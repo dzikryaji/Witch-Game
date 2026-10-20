@@ -122,24 +122,24 @@ Create folders only when real files need them.
 
 ```text
 Assets/
-└── Witch/
-    ├── Art/
-    ├── Audio/
-    ├── Content/
-    ├── Prefabs/
-    ├── Scenes/
-    ├── Scripts/
-    │   ├── Domain/
-    │   ├── Application/
-    │   ├── Presentation/
-    │   ├── Infrastructure/
-    │   └── Bootstrap/
-    ├── Settings/
-    ├── Tests/
-    │   ├── EditMode/
-    │   ├── PlayMode/
-    │   └── Fixtures/
-    └── UI/
+├── Art/
+├── Audio/
+├── Content/
+├── Prefabs/
+├── Scenes/
+├── Scripts/
+│   ├── Domain/
+│   ├── Application/
+│   ├── Presentation/
+│   ├── Infrastructure/
+│   └── Bootstrap/
+├── Settings/
+├── Tests/
+│   ├── EditMode/
+│   ├── PlayMode/
+│   └── Fixtures/
+├── ThirdParty/
+└── UI/
 ```
 
 Imported packages belong under `Assets/ThirdParty/`. Team code and imported assets must not be mixed.

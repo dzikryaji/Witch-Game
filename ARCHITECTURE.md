@@ -125,7 +125,7 @@ Tests should mirror these boundaries. Edit Mode tests cover Domain and Applicati
 ## Planned filesystem layout
 
 ```text
-Assets/Witch/
+Assets/
 ├── Art/
 │   ├── Characters/
 │   ├── Environment/
@@ -158,6 +158,7 @@ Assets/Witch/
 │   ├── EditMode/
 │   ├── PlayMode/
 │   └── Fixtures/
+├── ThirdParty/
 └── UI/
 ```
 
