@@ -7,6 +7,8 @@ This repository currently contains a fresh Unity 2D URP project and the default 
 ## Project status
 
 - Unity: `6000.6.5f1`
+- Target: macOS 12.0 or newer on Apple Silicon (`arm64`)
+- Player: macOS `.app` using Metal, mouse, and keyboard
 - Rendering: Universal Render Pipeline 2D
 - Input: Unity Input System
 - Tests: Unity Test Framework installed; no project tests yet
@@ -35,6 +37,7 @@ The main risk is magical treatment. A potion containing at least one magical ing
 
 - Unity Hub
 - Unity Editor `6000.6.5f1`
+- macOS with Apple Silicon for the required player build and smoke test
 - Git
 
 ### Open the project
@@ -47,6 +50,32 @@ The main risk is magical treatment. A potion containing at least one magical ing
 6. Enter Play Mode.
 
 The current result is only the Unity 2D template. These steps must be updated when the Bootstrap scene and first playable slice exist.
+
+## macOS target
+
+The confirmed release target is macOS desktop. Current baseline:
+
+- minimum macOS version: 12.0;
+- required architecture: Apple Silicon (`arm64`);
+- rendering API: Metal through URP 2D;
+- primary input: mouse and keyboard;
+- output: `Witch Game.app`;
+- required verification: build, launch, save, quit, relaunch, windowed mode, fullscreen mode, and player-log review on Apple Silicon hardware.
+
+Intel Mac support is optional until the team configures and tests a Universal `arm64` and `x86_64` build. Before distribution, replace the template bundle identifier and company name, then configure signing and notarization or Mac App Store submission.
+
+### Current compatibility result
+
+On October 20, 2026, the current template project successfully compiled as `StandaloneOSX`, produced an `arm64` macOS application with a macOS 12.0 minimum, and launched the enabled sample scene on Apple Silicon. This proves the current Unity setup can build and start on macOS. It does not yet prove production gameplay, save behavior, signing, notarization, Intel support, or release readiness because those systems do not exist yet.
+
+Current release blockers:
+
+- bundle identifier is still `com.DefaultCompany.2D-URP`;
+- company name is still the Unity template default;
+- generated app is not validly distribution-signed or notarized;
+- only the template sample scene is included;
+- window resizing is not yet enabled;
+- production gameplay, saves, tests, and build automation do not exist yet.
 
 ## Planned project layout
 
@@ -80,7 +109,7 @@ See [ARCHITECTURE.md](ARCHITECTURE.md) for boundaries, dependency rules, game fl
 
 ## Design constraints
 
-Do not turn unresolved proposals into fixed code or content. Herb identity, property count, recipe structure, restrictions, sound evidence, final-potion rules, final herb count, exact prices, stock limits, target platform, and UI technology still require decisions.
+Do not turn unresolved proposals into fixed code or content. Herb identity, property count, recipe structure, restrictions, sound evidence, final-potion rules, final herb count, exact prices, stock limits, and UI technology still require decisions.
 
 ## Development rules
 

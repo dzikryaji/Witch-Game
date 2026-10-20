@@ -7,10 +7,12 @@ This document describes the intended Unity architecture for Witch Game. It is a 
 Current repository state:
 
 - Unity `6000.6.5f1` with Universal Render Pipeline 2D
+- confirmed player target: macOS 12.0 or newer on Apple Silicon (`arm64`), using Metal
 - Input System and Unity Test Framework installed
 - only `Assets/Scenes/SampleScene.unity` enabled in build settings
 - sample scene contains template camera and 2D light objects
 - no production gameplay code, assembly definitions, UI, prefabs, tests, save system, or CI
+- current template successfully builds and launches as an Apple Silicon macOS player, but its template bundle identity and invalid distribution signature make it unsuitable for release
 
 This architecture preserves approved game and production rules while keeping unresolved design choices configurable or unimplemented. Code must not guess their outcomes.
 
@@ -22,6 +24,7 @@ This architecture preserves approved game and production rules while keeping unr
 - Give three programmers clear ownership and stable integration boundaries.
 - Support exact day-start restoration and branch-preserving replay.
 - Fit a two-month production schedule with one reusable shop location and one core loop.
+- Produce a launchable, testable macOS `.app` from a clean checkout.
 
 ## Dependency model
 
@@ -90,6 +93,8 @@ Adapters for Unity and device services:
 - application pause, resume, and quit callbacks.
 
 Infrastructure implements Application interfaces. It must not decide game outcomes.
+
+Infrastructure also owns macOS-specific adapters and release integration: `Application.persistentDataPath`, player logs, application pause and quit callbacks, build output, signing hooks, and packaging.
 
 ### Bootstrap
 
@@ -294,6 +299,23 @@ Do not create one scene per day. Change newspapers, customers, props, weather, d
 
 UI Toolkit is the recommended prototype choice for document-heavy screens. Confirm it during the Day 1 slice. If it cannot support shop interactions cleanly, choose one alternative before production UI expands; do not maintain parallel UI Toolkit and uGUI versions.
 
+## macOS platform architecture
+
+- Unity build target: `StandaloneOSX`.
+- Minimum supported system: macOS 12.0.
+- Required architecture: Apple Silicon (`arm64`).
+- Rendering: Metal through URP 2D.
+- Input: mouse and keyboard through Unity Input System.
+- Display: windowed and fullscreen, including Retina displays.
+- Output: `Witch Game.app`.
+- Persistence: file-backed repository rooted at `Application.persistentDataPath`.
+- Diagnostics: Unity player log plus explicit save and migration error results.
+- Distribution: stable bundle identifier, version, icon, code signing, and notarization or Mac App Store packaging.
+
+Run Edit Mode tests in the macOS Editor. Run Play Mode and integration smoke tests in both Editor and built player where supported. Release acceptance requires launch, save, quit, relaunch, window/fullscreen, input, audio, and log checks on Apple Silicon hardware.
+
+Intel support is not part of the current acceptance baseline. Supporting Intel requires a Universal `arm64` and `x86_64` build plus separate compatibility testing.
+
 ## Determinism and content validation
 
 Reloading a day must reproduce its customer order and Hunter placement. Persist an authored schedule or deterministic seed sufficient to recreate the exact day.
@@ -377,7 +399,6 @@ Keep these configurable or unimplemented until the team decides:
 - final herb count;
 - exact prices and stock limits;
 - save-branch limit;
-- target platform;
 - final UI technology after prototype testing.
 
 Three-or-more-unit recipes are also not approved. Current recipes remain exactly two units until an explicit design revision.
