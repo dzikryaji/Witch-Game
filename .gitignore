@@ -13,6 +13,16 @@
 # Recommended: add any editor/OS/tool-specific ignore rules from the Global/ templates as needed.
 # See: https://github.com/github/gitignore/tree/main/Global
 #
+
+# Local AI-agent instructions
+/[Aa][Gg][Ee][Nn][Tt]*.md
+/[Cc][Ll][Aa][Uu][Dd][Ee]*.md
+/[Gg][Ee][Mm][Ii][Nn][Ii]*.md
+/[Cc][Oo][Pp][Ii][Ll][Oo][Tt]*.md
+/[Aa][Ii].md
+/.github/copilot-instructions.md
+/.github/instructions/*.instructions.md
+
 .utmp/
 /[Ll]ibrary/
 /[Tt]emp/
