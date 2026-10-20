@@ -13,6 +13,7 @@ Current repository state:
 - sample scene contains template camera and 2D light objects
 - no production gameplay code, assembly definitions, UI, prefabs, tests, save system, or CI
 - current template successfully builds and launches as an Apple Silicon macOS player, but its template bundle identity and invalid distribution signature make it unsuitable for release
+- Apple.Core and Apple.GameKit are not installed; researched baseline is Apple.GameKit `4.1.0`, Apple.Core `3.3.0`, Unity `2022.3+`, and macOS `12.0+`
 
 This architecture preserves approved game and production rules while keeping unresolved design choices configurable or unimplemented. Code must not guess their outcomes.
 
@@ -25,6 +26,7 @@ This architecture preserves approved game and production rules while keeping unr
 - Support exact day-start restoration and branch-preserving replay.
 - Fit a two-month production schedule with one reusable shop location and one core loop.
 - Produce a launchable, testable macOS `.app` from a clean checkout.
+- Allow optional Apple Game Center integration without coupling gameplay to authentication or network availability.
 
 ## Dependency model
 
@@ -67,6 +69,8 @@ Use cases that coordinate Domain rules and define legal action order. Examples:
 
 Application owns service interfaces such as save repositories, clocks, random sources, and scene-transition requests. It returns typed results for Presentation to display. It must not draw UI or write files directly.
 
+If optional Game Center work is attempted, Application also owns `IGameCenterService` and platform-neutral authentication, achievement, and dashboard results. It does not reference Apple.GameKit types.
+
 ### Presentation
 
 Unity-facing views, presenters, input, animation, visual effects, and display-only timing. Planned surfaces include:
@@ -96,9 +100,13 @@ Infrastructure implements Application interfaces. It must not decide game outcom
 
 Infrastructure also owns macOS-specific adapters and release integration: `Application.persistentDataPath`, player logs, application pause and quit callbacks, build output, signing hooks, and packaging.
 
+Optional `AppleGameCenterService` belongs here. It wraps Apple.GameKit, translates `GameKitException` into Application results, and has a matching `NoOpGameCenterService` for unsupported or disabled environments.
+
 ### Bootstrap
 
 Composition root that creates concrete services and connects every layer. Bootstrap owns object lifetime and startup order, not gameplay rules.
+
+Game Center authentication may start here after listeners exist, but Bootstrap must not block local startup while waiting for it. Bootstrap selects the real macOS adapter only when enabled and uses the no-op adapter otherwise.
 
 ## Assembly boundaries
 
@@ -316,6 +324,64 @@ Run Edit Mode tests in the macOS Editor. Run Play Mode and integration smoke tes
 
 Intel support is not part of the current acceptance baseline. Supporting Intel requires a Universal `arm64` and `x86_64` build plus separate compatibility testing.
 
+### Release pipeline and gates
+
+- By October 24: permanent explicit App ID, matching App Store Connect macOS record, signing strategy, account roles, tester groups, and metadata owners confirmed.
+- October 26–30: first signed playable vertical build validates, uploads, finishes processing, installs through internal TestFlight, and passes Apple Silicon smoke testing.
+- By November 10: content-integrated TestFlight build processes and installs for Playtest 2.
+- By November 16: release candidate, test reports, symbols, commit, signed package, and known issues archived.
+- November 17: final TestFlight update processes and installs; external Beta App Review submitted when needed.
+- By November 22: store metadata, screenshots, privacy, age rating, pricing, availability, review notes, export compliance, and final build selection complete.
+- November 23: macOS version submitted to App Review. November 24–27 remain for blockers, Apple questions, or resubmission.
+
+Use one permanent bundle ID, one app-version strategy, and a unique increasing build string for each upload. Team completion means upload processing, internal installation, and App Review submission succeeded. Apple controls external Beta App Review, App Review approval, and storefront timing.
+
+## Optional Apple Game Center architecture
+
+Game Center is good-to-have only. Run its four-hour isolated feasibility gate inside the October 19–24 save, Apple platform, and TestFlight research task. Local files remain authoritative, and Game Center stays outside save correctness. Production integration begins only if that gate passes, the first TestFlight upload succeeds, and required work remains on schedule. It must pass by November 13 or final builds use the no-op adapter and hide Game Center controls. Stop all related work by November 16, 2026.
+
+Initial allowed scope:
+
+- `GKLocalPlayer` authentication;
+- approved `GKAchievement` progress;
+- `GKGameCenterViewController` or `GKAccessPoint` dashboard access.
+
+Required dependency flow:
+
+```text
+Presentation -> IGameCenterService <- AppleGameCenterService
+                                      NoOpGameCenterService
+Bootstrap chooses implementation
+Domain has no Game Center dependency
+```
+
+Recommended contract:
+
+```csharp
+public interface IGameCenterService
+{
+    bool IsAuthenticated { get; }
+    Task<GameCenterAuthenticationResult> AuthenticateAsync();
+    Task ReportAchievementAsync(string achievementId, double percentComplete);
+    Task PresentDashboardAsync();
+}
+```
+
+Rules:
+
+- subscribe to authentication-change events before `GKLocalPlayer.Authenticate()`;
+- catch `GameKitException` inside Infrastructure;
+- report only after authoritative Application state commits;
+- keep reports idempotent and retry-safe;
+- never grant gameplay state from platform achievements;
+- never require authentication for New Game, Continue, local save, victory, or loss;
+- keep local saves authoritative and leave `GKSavedGame` cloud sync for later work;
+- exclude leaderboards, multiplayer, matchmaking, invites, challenges, and activities.
+
+Setup requires pinned Apple Unity packages, a permanent bundle identifier, Game Center entitlement, App Sandbox incoming and outgoing network access, signing, a matching App Store Connect app, configured IDs, and dedicated test accounts. Game Center under alternative distribution still requires availability on at least one App Store storefront.
+
+Verify authenticated, signed-out, declined, offline, restricted, error, and later-reauthenticated states in a signed Apple Silicon build. Confirm dashboard dismissal restores input and every failure leaves gameplay and local saves unchanged.
+
 ## Determinism and content validation
 
 Reloading a day must reproduce its customer order and Hunter placement. Persist an authored schedule or deterministic seed sufficient to recreate the exact day.
@@ -360,6 +426,7 @@ Random or hybrid scheduling must never generate an impossible order through no p
 - failed writes preserve previous data;
 - Day 1 completes, saves Day 2, and reloads identical state;
 - replaying an earlier day creates a visible branch without damaging the original path.
+- optional Game Center authentication and reporting failures do not block local play or mutate saves.
 
 ## Team boundaries
 
@@ -370,6 +437,7 @@ Random or hybrid scheduling must never generate an impossible order through no p
 | UI, input, scenes, and presentation prefabs | Programmer B | Programmer A or C |
 | Save files, branching, migrations, and recovery | Programmer C | Programmer A |
 | Bootstrap, technical services, and builds | Programmer C | Programmer A or B |
+| All optional Game Center packages, interfaces, adapters, UI wiring, capabilities, achievement reporting, and signed tests | Programmer C | Programmers A and B review only |
 
 Coordinate before changing public interfaces, saveable state, ScriptableObject schemas, scene names, shared scenes, prefabs, assembly definitions, or project settings.
 
@@ -384,6 +452,9 @@ Coordinate before changing public interfaces, saveable state, ScriptableObject s
 7. Verify restart restores an identical Day 2 state.
 8. Add Story/Load branching and deletion.
 9. Add content validation, all fourteen days, final art, and release automation.
+10. Prove signing, App Store Connect processing, and internal TestFlight installation with the first playable vertical build during October 26–30.
+11. If the October 24 gate returned Go and the first TestFlight upload succeeded, optionally integrate Game Center authentication, one achievement, and dashboard access; disable it unless green by November 13.
+12. Reuse the proven pipeline for the November 10 content build, November 17 final TestFlight update, and November 23 App Review submission.
 
 ## Unresolved decisions
 
@@ -400,6 +471,8 @@ Keep these configurable or unimplemented until the team decides:
 - exact prices and stock limits;
 - save-branch limit;
 - final UI technology after prototype testing.
+- whether optional Game Center integration is attempted;
+- approved achievement identifiers and milestone mapping.
 
 Three-or-more-unit recipes are also not approved. Current recipes remain exactly two units until an explicit design revision.
 
@@ -415,3 +488,4 @@ Three-or-more-unit recipes are also not approved. Current recipes remain exactly
 - Save failure cannot expose a newspaper for a checkpoint that does not exist.
 - No unresolved design decision is hard-coded.
 - Clean checkout restores packages, runs tests, and starts the game using documented steps.
+- Optional Game Center code, if present, can be disabled without changing core gameplay or local saves.
