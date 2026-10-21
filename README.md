@@ -11,9 +11,9 @@ This repository currently contains a fresh Unity 2D URP project and the default 
 - Player: macOS `.app` using Metal, mouse, and keyboard
 - Rendering: Universal Render Pipeline 2D
 - Input: Unity Input System
-- Tests: Unity Test Framework installed; no project tests yet
+- Tests: Unity Test Framework installed; Domain and Application Edit Mode tests exist
 - Enabled scene: `Assets/Scenes/SampleScene.unity`
-- Gameplay code, production UI, content assets, prefabs, saves, and CI: not yet implemented
+- Domain and Application base-state code is implemented; production UI, content assets, prefabs, saves, Bootstrap, Infrastructure, and CI are not yet implemented
 - Current milestone: build a thin Day 1 vertical slice before entering all fourteen days of content
 - Optional platform enhancement: Apple Game Center after the core release candidate is stable; Apple packages are not installed yet
 
@@ -23,12 +23,14 @@ This repository currently contains a fresh Unity 2D URP project and the default 
 2. Open the shop and receive one customer at a time.
 3. Inspect the customer's appearance and automatic dialogue.
 4. Use the guidebook to interpret the requested treatment.
-5. Select, grind when required, and brew exactly one potion.
+5. Drag two different herbs from the shelves, grind each one, place both ground herbs in the brewing pot, and click Brew.
 6. Serve before the sixty-second timer expires.
 7. Resolve payment, Hunter inspection, arrest, and automatic hex protection.
 8. After the final customer, meet the day's minimum-income target.
 9. Restock herbs and buy available upgrades.
-10. Autosave the next day's starting state before showing its newspaper.
+10. At the next Shop Preparation, capture its starting state and autosave that immutable snapshot asynchronously.
+
+The current day's newspaper and guidebook remain available throughout shop gameplay. Reopening either document during a customer encounter does not pause the sixty-second timer. Guidebook, grinder, and herb items are draggable within the workbench; their visual positions reset each day.
 
 The main risk is magical treatment. A potion containing at least one magical ingredient pays twice the normal amount, but serving it to a Hunter causes an arrest attempt. An available hex prevents one arrest and is consumed automatically.
 
@@ -150,7 +152,7 @@ See [ARCHITECTURE.md](ARCHITECTURE.md) for boundaries, dependency rules, game fl
 
 ## Design constraints
 
-Do not turn unresolved proposals into fixed code or content. Herb identity, property count, recipe structure, restrictions, sound evidence, final-potion rules, final herb count, exact prices, stock limits, and UI technology still require decisions.
+Do not turn unresolved proposals into fixed code or content. Exact herb roster, property count, individual recipes, guidebook presentation, unlock assignments, restrictions, sound evidence, final-potion rules, final herb count, exact prices, stock limits, and UI technology still require decisions.
 
 ## Development rules
 

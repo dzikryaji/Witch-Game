@@ -1,0 +1,16 @@
+{
+    "name": "Witch.Application",
+    "rootNamespace": "Witch.Application",
+    "references": [
+        "Witch.Domain"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": true
+}
