@@ -11,7 +11,8 @@ Current repository state:
 - Input System and Unity Test Framework installed
 - only `Assets/Scenes/SampleScene.unity` enabled in build settings
 - sample scene contains template camera and 2D light objects
-- no production gameplay code, assembly definitions, UI, prefabs, tests, save system, or CI
+- Domain and Application base-state code, assembly definitions, and Edit Mode tests now exist under `Assets/Scripts/` and `Assets/Tests/`
+- no production UI, prefabs, save system, Bootstrap, Infrastructure, or CI
 - current template successfully builds and launches as an Apple Silicon macOS player, but its template bundle identity and invalid distribution signature make it unsuitable for release
 - Apple.Core and Apple.GameKit are not installed; researched baseline is Apple.GameKit `4.1.0`, Apple.Core `3.3.0`, Unity `2022.3+`, and macOS `12.0+`
 
@@ -61,8 +62,8 @@ Use cases that coordinate Domain rules and define legal action order. Examples:
 
 - start or load a run;
 - start a day or customer encounter;
-- select and commit ingredients;
-- grind, brew, discard, serve, or expire a timer;
+- move raw herbs between shelves, workbench, and grinder;
+- grind, move ground herbs into or out of the brewing pot, brew, discard, serve, or expire a timer;
 - finish a day;
 - buy stock, unlocks, or upgrades;
 - request save and load operations.
@@ -75,7 +76,7 @@ If optional Game Center work is attempted, Application also owns `IGameCenterSer
 
 Unity-facing views, presenters, input, animation, visual effects, and display-only timing. Planned surfaces include:
 
-- Main Menu and Story/Load screens;
+- Main Menu and Load Selection screens;
 - newspaper and guidebook;
 - customer portrait and dialogue;
 - inventory and potion preparation;
@@ -125,7 +126,7 @@ Tests should mirror these boundaries. Edit Mode tests cover Domain and Applicati
 ## Planned filesystem layout
 
 ```text
-Assets/Witch/
+Assets/
 ├── Art/
 │   ├── Characters/
 │   ├── Environment/
@@ -158,6 +159,7 @@ Assets/Witch/
 │   ├── EditMode/
 │   ├── PlayMode/
 │   └── Fixtures/
+├── ThirdParty/
 └── UI/
 ```
 
@@ -184,8 +186,8 @@ Definitions may contain stable IDs, display text, artwork references, prices, re
 Use plain serializable C# objects for player progress:
 
 - `RunState`: run ID, current day, money, inventory, unlocks, upgrades, hexes, and narrative flags;
-- `DayState`: qualifying income, deterministic customer order, current encounter, and day-specific flags;
-- `PotionDraft`: selected and committed ingredients plus preparation state;
+- `DayState`: qualifying income, deterministic customer sequence, current encounter, and day-specific flags;
+- `PotionDraft`: zero to two different ground herbs currently occupying the brewing pot;
 - `SaveNode`: complete beginning-of-day snapshot and parent metadata;
 - `SaveIndex`: runs, branches, node relationships, and latest markers;
 - `GlobalSettings`: audio, language, display, accessibility, and controls, stored separately from run saves.
@@ -194,36 +196,49 @@ Persist stable content IDs. Never persist list indexes, display names, Unity ins
 
 ## State machines
 
-### Top-level flow
+### Application navigation and active-run flow
+
+Keep application navigation separate from active-run gameplay. `GameSession` exists only after a run has been created or loaded, so Boot and menu screens are not gameplay phases.
 
 ```text
 Boot
 Main Menu
-Story/Load
-Newspaper
-Shop Opening
+├── New Game → create run
+├── Continue → load latest day-start save
+└── Load → Load Selection → load selected day-start save
+
+Active GameSession
+Shop Preparation
 Customer Encounter
 Income Check
 End-of-Day Shopping
-Saving Next Day
 Victory or Game Over
 ```
 
-Each Application action validates the current phase. Invalid actions return an explicit error and do not mutate state.
+New Game, Continue, and successful Load Selection enter `ShopPreparation`. Returning to Main Menu or quitting closes the active session through application navigation. Each gameplay action validates the current active-run phase. Invalid actions return an explicit error and do not mutate state.
+
+The current day's newspaper and guidebook are reusable UI panels, not game phases. The newspaper opens during Shop Preparation and may be reopened during Customer Encounter. Opening either document never pauses the sixty-second customer timer.
 
 ### Customer flow
 
 ```text
 Present customer and automatic dialogue
 Start 60-second timer when player gains control
-Select and prepare ingredients
-Serve one potion, or expire timer
+Drag raw herbs from shelves to the workbench or grinder
+Click Grind and wait for its animation; the timer and other interactions continue
+Drag two different ground herbs into the brewing pot
+Click Brew and wait for its animation; the timer and other interactions continue
+Move the completed potion into the single serving slot and click Serve, or expire timer
 Resolve payment, inspection, arrest, and hex use
 Display result
 Advance to next customer
 ```
 
-Ingredients are consumed once intentionally committed to a brew, discard, or service. UI must provide confirmation or an undo opportunity before an accidental mouse action can cause irreversible consumption.
+Grinding converts one raw shelf unit into one ground workbench item, so the raw unit is consumed when grinding completes. Brewing consumes both ground herbs. An invalid pair produces a failed potion that is discarded automatically. UI must provide confirmation or an undo opportunity before grinding or brewing begins.
+
+Workbench rules are separate from free-form visual positions. Loose items may move anywhere inside the workbench, but only one loose item with the same herb ID and preparation state may exist there. A raw and ground item of the same herb may coexist. Grinder and brewing-pot slots do not count toward this loose-item limit. Raw herbs may return to shelves before grinding. Ground herbs and completed potions remain available across customers but disappear when the next day begins; loose raw herbs return to shelves. All object positions reset to defaults each day.
+
+The grinder holds one raw herb. The brewing pot holds at most two ground herbs with different IDs. Before Brew is clicked, either pot ingredient may return to the workbench. If the customer timer expires, each pot ingredient returns to the workbench when its same ground herb is not already there; otherwise that ingredient remains in its pot slot for the next customer. Grinder and pot animations may run simultaneously, and guidebook, newspaper, and other workbench interactions remain usable during both animations.
 
 ### End-of-day flow
 
@@ -235,8 +250,9 @@ Victory after successful Day 14
 Otherwise show summary and shopping
 Finalize purchases
 Build next day with income reset to zero
-Write and validate autosave
-Show next newspaper only after save succeeds
+Enter Shop Preparation
+Capture an immutable beginning-of-day snapshot and start its autosave asynchronously
+Show the next newspaper and allow Customer Encounter while that snapshot is written
 ```
 
 Speed tips increase money but never count toward the daily income target. Meeting a target never deducts money.
@@ -245,9 +261,11 @@ Speed tips increase money but never count toward the daily income target. Meetin
 
 Current fixed rules:
 
-- Every current recipe uses exactly two herb units and may use two units of the same herb.
-- Normal and magical variants satisfy the same recipe requirement.
+- Every current recipe uses exactly two different ground herb types.
+- Every magical herb is a separate herb definition with its own stable ID, name, artwork, guidebook entry, and recipe; it is not a variant of an ordinary herb.
+- Magical and ordinary recipes may treat the same illness, but exact guidebook presentation remains undecided.
 - Any magical ingredient makes the completed potion magical.
+- An incorrect herb pair produces a failed potion that is discarded automatically, consuming both ground herbs.
 - Correct normal potion pays the normal amount.
 - Correct magical potion pays double.
 - Wrong potion pays nothing.
@@ -289,7 +307,7 @@ Repository operations should return explicit success or error results. UI must n
 4. Replace primary file or index only after validation succeeds.
 5. Keep a recoverable previous copy until replacement completes.
 
-Next-day gameplay cannot begin until this operation succeeds. Failed writes leave the previous valid day-start save intact.
+Snapshot capture happens synchronously when Shop Preparation begins. File writing may continue asynchronously during Shop Preparation and Customer Encounter because it uses that immutable snapshot rather than live run state. Saving is an operation status, not a game phase. Failed writes leave the previous valid day-start save intact and produce an explicit error that allows retrying the same snapshot.
 
 ### Compatibility
 
@@ -300,7 +318,7 @@ Store save-data version separately from displayed game version. Migrate supporte
 Use three production scenes:
 
 - `Bootstrap`: long-lived services and composition root;
-- `MainMenu`: title, settings, credits, and Story/Load;
+- `MainMenu`: title, New Game, Continue, Load Selection, settings, and credits;
 - `Shop`: all fourteen playable days.
 
 Do not create one scene per day. Change newspapers, customers, props, weather, damage, lighting, and sound through data and reusable layers.
@@ -384,7 +402,7 @@ Verify authenticated, signed-out, declined, offline, restricted, error, and late
 
 ## Determinism and content validation
 
-Reloading a day must reproduce its customer order and Hunter placement. Persist an authored schedule or deterministic seed sufficient to recreate the exact day.
+Reloading a day must reproduce its customer sequence, requested orders, and Hunter placement. Persist an authored schedule or deterministic seed sufficient to recreate the exact day.
 
 Before entering all fourteen days, add an Editor validation tool that reports:
 
@@ -450,7 +468,7 @@ Coordinate before changing public interfaces, saveable state, ScriptableObject s
 5. Build one customer UI, then the complete Day 1 flow.
 6. Add daily target, shopping, next-day state, and safe local persistence.
 7. Verify restart restores an identical Day 2 state.
-8. Add Story/Load branching and deletion.
+8. Add Load Selection branching and deletion.
 9. Add content validation, all fourteen days, final art, and release automation.
 10. Prove signing, App Store Connect processing, and internal TestFlight installation with the first playable vertical build during October 26–30.
 11. If the October 24 gate returned Go and the first TestFlight upload succeeded, optionally integrate Game Center authentication, one achievement, and dashboard access; disable it unless green by November 13.
@@ -460,9 +478,8 @@ Coordinate before changing public interfaces, saveable state, ScriptableObject s
 
 Keep these configurable or unimplemented until the team decides:
 
-- herb identity and magical-variant model;
 - five or six treatment properties;
-- exact basic and compound recipe structure;
+- exact recipe roster and guidebook presentation for ordinary and magical treatments of the same illness;
 - detailed unlock schedule;
 - whether sound counts as Hunter evidence;
 - whether a final potion is required;
@@ -474,7 +491,7 @@ Keep these configurable or unimplemented until the team decides:
 - whether optional Game Center integration is attempted;
 - approved achievement identifiers and milestone mapping.
 
-Three-or-more-unit recipes are also not approved. Current recipes remain exactly two units until an explicit design revision.
+Three-or-more-unit recipes are not approved. Current recipes remain exactly two different ground herbs until an explicit design revision.
 
 ## Architecture acceptance criteria
 
@@ -485,7 +502,7 @@ Three-or-more-unit recipes are also not approved. Current recipes remain exactly
 - One customer flows end to end through Presentation, Application, and Domain.
 - Day 1 saves Day 2 and reloads exactly.
 - Rule tests and content validation pass.
-- Save failure cannot expose a newspaper for a checkpoint that does not exist.
+- An asynchronous save always writes the immutable Shop Preparation snapshot, never later encounter changes, and a failed write remains retryable without corrupting the previous save.
 - No unresolved design decision is hard-coded.
 - Clean checkout restores packages, runs tests, and starts the game using documented steps.
 - Optional Game Center code, if present, can be disabled without changing core gameplay or local saves.
