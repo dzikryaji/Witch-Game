@@ -170,7 +170,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Witch.Bootstrap::Witch.Bootstrap.GameCompositionRoot
   contentCatalog: {fileID: 11400000, guid: 10000000000000000000000000000015, type: 2}
   randomSeed: 20261024
-  startupScene: 2
+  startupScene: 0
   developmentStartingMoney: 0
   developmentRewindCount: 0
   developmentOrderSeed: 20261024
