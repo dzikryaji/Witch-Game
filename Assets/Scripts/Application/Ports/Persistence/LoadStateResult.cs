@@ -1,29 +1,28 @@
 using System;
-using Witch.Domain.Progression;
 
 namespace Witch.Application.Ports
 {
     public sealed class LoadStateResult
     {
-        private LoadStateResult(RunState runState, LoadStateError error, string errorMessage)
+        private LoadStateResult(GameSaveState savedGame, LoadStateError error, string errorMessage)
         {
-            RunState = runState;
+            SavedGame = savedGame;
             Error = error;
             ErrorMessage = errorMessage;
         }
 
         public bool Succeeded => Error == LoadStateError.None;
 
-        public RunState RunState { get; }
+        public GameSaveState SavedGame { get; }
 
         public LoadStateError Error { get; }
 
         public string ErrorMessage { get; }
 
-        public static LoadStateResult Success(RunState runState)
+        public static LoadStateResult Success(GameSaveState savedGame)
         {
             return new LoadStateResult(
-                runState ?? throw new ArgumentNullException(nameof(runState)),
+                savedGame ?? throw new ArgumentNullException(nameof(savedGame)),
                 LoadStateError.None,
                 null);
         }

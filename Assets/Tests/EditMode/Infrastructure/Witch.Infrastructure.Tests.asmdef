@@ -1,0 +1,23 @@
+{
+    "name": "Witch.Infrastructure.Tests",
+    "rootNamespace": "Witch.Infrastructure.Tests",
+    "references": [
+        "Witch.Infrastructure",
+        "Witch.Application",
+        "Witch.Domain"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false,
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ]
+}

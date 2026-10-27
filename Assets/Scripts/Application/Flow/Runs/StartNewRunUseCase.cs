@@ -1,6 +1,5 @@
 using System;
 using Witch.Domain;
-using Witch.Domain.Inventory;
 using Witch.Domain.Progression;
 
 namespace Witch.Application.Flow
@@ -18,16 +17,37 @@ namespace Witch.Application.Flow
 
             try
             {
-                var inventory = new InventoryState(command.StartingInventory);
-                var firstDay = new DayState(DayState.FirstDay, command.FirstDayCustomerSequence);
                 var runState = new RunState(
                     command.RunId,
+                    RunState.FirstDay,
                     command.StartingMoney,
-                    inventory,
-                    command.StartingHexCount,
-                    firstDay);
+                    0,
+                    0,
+                    command.UnlockedCategoryIds,
+                    command.UnlockedHerbIds,
+                    command.UnlockedRecipeIds,
+                    command.UnlockedGuidebookEntryIds,
+                    command.TutorialFlags,
+                    command.NarrativeFlags);
+                var snapshot = new DayStartSnapshot(
+                    runState,
+                    command.FirstDayOrderSeed,
+                    command.FirstDayTimerDuration,
+                    command.FirstDayExpenseId,
+                    command.FirstDayExpenseValue,
+                    command.SaveVersion,
+                    command.CapturedAtUtc);
+                var metadata = new ActiveAttemptMetadata(
+                    runState.RunId,
+                    runState.CurrentDayNumber,
+                    0,
+                    0,
+                    false,
+                    0,
+                    command.FirstDayOrderSeed);
 
-                return StartNewRunResult.Success(new GameSession(runState, GamePhase.ShopPreparation));
+                return StartNewRunResult.Success(
+                    new GameSession(snapshot, metadata, GamePhase.ShopPreparation));
             }
             catch (ArgumentException exception)
             {

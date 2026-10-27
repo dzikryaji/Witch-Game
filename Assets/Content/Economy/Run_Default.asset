@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c97a41b10ce8487f9acc4ab9c0b55ec, type: 3}
+  m_Name: Run_Default
+  m_EditorClassIdentifier: Witch.Infrastructure::Witch.Infrastructure.Content.RunConfigurationDefinition
+  stableId: run.default
+  startingMoney: 0
+  saveVersion: 1
+  firstDay: 1
+  dailyTimerIncreaseSeconds: 20

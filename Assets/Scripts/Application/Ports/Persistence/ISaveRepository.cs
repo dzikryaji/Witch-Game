@@ -1,13 +1,15 @@
 using System.Threading;
 using System.Threading.Tasks;
-using Witch.Domain.Progression;
 
 namespace Witch.Application.Ports
 {
-    public interface ISaveRepository
+    public interface ISaveRepository :
+        IDayStartSnapshotRepository,
+        IActiveAttemptMetadataRepository,
+        IRunStateTransactionRepository
     {
         Task<SaveStateResult> SaveAsync(
-            RunState snapshot,
+            GameSaveState savedGame,
             CancellationToken cancellationToken = default);
 
         Task<LoadStateResult> LoadLatestAsync(CancellationToken cancellationToken = default);

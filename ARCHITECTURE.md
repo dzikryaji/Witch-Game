@@ -1,33 +1,16 @@
 # Witch Game Architecture
 
-## Status and scope
+## Current status
 
-This document describes the intended Unity architecture for Witch Game. It is a target design, not a description of systems that already exist.
+This file describes the implemented three-day prototype as of October 24, 2026. The fourteen-day documents remain the release target; features explicitly listed as deferred below are not claimed as implemented.
 
-Current repository state:
+Unity project facts:
 
-- Unity `6000.6.5f1` with Universal Render Pipeline 2D
-- confirmed player target: macOS 12.0 or newer on Apple Silicon (`arm64`), using Metal
-- Input System and Unity Test Framework installed
-- only `Assets/Scenes/SampleScene.unity` enabled in build settings
-- sample scene contains template camera and 2D light objects
-- Domain and Application base-state code, assembly definitions, and Edit Mode tests now exist under `Assets/Scripts/` and `Assets/Tests/`
-- no production UI, prefabs, save system, Bootstrap, Infrastructure, or CI
-- current template successfully builds and launches as an Apple Silicon macOS player, but its template bundle identity and invalid distribution signature make it unsuitable for release
-- Apple.Core and Apple.GameKit are not installed; researched baseline is Apple.GameKit `4.1.0`, Apple.Core `3.3.0`, Unity `2022.3+`, and macOS `12.0+`
-
-This architecture preserves approved game and production rules while keeping unresolved design choices configurable or unimplemented. Code must not guess their outcomes.
-
-## Architectural goals
-
-- Keep deterministic game rules testable without loading Unity scenes.
-- Keep Unity UI, animation, audio, and input replaceable without rewriting game rules.
-- Keep persistence and platform behavior outside gameplay decisions.
-- Give three programmers clear ownership and stable integration boundaries.
-- Support exact day-start restoration and branch-preserving replay.
-- Fit a two-month production schedule with one reusable shop location and one core loop.
-- Produce a launchable, testable macOS `.app` from a clean checkout.
-- Allow optional Apple Game Center integration without coupling gameplay to authentication or network availability.
+- Unity `6000.6.5f1`, URP 2D, Input System, Unity Test Framework.
+- macOS 12 minimum, Apple Silicon (`arm64`) development build, Metal through URP.
+- Four enabled production scenes: Bootstrap, MainMenu, Shop, RewindMinigame.
+- Editor-authored uGUI scenes and reusable herb/card prefabs; no scene per day or card difficulty.
+- Every production scene contains an authored Camera. Main Menu, Shop, and Rewind also contain their editable Canvas and EventSystem hierarchies.
 
 ## Dependency model
 
@@ -37,472 +20,93 @@ Presentation ------> Application ------> Domain
                            |                |
 Infrastructure ------------+----------------+
 
-Bootstrap creates and connects all concrete services.
+Bootstrap creates and connects concrete services.
 ```
 
-Dependencies point toward game policy. Domain knows nothing about Unity, files, scenes, UI, or platform APIs.
+| Assembly | Implemented responsibility | Project references |
+|---|---|---|
+| `Witch.Domain` | Recipes, exact pairs, payments, suspicion, timer/expense/rewind rules, immutable run state | none |
+| `Witch.Application` | Legal phases and use cases for start/load, arrival, preparation, serving, timer, rewind, expense, retry, and advancement | Domain |
+| `Witch.Infrastructure` | ScriptableObject content adapter/validation, JSON persistence, atomic file replacement, clock, random, scene loading, audio, lifecycle | Application, Domain |
+| `Witch.Presentation` | Main menu/settings, Shop/guidebook/tutorial/pause, card board, result screens, input, audio requests | Application, Domain, Unity UI/Input |
+| `Witch.Bootstrap` | Composition root, object lifetime, content-to-view mapping, scene injection | all four assemblies |
 
-### Domain
+Domain and Application assembly definitions use `noEngineReferences: true`. Source checks and Unity compilation verify neither imports Unity APIs.
 
-Pure C# rules and state transitions. Domain answers questions such as:
+## Runtime composition
 
-- whether selected ingredients match a recipe;
-- whether a potion is normal or magical;
-- whether ingredients and money can be spent;
-- how much payment qualifies toward the daily target;
-- whether a Hunter inspects inventory;
-- whether an arrest occurs and a hex is consumed;
-- whether the day target, victory, or a loss condition is satisfied.
+`GameCompositionRoot` persists from Bootstrap and:
 
-Domain must not reference `UnityEngine` or call infrastructure interfaces directly.
+1. validates and maps `GameContentCatalog`;
+2. creates JSON run/settings repositories and platform adapters;
+3. creates Application use cases with Domain rules;
+4. loads Main Menu;
+5. injects Main Menu, Shop, or Rewind presenters whenever a production scene loads.
 
-### Application
+Scenes and prefabs own visual hierarchy, layout, colors, fonts, and component references. Presentation scripts bind authored controls, dispatch interactions, and render state; they do not create GameObjects, add visual components, or calculate layout at runtime. Six reusable herb slots and sixteen reusable rewind-card slots are authored in advance and activated/configured from content. Recipes, orders, timers, payments, expenses, unlocks, and rewind difficulty still come from content definitions or Domain configuration, not scene objects.
 
-Use cases that coordinate Domain rules and define legal action order. Examples:
+The current implementation creates no GameObjects or components at runtime. Bootstrap, Cameras, audio channels, interface hierarchy, herb slots, and maximum rewind-card slots are all authored. Scripts only configure content, state, activity, and behavior.
 
-- start or load a run;
-- start a day or customer encounter;
-- move raw herbs between shelves, workbench, and grinder;
-- grind, move ground herbs into or out of the brewing pot, brew, discard, serve, or expire a timer;
-- finish a day;
-- buy stock, unlocks, or upgrades;
-- request save and load operations.
-
-Application owns service interfaces such as save repositories, clocks, random sources, and scene-transition requests. It returns typed results for Presentation to display. It must not draw UI or write files directly.
-
-If optional Game Center work is attempted, Application also owns `IGameCenterService` and platform-neutral authentication, achievement, and dashboard results. It does not reference Apple.GameKit types.
-
-### Presentation
-
-Unity-facing views, presenters, input, animation, visual effects, and display-only timing. Planned surfaces include:
-
-- Main Menu and Load Selection screens;
-- newspaper and guidebook;
-- customer portrait and dialogue;
-- inventory and potion preparation;
-- sixty-second timer;
-- result, arrest, hex, game-over, and victory feedback;
-- end-of-day summary, restocking, and upgrades.
-
-Presentation forwards actions to Application and renders returned results. It must not calculate recipes, payment, Hunter identity, income targets, or save outcomes.
-
-### Infrastructure
-
-Adapters for Unity and device services:
-
-- local file save repository;
-- system clock;
-- deterministic random source;
-- scene loading;
-- audio playback and mixer settings;
-- application pause, resume, and quit callbacks.
-
-Infrastructure implements Application interfaces. It must not decide game outcomes.
-
-Infrastructure also owns macOS-specific adapters and release integration: `Application.persistentDataPath`, player logs, application pause and quit callbacks, build output, signing hooks, and packaging.
-
-Optional `AppleGameCenterService` belongs here. It wraps Apple.GameKit, translates `GameKitException` into Application results, and has a matching `NoOpGameCenterService` for unsupported or disabled environments.
-
-### Bootstrap
-
-Composition root that creates concrete services and connects every layer. Bootstrap owns object lifetime and startup order, not gameplay rules.
-
-Game Center authentication may start here after listeners exist, but Bootstrap must not block local startup while waiting for it. Bootstrap selects the real macOS adapter only when enabled and uses the no-op adapter otherwise.
-
-## Assembly boundaries
-
-Create assembly definitions when their first production files are added.
-
-| Assembly | Allowed project references | Unity reference |
-| --- | --- | --- |
-| `Witch.Domain` | none | no |
-| `Witch.Application` | `Witch.Domain` | no |
-| `Witch.Presentation` | `Witch.Application`, `Witch.Domain` | yes |
-| `Witch.Infrastructure` | `Witch.Application`, `Witch.Domain` | yes |
-| `Witch.Bootstrap` | all assemblies | yes |
-
-Tests should mirror these boundaries. Edit Mode tests cover Domain and Application first; Play Mode tests cover Unity integration.
-
-## Planned filesystem layout
+## Implemented content and folders
 
 ```text
 Assets/
-├── Art/
-│   ├── Characters/
-│   ├── Environment/
-│   ├── Herbs/
-│   └── UI/
-├── Audio/
-├── Content/
-│   ├── Customers/
-│   ├── Days/
-│   ├── Economy/
-│   ├── Guidebook/
-│   ├── Herbs/
-│   ├── Newspapers/
-│   ├── Recipes/
-│   └── Upgrades/
-├── Prefabs/
-├── Scenes/
-│   ├── Bootstrap.unity
-│   ├── MainMenu.unity
-│   ├── Shop.unity
-│   └── Development/
-├── Scripts/
-│   ├── Domain/
-│   ├── Application/
-│   ├── Presentation/
-│   ├── Infrastructure/
-│   └── Bootstrap/
-├── Settings/
-├── Tests/
-│   ├── EditMode/
-│   ├── PlayMode/
-│   └── Fixtures/
-├── ThirdParty/
-└── UI/
+├── Audio/{BGM,SFX,Licenses}
+├── Content/{Customers,Days,Economy,Guidebook,Herbs,Orders,Recipes,Rewind,Unlocks}
+├── Editor/GameBuild.cs
+├── Prefabs/{HerbButton,RewindCard}.prefab
+├── Scenes/{Bootstrap,MainMenu,Shop,RewindMinigame}.unity
+├── Scripts/{Domain,Application,Infrastructure,Presentation,Bootstrap}
+├── Settings/WitchInputActions.inputactions
+└── Tests/{EditMode,PlayMode,Fixtures}
 ```
 
-Add folders only when real files need them. Imported assets belong under `Assets/ThirdParty/`.
+The catalog contains six herbs, three exact recipes, 15 orders, three days, two guidebook entries, two unlock sets, eight rewind symbols, prototype economy, and run configuration. Day 3 applies Soothe unlocks before building its first Shop view.
 
-## Data model
+No active script, content asset, or production scene references newspaper gameplay, Hunter customers/deduction, magical-herb variants, hexes, or finite herb stock.
 
-### Authored definitions
+## State and persistence
 
-Use ScriptableObjects for team-authored, immutable-at-runtime content:
+- `RunState`: run ID, current day, money, unlock IDs, suspicion, rewind count, threshold.
+- `DayStartSnapshot`: immutable start-of-day run, timer, expense, save version/time.
+- `DayAttemptState`: active seed, timer, nonrepeating used-order IDs, active encounter, earnings, workbench.
+- `ActiveAttemptMetadata`: immediately persisted suspicion, rewind count, pending rewind, board seed, active order seed, run/day identity.
 
-- `HerbDefinition`
-- `RecipeDefinition`
-- `CustomerDefinition`
-- `DayDefinition`
-- `NewspaperDefinition`
-- `UpgradeDefinition`
-- `EconomyDefinition`
+`JsonRunRepository` writes one current prototype run through temporary file, flush, atomic replace, and previous-copy recovery. `settings.json` is separate and stores master/music/SFX volume plus reduced card mismatch delay. Old prototype save schemas are intentionally unsupported.
 
-Definitions may contain stable IDs, display text, artwork references, prices, recipe requirements, dialogue, and authored schedules. They must not contain current money, inventory quantities, purchased upgrades, or completed-day state.
+## Principal flows
 
-### Mutable state
+### Shop
 
-Use plain serializable C# objects for player progress:
+Day 1 shows three short opening beats before customer arrival. Prototype 1 temporarily admits customers automatically. Prototype 2 will add a player-operated bell/button; first successful admission starts the timer once. The presenter dispatches grind, pot, brew, discard, and serve commands. Domain returns correct, wrong-valid, or invalid-brew outcomes. Correct pays `10`; wrong-valid pays `0` and adds suspicion; invalid pairs auto-discard without suspicion. Each seeded order bag uses every available template once before reshuffling; repeated templates receive unique runtime order IDs so the queue can continue until closing time.
 
-- `RunState`: run ID, current day, money, inventory, unlocks, upgrades, hexes, and narrative flags;
-- `DayState`: qualifying income, deterministic customer sequence, current encounter, and day-specific flags;
-- `PotionDraft`: zero to two different ground herbs currently occupying the brewing pot;
-- `SaveNode`: complete beginning-of-day snapshot and parent metadata;
-- `SaveIndex`: runs, branches, node relationships, and latest markers;
-- `GlobalSettings`: audio, language, display, accessibility, and controls, stored separately from run saves.
+Timer runs during customer/order, guidebook, and preparation. Pause freezes it. At zero, no new encounter starts; an active encounter remains completable. If the authored queue is already empty, zero transitions directly to closing.
 
-Persist stable content IDs. Never persist list indexes, display names, Unity instance IDs, or direct GameObject references as identity.
+### Rewind
 
-## State machines
+Suspicion `3` is persisted as pending before scene navigation. Rewind reconstructs a deterministic 3–8-pair symbol board from saved metadata. There is no timer or failure. Mismatches flip back after the selected accessibility delay. Completion atomically restores day-start money/timer/workbench, resets suspicion, increments rewind count, changes order seed, and reloads Shop.
 
-### Application navigation and active-run flow
+### Expense and progression
 
-Keep application navigation separate from active-run gameplay. `GameSession` exists only after a run has been created or loaded, so Boot and menu screens are not gameplay phases.
+Closing resolves the configured expense. Success deducts the full amount; failure deducts nothing and is the only game-over route. Retry restores the same day and seed. Days 1–2 create the next snapshot with timer progression and unlocks. Paying Day 3 expense produces prototype victory and its medieval-fanfare placeholder cue.
 
-```text
-Boot
-Main Menu
-├── New Game → create run
-├── Continue → load latest day-start save
-└── Load → Load Selection → load selected day-start save
+## Audio and accessibility
 
-Active GameSession
-Shop Preparation
-Customer Encounter
-Income Check
-End-of-Day Shopping
-Victory or Game Over
-```
+`UnityAudioService` owns independent Music, SFX, Ambience, and UI sources routed through the authored `WitchAudio` mixer groups. It prevents rapid repeated-cue stacking, applies persistent volume settings, and validates every required cue during Bootstrap startup. All current clips are original generated WAV placeholders; there is no runtime synthesis fallback and no downloaded audio ships. Ownership is recorded in `../Witch Vaults/AUDIO_LICENSE.md`; future CC0 recommendations remain in the current game specification.
 
-New Game, Continue, and successful Load Selection enter `ShopPreparation`. Returning to Main Menu or quitting closes the active session through application navigation. Each gameplay action validates the current active-run phase. Invalid actions return an explicit error and do not mutate state.
+All uGUI buttons are Selectables for keyboard navigation. Rewind card identity uses text/symbol IDs in addition to color. Settings provide master/music/SFX volumes and reduced mismatch delay. Pause stops the authoritative Shop timer; guidebook does not.
 
-The current day's newspaper and guidebook are reusable UI panels, not game phases. The newspaper opens during Shop Preparation and may be reopened during Customer Encounter. Opening either document never pauses the sixty-second customer timer.
+## Verification
 
-### Customer flow
+Edit Mode covers Domain rules, Application guards/transactions, content validation/mapping, persistence, recovery, settings separation, and platform adapters. Play Mode covers scene order, authored view references, Cameras, automatic arrival, guidebook timer behavior, preparation/service outcomes, seeded order-bag refill, tutorial/pause, rewind/reload/reset, expense retry, and three-day victory.
 
-```text
-Present customer and automatic dialogue
-Start 60-second timer when player gains control
-Drag raw herbs from shelves to the workbench or grinder
-Click Grind and wait for its animation; the timer and other interactions continue
-Drag two different ground herbs into the brewing pot
-Click Brew and wait for its animation; the timer and other interactions continue
-Move the completed potion into the single serving slot and click Serve, or expire timer
-Resolve payment, inspection, arrest, and hex use
-Display result
-Advance to next customer
-```
+`Witch.Editor.GameBuild.BuildMacArm64` validates the four enabled scenes and creates a clean Apple Silicon macOS development player at `/private/tmp/WitchGamePrototype.app`.
 
-Grinding converts one raw shelf unit into one ground workbench item, so the raw unit is consumed when grinding completes. Brewing consumes both ground herbs. An invalid pair produces a failed potion that is discarded automatically. UI must provide confirmation or an undo opportunity before grinding or brewing begins.
+## Deliberately deferred release features
 
-Workbench rules are separate from free-form visual positions. Loose items may move anywhere inside the workbench, but only one loose item with the same herb ID and preparation state may exist there. A raw and ground item of the same herb may coexist. Grinder and brewing-pot slots do not count toward this loose-item limit. Raw herbs may return to shelves before grinding. Ground herbs and completed potions remain available across customers but disappear when the next day begins; loose raw herbs return to shelves. All object positions reset to defaults each day.
+- Days 4–14 and final balance/content.
+- Load Selection, save branches, hints, cosmetics, purchases, and Game Center.
+- Final art, animation, authored BGM/SFX, localization, signing, notarization, and TestFlight/App Store work.
+- Persisted narrative/tutorial flags and optional repeated-mismatch assistance.
 
-The grinder holds one raw herb. The brewing pot holds at most two ground herbs with different IDs. Before Brew is clicked, either pot ingredient may return to the workbench. If the customer timer expires, each pot ingredient returns to the workbench when its same ground herb is not already there; otherwise that ingredient remains in its pot slot for the next customer. Grinder and pot animations may run simultaneously, and guidebook, newspaper, and other workbench interactions remain usable during both animations.
-
-### End-of-day flow
-
-```text
-Resolve final customer
-Check qualifying potion-payment income
-Game Over when below target
-Victory after successful Day 14
-Otherwise show summary and shopping
-Finalize purchases
-Build next day with income reset to zero
-Enter Shop Preparation
-Capture an immutable beginning-of-day snapshot and start its autosave asynchronously
-Show the next newspaper and allow Customer Encounter while that snapshot is written
-```
-
-Speed tips increase money but never count toward the daily income target. Meeting a target never deducts money.
-
-## Potion and encounter resolution
-
-Current fixed rules:
-
-- Every current recipe uses exactly two different ground herb types.
-- Every magical herb is a separate herb definition with its own stable ID, name, artwork, guidebook entry, and recipe; it is not a variant of an ordinary herb.
-- Magical and ordinary recipes may treat the same illness, but exact guidebook presentation remains undecided.
-- Any magical ingredient makes the completed potion magical.
-- An incorrect herb pair produces a failed potion that is discarded automatically, consuming both ground herbs.
-- Correct normal potion pays the normal amount.
-- Correct magical potion pays double.
-- Wrong potion pays nothing.
-- Served and discarded ingredients remain consumed.
-- Villagers never expose or arrest the player.
-- A Hunter leaves after correct normal treatment without inspecting inventory.
-- A Hunter attempts arrest after magical treatment.
-- A Hunter inspects inventory after wrong treatment or timeout; magical stock then causes an arrest attempt.
-- An available hex automatically prevents one arrest and is consumed.
-
-Hunter identity follows the two-characteristic rule. One characteristic is insufficient. Each designed Hunter-like appearance trait counts as one; dialogue contradicting the current newspaper counts as one. Villagers may contradict the newspaper, and Hunters may tell the truth.
-
-Keep these rules in Domain and test every outcome as a decision table. Do not duplicate them in UI callbacks.
-
-## Save architecture
-
-Saving follows the checkpoint, branching, safety, and compatibility rules below.
-
-### Checkpoint model
-
-- Create one complete autosave at the beginning of each day.
-- Do not provide manual or mid-day saves.
-- Leaving or losing during a day restores that day's starting snapshot.
-- Replaying an earlier node preserves existing descendants.
-- Completing the replay creates a new branch from the selected ancestor.
-- Starting a separate new run resets progression without deleting existing runs.
-
-### Repository boundary
-
-Application owns an `ISaveRepository` contract. Infrastructure provides an in-memory implementation for early tests and a file-backed implementation for production.
-
-Repository operations should return explicit success or error results. UI must never infer success from a missing exception.
-
-### Safe write sequence
-
-1. Serialize complete save data to a temporary file.
-2. Validate required fields, stable references, and save-data version.
-3. Flush completed data.
-4. Replace primary file or index only after validation succeeds.
-5. Keep a recoverable previous copy until replacement completes.
-
-Snapshot capture happens synchronously when Shop Preparation begins. File writing may continue asynchronously during Shop Preparation and Customer Encounter because it uses that immutable snapshot rather than live run state. Saving is an operation status, not a game phase. Failed writes leave the previous valid day-start save intact and produce an explicit error that allows retrying the same snapshot.
-
-### Compatibility
-
-Store save-data version separately from displayed game version. Migrate supported versions only after creating a backup. Corrupt or unsupported saves produce a clear error; they must never silently become a new game.
-
-## Scene strategy
-
-Use three production scenes:
-
-- `Bootstrap`: long-lived services and composition root;
-- `MainMenu`: title, New Game, Continue, Load Selection, settings, and credits;
-- `Shop`: all fourteen playable days.
-
-Do not create one scene per day. Change newspapers, customers, props, weather, damage, lighting, and sound through data and reusable layers.
-
-UI Toolkit is the recommended prototype choice for document-heavy screens. Confirm it during the Day 1 slice. If it cannot support shop interactions cleanly, choose one alternative before production UI expands; do not maintain parallel UI Toolkit and uGUI versions.
-
-## macOS platform architecture
-
-- Unity build target: `StandaloneOSX`.
-- Minimum supported system: macOS 12.0.
-- Required architecture: Apple Silicon (`arm64`).
-- Rendering: Metal through URP 2D.
-- Input: mouse and keyboard through Unity Input System.
-- Display: windowed and fullscreen, including Retina displays.
-- Output: `Witch Game.app`.
-- Persistence: file-backed repository rooted at `Application.persistentDataPath`.
-- Diagnostics: Unity player log plus explicit save and migration error results.
-- Distribution: stable bundle identifier, version, icon, code signing, and notarization or Mac App Store packaging.
-
-Run Edit Mode tests in the macOS Editor. Run Play Mode and integration smoke tests in both Editor and built player where supported. Release acceptance requires launch, save, quit, relaunch, window/fullscreen, input, audio, and log checks on Apple Silicon hardware.
-
-Intel support is not part of the current acceptance baseline. Supporting Intel requires a Universal `arm64` and `x86_64` build plus separate compatibility testing.
-
-### Release pipeline and gates
-
-- By October 24: permanent explicit App ID, matching App Store Connect macOS record, signing strategy, account roles, tester groups, and metadata owners confirmed.
-- October 26–30: first signed playable vertical build validates, uploads, finishes processing, installs through internal TestFlight, and passes Apple Silicon smoke testing.
-- By November 10: content-integrated TestFlight build processes and installs for Playtest 2.
-- By November 16: release candidate, test reports, symbols, commit, signed package, and known issues archived.
-- November 17: final TestFlight update processes and installs; external Beta App Review submitted when needed.
-- By November 22: store metadata, screenshots, privacy, age rating, pricing, availability, review notes, export compliance, and final build selection complete.
-- November 23: macOS version submitted to App Review. November 24–27 remain for blockers, Apple questions, or resubmission.
-
-Use one permanent bundle ID, one app-version strategy, and a unique increasing build string for each upload. Team completion means upload processing, internal installation, and App Review submission succeeded. Apple controls external Beta App Review, App Review approval, and storefront timing.
-
-## Optional Apple Game Center architecture
-
-Game Center is good-to-have only. Run its four-hour isolated feasibility gate inside the October 19–24 save, Apple platform, and TestFlight research task. Local files remain authoritative, and Game Center stays outside save correctness. Production integration begins only if that gate passes, the first TestFlight upload succeeds, and required work remains on schedule. It must pass by November 13 or final builds use the no-op adapter and hide Game Center controls. Stop all related work by November 16, 2026.
-
-Initial allowed scope:
-
-- `GKLocalPlayer` authentication;
-- approved `GKAchievement` progress;
-- `GKGameCenterViewController` or `GKAccessPoint` dashboard access.
-
-Required dependency flow:
-
-```text
-Presentation -> IGameCenterService <- AppleGameCenterService
-                                      NoOpGameCenterService
-Bootstrap chooses implementation
-Domain has no Game Center dependency
-```
-
-Recommended contract:
-
-```csharp
-public interface IGameCenterService
-{
-    bool IsAuthenticated { get; }
-    Task<GameCenterAuthenticationResult> AuthenticateAsync();
-    Task ReportAchievementAsync(string achievementId, double percentComplete);
-    Task PresentDashboardAsync();
-}
-```
-
-Rules:
-
-- subscribe to authentication-change events before `GKLocalPlayer.Authenticate()`;
-- catch `GameKitException` inside Infrastructure;
-- report only after authoritative Application state commits;
-- keep reports idempotent and retry-safe;
-- never grant gameplay state from platform achievements;
-- never require authentication for New Game, Continue, local save, victory, or loss;
-- keep local saves authoritative and leave `GKSavedGame` cloud sync for later work;
-- exclude leaderboards, multiplayer, matchmaking, invites, challenges, and activities.
-
-Setup requires pinned Apple Unity packages, a permanent bundle identifier, Game Center entitlement, App Sandbox incoming and outgoing network access, signing, a matching App Store Connect app, configured IDs, and dedicated test accounts. Game Center under alternative distribution still requires availability on at least one App Store storefront.
-
-Verify authenticated, signed-out, declined, offline, restricted, error, and later-reauthenticated states in a signed Apple Silicon build. Confirm dashboard dismissal restores input and every failure leaves gameplay and local saves unchanged.
-
-## Determinism and content validation
-
-Reloading a day must reproduce its customer sequence, requested orders, and Hunter placement. Persist an authored schedule or deterministic seed sufficient to recreate the exact day.
-
-Before entering all fourteen days, add an Editor validation tool that reports:
-
-- missing or duplicate stable IDs;
-- wrong customer, Hunter, or Villager counts;
-- wrong daily income targets;
-- recipes using unavailable herbs;
-- orders requiring locked guidebook information;
-- Hunters lacking two visible or readable characteristics;
-- unlocks occurring after dependent orders;
-- missing newspaper facts or dialogue links;
-- invalid save references.
-
-Random or hybrid scheduling must never generate an impossible order through no player fault.
-
-## Testing strategy
-
-### Edit Mode
-
-- correct and wrong recipes;
-- ingredient consumption on serve and discard;
-- normal and magical potion classification;
-- every Villager and Hunter outcome;
-- timeout, inspection, arrest, and hex use;
-- speed-tip exclusion from qualifying income;
-- all fourteen fixed income targets;
-- resource exhaustion and Day 14 victory priority;
-- deterministic schedules;
-- save-node ancestry, branching, and deletion;
-- state-machine action guards.
-
-### Play Mode and integration
-
-- Bootstrap creates each service once;
-- production scenes load correctly;
-- UI sends one command per action and displays returned results;
-- timer starts only after automatic dialogue;
-- save survives application restart;
-- failed writes preserve previous data;
-- Day 1 completes, saves Day 2, and reloads identical state;
-- replaying an earlier day creates a visible branch without damaging the original path.
-- optional Game Center authentication and reporting failures do not block local play or mutate saves.
-
-## Team boundaries
-
-| Area | Owner | Main reviewer |
-| --- | --- | --- |
-| Domain rules, state, flow, and content validation | Programmer A | Programmer C |
-| Application commands and results | Programmer A | Programmer B |
-| UI, input, scenes, and presentation prefabs | Programmer B | Programmer A or C |
-| Save files, branching, migrations, and recovery | Programmer C | Programmer A |
-| Bootstrap, technical services, and builds | Programmer C | Programmer A or B |
-| All optional Game Center packages, interfaces, adapters, UI wiring, capabilities, achievement reporting, and signed tests | Programmer C | Programmers A and B review only |
-
-Coordinate before changing public interfaces, saveable state, ScriptableObject schemas, scene names, shared scenes, prefabs, assembly definitions, or project settings.
-
-## Implementation sequence
-
-1. Create Domain and Application assemblies with plain state objects.
-2. Test inventory, potion drafts, recipe matching, payment, Hunter outcomes, and hex use.
-3. Add one customer Application flow and typed results.
-4. Create Bootstrap with an in-memory save repository and test adapters.
-5. Build one customer UI, then the complete Day 1 flow.
-6. Add daily target, shopping, next-day state, and safe local persistence.
-7. Verify restart restores an identical Day 2 state.
-8. Add Load Selection branching and deletion.
-9. Add content validation, all fourteen days, final art, and release automation.
-10. Prove signing, App Store Connect processing, and internal TestFlight installation with the first playable vertical build during October 26–30.
-11. If the October 24 gate returned Go and the first TestFlight upload succeeded, optionally integrate Game Center authentication, one achievement, and dashboard access; disable it unless green by November 13.
-12. Reuse the proven pipeline for the November 10 content build, November 17 final TestFlight update, and November 23 App Review submission.
-
-## Unresolved decisions
-
-Keep these configurable or unimplemented until the team decides:
-
-- five or six treatment properties;
-- exact recipe roster and guidebook presentation for ordinary and magical treatments of the same illness;
-- detailed unlock schedule;
-- whether sound counts as Hunter evidence;
-- whether a final potion is required;
-- hard-order restriction rules;
-- final herb count;
-- exact prices and stock limits;
-- save-branch limit;
-- final UI technology after prototype testing.
-- whether optional Game Center integration is attempted;
-- approved achievement identifiers and milestone mapping.
-
-Three-or-more-unit recipes are not approved. Current recipes remain exactly two different ground herbs until an explicit design revision.
-
-## Architecture acceptance criteria
-
-- Assembly references enforce dependency direction.
-- Domain and Application compile without `UnityEngine`.
-- Bootstrap is the only composition root.
-- ScriptableObjects hold definitions, never mutable run state.
-- One customer flows end to end through Presentation, Application, and Domain.
-- Day 1 saves Day 2 and reloads exactly.
-- Rule tests and content validation pass.
-- An asynchronous save always writes the immutable Shop Preparation snapshot, never later encounter changes, and a failed write remains retryable without corrupting the previous save.
-- No unresolved design decision is hard-coded.
-- Clean checkout restores packages, runs tests, and starts the game using documented steps.
-- Optional Game Center code, if present, can be disabled without changing core gameplay or local saves.
+These are release-roadmap items, not holes in the three-day prototype contract.

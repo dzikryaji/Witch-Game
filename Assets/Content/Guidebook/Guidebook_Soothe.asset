@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 828054595c32a4f339a7ead0cb3c11c4, type: 3}
+  m_Name: Guidebook_Soothe
+  m_EditorClassIdentifier: Witch.Infrastructure::Witch.Infrastructure.Content.GuidebookEntryDefinition
+  stableId: guidebook.soothe
+  title: Soothe Herbs
+  categoryId: category.soothe
+  bodyText: 'SOOTHE — Lavender: purple flower spikes. Chamomile: tiny white petals, yellow hearts, apple scent. Together they make the graveyard-nap soothing cordial.'
+  herbIds: [herb.lavender, herb.chamomile]
+  clueIds: [clue.lavender.purple-bloom, clue.chamomile.apple-scent, clue.soothe.graveyard-nap]

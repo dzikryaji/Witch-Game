@@ -1,25 +1,33 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using Witch.Domain.Inventory;
 
 namespace Witch.Domain.Progression
 {
     [Serializable]
     public sealed class RunState
     {
-        private readonly ReadOnlyCollection<string> unlockIds;
-        private readonly ReadOnlyCollection<string> upgradeIds;
+        public const int FirstDay = 1;
+        public const int RewindSuspicionThreshold = 3;
+
+        private readonly ReadOnlyCollection<string> unlockedCategoryIds;
+        private readonly ReadOnlyCollection<string> unlockedHerbIds;
+        private readonly ReadOnlyCollection<string> unlockedRecipeIds;
+        private readonly ReadOnlyCollection<string> unlockedGuidebookEntryIds;
+        private readonly ReadOnlyDictionary<string, bool> readOnlyTutorialFlags;
         private readonly ReadOnlyDictionary<string, bool> readOnlyNarrativeFlags;
 
         public RunState(
             string runId,
+            int currentDayNumber,
             int money,
-            InventoryState inventory,
-            int hexCount,
-            DayState currentDay,
-            IReadOnlyList<string> unlockIds = null,
-            IReadOnlyList<string> upgradeIds = null,
+            int suspicion,
+            int rewindCount,
+            IReadOnlyList<string> unlockedCategoryIds = null,
+            IReadOnlyList<string> unlockedHerbIds = null,
+            IReadOnlyList<string> unlockedRecipeIds = null,
+            IReadOnlyList<string> unlockedGuidebookEntryIds = null,
+            IReadOnlyDictionary<string, bool> tutorialFlags = null,
             IReadOnlyDictionary<string, bool> narrativeFlags = null)
         {
             if (string.IsNullOrWhiteSpace(runId))
@@ -27,42 +35,89 @@ namespace Witch.Domain.Progression
                 throw new ArgumentException("Run ID must not be empty.", nameof(runId));
             }
 
+            if (currentDayNumber < FirstDay)
+            {
+                throw new ArgumentOutOfRangeException(nameof(currentDayNumber));
+            }
+
             if (money < 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(money));
             }
 
-            if (hexCount < 0)
+            if (suspicion < 0 || suspicion > RewindSuspicionThreshold)
             {
-                throw new ArgumentOutOfRangeException(nameof(hexCount));
+                throw new ArgumentOutOfRangeException(nameof(suspicion));
+            }
+
+            if (rewindCount < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(rewindCount));
             }
 
             RunId = runId;
+            CurrentDayNumber = currentDayNumber;
             Money = money;
-            Inventory = inventory ?? throw new ArgumentNullException(nameof(inventory));
-            HexCount = hexCount;
-            CurrentDay = currentDay ?? throw new ArgumentNullException(nameof(currentDay));
-            this.unlockIds = CopyIds(unlockIds, nameof(unlockIds));
-            this.upgradeIds = CopyIds(upgradeIds, nameof(upgradeIds));
+            Suspicion = suspicion;
+            RewindCount = rewindCount;
+            this.unlockedCategoryIds = CopyIds(unlockedCategoryIds, nameof(unlockedCategoryIds));
+            this.unlockedHerbIds = CopyIds(unlockedHerbIds, nameof(unlockedHerbIds));
+            this.unlockedRecipeIds = CopyIds(unlockedRecipeIds, nameof(unlockedRecipeIds));
+            this.unlockedGuidebookEntryIds = CopyIds(
+                unlockedGuidebookEntryIds,
+                nameof(unlockedGuidebookEntryIds));
+            readOnlyTutorialFlags = new ReadOnlyDictionary<string, bool>(
+                CopyFlags(tutorialFlags, nameof(tutorialFlags)));
             readOnlyNarrativeFlags = new ReadOnlyDictionary<string, bool>(
                 CopyFlags(narrativeFlags, nameof(narrativeFlags)));
         }
 
         public string RunId { get; }
 
+        public int CurrentDayNumber { get; }
+
         public int Money { get; }
 
-        public InventoryState Inventory { get; }
+        public int Suspicion { get; }
 
-        public int HexCount { get; }
+        public int RewindCount { get; }
 
-        public DayState CurrentDay { get; }
+        public IReadOnlyList<string> UnlockedCategoryIds => unlockedCategoryIds;
 
-        public IReadOnlyList<string> UnlockIds => unlockIds;
+        public IReadOnlyList<string> UnlockedHerbIds => unlockedHerbIds;
 
-        public IReadOnlyList<string> UpgradeIds => upgradeIds;
+        public IReadOnlyList<string> UnlockedRecipeIds => unlockedRecipeIds;
+
+        public IReadOnlyList<string> UnlockedGuidebookEntryIds => unlockedGuidebookEntryIds;
+
+        public IReadOnlyDictionary<string, bool> TutorialFlags => readOnlyTutorialFlags;
 
         public IReadOnlyDictionary<string, bool> NarrativeFlags => readOnlyNarrativeFlags;
+
+        public RunState WithEconomy(int money, int suspicion)
+        {
+            return WithProgress(CurrentDayNumber, money, suspicion, RewindCount);
+        }
+
+        public RunState WithProgress(
+            int currentDayNumber,
+            int money,
+            int suspicion,
+            int rewindCount)
+        {
+            return new RunState(
+                RunId,
+                currentDayNumber,
+                money,
+                suspicion,
+                rewindCount,
+                UnlockedCategoryIds,
+                UnlockedHerbIds,
+                UnlockedRecipeIds,
+                UnlockedGuidebookEntryIds,
+                TutorialFlags,
+                NarrativeFlags);
+        }
 
         private static ReadOnlyCollection<string> CopyIds(IReadOnlyList<string> source, string parameterName)
         {
@@ -105,7 +160,7 @@ namespace Witch.Domain.Progression
             {
                 if (string.IsNullOrWhiteSpace(flag.Key))
                 {
-                    throw new ArgumentException("Narrative flag IDs must not be empty.", parameterName);
+                    throw new ArgumentException("Flag IDs must not be empty.", parameterName);
                 }
 
                 copy.Add(flag.Key, flag.Value);

@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a584439ecdf764e42b390a3fcce0f878, type: 3}
+  m_Name: Day_03
+  m_EditorClassIdentifier: Witch.Infrastructure::Witch.Infrastructure.Content.DayDefinition
+  stableId: day.3
+  dayNumber: 3
+  timerSeconds: 280
+  orderIds:
+  - order.day1.direct-warm
+  - order.day1.visual-warm
+  - order.day1.warm-03
+  - order.day1.warm-04
+  - order.day1.warm-05
+  - order.day1.direct-cool
+  - order.day1.visual-cool
+  - order.day1.cool-03
+  - order.day1.cool-04
+  - order.day1.cool-05
+  - order.day3.soothe-direct
+  - order.day3.soothe-alias
+  - order.day3.soothe-physical
+  - order.day3.soothe-04
+  - order.day3.soothe-05
+  customerIds: [customer.nervous-villager]

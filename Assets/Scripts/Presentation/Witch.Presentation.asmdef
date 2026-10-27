@@ -1,0 +1,19 @@
+{
+    "name": "Witch.Presentation",
+    "rootNamespace": "Witch.Presentation",
+    "references": [
+        "Witch.Application",
+        "Witch.Domain",
+        "Unity.ugui",
+        "Unity.InputSystem"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

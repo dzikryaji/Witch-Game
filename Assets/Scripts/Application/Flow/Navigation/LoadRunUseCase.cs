@@ -8,16 +8,19 @@ namespace Witch.Application.Flow
 {
     public sealed class LoadRunUseCase : ILoadRunUseCase
     {
-        private readonly ISaveRepository saveRepository;
+        private readonly IDayStartSnapshotRepository snapshotRepository;
+        private readonly IActiveAttemptMetadataRepository attemptRepository;
         private readonly IGameSessionStore sessionStore;
         private readonly ISceneLoader sceneLoader;
 
         public LoadRunUseCase(
-            ISaveRepository saveRepository,
+            IDayStartSnapshotRepository snapshotRepository,
+            IActiveAttemptMetadataRepository attemptRepository,
             IGameSessionStore sessionStore,
             ISceneLoader sceneLoader)
         {
-            this.saveRepository = saveRepository ?? throw new ArgumentNullException(nameof(saveRepository));
+            this.snapshotRepository = snapshotRepository ?? throw new ArgumentNullException(nameof(snapshotRepository));
+            this.attemptRepository = attemptRepository ?? throw new ArgumentNullException(nameof(attemptRepository));
             this.sessionStore = sessionStore ?? throw new ArgumentNullException(nameof(sessionStore));
             this.sceneLoader = sceneLoader ?? throw new ArgumentNullException(nameof(sceneLoader));
         }
@@ -36,22 +39,41 @@ namespace Witch.Application.Flow
                 return LoadRunResult.Failure(LoadRunError.InvalidRunId, "Run ID is required.");
             }
 
-            LoadStateResult loadResult = command.LoadLatest
-                ? await saveRepository.LoadLatestAsync(cancellationToken)
-                : await saveRepository.LoadAsync(command.RunId, cancellationToken);
-            if (!loadResult.Succeeded)
+            DayStartSnapshotLoadResult snapshotResult = command.LoadLatest
+                ? await snapshotRepository.LoadLatestDayStartSnapshotAsync(cancellationToken)
+                : await snapshotRepository.LoadDayStartSnapshotAsync(command.RunId, cancellationToken);
+            if (!snapshotResult.Succeeded)
             {
-                return LoadRunResult.Failure(LoadRunError.LoadFailed, loadResult.ErrorMessage);
+                return LoadRunResult.Failure(LoadRunError.LoadFailed, snapshotResult.ErrorMessage);
             }
 
-            var session = new GameSession(loadResult.RunState, GamePhase.ShopPreparation);
+            ActiveAttemptMetadataLoadResult attemptResult = command.LoadLatest
+                ? await attemptRepository.LoadLatestActiveAttemptMetadataAsync(cancellationToken)
+                : await attemptRepository.LoadActiveAttemptMetadataAsync(command.RunId, cancellationToken);
+            if (!attemptResult.Succeeded)
+            {
+                return LoadRunResult.Failure(LoadRunError.LoadFailed, attemptResult.ErrorMessage);
+            }
+
+            bool pendingRewind = attemptResult.Metadata.PendingRewind;
+            bool thresholdReached = attemptResult.Metadata.Suspicion >= Witch.Domain.Progression.RunState.RewindSuspicionThreshold;
+            var session = new GameSession(
+                snapshotResult.Snapshot,
+                attemptResult.Metadata,
+                pendingRewind || thresholdReached ? GamePhase.RewindPending : GamePhase.ShopPreparation);
             sessionStore.SetActive(session);
 
-            SceneLoadResult sceneResult = await sceneLoader.LoadAsync(SceneId.Shop, cancellationToken);
+            SceneId targetScene = pendingRewind ? SceneId.RewindMinigame : SceneId.Shop;
+            SceneLoadResult sceneResult = await sceneLoader.LoadAsync(targetScene, cancellationToken);
             if (!sceneResult.Succeeded)
             {
                 sessionStore.Clear();
                 return LoadRunResult.Failure(LoadRunError.SceneLoadFailed, sceneResult.ErrorMessage);
+            }
+
+            if (pendingRewind)
+            {
+                session.TryTransition(GamePhase.RewindMinigame);
             }
 
             return LoadRunResult.Success(session);
