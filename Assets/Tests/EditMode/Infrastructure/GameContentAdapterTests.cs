@@ -23,9 +23,16 @@ namespace Witch.Infrastructure.Tests
             Assert.That(result.Content.DaysByNumber[1].TimerDuration, Is.EqualTo(TimeSpan.FromMinutes(4)));
             Assert.That(result.Content.DaysByNumber[2].TimerDuration, Is.EqualTo(TimeSpan.FromMinutes(4) + TimeSpan.FromSeconds(20)));
             Assert.That(result.Content.DaysByNumber[3].TimerDuration, Is.EqualTo(TimeSpan.FromMinutes(4) + TimeSpan.FromSeconds(40)));
+            Assert.That(result.Content.HerbsById.Count, Is.EqualTo(25));
             Assert.That(result.Content.HerbsById.ContainsKey("herb.lavender"), Is.True);
+            Assert.That(result.Content.HerbsById["herb.ginger"].ScientificName, Is.EqualTo("Zingiber officinale"));
+            Assert.That(result.Content.HerbsById["herb.ginger"].WarningText, Does.Contain("blood clotting"));
+            Assert.That(result.Content.HerbsById["herb.ginger"].GuidebookPage, Is.EqualTo(3));
+            Assert.That(result.Content.HerbsById["herb.mint"].DisplayName, Is.EqualTo("Peppermint"));
+            Assert.That(result.Content.HerbsById["herb.mint"].ClueIds, Does.Contain("clue.mint.cool-leaf"));
             Assert.That(result.Content.GuidebookEntriesById.ContainsKey("guidebook.soothe"), Is.True);
-            Assert.That(result.Content.GuidebookEntriesById["guidebook.soothe"].BodyText, Does.Contain("Lavender"));
+            Assert.That(result.Content.GuidebookEntriesById["guidebook.soothe"].BodyText, Does.Contain("quiet the nerves"));
+            Assert.That(result.Content.GuidebookEntriesById["guidebook.soothe"].BodyText, Does.Not.Contain("Lavender"));
             Assert.That(result.Content.GuidebookEntriesById["guidebook.warm-cool"].BodyText, Does.Not.Contain("\\n"));
             Assert.That(result.Content.CategoryUnlocks.Single(value => value.CategoryId == "category.soothe").FirstDay, Is.EqualTo(3));
             var dayThreeState = result.Content.DayProgressionSetup.ApplyUnlocks(
@@ -69,6 +76,22 @@ namespace Witch.Infrastructure.Tests
             Assert.That(report.IsValid, Is.False);
             Assert.That(report.Errors.Any(error => error.Contains("Herb stable ID is required")), Is.True);
             Assert.That(report.Errors.Any(error => error.Contains("Duplicate herb stable ID")), Is.True);
+        }
+
+        [Test]
+        public void Validate_MissingHerbGuidebookContentReturnsClearErrors()
+        {
+            GameContentCatalogDefinition catalog = ContentTestFixture.CreateValidCatalog();
+            catalog.Herbs[0].ConfigureGuidebook("", "", "", "", 0);
+
+            ContentValidationReport report = new GameContentValidator().Validate(catalog);
+
+            Assert.That(report.IsValid, Is.False);
+            Assert.That(report.Errors.Any(error => error.Contains("needs a scientific name")), Is.True);
+            Assert.That(report.Errors.Any(error => error.Contains("needs treatment text")), Is.True);
+            Assert.That(report.Errors.Any(error => error.Contains("needs warning text")), Is.True);
+            Assert.That(report.Errors.Any(error => error.Contains("needs an accessible label")), Is.True);
+            Assert.That(report.Errors.Any(error => error.Contains("needs a positive guidebook page")), Is.True);
         }
 
         [Test]

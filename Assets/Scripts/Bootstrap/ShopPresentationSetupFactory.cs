@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Witch.Application.Flow;
 using Witch.Infrastructure.Content;
@@ -44,11 +45,30 @@ namespace Witch.Bootstrap
             }
 
             var guidebook = new StringBuilder();
-            foreach (string entryId in session.RunState.UnlockedGuidebookEntryIds)
+            var unlockedCategories = new HashSet<string>(
+                session.RunState.UnlockedCategoryIds,
+                StringComparer.Ordinal);
+            foreach (GuidebookEntryContent entry in content.GuidebookEntriesById.Values
+                         .Where(value => unlockedCategories.Contains(value.CategoryId))
+                         .OrderBy(value => value.Title, StringComparer.Ordinal))
             {
-                GuidebookEntryContent entry = content.GuidebookEntriesById[entryId];
                 if (guidebook.Length > 0) guidebook.Append("\n\n");
                 guidebook.Append(entry.Title).Append("\n").Append(entry.BodyText);
+            }
+
+            foreach (HerbContent herb in session.RunState.UnlockedHerbIds
+                         .Select(herbId => content.HerbsById[herbId])
+                         .OrderBy(value => value.GuidebookPage))
+            {
+                if (guidebook.Length > 0) guidebook.Append("\n\n");
+                guidebook
+                    .Append(herb.DisplayName)
+                    .Append("\n")
+                    .Append(herb.ScientificName)
+                    .Append("\n")
+                    .Append(herb.TreatmentText)
+                    .Append("\nWarning: ")
+                    .Append(herb.WarningText);
             }
 
             bool showTutorial = session.RunState.CurrentDayNumber == 1

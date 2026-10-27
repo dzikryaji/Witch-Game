@@ -15,3 +15,11 @@ MonoBehaviour:
   stableId: herb.ginger
   displayName: Ginger
   categoryId: category.warm
+  scientificName: Zingiber officinale
+  treatmentText: A twisted, tough root with a strong flavor. It calms a sore stomach, treats serious nausea, and helps restore a lost appetite.
+  warningText: Ginger can dangerously reduce blood clotting. It can be deadly for people with open wounds or bleeding internal ulcers.
+  guidebookIllustration: {fileID: 0}
+  accessibleLabel: Ginger
+  guidebookPage: 3
+  clueIds:
+  - clue.ginger.knotted-root

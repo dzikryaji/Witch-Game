@@ -13,5 +13,13 @@ MonoBehaviour:
   m_Name: Herb_Aloe
   m_EditorClassIdentifier: Witch.Infrastructure::Witch.Infrastructure.Content.HerbDefinition
   stableId: herb.aloe
-  displayName: Aloe
+  displayName: Aloe Vera
   categoryId: category.cool
+  scientificName: Aloe barbadensis
+  treatmentText: A desert plant containing a thick gel that lowers internal body temperature and prevents natural venoms or infections from spreading through the bloodstream without causing harm.
+  warningText: Aloe Vera causes intense, freezing numbness. It can be fatal for anyone already experiencing winter chill or hypothermia.
+  guidebookIllustration: {fileID: 0}
+  accessibleLabel: Aloe Vera
+  guidebookPage: 12
+  clueIds:
+  - clue.aloe.clear-gel

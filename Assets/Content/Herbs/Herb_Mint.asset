@@ -13,5 +13,13 @@ MonoBehaviour:
   m_Name: Herb_Mint
   m_EditorClassIdentifier: Witch.Infrastructure::Witch.Infrastructure.Content.HerbDefinition
   stableId: herb.mint
-  displayName: Mint
+  displayName: Peppermint
   categoryId: category.cool
+  scientificName: Mentha piperita
+  treatmentText: A dark green leaf with a sharp smell. It clears blocked sinuses, reduces everyday fevers, and eases mild headaches.
+  warningText: Peppermint can cause strong, painful stomach cramps in patients with acid reflux.
+  guidebookIllustration: {fileID: 0}
+  accessibleLabel: Peppermint
+  guidebookPage: 8
+  clueIds:
+  - clue.mint.cool-leaf
