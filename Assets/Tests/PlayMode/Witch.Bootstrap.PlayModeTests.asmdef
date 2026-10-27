@@ -1,0 +1,26 @@
+{
+    "name": "Witch.Bootstrap.PlayModeTests",
+    "rootNamespace": "Witch.Bootstrap.PlayModeTests",
+    "references": [
+        "Witch.Bootstrap",
+        "Witch.Presentation",
+        "Witch.Infrastructure",
+        "Witch.Application",
+        "Witch.Domain",
+        "Unity.ugui",
+        "Unity.InputSystem",
+        "Unity.InputSystem.TestFramework"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false,
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ]
+}

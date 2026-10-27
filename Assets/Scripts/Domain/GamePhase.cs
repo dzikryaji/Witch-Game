@@ -3,9 +3,13 @@ namespace Witch.Domain
     public enum GamePhase
     {
         ShopPreparation,
+        CustomerArrival,
         CustomerEncounter,
-        IncomeCheck,
-        EndOfDayShopping,
+        ClosingEncounter,
+        ExpenseCheck,
+        RewindPending,
+        RewindMinigame,
+        DaySummary,
         Victory,
         GameOver
     }

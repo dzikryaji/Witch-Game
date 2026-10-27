@@ -6,58 +6,114 @@ namespace Witch.Application.Flow
 {
     public sealed class NewRunSetup
     {
-        private readonly ReadOnlyDictionary<string, int> startingInventory;
-        private readonly ReadOnlyCollection<string> firstDayCustomerSequence;
+        private readonly ReadOnlyCollection<string> unlockedCategoryIds;
+        private readonly ReadOnlyCollection<string> unlockedHerbIds;
+        private readonly ReadOnlyCollection<string> unlockedRecipeIds;
+        private readonly ReadOnlyCollection<string> unlockedGuidebookEntryIds;
 
         public NewRunSetup(
             int startingMoney,
-            IReadOnlyDictionary<string, int> startingInventory,
-            int startingHexCount,
-            IReadOnlyList<string> firstDayCustomerSequence)
+            IReadOnlyList<string> unlockedCategoryIds,
+            IReadOnlyList<string> unlockedHerbIds,
+            IReadOnlyList<string> unlockedRecipeIds,
+            IReadOnlyList<string> unlockedGuidebookEntryIds,
+            TimeSpan firstDayTimerDuration,
+            string firstDayExpenseId,
+            int firstDayExpenseValue,
+            int saveVersion)
         {
             if (startingMoney < 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(startingMoney));
             }
 
-            if (startingInventory == null)
+            if (unlockedCategoryIds == null)
             {
-                throw new ArgumentNullException(nameof(startingInventory));
+                throw new ArgumentNullException(nameof(unlockedCategoryIds));
             }
 
-            if (startingHexCount < 0)
+            if (unlockedHerbIds == null)
             {
-                throw new ArgumentOutOfRangeException(nameof(startingHexCount));
+                throw new ArgumentNullException(nameof(unlockedHerbIds));
             }
 
-            if (firstDayCustomerSequence == null)
+            if (unlockedRecipeIds == null)
             {
-                throw new ArgumentNullException(nameof(firstDayCustomerSequence));
+                throw new ArgumentNullException(nameof(unlockedRecipeIds));
+            }
+
+            if (unlockedGuidebookEntryIds == null)
+            {
+                throw new ArgumentNullException(nameof(unlockedGuidebookEntryIds));
+            }
+
+            if (firstDayTimerDuration <= TimeSpan.Zero)
+            {
+                throw new ArgumentOutOfRangeException(nameof(firstDayTimerDuration));
+            }
+
+            if (string.IsNullOrWhiteSpace(firstDayExpenseId))
+            {
+                throw new ArgumentException("Expense ID must not be empty.", nameof(firstDayExpenseId));
+            }
+
+            if (firstDayExpenseValue < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(firstDayExpenseValue));
+            }
+
+            if (saveVersion < 1)
+            {
+                throw new ArgumentOutOfRangeException(nameof(saveVersion));
             }
 
             StartingMoney = startingMoney;
-            this.startingInventory = new ReadOnlyDictionary<string, int>(
-                new Dictionary<string, int>(startingInventory, StringComparer.Ordinal));
-            StartingHexCount = startingHexCount;
-            this.firstDayCustomerSequence = new List<string>(firstDayCustomerSequence).AsReadOnly();
+            this.unlockedCategoryIds = new List<string>(unlockedCategoryIds).AsReadOnly();
+            this.unlockedHerbIds = new List<string>(unlockedHerbIds).AsReadOnly();
+            this.unlockedRecipeIds = new List<string>(unlockedRecipeIds).AsReadOnly();
+            this.unlockedGuidebookEntryIds = new List<string>(unlockedGuidebookEntryIds).AsReadOnly();
+            FirstDayTimerDuration = firstDayTimerDuration;
+            FirstDayExpenseId = firstDayExpenseId;
+            FirstDayExpenseValue = firstDayExpenseValue;
+            SaveVersion = saveVersion;
         }
 
         public int StartingMoney { get; }
 
-        public IReadOnlyDictionary<string, int> StartingInventory => startingInventory;
+        public IReadOnlyList<string> UnlockedCategoryIds => unlockedCategoryIds;
 
-        public int StartingHexCount { get; }
+        public IReadOnlyList<string> UnlockedHerbIds => unlockedHerbIds;
 
-        public IReadOnlyList<string> FirstDayCustomerSequence => firstDayCustomerSequence;
+        public IReadOnlyList<string> UnlockedRecipeIds => unlockedRecipeIds;
 
-        internal StartNewRunCommand CreateCommand(string runId)
+        public IReadOnlyList<string> UnlockedGuidebookEntryIds => unlockedGuidebookEntryIds;
+
+        public TimeSpan FirstDayTimerDuration { get; }
+
+        public string FirstDayExpenseId { get; }
+
+        public int FirstDayExpenseValue { get; }
+
+        public int SaveVersion { get; }
+
+        internal StartNewRunCommand CreateCommand(
+            string runId,
+            int firstDayOrderSeed,
+            DateTimeOffset capturedAtUtc)
         {
             return new StartNewRunCommand(
                 runId,
                 StartingMoney,
-                StartingInventory,
-                StartingHexCount,
-                FirstDayCustomerSequence);
+                UnlockedCategoryIds,
+                UnlockedHerbIds,
+                UnlockedRecipeIds,
+                UnlockedGuidebookEntryIds,
+                firstDayOrderSeed,
+                FirstDayTimerDuration,
+                FirstDayExpenseId,
+                FirstDayExpenseValue,
+                SaveVersion,
+                capturedAtUtc);
         }
     }
 }

@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 828054595c32a4f339a7ead0cb3c11c4, type: 3}
+  m_Name: Guidebook_WarmCool
+  m_EditorClassIdentifier: Witch.Infrastructure::Witch.Infrastructure.Content.GuidebookEntryDefinition
+  stableId: guidebook.warm-cool
+  title: Warm and Cool Herbs
+  categoryId: category.warm-cool
+  bodyText: "WARM — Ginger: knotted tan root. Cinnamon: rolled brown bark. Together they make the fireside warming tonic.\n\nCOOL — Mint: small cool green leaves. Aloe: thick jagged leaves with clear gel. Together they make the fever cooling draught."
+  herbIds:
+  - herb.ginger
+  - herb.cinnamon
+  - herb.mint
+  - herb.aloe
+  clueIds:
+  - clue.ginger.knotted-root
+  - clue.cinnamon.rolled-bark
+  - clue.mint.cool-leaf
+  - clue.aloe.clear-gel
+  - clue.warm.fireside
+  - clue.cool.fever

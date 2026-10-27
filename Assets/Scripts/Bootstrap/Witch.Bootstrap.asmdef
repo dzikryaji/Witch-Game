@@ -1,0 +1,19 @@
+{
+    "name": "Witch.Bootstrap",
+    "rootNamespace": "Witch.Bootstrap",
+    "references": [
+        "Witch.Presentation",
+        "Witch.Infrastructure",
+        "Witch.Application",
+        "Witch.Domain"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
