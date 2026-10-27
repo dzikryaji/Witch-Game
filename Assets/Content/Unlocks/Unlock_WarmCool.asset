@@ -23,5 +23,3 @@ MonoBehaviour:
   recipeIds:
   - recipe.warming-tonic
   - recipe.cooling-draught
-  guidebookEntryIds:
-  - guidebook.warm-cool
