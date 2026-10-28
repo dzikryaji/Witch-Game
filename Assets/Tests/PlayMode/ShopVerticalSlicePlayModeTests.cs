@@ -46,10 +46,15 @@ namespace Witch.Bootstrap.PlayModeTests
                 Button grind = GameObject.Find("Grind").GetComponent<Button>();
                 Button brew = GameObject.Find("Brew").GetComponent<Button>();
                 Button discardPotion = GameObject.Find("Discard").GetComponent<Button>();
+                GrinderDropZone grinder = Object.FindAnyObjectByType<GrinderDropZone>();
                 CauldronDropZone cauldron = Object.FindAnyObjectByType<CauldronDropZone>();
                 PotionServeDropZone customerSlot = Object.FindAnyObjectByType<PotionServeDropZone>();
 
-                yield return ClickUi(mouse, mint.GetComponent<RectTransform>());
+                yield return DragUi(
+                    mouse,
+                    mint.GetComponent<RectTransform>(),
+                    grinder.GetComponent<RectTransform>(),
+                    () => AssertRenderedInFront(mint.transform, "mint herb"));
                 yield return ClickUi(mouse, grind.GetComponent<RectTransform>());
 
                 GroundHerbDragItem ground = Object.FindAnyObjectByType<GroundHerbDragItem>();
@@ -68,7 +73,11 @@ namespace Witch.Bootstrap.PlayModeTests
                     () => AssertRenderedInFront(ground.transform, "ground herb"));
                 Assert.That(presenter.ActiveSession.PotionDraft.Ingredients.Count, Is.EqualTo(1));
 
-                yield return ClickUi(mouse, aloe.GetComponent<RectTransform>());
+                yield return DragUi(
+                    mouse,
+                    aloe.GetComponent<RectTransform>(),
+                    grinder.GetComponent<RectTransform>(),
+                    () => AssertRenderedInFront(aloe.transform, "aloe herb"));
                 yield return ClickUi(mouse, grind.GetComponent<RectTransform>());
 
                 ground = Object.FindAnyObjectByType<GroundHerbDragItem>();
@@ -150,6 +159,14 @@ namespace Witch.Bootstrap.PlayModeTests
 
             HerbDragItem ginger = FindHerb("herb.ginger");
             GrinderDropZone grinder = Object.FindAnyObjectByType<GrinderDropZone>();
+            ginger.GetComponent<Button>().onClick.Invoke();
+            Assert.That(presenter.GrindLoadedHerb().Succeeded, Is.False, "Clicking a herb must not load the grinder.");
+            ExecuteEvents.Execute<ISubmitHandler>(
+                ginger.gameObject,
+                new BaseEventData(EventSystem.current),
+                ExecuteEvents.submitHandler);
+            Assert.That(presenter.GrindLoadedHerb().Succeeded, Is.True, "Keyboard submit must load the grinder.");
+            presenter.DiscardGroundHerb();
             var pointer = new PointerEventData(EventSystem.current) { pointerDrag = ginger.gameObject };
             grinder.OnDrop(pointer);
             Assert.That(presenter.ActiveSession.GroundHerbId, Is.Null);

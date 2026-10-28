@@ -289,7 +289,19 @@ namespace Witch.Bootstrap
 
                 foreach (RewindShellPresenter presenter in root.GetComponentsInChildren<RewindShellPresenter>(true))
                 {
-                    presenter.Initialize(sessionStore, completeRewind, audioService, settingsService.Current);
+                    var symbols = new System.Collections.Generic.List<string>(runtimeContent.RewindCards.Count);
+                    foreach (RewindCardContent card in runtimeContent.RewindCards)
+                    {
+                        symbols.Add(card.SymbolKey);
+                    }
+                    presenter.Initialize(
+                        sessionStore,
+                        completeRewind,
+                        audioService,
+                        settingsService.Current,
+                        symbols,
+                        runtimeContent.RewindDifficulty.StartingPairCount,
+                        runtimeContent.RewindDifficulty.MaximumPairCount);
                 }
             }
         }

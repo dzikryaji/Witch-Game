@@ -69,6 +69,28 @@ namespace Witch.Infrastructure.Tests
         }
 
         [Test]
+        public async Task JsonRepository_RoundTripsCompletedRunFlag()
+        {
+            GameSaveState save = CreateSave("run.complete", suspicion: 0, seed: 223);
+            DayStartSnapshot source = save.DayStartSnapshot;
+            var completedSnapshot = new DayStartSnapshot(
+                source.RunState.MarkCompleted(),
+                source.OrderSeed,
+                source.TimerDuration,
+                source.ExpenseId,
+                source.ExpenseValue,
+                source.SaveVersion,
+                source.CapturedAtUtc);
+            var repository = new JsonRunRepository(temporaryDirectory, 1);
+
+            await repository.SaveRunStateAsync(completedSnapshot, save.AttemptMetadata);
+            LoadStateResult load = await repository.LoadLatestAsync();
+
+            Assert.That(load.Succeeded, Is.True, load.ErrorMessage);
+            Assert.That(load.SavedGame.DayStartSnapshot.RunState.RunCompleted, Is.True);
+        }
+
+        [Test]
         public async Task JsonRepository_MissingAndUnsupportedDataReturnTypedErrors()
         {
             var fileStore = new MemoryAtomicFileStore();

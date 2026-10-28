@@ -114,6 +114,11 @@ namespace Witch.Infrastructure.Content
                     errors.Add("Day '" + day.StableId + "' timer must be at least 1 second.");
                 }
 
+                if (day.CustomerIds.Count == 0)
+                {
+                    errors.Add("Day '" + day.StableId + "' needs at least one customer.");
+                }
+
                 ValidateDayOrders(
                     day,
                     orderIds,

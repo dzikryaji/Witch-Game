@@ -22,11 +22,10 @@ namespace Witch.Presentation.Rewind
             && revealedLabel != null
             && matchedLabel != null;
 
-        public void Render(int sigilNumber, bool visible, bool matched, bool interactable)
+        public void Render(string symbol, bool visible, bool matched, bool interactable)
         {
-            string value = "SIGIL " + sigilNumber;
-            revealedLabel.text = value;
-            matchedLabel.text = value;
+            revealedLabel.text = symbol;
+            matchedLabel.text = symbol;
             hiddenFace.SetActive(!visible && !matched);
             revealedFace.SetActive(visible && !matched);
             matchedFace.SetActive(matched);

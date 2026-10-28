@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 namespace Witch.Presentation.Shop
 {
-    public sealed class HerbDragItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
+    public sealed class HerbDragItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, ISubmitHandler
     {
         [SerializeField] private Button button;
         [SerializeField] private CanvasGroup canvasGroup;
@@ -14,32 +14,28 @@ namespace Witch.Presentation.Shop
         private Vector2 originalAnchoredPosition;
         private RectTransform rectTransform;
         private Canvas rootCanvas;
-        private UnityAction boundAction;
+        private UnityAction boundSubmitAction;
 
         public string HerbId { get; private set; }
 
         public void Initialize(string herbId) => HerbId = herbId;
 
+        public void BindSubmit(UnityAction action) => boundSubmitAction = action;
+
+        public void UnbindSubmit() => boundSubmitAction = null;
+
+        public void OnSubmit(BaseEventData eventData)
+        {
+            if (button != null && button.interactable && !string.IsNullOrWhiteSpace(HerbId))
+            {
+                boundSubmitAction?.Invoke();
+            }
+        }
+
         private void Awake()
         {
             rectTransform = (RectTransform)transform;
             rootCanvas = GetComponentInParent<Canvas>()?.rootCanvas;
-        }
-
-        public void Bind(UnityAction action)
-        {
-            Unbind();
-            boundAction = action;
-            button.onClick.AddListener(boundAction);
-        }
-
-        public void Unbind()
-        {
-            if (button != null && boundAction != null)
-            {
-                button.onClick.RemoveListener(boundAction);
-            }
-            boundAction = null;
         }
 
         public void OnBeginDrag(PointerEventData eventData)
@@ -71,6 +67,6 @@ namespace Witch.Presentation.Shop
             originalParent = null;
         }
 
-        private void OnDestroy() => Unbind();
+        private void OnDestroy() => UnbindSubmit();
     }
 }

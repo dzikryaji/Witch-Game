@@ -40,6 +40,7 @@ namespace Witch.Presentation.Shop
         [SerializeField] private GameObject guidebookPanel;
         [SerializeField] private Text guidebookPageText;
         [SerializeField] private Text guidebookPageNumberText;
+        [SerializeField] private Image guidebookIllustration;
         [SerializeField] private Text grinderInputText;
         [SerializeField] private GameObject groundHerbObject;
         [SerializeField] private Text groundHerbText;
@@ -87,7 +88,7 @@ namespace Witch.Presentation.Shop
         private InputAction guidebookAction;
         private readonly List<HerbDragItem> herbSlots = new List<HerbDragItem>();
         private string loadedGrinderHerbId;
-        private string[] guidebookPages = Array.Empty<string>();
+        private IReadOnlyList<GuidebookPageViewData> guidebookPages = Array.Empty<GuidebookPageViewData>();
         private int guidebookPageIndex;
         private Coroutine badPotionRoutine;
 
@@ -122,6 +123,7 @@ namespace Witch.Presentation.Shop
             && guidebookPanel != null
             && guidebookPageText != null
             && guidebookPageNumberText != null
+            && guidebookIllustration != null
             && grinderInputText != null
             && groundHerbObject != null
             && groundHerbText != null
@@ -466,7 +468,12 @@ namespace Witch.Presentation.Shop
             CancellationToken cancellationToken = lifetimeCancellation?.Token ?? CancellationToken.None;
             ExpenseResolutionResult result = await resolveExpense.ExecuteAsync(ActiveSession, cancellationToken);
             SetStatus(result.Succeeded ? "Daily expense resolved." : result.ErrorMessage);
-            if (result.Succeeded && ActiveSession.CurrentPhase == Witch.Domain.GamePhase.Victory)
+            if (result.Succeeded && ActiveSession.CurrentPhase == Witch.Domain.GamePhase.GameOver)
+            {
+                audioService?.Play(GameAudioCueIds.ExpenseFail);
+                audioService?.PlayMusic(GameAudioCueIds.GameOverMusic);
+            }
+            else if (result.Succeeded && ActiveSession.CurrentPhase == Witch.Domain.GamePhase.Victory)
             {
                 audioService?.Play(GameAudioCueIds.ExpensePay);
                 audioService?.PlayMusic(GameAudioCueIds.VictoryMusic);
@@ -474,11 +481,6 @@ namespace Witch.Presentation.Shop
             else if (result.Succeeded)
             {
                 audioService?.Play(GameAudioCueIds.ExpensePay);
-            }
-            else if (ActiveSession.CurrentPhase == Witch.Domain.GamePhase.GameOver)
-            {
-                audioService?.Play(GameAudioCueIds.ExpenseFail);
-                audioService?.PlayMusic(GameAudioCueIds.GameOverMusic);
             }
             Render();
             return result;
@@ -509,16 +511,16 @@ namespace Witch.Presentation.Shop
 
         public void PreviousGuidebookPage()
         {
-            if (guidebookPages.Length == 0) return;
-            guidebookPageIndex = (guidebookPageIndex - 1 + guidebookPages.Length) % guidebookPages.Length;
+            if (guidebookPages.Count == 0) return;
+            guidebookPageIndex = (guidebookPageIndex - 1 + guidebookPages.Count) % guidebookPages.Count;
             RenderGuidebookPage();
             audioService?.Play(GameAudioCueIds.GuidebookClose);
         }
 
         public void NextGuidebookPage()
         {
-            if (guidebookPages.Length == 0) return;
-            guidebookPageIndex = (guidebookPageIndex + 1) % guidebookPages.Length;
+            if (guidebookPages.Count == 0) return;
+            guidebookPageIndex = (guidebookPageIndex + 1) % guidebookPages.Count;
             RenderGuidebookPage();
             audioService?.Play(GameAudioCueIds.GuidebookOpen);
         }
@@ -724,7 +726,7 @@ namespace Witch.Presentation.Shop
                 button.gameObject.SetActive(true);
                 if (!active)
                 {
-                    drag.Unbind();
+                    drag.UnbindSubmit();
                     drag.Initialize(null);
                     button.interactable = false;
                     Text lockedLabel = button.GetComponentInChildren<Text>(true);
@@ -748,7 +750,7 @@ namespace Witch.Presentation.Shop
 
                 drag.Initialize(herb.StableId);
                 string herbId = herb.StableId;
-                drag.Bind(() => LoadHerbIntoGrinder(herbId));
+                drag.BindSubmit(() => LoadHerbIntoGrinder(herbId));
             }
 
             if (herbSlots.Count > 0)
@@ -881,12 +883,10 @@ namespace Witch.Presentation.Shop
 
         private void ConfigureGuidebook()
         {
-            guidebookPages = setup.GuidebookText.Split(
-                new[] { "\n\n" },
-                StringSplitOptions.RemoveEmptyEntries);
-            if (guidebookPages.Length == 0)
+            guidebookPages = setup.GuidebookPages;
+            if (guidebookPages.Count == 0)
             {
-                guidebookPages = new[] { "No remedies unlocked." };
+                guidebookPages = new[] { new GuidebookPageViewData(1, "No remedies unlocked.") };
             }
             guidebookPageIndex = 0;
             RenderGuidebookPage();
@@ -894,10 +894,16 @@ namespace Witch.Presentation.Shop
 
         private void RenderGuidebookPage()
         {
-            string page = guidebookPages[Math.Min(guidebookPageIndex, guidebookPages.Length - 1)];
-            guidebookText.text = page;
-            guidebookPageText.text = page;
-            guidebookPageNumberText.text = (guidebookPageIndex + 1) + " / " + guidebookPages.Length;
+            GuidebookPageViewData page = guidebookPages[Math.Min(guidebookPageIndex, guidebookPages.Count - 1)];
+            guidebookText.text = page.Text;
+            guidebookPageText.text = page.Text;
+            int totalPages = guidebookPages.Max(value => value.PageNumber);
+            guidebookPageNumberText.text = page.PageNumber + " / " + totalPages;
+            if (guidebookIllustration != null)
+            {
+                guidebookIllustration.sprite = page.Illustration;
+                guidebookIllustration.gameObject.SetActive(page.Illustration != null);
+            }
         }
 
         private void SetTutorialHighlight(int activeIndex)

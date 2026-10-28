@@ -155,6 +155,22 @@ namespace Witch.Infrastructure.Tests
         }
 
         [Test]
+        public void Validate_DayWithoutCustomersReturnsError()
+        {
+            GameContentCatalogDefinition catalog = ContentTestFixture.CreateValidCatalog();
+            catalog.Days[0].Configure(
+                "day.1",
+                1,
+                240,
+                new[] { "order.direct", "order.visual" },
+                Array.Empty<string>());
+
+            ContentValidationReport report = new GameContentValidator().Validate(catalog);
+
+            Assert.That(report.Errors.Any(error => error.Contains("at least one customer")), Is.True);
+        }
+
+        [Test]
         public void Validate_SameHerbRecipeAndSmallCardPoolReturnsErrors()
         {
             GameContentCatalogDefinition catalog = ContentTestFixture.CreateValidCatalog();

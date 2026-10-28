@@ -8,6 +8,9 @@ namespace Witch.Application.Tests
     {
         public System.Collections.Generic.IList<string> Operations { get; set; }
 
+        public System.Collections.Generic.Queue<SceneLoadResult> Results { get; }
+            = new System.Collections.Generic.Queue<SceneLoadResult>();
+
         public SceneLoadResult Result { get; set; } = SceneLoadResult.Success();
 
         public int LoadCallCount { get; private set; }
@@ -22,7 +25,7 @@ namespace Witch.Application.Tests
             LoadCallCount++;
             LastRequestedScene = sceneId;
             Operations?.Add("scene:" + sceneId);
-            return Task.FromResult(Result);
+            return Task.FromResult(Results.Count > 0 ? Results.Dequeue() : Result);
         }
     }
 }

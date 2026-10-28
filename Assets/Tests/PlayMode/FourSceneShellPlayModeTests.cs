@@ -21,6 +21,18 @@ namespace Witch.Bootstrap.PlayModeTests
     public sealed class FourSceneShellPlayModeTests
     {
         [Test]
+        public void FixedAspectRatio_UsesFullLandscapeViewportAndPillarboxesWiderScreens()
+        {
+            Rect landscape = FixedAspectRatioController.CalculateViewport(1600, 900);
+            Rect wide = FixedAspectRatioController.CalculateViewport(1700, 900);
+
+            Assert.That(landscape, Is.EqualTo(new Rect(0f, 0f, 1f, 1f)));
+            Assert.That(wide.height, Is.EqualTo(1f));
+            Assert.That(wide.width, Is.EqualTo((16f / 9f) / (1700f / 900f)).Within(0.0001f));
+            Assert.That(wide.x, Is.EqualTo((1f - wide.width) * 0.5f).Within(0.0001f));
+        }
+
+        [Test]
         public void BuildSettingsStartWithFourProductionScenesAndExcludeSampleScene()
         {
             string[] expectedPaths =
@@ -31,6 +43,7 @@ namespace Witch.Bootstrap.PlayModeTests
                 "Assets/Scenes/RewindMinigame.unity"
             };
 
+            // Unity Test Runner appends its own temporary scene in Play Mode.
             Assert.That(SceneManager.sceneCountInBuildSettings, Is.GreaterThanOrEqualTo(expectedPaths.Length));
             for (int index = 0; index < expectedPaths.Length; index++)
             {
@@ -60,7 +73,9 @@ namespace Witch.Bootstrap.PlayModeTests
             Assert.That(menu.IsInitialized, Is.True);
             Assert.That(menu.HasAuthoredView, Is.True);
             Assert.That(Object.FindAnyObjectByType<Camera>(), Is.Not.Null);
-            Assert.That(GameObject.Find("Main Menu Canvas"), Is.Not.Null);
+            Canvas mainMenuCanvas = GameObject.Find("Main Menu Canvas").GetComponent<Canvas>();
+            Assert.That(mainMenuCanvas.renderMode, Is.EqualTo(RenderMode.ScreenSpaceCamera));
+            Assert.That(mainMenuCanvas.worldCamera, Is.Not.Null);
             AssertNoMissingScripts(SceneManager.GetActiveScene());
 
             Object.Destroy(composition.gameObject);
