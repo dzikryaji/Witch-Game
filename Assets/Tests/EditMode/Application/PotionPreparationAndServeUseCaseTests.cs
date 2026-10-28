@@ -29,7 +29,7 @@ namespace Witch.Application.Tests
         }
 
         [Test]
-        public void Brew_UnknownPairAutoDiscardsFailedPotion()
+        public void Brew_UnknownPairPreparesFreeformPotion()
         {
             GameSession session = CreateEncounterSession();
             var preparation = new PotionPreparationUseCase(CreateRules());
@@ -40,9 +40,9 @@ namespace Witch.Application.Tests
             preparation.AddToPot(session);
             PreparationResult result = preparation.Brew(session);
 
-            Assert.That(result.Kind, Is.EqualTo(PreparationResultKind.InvalidRecipeDiscarded));
-            Assert.That(session.PotionDraft.Ingredients, Is.Empty);
-            Assert.That(session.PreparedRecipe, Is.Null);
+            Assert.That(result.Kind, Is.EqualTo(PreparationResultKind.Prepared));
+            Assert.That(session.PotionDraft.Ingredients.Count, Is.EqualTo(2));
+            Assert.That(session.PreparedRecipe.HerbPair, Is.EqualTo(new HerbPair("herb.ginger", "herb.sage")));
             Assert.That(session.RunState.Suspicion, Is.Zero);
         }
 

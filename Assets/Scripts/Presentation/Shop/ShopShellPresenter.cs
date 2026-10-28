@@ -102,7 +102,8 @@ namespace Witch.Presentation.Shop
             && hudView.IsAuthored
             && guidebookText != null
             && herbButtons != null
-            && herbButtons.Length == 24
+            && herbButtons.Length == 25
+            && Array.TrueForAll(herbButtons, button => button != null)
             && herbButtonContainer != null
             && grinderDropZone != null
             && cauldronDropZone != null
@@ -307,18 +308,19 @@ namespace Witch.Presentation.Shop
             return result;
         }
 
-        public void LoadHerbIntoGrinder(string herbId)
+        public bool LoadHerbIntoGrinder(string herbId)
         {
             if (ActiveSession == null || ActiveSession.CurrentPhase != Witch.Domain.GamePhase.CustomerEncounter)
             {
                 SetStatus("Wait for a customer before preparing medicine.");
-                return;
+                return false;
             }
 
-            if (string.IsNullOrWhiteSpace(herbId)) return;
+            if (string.IsNullOrWhiteSpace(herbId)) return false;
             loadedGrinderHerbId = herbId;
             SetStatus(DisplayName(herbId) + " loaded. Press Grind, or Eject to change it.");
             Render();
+            return true;
         }
 
         public PreparationResult GrindLoadedHerb()
@@ -385,19 +387,11 @@ namespace Witch.Presentation.Shop
             PreparationResult result = preparation.Brew(ActiveSession);
             string message = !result.Succeeded
                 ? result.ErrorMessage
-                : result.Kind == PreparationResultKind.InvalidRecipeDiscarded
-                    ? "Bad potion! Black fumes form a skull. It is discarded immediately."
-                    : "Potion brewed. Drag it into the customer Potion slot.";
+                : "Potion brewed. Drag it into the customer Potion slot.";
             SetStatus(message);
             if (result.Succeeded)
             {
-                audioService?.Play(result.Kind == PreparationResultKind.InvalidRecipeDiscarded
-                    ? GameAudioCueIds.BrewInvalid
-                    : GameAudioCueIds.BrewSuccess);
-            }
-            if (result.Succeeded && result.Kind == PreparationResultKind.InvalidRecipeDiscarded)
-            {
-                ShowBadPotionBriefly();
+                audioService?.Play(GameAudioCueIds.BrewSuccess);
             }
             Render();
             return result;
@@ -732,8 +726,7 @@ namespace Witch.Presentation.Shop
                     Text lockedLabel = button.GetComponentInChildren<Text>(true);
                     if (lockedLabel != null)
                     {
-                        lockedLabel.text = "LOCKED";
-                        lockedLabel.color = new Color32(30, 23, 22, 255);
+                        lockedLabel.text = string.Empty;
                     }
                     continue;
                 }
@@ -745,7 +738,6 @@ namespace Witch.Presentation.Shop
                 if (label != null)
                 {
                     label.text = herb.DisplayName;
-                    label.color = new Color32(255, 244, 218, 255);
                 }
 
                 drag.Initialize(herb.StableId);
@@ -780,12 +772,12 @@ namespace Witch.Presentation.Shop
             if (hasGroundHerb) groundHerbText.text = "Ground\n" + DisplayName(session.GroundHerbId);
             bool hasPotion = session.PreparedRecipe != null;
             preparedPotionObject.SetActive(hasPotion);
-            if (hasPotion) preparedPotionText.text = "Brewed Potion\n" + session.PreparedRecipe.RecipeId;
-            if (!string.IsNullOrWhiteSpace(LastStatus))
+            if (hasPotion)
             {
-                hudView.SetStatus(LastStatus);
+                HerbPair pair = session.PreparedRecipe.HerbPair;
+                preparedPotionText.text = "Brewed Potion\n"
+                    + DisplayName(pair.FirstHerbId) + " + " + DisplayName(pair.SecondHerbId);
             }
-
             RenderProgression(session);
         }
 
@@ -875,10 +867,6 @@ namespace Witch.Presentation.Shop
         private void SetStatus(string message)
         {
             LastStatus = message;
-            if (hudView != null)
-            {
-                hudView.SetStatus(message);
-            }
         }
 
         private void ConfigureGuidebook()

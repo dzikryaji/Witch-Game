@@ -18,8 +18,14 @@ MonoBehaviour:
   herbIds:
   - herb.ginger
   - herb.cinnamon
+  - herb.cayennePepper
+  - herb.clove
+  - herb.mustardSeed
   - herb.mint
   - herb.aloe
+  - herb.elderflower
+  - herb.henbane
+  - herb.whiteWillow
   recipeIds:
   - recipe.warming-tonic
   - recipe.cooling-draught

@@ -36,6 +36,10 @@ namespace Witch.Infrastructure.Content
             var recipeIds = IdSet(catalog.Recipes);
             var orderIds = IdSet(catalog.Orders);
             var customerIds = IdSet(catalog.Customers);
+            var herbsById = catalog.Herbs
+                .Where(value => value != null && !string.IsNullOrWhiteSpace(value.StableId))
+                .GroupBy(value => value.StableId, StringComparer.Ordinal)
+                .ToDictionary(group => group.Key, group => group.First(), StringComparer.Ordinal);
             var clueIds = new HashSet<string>(StringComparer.Ordinal);
             foreach (HerbDefinition herb in catalog.Herbs.Where(value => value != null))
             {
@@ -60,17 +64,17 @@ namespace Witch.Infrastructure.Content
 
             foreach (OrderDefinition order in catalog.Orders.Where(value => value != null))
             {
-                int matchingRecipes = catalog.Recipes.Count(recipe =>
-                    recipe != null && SamePair(
-                        recipe.FirstHerbId,
-                        recipe.SecondHerbId,
-                        order.FirstHerbId,
-                        order.SecondHerbId));
-                if (matchingRecipes != 1)
+                ValidateReference(order.FirstHerbId, herbIds, "Order '" + order.StableId + "' first herb", errors);
+                ValidateReference(order.SecondHerbId, herbIds, "Order '" + order.StableId + "' second herb", errors);
+                if (string.Equals(order.FirstHerbId, order.SecondHerbId, StringComparison.Ordinal))
                 {
-                    errors.Add(
-                        "Order '" + order.StableId + "' must resolve to exactly one recipe; found "
-                        + matchingRecipes + ".");
+                    errors.Add("Order '" + order.StableId + "' must use two different herbs.");
+                }
+                else if (herbsById.TryGetValue(order.FirstHerbId, out HerbDefinition firstHerb)
+                         && herbsById.TryGetValue(order.SecondHerbId, out HerbDefinition secondHerb)
+                         && !string.Equals(firstHerb.CategoryId, secondHerb.CategoryId, StringComparison.Ordinal))
+                {
+                    errors.Add("Order '" + order.StableId + "' herbs must share one category.");
                 }
 
                 foreach (string clueId in order.ClueIds)
@@ -95,10 +99,6 @@ namespace Witch.Infrastructure.Content
 
             var daysSeen = new HashSet<int>();
             var ordersById = catalog.Orders
-                .Where(value => value != null && !string.IsNullOrWhiteSpace(value.StableId))
-                .GroupBy(value => value.StableId, StringComparer.Ordinal)
-                .ToDictionary(group => group.Key, group => group.First(), StringComparer.Ordinal);
-            var herbsById = catalog.Herbs
                 .Where(value => value != null && !string.IsNullOrWhiteSpace(value.StableId))
                 .GroupBy(value => value.StableId, StringComparer.Ordinal)
                 .ToDictionary(group => group.Key, group => group.First(), StringComparer.Ordinal);
@@ -406,12 +406,5 @@ namespace Witch.Infrastructure.Content
             }
         }
 
-        private static bool SamePair(string firstA, string secondA, string firstB, string secondB)
-        {
-            return string.Equals(firstA, firstB, StringComparison.Ordinal)
-                       && string.Equals(secondA, secondB, StringComparison.Ordinal)
-                   || string.Equals(firstA, secondB, StringComparison.Ordinal)
-                       && string.Equals(secondA, firstB, StringComparison.Ordinal);
-        }
     }
 }

@@ -9,11 +9,8 @@ namespace Witch.Presentation.Shop
     {
         [SerializeField] private Button button;
         [SerializeField] private CanvasGroup canvasGroup;
-        private Transform originalParent;
-        private int originalSiblingIndex;
-        private Vector2 originalAnchoredPosition;
-        private RectTransform rectTransform;
         private Canvas rootCanvas;
+        private RectTransform dragVisual;
         private UnityAction boundSubmitAction;
 
         public string HerbId { get; private set; }
@@ -34,39 +31,49 @@ namespace Witch.Presentation.Shop
 
         private void Awake()
         {
-            rectTransform = (RectTransform)transform;
             rootCanvas = GetComponentInParent<Canvas>()?.rootCanvas;
         }
 
         public void OnBeginDrag(PointerEventData eventData)
         {
             if (rootCanvas == null || canvasGroup == null || button == null || !button.interactable || string.IsNullOrWhiteSpace(HerbId)) return;
-            originalParent = transform.parent;
-            originalSiblingIndex = transform.GetSiblingIndex();
-            originalAnchoredPosition = rectTransform.anchoredPosition;
-            transform.SetParent(rootCanvas.transform, true);
-            transform.SetAsLastSibling();
-            canvasGroup.blocksRaycasts = false;
-            canvasGroup.alpha = 0.82f;
+            DestroyDragVisual();
+            GameObject copy = Instantiate(gameObject, rootCanvas.transform, true);
+            copy.name = gameObject.name + " Drag Visual";
+            copy.GetComponent<HerbDragItem>().enabled = false;
+            copy.GetComponent<Button>().enabled = false;
+            CanvasGroup copyCanvasGroup = copy.GetComponent<CanvasGroup>();
+            copyCanvasGroup.blocksRaycasts = false;
+            copyCanvasGroup.alpha = 0.82f;
+            dragVisual = (RectTransform)copy.transform;
+            dragVisual.SetAsLastSibling();
         }
 
         public void OnDrag(PointerEventData eventData)
         {
-            if (originalParent == null || rootCanvas == null) return;
-            rectTransform.anchoredPosition += eventData.delta / rootCanvas.scaleFactor;
+            if (dragVisual == null || rootCanvas == null) return;
+            dragVisual.anchoredPosition += eventData.delta / rootCanvas.scaleFactor;
         }
 
         public void OnEndDrag(PointerEventData eventData)
         {
-            if (originalParent == null) return;
-            transform.SetParent(originalParent, false);
-            transform.SetSiblingIndex(originalSiblingIndex);
-            rectTransform.anchoredPosition = originalAnchoredPosition;
-            canvasGroup.blocksRaycasts = true;
-            canvasGroup.alpha = 1f;
-            originalParent = null;
+            DestroyDragVisual();
         }
 
-        private void OnDestroy() => UnbindSubmit();
+        private void OnDisable() => DestroyDragVisual();
+
+        private void OnDestroy()
+        {
+            DestroyDragVisual();
+            UnbindSubmit();
+        }
+
+        private void DestroyDragVisual()
+        {
+            if (dragVisual == null) return;
+            dragVisual.gameObject.SetActive(false);
+            Destroy(dragVisual.gameObject);
+            dragVisual = null;
+        }
     }
 }

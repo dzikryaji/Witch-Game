@@ -48,15 +48,15 @@ namespace Witch.Domain.Tests
         }
 
         [Test]
-        public void UnknownPair_IsFailedBrewAndDoesNotChangeRun()
+        public void UnknownPair_BrewsFreeformPotionAndDoesNotChangeRun()
         {
             PotionServiceRules rules = CreateRules();
             RunState run = CreateRunState();
 
             BrewOutcome brew = rules.Brew(new HerbPair("herb.ginger", "herb.sage"));
 
-            Assert.That(brew.Kind, Is.EqualTo(BrewOutcomeKind.InvalidRecipe));
-            Assert.That(brew.Recipe, Is.Null);
+            Assert.That(brew.Kind, Is.EqualTo(BrewOutcomeKind.ValidRecipe));
+            Assert.That(brew.Recipe.HerbPair, Is.EqualTo(new HerbPair("herb.ginger", "herb.sage")));
             Assert.That(run.Money, Is.Zero);
             Assert.That(run.Suspicion, Is.Zero);
         }

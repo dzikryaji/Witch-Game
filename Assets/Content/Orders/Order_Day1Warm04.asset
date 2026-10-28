@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Order_Day1Warm04
   m_EditorClassIdentifier: Witch.Infrastructure::Witch.Infrastructure.Content.OrderDefinition
   stableId: order.day1.warm-04
-  clueText: Ginger and cinnamon, quickly. Winter is trying to collect me early.
-  clueIds: [clue.ginger.knotted-root, clue.cinnamon.rolled-bark]
-  firstHerbId: herb.ginger
-  secondHerbId: herb.cinnamon
+  clueText: Cinnamon and cayenne pepper, quickly. Winter is trying to collect me early.
+  clueIds: []
+  firstHerbId: herb.cinnamon
+  secondHerbId: herb.cayennePepper

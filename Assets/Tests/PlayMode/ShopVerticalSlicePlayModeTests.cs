@@ -54,7 +54,8 @@ namespace Witch.Bootstrap.PlayModeTests
                     mouse,
                     mint.GetComponent<RectTransform>(),
                     grinder.GetComponent<RectTransform>(),
-                    () => AssertRenderedInFront(mint.transform, "mint herb"));
+                    () => AssertShelfHerbCopied(mint, "mint herb"));
+                AssertDragVisualRemoved(mint, "mint herb");
                 yield return ClickUi(mouse, grind.GetComponent<RectTransform>());
 
                 GroundHerbDragItem ground = Object.FindAnyObjectByType<GroundHerbDragItem>();
@@ -77,7 +78,8 @@ namespace Witch.Bootstrap.PlayModeTests
                     mouse,
                     aloe.GetComponent<RectTransform>(),
                     grinder.GetComponent<RectTransform>(),
-                    () => AssertRenderedInFront(aloe.transform, "aloe herb"));
+                    () => AssertShelfHerbCopied(aloe, "aloe herb"));
+                AssertDragVisualRemoved(aloe, "aloe herb");
                 yield return ClickUi(mouse, grind.GetComponent<RectTransform>());
 
                 ground = Object.FindAnyObjectByType<GroundHerbDragItem>();
@@ -206,15 +208,15 @@ namespace Witch.Bootstrap.PlayModeTests
         }
 
         [UnityTest]
-        public IEnumerator InvalidDiscardAndTimerZeroClosingBehaveAsSpecified()
+        public IEnumerator MixedPairBrewsAndTimerZeroClosingBehaveAsSpecified()
         {
             yield return LoadShop();
             Harness harness = CreateHarness();
             ShopShellPresenter presenter = InitializePresenter(harness);
 
             PreparePair(presenter, "herb.mint", "herb.lavender");
-            Assert.That(presenter.Brew().Kind, Is.EqualTo(PreparationResultKind.InvalidRecipeDiscarded));
-            Assert.That(presenter.ActiveSession.PotionDraft.Ingredients, Is.Empty);
+            Assert.That(presenter.Brew().Kind, Is.EqualTo(PreparationResultKind.Prepared));
+            Assert.That(presenter.ActiveSession.PreparedRecipe, Is.Not.Null);
 
             presenter.GrindHerb("herb.ginger");
             Assert.That(presenter.Discard().Kind, Is.EqualTo(PreparationResultKind.Discarded));
@@ -554,6 +556,21 @@ namespace Witch.Bootstrap.PlayModeTests
         {
             Assert.That(item.GetSiblingIndex(), Is.EqualTo(item.parent.childCount - 1),
                 label + " must render above its Workbench siblings while dragged.");
+        }
+
+        private static void AssertShelfHerbCopied(HerbDragItem item, string label)
+        {
+            Assert.That(item.GetComponentInParent<GridLayoutGroup>(), Is.Not.Null,
+                label + " source must stay in the shelf grid while dragged.");
+            GameObject copy = GameObject.Find(item.gameObject.name + " Drag Visual");
+            Assert.That(copy, Is.Not.Null, label + " must drag a visual copy.");
+            Assert.That(copy.GetComponent<CanvasGroup>().blocksRaycasts, Is.False);
+        }
+
+        private static void AssertDragVisualRemoved(HerbDragItem item, string label)
+        {
+            Assert.That(GameObject.Find(item.gameObject.name + " Drag Visual"), Is.Null,
+                label + " drag visual must disappear after drop.");
         }
 
         private static Vector2 ScreenCenter(RectTransform target)
