@@ -26,9 +26,4 @@ MonoBehaviour:
   - order.day1.cool-03
   - order.day1.cool-04
   - order.day1.cool-05
-  - order.day3.soothe-direct
-  - order.day3.soothe-alias
-  - order.day3.soothe-physical
-  - order.day3.soothe-04
-  - order.day3.soothe-05
   customerIds: [customer.nervous-villager]

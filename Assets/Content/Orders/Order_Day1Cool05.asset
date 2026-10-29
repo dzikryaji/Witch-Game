@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Order_Day1Cool05
   m_EditorClassIdentifier: Witch.Infrastructure::Witch.Infrastructure.Content.OrderDefinition
   stableId: order.day1.cool-05
-  clueText: I need mint and aloe. The fever says we are family now.
-  clueIds: [clue.mint.cool-leaf, clue.aloe.clear-gel]
-  firstHerbId: herb.mint
-  secondHerbId: herb.aloe
+  clueText: I need white willow and henbane. The fever says we are family now.
+  clueIds: []
+  firstHerbId: herb.whiteWillow
+  secondHerbId: herb.henbane

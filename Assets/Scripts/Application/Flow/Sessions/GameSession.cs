@@ -317,9 +317,13 @@ namespace Witch.Application.Flow
             TryTransition(GamePhase.GameOver);
         }
 
-        internal void ApplyVictory(RunState runState)
+        internal void ApplyVictory(
+            DayStartSnapshot dayStartSnapshot,
+            ActiveAttemptMetadata attemptMetadata)
         {
-            RunState = runState ?? throw new ArgumentNullException(nameof(runState));
+            DayStartSnapshot = dayStartSnapshot ?? throw new ArgumentNullException(nameof(dayStartSnapshot));
+            AttemptMetadata = attemptMetadata ?? throw new ArgumentNullException(nameof(attemptMetadata));
+            RunState = dayStartSnapshot.RunState;
             TryTransition(GamePhase.Victory);
         }
 

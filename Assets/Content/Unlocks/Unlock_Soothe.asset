@@ -14,9 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Witch.Infrastructure::Witch.Infrastructure.Content.CategoryUnlockDefinition
   stableId: unlock.soothe
   categoryId: category.soothe
-  firstDay: 3
+  firstDay: 4
   herbIds:
   - herb.lavender
   - herb.chamomile
+  - herb.belladonnaBerry
+  - herb.passionFlower
+  - herb.valerian
   recipeIds:
   - recipe.soothing-cordial

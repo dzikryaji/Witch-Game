@@ -12,6 +12,8 @@ All customers are Villagers. Hunters are an outside narrative threat triggered b
 - Wrong valid orders pay `0` and add suspicion. Suspicion `3` persists a pending rewind and opens the separate memory-card scene.
 - Guaranteed 3–8-pair rewind board with deterministic reload, mismatch flip-back, day reset, suspicion reset, erased attempt earnings, and changed order seed.
 - Expense failure as the only game-over path, same-seed retry, and prototype victory after paying Day 3 expense.
+- Persisted victory restoration and safe Main Menu fallback when Shop/Rewind scene loading fails.
+- Centered `16:9` landscape gameplay/UI viewport with black pillarboxes on wider displays.
 - Dark-comedy Day 1 opening/tutorial, keyboard navigation, pause behavior, readable symbolic cards, reduced mismatch-delay setting, and persistent master/music/SFX settings.
 - Four authored Audio Mixer groups—Music, SFX, Ambience, UI—with copyright-safe original placeholder cues and Bootstrap validation for missing clips. CC0 replacement recommendations and rules live in the prototype design document.
 - Atomic JSON current-run save with recovery copy and a separate settings file.
@@ -27,7 +29,7 @@ Bootstrap connects all parts
 
 `Witch.Domain` and `Witch.Application` are Unity-free assemblies. Immutable authored content uses ScriptableObjects; mutable run data uses plain C# state. Infrastructure owns files, time, random generation, scenes, audio, and lifecycle. Presentation renders typed results and does not calculate outcomes.
 
-Every production scene contains a Camera. Visible hierarchy, layout, styling, Canvas controls, and reusable card/herb visuals are authored in scenes and prefabs. Presentation code binds interactions and updates state; it does not build visual GameObjects at runtime.
+Every production scene contains a Camera. Bootstrap owns an authored fixed-aspect controller; loaded Canvases use their scene Camera so UI follows the centered `16:9` landscape viewport. Visible hierarchy, layout, styling, Canvas controls, and reusable card/herb visuals are authored in scenes and prefabs. Presentation code binds interactions and updates state; it does not build visual GameObjects at runtime.
 
 Production uses exactly four enabled scenes:
 

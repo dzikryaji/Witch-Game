@@ -57,13 +57,18 @@ namespace Witch.Application.Flow
 
             bool pendingRewind = attemptResult.Metadata.PendingRewind;
             bool thresholdReached = attemptResult.Metadata.Suspicion >= Witch.Domain.Progression.RunState.RewindSuspicionThreshold;
+            bool runCompleted = snapshotResult.Snapshot.RunState.RunCompleted;
             var session = new GameSession(
                 snapshotResult.Snapshot,
                 attemptResult.Metadata,
-                pendingRewind || thresholdReached ? GamePhase.RewindPending : GamePhase.ShopPreparation);
+                runCompleted
+                    ? GamePhase.Victory
+                    : pendingRewind || thresholdReached
+                        ? GamePhase.RewindPending
+                        : GamePhase.ShopPreparation);
             sessionStore.SetActive(session);
 
-            SceneId targetScene = pendingRewind ? SceneId.RewindMinigame : SceneId.Shop;
+            SceneId targetScene = pendingRewind && !runCompleted ? SceneId.RewindMinigame : SceneId.Shop;
             SceneLoadResult sceneResult = await sceneLoader.LoadAsync(targetScene, cancellationToken);
             if (!sceneResult.Succeeded)
             {

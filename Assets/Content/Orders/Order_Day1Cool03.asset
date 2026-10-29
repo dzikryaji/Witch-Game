@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Order_Day1Cool03
   m_EditorClassIdentifier: Witch.Infrastructure::Witch.Infrastructure.Content.OrderDefinition
   stableId: order.day1.cool-03
-  clueText: Please prepare mint and aloe. My forehead could cook an egg, and it has opinions.
-  clueIds: [clue.mint.cool-leaf, clue.aloe.clear-gel]
-  firstHerbId: herb.mint
-  secondHerbId: herb.aloe
+  clueText: Please prepare henbane and mint. My forehead could cook an egg, and it has opinions.
+  clueIds: []
+  firstHerbId: herb.henbane
+  secondHerbId: herb.mint

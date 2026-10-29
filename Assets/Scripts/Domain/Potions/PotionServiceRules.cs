@@ -23,9 +23,15 @@ namespace Witch.Domain.Potions
 
         public BrewOutcome Brew(HerbPair herbPair)
         {
-            return recipeCatalog.TryFind(herbPair, out Recipe recipe)
-                ? BrewOutcome.Valid(recipe)
-                : BrewOutcome.Invalid();
+            if (herbPair == null)
+            {
+                throw new ArgumentNullException(nameof(herbPair));
+            }
+
+            return BrewOutcome.Valid(
+                recipeCatalog.TryFind(herbPair, out Recipe recipe)
+                    ? recipe
+                    : new Recipe("potion.freeform", herbPair));
         }
 
         public ServiceOutcome Serve(RunState runState, OrderRequest order, Recipe servedRecipe)

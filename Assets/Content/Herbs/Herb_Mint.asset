@@ -18,7 +18,7 @@ MonoBehaviour:
   scientificName: Mentha piperita
   treatmentText: A dark green leaf with a sharp smell. It clears blocked sinuses, reduces everyday fevers, and eases mild headaches.
   warningText: Peppermint can cause strong, painful stomach cramps in patients with acid reflux.
-  guidebookIllustration: {fileID: 0}
+  herbIllustration: {fileID: 21300000, guid: 28bed1a70c196401d92b13eee99db344, type: 3}
   accessibleLabel: Peppermint
   guidebookPage: 8
   clueIds:

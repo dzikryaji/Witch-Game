@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Order_Day1VisualCool
   m_EditorClassIdentifier: Witch.Infrastructure::Witch.Infrastructure.Content.OrderDefinition
   stableId: order.day1.visual-cool
-  clueText: Mint and aloe, please. Do not ask why I licked the stove.
-  clueIds: [clue.mint.cool-leaf, clue.aloe.clear-gel]
-  firstHerbId: herb.mint
-  secondHerbId: herb.aloe
+  clueText: Elderflower and white willow, please. Do not ask why I licked the stove.
+  clueIds: []
+  firstHerbId: herb.elderflower
+  secondHerbId: herb.whiteWillow

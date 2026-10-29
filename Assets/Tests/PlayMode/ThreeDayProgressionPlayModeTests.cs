@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
@@ -77,6 +78,9 @@ namespace Witch.Bootstrap.PlayModeTests
             Assert.That(expense.Result.Outcome.Kind, Is.EqualTo(ExpenseOutcomeKind.GameOver));
             Assert.That(presenter.ActiveSession.RunState.Money, Is.Zero);
             Assert.That(presenter.ActiveSession.CurrentPhase, Is.EqualTo(GamePhase.GameOver));
+            Assert.That(harness.Audio.Played, Does.Contain(GameAudioCueIds.ExpenseFail));
+            Assert.That(harness.Audio.Played, Does.Contain(GameAudioCueIds.GameOverMusic));
+            Assert.That(harness.Audio.Played, Does.Not.Contain(GameAudioCueIds.ExpensePay));
 
             Task<ExpenseResolutionResult> retry = presenter.RetryDayAsync();
             yield return WaitFor(retry);
@@ -131,6 +135,7 @@ namespace Witch.Bootstrap.PlayModeTests
                 clock,
                 scenes,
                 rules,
+                new FakeAudioService(),
                 new UpdateShopTimerUseCase(clock),
                 new ResolveExpenseUseCase(new ExpenseRules(3), daySetup, repository, new IncreasingRandom(), clock));
         }
@@ -160,6 +165,10 @@ namespace Witch.Bootstrap.PlayModeTests
                 harness.ResolveExpense,
                 new RetryDayUseCase(harness.Repository, harness.Scenes),
                 new ContinueToNextDayUseCase(harness.Scenes));
+            presenter.ConfigurePolish(
+                new SetShopTimerPausedUseCase(harness.Clock),
+                harness.Audio,
+                GameSettingsState.Default);
             return presenter;
         }
 
@@ -191,15 +200,16 @@ namespace Witch.Bootstrap.PlayModeTests
 
         private sealed class ProgressionHarness
         {
-            public ProgressionHarness(InMemoryRunRepository repository, IGameSessionStore store, MutableClock clock, ISceneLoader scenes, PotionServiceRules rules, UpdateShopTimerUseCase updateTimer, ResolveExpenseUseCase resolveExpense)
+            public ProgressionHarness(InMemoryRunRepository repository, IGameSessionStore store, MutableClock clock, ISceneLoader scenes, PotionServiceRules rules, FakeAudioService audio, UpdateShopTimerUseCase updateTimer, ResolveExpenseUseCase resolveExpense)
             {
-                Repository = repository; Store = store; Clock = clock; Scenes = scenes; Rules = rules; UpdateTimer = updateTimer; ResolveExpense = resolveExpense;
+                Repository = repository; Store = store; Clock = clock; Scenes = scenes; Rules = rules; Audio = audio; UpdateTimer = updateTimer; ResolveExpense = resolveExpense;
             }
             public InMemoryRunRepository Repository { get; }
             public IGameSessionStore Store { get; }
             public MutableClock Clock { get; }
             public ISceneLoader Scenes { get; }
             public PotionServiceRules Rules { get; }
+            public FakeAudioService Audio { get; }
             public UpdateShopTimerUseCase UpdateTimer { get; }
             public ResolveExpenseUseCase ResolveExpense { get; }
         }
@@ -219,6 +229,17 @@ namespace Witch.Bootstrap.PlayModeTests
         private sealed class FakeSceneLoader : ISceneLoader
         {
             public Task<SceneLoadResult> LoadAsync(SceneId sceneId, CancellationToken cancellationToken = default) => Task.FromResult(SceneLoadResult.Success());
+        }
+
+        private sealed class FakeAudioService : IGameAudioService
+        {
+            public readonly List<string> Played = new List<string>();
+            public ServiceResult Play(string cueId) { Played.Add(cueId); return ServiceResult.Success(); }
+            public ServiceResult PlayMusic(string cueId) { Played.Add(cueId); return ServiceResult.Success(); }
+            public ServiceResult PlayAmbience(string cueId) { Played.Add(cueId); return ServiceResult.Success(); }
+            public void StopMusic() { }
+            public void StopAmbience() { }
+            public void ApplySettings(GameSettingsState settings) { }
         }
     }
 }

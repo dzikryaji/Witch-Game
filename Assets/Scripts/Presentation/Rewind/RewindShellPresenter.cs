@@ -23,6 +23,7 @@ namespace Witch.Presentation.Rewind
         private GameSettingsState settings = GameSettingsState.Default;
         private readonly CancellationTokenSource lifetime = new CancellationTokenSource();
         private readonly List<RewindCardView> cardSlots = new List<RewindCardView>();
+        private IReadOnlyList<string> symbols;
 
         public bool IsInitialized => sessionStore != null;
         public GameSession ActiveSession => sessionStore?.ActiveSession;
@@ -66,6 +67,25 @@ namespace Witch.Presentation.Rewind
             IGameAudioService audio,
             GameSettingsState currentSettings)
         {
+            Initialize(
+                store,
+                completeUseCase,
+                audio,
+                currentSettings,
+                null,
+                RewindRules.StartingPairCount,
+                RewindRules.MaximumPairCount);
+        }
+
+        public void Initialize(
+            IGameSessionStore store,
+            CompleteRewindUseCase completeUseCase,
+            IGameAudioService audio,
+            GameSettingsState currentSettings,
+            IReadOnlyList<string> symbolKeys,
+            int startingPairCount,
+            int maximumPairCount)
+        {
             Initialize(store);
             completeRewind = completeUseCase ?? throw new ArgumentNullException(nameof(completeUseCase));
             audioService = audio;
@@ -79,7 +99,14 @@ namespace Witch.Presentation.Rewind
             RequireAuthoredView();
             Board = RewindBoard.Create(
                 ActiveSession.AttemptMetadata.MinigameBoardSeed,
-                ActiveSession.AttemptMetadata.RewindCount);
+                ActiveSession.AttemptMetadata.RewindCount,
+                startingPairCount,
+                maximumPairCount);
+            if (symbolKeys != null && symbolKeys.Count < Board.PairCount)
+            {
+                throw new InvalidOperationException("Rewind content has fewer symbols than board pairs.");
+            }
+            symbols = symbolKeys;
             revealed = new bool[Board.Cards.Count];
             matched = new bool[Board.Cards.Count];
             EnsureCardViews(Board.Cards.Count);
@@ -212,7 +239,9 @@ namespace Witch.Presentation.Rewind
                 bool visible = revealed[index];
                 bool isMatched = matched[index];
                 cardSlots[index].Render(
-                    Board.Cards[index] + 1,
+                    symbols == null
+                        ? "SIGIL " + (Board.Cards[index] + 1)
+                        : symbols[Board.Cards[index]],
                     visible,
                     isMatched,
                     !isMatched && !IsResolvingMismatch && !IsComplete);

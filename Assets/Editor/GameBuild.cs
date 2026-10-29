@@ -10,6 +10,13 @@ namespace Witch.Editor
     {
         public const string DefaultOutputPath = "/private/tmp/WitchGamePrototype.app";
         public const string ReleaseOutputPath = "/private/tmp/WitchGamePrototype-Release.app";
+        private static readonly string[] ProductionScenes =
+        {
+            "Assets/Scenes/Bootstrap.unity",
+            "Assets/Scenes/MainMenu.unity",
+            "Assets/Scenes/Shop.unity",
+            "Assets/Scenes/RewindMinigame.unity"
+        };
 
         public static void BuildMacArm64()
         {
@@ -27,9 +34,9 @@ namespace Witch.Editor
                 .Where(scene => scene.enabled)
                 .Select(scene => scene.path)
                 .ToArray();
-            if (scenes.Length != 4 || scenes[0] != "Assets/Scenes/Bootstrap.unity")
+            if (!scenes.SequenceEqual(ProductionScenes))
             {
-                throw new InvalidOperationException("Game build requires exactly four production scenes starting with Bootstrap.");
+                throw new InvalidOperationException("Game build requires Bootstrap, MainMenu, Shop, and RewindMinigame in that order.");
             }
 
             PlayerSettings.SetArchitecture(NamedBuildTarget.Standalone, 1);

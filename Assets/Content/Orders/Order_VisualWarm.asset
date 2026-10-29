@@ -13,9 +13,7 @@ MonoBehaviour:
   m_Name: Order_VisualWarm
   m_EditorClassIdentifier: Witch.Infrastructure::Witch.Infrastructure.Content.OrderDefinition
   stableId: order.day1.visual-warm
-  clueText: Ginger and cinnamon, please. My toes have filed a complaint about the cold.
-  clueIds:
-  - clue.ginger.knotted-root
-  - clue.cinnamon.rolled-bark
-  firstHerbId: herb.ginger
-  secondHerbId: herb.cinnamon
+  clueText: Cayenne pepper and clove, please. My toes have filed a complaint about the cold.
+  clueIds: []
+  firstHerbId: herb.cayennePepper
+  secondHerbId: herb.clove

@@ -13,7 +13,9 @@ MonoBehaviour:
   m_Name: Order_Day1DirectCool
   m_EditorClassIdentifier: Witch.Infrastructure::Witch.Infrastructure.Content.OrderDefinition
   stableId: order.day1.direct-cool
-  clueText: Mint and aloe, please. My fever has begun charging rent.
-  clueIds: [clue.mint.cool-leaf, clue.aloe.clear-gel]
+  clueText: Peppermint and borage, please. My fever has begun charging rent.
+  clueIds:
+  - clue.mint.cool-leaf
+  - clue.borage.blue-flower
   firstHerbId: herb.mint
-  secondHerbId: herb.aloe
+  secondHerbId: herb.borage

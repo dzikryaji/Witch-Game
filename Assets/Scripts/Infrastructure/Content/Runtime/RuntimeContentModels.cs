@@ -15,7 +15,7 @@ namespace Witch.Infrastructure.Content
             string scientificName,
             string treatmentText,
             string warningText,
-            Sprite guidebookIllustration,
+            Sprite herbIllustration,
             string accessibleLabel,
             int guidebookPage,
             IReadOnlyList<string> clueIds)
@@ -26,7 +26,7 @@ namespace Witch.Infrastructure.Content
             ScientificName = scientificName;
             TreatmentText = treatmentText;
             WarningText = warningText;
-            GuidebookIllustration = guidebookIllustration;
+            HerbIllustration = herbIllustration;
             AccessibleLabel = accessibleLabel;
             GuidebookPage = guidebookPage;
             ClueIds = new List<string>(clueIds).AsReadOnly();
@@ -38,7 +38,7 @@ namespace Witch.Infrastructure.Content
         public string ScientificName { get; }
         public string TreatmentText { get; }
         public string WarningText { get; }
-        public Sprite GuidebookIllustration { get; }
+        public Sprite HerbIllustration { get; }
         public string AccessibleLabel { get; }
         public int GuidebookPage { get; }
         public IReadOnlyList<string> ClueIds { get; }

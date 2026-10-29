@@ -55,9 +55,38 @@ namespace Witch.Application.Flow
 
             if (outcome.Kind == ExpenseOutcomeKind.Victory)
             {
+                RunState completedRun = outcome.UpdatedRunState.MarkCompleted();
+                var completedSnapshot = new DayStartSnapshot(
+                    completedRun,
+                    session.DayStartSnapshot.OrderSeed,
+                    session.DayStartSnapshot.TimerDuration,
+                    session.DayStartSnapshot.ExpenseId,
+                    session.DayStartSnapshot.ExpenseValue,
+                    session.DayStartSnapshot.SaveVersion,
+                    clock.UtcNow);
+                var completedMetadata = new ActiveAttemptMetadata(
+                    completedRun.RunId,
+                    completedRun.CurrentDayNumber,
+                    completedRun.Suspicion,
+                    completedRun.RewindCount,
+                    false,
+                    0,
+                    session.AttemptMetadata.ActiveOrderSeed);
+                SaveStateResult completedSave = await saveRepository.SaveRunStateAsync(
+                    completedSnapshot,
+                    completedMetadata,
+                    cancellationToken);
+                if (!completedSave.Succeeded)
+                {
+                    return ExpenseResolutionResult.Failure(
+                        ExpenseResolutionError.SaveFailed,
+                        completedSave.ErrorMessage);
+                }
+
                 session.BeginExpenseCheck();
-                session.ApplyVictory(outcome.UpdatedRunState);
-                return ExpenseResolutionResult.Success(outcome);
+                session.ApplyVictory(completedSnapshot, completedMetadata);
+                return ExpenseResolutionResult.Success(
+                    new ExpenseOutcome(ExpenseOutcomeKind.Victory, completedRun));
             }
 
             RunState nextRunState = setup.ApplyUnlocks(outcome.UpdatedRunState);

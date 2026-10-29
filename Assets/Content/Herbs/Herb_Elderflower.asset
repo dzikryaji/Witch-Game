@@ -18,6 +18,7 @@ MonoBehaviour:
   scientificName: Sambucus nigra
   treatmentText: Delicate white flowers that can be brewed into a light tea to reduce severe swelling and break persistent high fevers.
   warningText: Elderflower places considerable stress on the kidneys. It can be poisonous and deadly for people who are severely dehydrated.
-  guidebookIllustration: {fileID: 0}
+  herbIllustration: {fileID: 21300000, guid: 1f019f9a9bd704ebba38dcead8280f37, type: 3}
   accessibleLabel: Elderflower
   guidebookPage: 9
+  clueIds: []

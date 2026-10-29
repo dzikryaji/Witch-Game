@@ -51,7 +51,9 @@ namespace Witch.Application.Tests
                 }
             }
 
-            Assert.That(saves.SaveCallCount, Is.EqualTo(2));
+            Assert.That(saves.SaveCallCount, Is.EqualTo(3));
+            Assert.That(saves.SavedSnapshot.RunState.RunCompleted, Is.True);
+            Assert.That(session.DayStartSnapshot.RunState.RunCompleted, Is.True);
         }
 
         [Test]
@@ -105,6 +107,55 @@ namespace Witch.Application.Tests
             Assert.That(session.CurrentPhase, Is.EqualTo(GamePhase.ClosingEncounter));
             Assert.That(session.RunState.CurrentDayNumber, Is.EqualTo(1));
             Assert.That(session.RunState.Money, Is.EqualTo(20));
+        }
+
+        [Test]
+        public async Task Continue_SceneFailureFallsBackToMainMenu()
+        {
+            var clock = new FakeClock();
+            GameSession session = CreateSession();
+            CompletePaidClosingCustomer(session, clock, 1);
+            var scenes = new FakeSceneLoader();
+            scenes.Results.Enqueue(SceneLoadResult.Failure(SceneLoadError.LoadFailed, "shop unavailable"));
+            scenes.Results.Enqueue(SceneLoadResult.Success());
+            var resolve = new ResolveExpenseUseCase(
+                new ExpenseRules(3),
+                CreateSetup(),
+                new FakeSaveRepository(),
+                new FakeRandomSource(),
+                clock);
+            await resolve.ExecuteAsync(session);
+
+            ExpenseResolutionResult result = await new ContinueToNextDayUseCase(scenes).ExecuteAsync(session);
+
+            Assert.That(result.Error, Is.EqualTo(ExpenseResolutionError.SceneLoadFailed));
+            Assert.That(scenes.LastRequestedScene, Is.EqualTo(SceneId.MainMenu));
+            Assert.That(session.CurrentPhase, Is.EqualTo(GamePhase.ShopPreparation));
+        }
+
+        [Test]
+        public async Task Retry_SceneFailureFallsBackToMainMenu()
+        {
+            var clock = new FakeClock();
+            GameSession session = CreateSession();
+            CompleteUnpaidClosingCustomer(session, clock);
+            var saves = new FakeSaveRepository();
+            var scenes = new FakeSceneLoader();
+            scenes.Results.Enqueue(SceneLoadResult.Failure(SceneLoadError.LoadFailed, "shop unavailable"));
+            scenes.Results.Enqueue(SceneLoadResult.Success());
+            var resolve = new ResolveExpenseUseCase(
+                new ExpenseRules(3),
+                CreateSetup(),
+                saves,
+                new FakeRandomSource(),
+                clock);
+            await resolve.ExecuteAsync(session);
+
+            ExpenseResolutionResult result = await new RetryDayUseCase(saves, scenes).ExecuteAsync(session);
+
+            Assert.That(result.Error, Is.EqualTo(ExpenseResolutionError.SceneLoadFailed));
+            Assert.That(scenes.LastRequestedScene, Is.EqualTo(SceneId.MainMenu));
+            Assert.That(session.CurrentPhase, Is.EqualTo(GamePhase.ShopPreparation));
         }
 
         [Test]

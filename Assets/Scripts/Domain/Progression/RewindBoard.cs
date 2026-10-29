@@ -23,7 +23,24 @@ namespace Witch.Domain.Progression
 
         public static RewindBoard Create(int seed, int rewindCount)
         {
-            int pairCount = RewindRules.GetPairCount(rewindCount);
+            return Create(
+                seed,
+                rewindCount,
+                RewindRules.StartingPairCount,
+                RewindRules.MaximumPairCount);
+        }
+
+        public static RewindBoard Create(
+            int seed,
+            int rewindCount,
+            int startingPairCount,
+            int maximumPairCount)
+        {
+            if (rewindCount < 0) throw new ArgumentOutOfRangeException(nameof(rewindCount));
+            if (startingPairCount < 1) throw new ArgumentOutOfRangeException(nameof(startingPairCount));
+            if (maximumPairCount < startingPairCount) throw new ArgumentOutOfRangeException(nameof(maximumPairCount));
+
+            int pairCount = Math.Min(startingPairCount + rewindCount, maximumPairCount);
             var shuffled = new List<int>(pairCount * 2);
             for (int pair = 0; pair < pairCount; pair++)
             {
