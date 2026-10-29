@@ -640,6 +640,7 @@ namespace Witch.Presentation.Shop
 
             if (minigameIntroPopup != null && minigameIntroPopup.IsAuthored)
             {
+                setTimerPaused?.Execute(ActiveSession, true);
                 minigameIntroPopup.Show();
                 return Task.CompletedTask; // wait for the player to press the button
             }
