@@ -257,28 +257,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!95 &15796394
-Animator:
-  serializedVersion: 7
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 15796390}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 4c8a85a0afdc446a8310ac8591d489c4, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_AnimatePhysics: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
 --- !u!224 &15796391
 RectTransform:
   m_ObjectHideFlags: 0
@@ -336,6 +314,28 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 15796390}
   m_CullTransparentMesh: 1
+--- !u!95 &15796394
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 15796390}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 4c8a85a0afdc446a8310ac8591d489c4, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!224 &29624392 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 8657453304455295008, guid: 56ffd86123e5b46c4ab6af028dee4316, type: 3}
@@ -2667,10 +2667,10 @@ RectTransform:
   - {fileID: 239288228}
   m_Father: {fileID: 866230072}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.02, y: 0.025}
-  m_AnchorMax: {x: 0.3346663, y: 0.37}
-  m_AnchoredPosition: {x: 389.12, y: 0}
-  m_SizeDelta: {x: 778.24, y: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: -253, y: -243}
+  m_SizeDelta: {x: 1420, y: 600}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &567868297
 MonoBehaviour:
@@ -2692,9 +2692,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -2023450507654261601, guid: cc7c476002d9445ea903d4b401a5ae53, type: 3}
+  m_Sprite: {fileID: 5546759370136898963, guid: 44511d6457e344885ba8c878a4787276, type: 3}
   m_Type: 0
-  m_PreserveAspect: 0
+  m_PreserveAspect: 1
   m_FillCenter: 1
   m_FillMethod: 4
   m_FillAmount: 1
@@ -3125,8 +3125,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.02, y: 0.4}
   m_AnchorMax: {x: 0.74, y: 0.9}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 82.506}
+  m_SizeDelta: {x: 0, y: -165.01}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &713782598
 MonoBehaviour:
@@ -3329,7 +3329,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1.08
-  m_Text: POT [ empty ]
+  m_Text: 'POT [ empty ]'
 --- !u!222 &765355975
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -3413,7 +3413,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 1347.196, y: 372}
+  m_SizeDelta: {x: 1420, y: 600}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &777695455
 MonoBehaviour:
@@ -3428,15 +3428,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.GridLayoutGroup
   m_Padding:
-    m_Left: 60
+    m_Left: 68
     m_Right: 0
-    m_Top: 38
+    m_Top: 57
     m_Bottom: 0
   m_ChildAlignment: 0
   m_StartCorner: 0
   m_StartAxis: 0
-  m_CellSize: {x: 184, y: 42}
-  m_Spacing: {x: 78, y: 25}
+  m_CellSize: {x: 220, y: 81}
+  m_Spacing: {x: 47.5, y: 25}
   m_Constraint: 1
   m_ConstraintCount: 5
 --- !u!1001 &784362446
@@ -4105,22 +4105,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 829616498}
   m_CullTransparentMesh: 1
---- !u!224 &855406206 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 8657453304455295008, guid: 56ffd86123e5b46c4ab6af028dee4316, type: 3}
-  m_PrefabInstance: {fileID: 1606119183}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &855406209 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1421819396930471573, guid: 56ffd86123e5b46c4ab6af028dee4316, type: 3}
-  m_PrefabInstance: {fileID: 1606119183}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
 --- !u!1 &849889367
 GameObject:
   m_ObjectHideFlags: 0
@@ -4242,6 +4226,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 849889367}
   m_CullTransparentMesh: 1
+--- !u!224 &855406206 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 8657453304455295008, guid: 56ffd86123e5b46c4ab6af028dee4316, type: 3}
+  m_PrefabInstance: {fileID: 1606119183}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &855406209 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1421819396930471573, guid: 56ffd86123e5b46c4ab6af028dee4316, type: 3}
+  m_PrefabInstance: {fileID: 1606119183}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
 --- !u!1 &866230066
 GameObject:
   m_ObjectHideFlags: 0
@@ -4959,7 +4959,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 183, y: 167}
+  m_AnchoredPosition: {x: 183, y: 241}
   m_SizeDelta: {x: 470, y: 345}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &942601023
@@ -12706,7 +12706,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1.08
-  m_Text: GUIDEBOOK [G/TAB]
+  m_Text: 'GUIDEBOOK [G/TAB]'
 --- !u!222 &2065861983
 CanvasRenderer:
   m_ObjectHideFlags: 0
