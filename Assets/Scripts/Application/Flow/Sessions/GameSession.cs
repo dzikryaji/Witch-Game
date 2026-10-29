@@ -294,7 +294,11 @@ namespace Witch.Application.Flow
             DayStartSnapshot dayStartSnapshot,
             ActiveAttemptMetadata attemptMetadata)
         {
+            TimeSpan remaining = TimerState.RemainingTime; // time left when the minigame started
+
             ReplaceAttempt(dayStartSnapshot, attemptMetadata);
+
+            TimerState = new ShopTimerState(remaining, false);
             RewindCompletionApplied = true;
             TryTransition(GamePhase.ShopPreparation);
         }
