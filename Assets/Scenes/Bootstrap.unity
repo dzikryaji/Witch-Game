@@ -167,7 +167,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 61000000000000000000000000000014, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Witch.Bootstrap::Witch.Bootstrap.GameCompositionRoot
   contentCatalog: {fileID: 11400000, guid: 10000000000000000000000000000015, type: 2}
   randomSeed: 20261024
@@ -258,7 +258,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4cb8f4c41e8e84fcaa3347c1a79c5dee, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Witch.Bootstrap::Witch.Bootstrap.FixedAspectRatioController
 --- !u!1 &313298145
 GameObject:
