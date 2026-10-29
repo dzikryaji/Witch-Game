@@ -62,6 +62,7 @@ namespace Witch.Presentation.Shop
         [SerializeField] private GameObject[] tutorialHighlights;
         [Header("Input Actions")]
         [SerializeField] private InputActionAsset inputActions;
+        [SerializeField] private MinigameIntroPopupView minigameIntroPopup;
 
         private IGameSessionStore sessionStore;
         private OpenShopUseCase openShop;
@@ -98,6 +99,7 @@ namespace Witch.Presentation.Shop
         public bool GuidebookVisible => guidebookPanel != null && guidebookPanel.activeSelf;
         public bool PauseVisible => pausePanel != null && pausePanel.activeSelf;
         public bool TutorialVisible => tutorialPanel != null && tutorialPanel.activeSelf;
+        public bool MinigameIntroVisible => minigameIntroPopup != null && minigameIntroPopup.IsVisible;
         public bool HasAuthoredView => hudView != null
             && hudView.IsAuthored
             && guidebookText != null
@@ -287,12 +289,12 @@ namespace Witch.Presentation.Shop
 
         private void HandlePauseAction(InputAction.CallbackContext context)
         {
-            if (setTimerPaused != null && !TutorialVisible) TogglePause();
+            if (setTimerPaused != null && !TutorialVisible && !MinigameIntroVisible) TogglePause();
         }
 
         private void HandleGuidebookAction(InputAction.CallbackContext context)
         {
-            if (IsInitialized && !TutorialVisible) ToggleGuidebook();
+            if (IsInitialized && !TutorialVisible && !MinigameIntroVisible) ToggleGuidebook();
         }
 
         public PreparationResult GrindHerb(string herbId)
@@ -628,23 +630,62 @@ namespace Witch.Presentation.Shop
             SetTutorialHighlight(Math.Min(tutorialBeat, tutorialHighlights.Length - 1));
         }
 
-        private async Task EnterPendingRewindAsync(CancellationToken cancellationToken)
+        private Task EnterPendingRewindAsync(CancellationToken cancellationToken)
         {
-            hunterWarningPanel.SetActive(true);
             SetStatus("KNOCK. KNOCK. Hunters suspect poisoning. Cast the memory spell before they enter; the day will rewind.");
             audioService?.Play(GameAudioCueIds.HunterWarning);
             audioService?.Play(GameAudioCueIds.TimeStop);
             audioService?.StopMusic();
             audioService?.StopAmbience();
+
+            if (minigameIntroPopup != null && minigameIntroPopup.IsAuthored)
+            {
+                minigameIntroPopup.Show();
+                return Task.CompletedTask; // wait for the player to press the button
+            }
+
+            hunterWarningPanel.SetActive(true); // fallback when the popup isn't wired
+            return StartRewindAsync(cancellationToken);
+        }
+
+        private async Task StartRewindAsync(CancellationToken cancellationToken)
+        {
             await Task.Yield();
             cancellationToken.ThrowIfCancellationRequested();
-            RewindTransactionResult rewind = await enterRewind.ExecuteAsync(ActiveSession, cancellationToken);
-            if (!rewind.Succeeded)
+
+            RewindTransactionResult rewind;
+            try
             {
-                hunterWarningPanel.SetActive(false);
-                SetStatus("Rewind could not start. " + rewind.ErrorMessage + " Try again by serving or reloading the run.");
-                audioService?.PlayMusic(GameAudioCueIds.ShopMusic);
+                rewind = await enterRewind.ExecuteAsync(ActiveSession, cancellationToken);
             }
+            catch (OperationCanceledException) { throw; }
+            catch (Exception exception)
+            {
+                Debug.LogException(exception, this);
+                if (MinigameIntroVisible) minigameIntroPopup.Show("Rewind could not start. Please try again.");
+                return;
+            }
+
+            if (rewind.Succeeded) return;
+
+            string error = "Rewind could not start. " + rewind.ErrorMessage;
+            if (MinigameIntroVisible)
+            {
+                minigameIntroPopup.Show(error); // keeps the popup and re-enables the button
+                return;
+            }
+
+            hunterWarningPanel.SetActive(false);
+            SetStatus(error + " Try again by serving or reloading the run.");
+            audioService?.PlayMusic(GameAudioCueIds.ShopMusic);
+        }
+
+        private void OnMinigameIntroClicked()
+        {
+            if (actionInProgress) return;
+            minigameIntroPopup.SetInteractable(false); // prevents double clicks
+            audioService?.Play(GameAudioCueIds.UiConfirm);
+            RunUiAction(() => StartRewindAsync(lifetimeCancellation?.Token ?? CancellationToken.None));
         }
 
         private void ResumePendingRewind() => RunUiAction(
@@ -666,6 +707,12 @@ namespace Witch.Presentation.Shop
             if (viewBound)
             {
                 return;
+            }
+
+            if (minigameIntroPopup != null)
+            {
+                minigameIntroPopup.Hide();
+                minigameIntroPopup.Bind(OnMinigameIntroClicked);
             }
 
             grinderDropZone.Initialize(this);
