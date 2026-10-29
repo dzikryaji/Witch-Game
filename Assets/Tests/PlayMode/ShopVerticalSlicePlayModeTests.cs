@@ -24,7 +24,7 @@ namespace Witch.Bootstrap.PlayModeTests
     public sealed class ShopVerticalSlicePlayModeTests : InputTestFixture
     {
         [UnityTest]
-        public IEnumerator RepeatedMintThenAloeGroundHerbsAndPotionsStayVisibleAndDraggable()
+        public IEnumerator RepeatedMintThenBorageGroundHerbsAndPotionsStayVisibleAndDraggable()
         {
             yield return LoadShop();
             Mouse mouse = InputSystem.AddDevice<Mouse>();
@@ -42,7 +42,7 @@ namespace Witch.Bootstrap.PlayModeTests
             for (int cycle = 0; cycle < 3; cycle++)
             {
                 HerbDragItem mint = FindHerb("herb.mint");
-                HerbDragItem aloe = FindHerb("herb.aloe");
+                HerbDragItem borage = FindHerb("herb.borage");
                 Button grind = GameObject.Find("Grind").GetComponent<Button>();
                 Button brew = GameObject.Find("Brew").GetComponent<Button>();
                 Button discardPotion = GameObject.Find("Discard").GetComponent<Button>();
@@ -76,15 +76,15 @@ namespace Witch.Bootstrap.PlayModeTests
 
                 yield return DragUi(
                     mouse,
-                    aloe.GetComponent<RectTransform>(),
+                    borage.GetComponent<RectTransform>(),
                     grinder.GetComponent<RectTransform>(),
-                    () => AssertShelfHerbCopied(aloe, "aloe herb"));
-                AssertDragVisualRemoved(aloe, "aloe herb");
+                    () => AssertShelfHerbCopied(borage, "borage herb"));
+                AssertDragVisualRemoved(borage, "borage herb");
                 yield return ClickUi(mouse, grind.GetComponent<RectTransform>());
 
                 ground = Object.FindAnyObjectByType<GroundHerbDragItem>();
                 Assert.That(ground, Is.Not.Null, "Second grinding must reveal the same draggable output.");
-                AssertGroundHerbVisible(ground, "Aloe");
+                AssertGroundHerbVisible(ground, "Borage");
                 Assert.That(ground.GetComponent<CanvasGroup>().blocksRaycasts, Is.True);
                 RememberOrAssertHome(
                     ground.GetComponent<RectTransform>(),
@@ -295,7 +295,7 @@ namespace Witch.Bootstrap.PlayModeTests
         public void RandomEncounterDeckUsesBalancedBagsAndNeverRunsOneRecipeMoreThanTwice()
         {
             HerbPair warm = new HerbPair("herb.ginger", "herb.cinnamon");
-            HerbPair cool = new HerbPair("herb.mint", "herb.aloe");
+            HerbPair cool = new HerbPair("herb.mint", "herb.borage");
             HerbPair soothe = new HerbPair("herb.lavender", "herb.chamomile");
             var encounters = new List<ShopEncounterViewData>();
             for (int index = 0; index < 5; index++)
@@ -309,7 +309,7 @@ namespace Witch.Bootstrap.PlayModeTests
                     "customer.test",
                     "Test Villager",
                     new OrderRequest("order.cool." + index, cool),
-                    "Mint and aloe."));
+                    "Peppermint and borage."));
                 encounters.Add(new ShopEncounterViewData(
                     "customer.test",
                     "Test Villager",
@@ -418,7 +418,7 @@ namespace Witch.Bootstrap.PlayModeTests
             var setup = new NewRunSetup(
                 0,
                 new[] { "category.test" },
-                new[] { "herb.ginger", "herb.mint", "herb.aloe", "herb.sage", "herb.lavender" },
+                new[] { "herb.ginger", "herb.mint", "herb.borage", "herb.sage", "herb.lavender" },
                 new[] { "recipe.correct", "recipe.cool", "recipe.wrong" },
                 new[] { "guide.test" },
                 TimeSpan.FromSeconds(60),
@@ -439,7 +439,7 @@ namespace Witch.Bootstrap.PlayModeTests
             var recipes = new RecipeCatalog(new[]
             {
                 new Recipe("recipe.correct", new HerbPair("herb.ginger", "herb.mint")),
-                new Recipe("recipe.cool", new HerbPair("herb.mint", "herb.aloe")),
+                new Recipe("recipe.cool", new HerbPair("herb.mint", "herb.borage")),
                 new Recipe("recipe.wrong", new HerbPair("herb.ginger", "herb.sage"))
             });
             var rules = new PotionServiceRules(10, recipes);
@@ -489,8 +489,8 @@ namespace Witch.Bootstrap.PlayModeTests
                 encounters[index] = new ShopEncounterViewData(
                     "customer.stress." + index,
                     "Stress Villager " + index,
-                    new OrderRequest("order.stress." + index, new HerbPair("herb.mint", "herb.aloe")),
-                    "Mint and aloe.");
+                    new OrderRequest("order.stress." + index, new HerbPair("herb.mint", "herb.borage")),
+                    "Peppermint and borage.");
             }
 
             presenter.Initialize(
@@ -505,7 +505,7 @@ namespace Witch.Bootstrap.PlayModeTests
                     new[]
                     {
                         new ShopHerbViewData("herb.mint", "Mint"),
-                        new ShopHerbViewData("herb.aloe", "Aloe")
+                        new ShopHerbViewData("herb.borage", "Borage")
                     }));
             return presenter;
         }

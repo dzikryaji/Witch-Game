@@ -23,16 +23,18 @@ namespace Witch.Presentation.Shop
 
     public sealed class ShopHerbViewData
     {
-        public ShopHerbViewData(string stableId, string displayName)
+        public ShopHerbViewData(string stableId, string displayName, Sprite herbIllustration = null)
         {
             StableId = string.IsNullOrWhiteSpace(stableId)
                 ? throw new ArgumentException("Herb ID is required.", nameof(stableId))
                 : stableId;
             DisplayName = string.IsNullOrWhiteSpace(displayName) ? stableId : displayName;
+            HerbIllustration = herbIllustration;
         }
 
         public string StableId { get; }
         public string DisplayName { get; }
+        public Sprite HerbIllustration { get; }
     }
 
     public sealed class GuidebookPageViewData

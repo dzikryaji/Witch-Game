@@ -30,6 +30,9 @@ namespace Witch.Infrastructure.Tests
             Assert.That(result.Content.HerbsById["herb.ginger"].GuidebookPage, Is.EqualTo(3));
             Assert.That(result.Content.HerbsById["herb.mint"].DisplayName, Is.EqualTo("Peppermint"));
             Assert.That(result.Content.HerbsById["herb.mint"].ClueIds, Does.Contain("clue.mint.cool-leaf"));
+            Assert.That(result.Content.HerbsById["herb.borage"].DisplayName, Is.EqualTo("Borage"));
+            Assert.That(result.Content.HerbsById["herb.borage"].ClueIds, Does.Contain("clue.borage.blue-flower"));
+            Assert.That(result.Content.HerbsById["herb.borage"].HerbIllustration, Is.Not.Null);
             Assert.That(result.Content.GuidebookEntriesById.ContainsKey("guidebook.soothe"), Is.True);
             Assert.That(result.Content.GuidebookEntriesById["guidebook.soothe"].BodyText, Does.Contain("quiet the nerves"));
             Assert.That(result.Content.GuidebookEntriesById["guidebook.soothe"].BodyText, Does.Not.Contain("Lavender"));

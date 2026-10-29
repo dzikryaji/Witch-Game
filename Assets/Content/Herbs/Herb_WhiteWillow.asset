@@ -18,6 +18,7 @@ MonoBehaviour:
   scientificName: Salix alba
   treatmentText: A tough strip of bark that eases sore joints and severe muscle pain.
   warningText: White Willow can greatly slow breathing. It can be deadly for people with asthma or weak lungs.
-  guidebookIllustration: {fileID: 0}
+  herbIllustration: {fileID: 21300000, guid: f78daeebfecb4409cad483e37495a004, type: 3}
   accessibleLabel: White Willow
   guidebookPage: 10
+  clueIds: []

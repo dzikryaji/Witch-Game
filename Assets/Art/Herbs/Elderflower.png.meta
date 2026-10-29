@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: cc7c476002d9445ea903d4b401a5ae53
+guid: 1f019f9a9bd704ebba38dcead8280f37
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -2023450507654261601
-    second: herb-drawer_0
+      213: -8085702265519948207
+    second: Elderflower_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -46,7 +46,7 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 2
+  spriteMode: 1
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
@@ -115,13 +115,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: herb-drawer_0
+      name: Elderflower_0
       rect:
         serializedVersion: 2
-        x: 4
-        y: 0
-        width: 1722
-        height: 1062
+        x: 68
+        y: 5
+        width: 93
+        height: 72
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -130,8 +130,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: f941fa6eb724be3e0800000000000000
-      internalID: -2023450507654261601
+      spriteID: 15ebc1021a0d9cf80800000000000000
+      internalID: -8085702265519948207
       vertices: []
       indices: 
       edges: []
@@ -140,7 +140,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 5e97eb03825dee720800000000000000
     internalID: 0
     vertices: []
     indices: 
@@ -150,7 +150,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      herb-drawer_0: -2023450507654261601
+      Elderflower_0: -8085702265519948207
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

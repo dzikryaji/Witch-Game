@@ -18,6 +18,7 @@ MonoBehaviour:
   scientificName: Valeriana officianalis
   treatmentText: A strong, earthy root that helps anxious people sleep deeply and calms a racing heart.
   warningText: Valerian leaves a lasting smell of decay on the breath and causes intense, frightening dreams. It is risky for patients who are easily frightened.
-  guidebookIllustration: {fileID: 0}
+  herbIllustration: {fileID: 21300000, guid: 031883b51c5ba457dab1ef1195ac874b, type: 3}
   accessibleLabel: Valerian
   guidebookPage: 14
+  clueIds: []

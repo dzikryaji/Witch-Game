@@ -766,6 +766,7 @@ namespace Witch.Presentation.Shop
                 }
                 bool active = index < setup.Herbs.Count;
                 button.gameObject.SetActive(true);
+                Image illustration = button.image;
                 if (!active)
                 {
                     drag.UnbindSubmit();
@@ -776,6 +777,11 @@ namespace Witch.Presentation.Shop
                     {
                         lockedLabel.text = string.Empty;
                     }
+                    if (illustration != null)
+                    {
+                        illustration.sprite = null;
+                        illustration.color = Color.clear;
+                    }
                     continue;
                 }
 
@@ -785,7 +791,13 @@ namespace Witch.Presentation.Shop
                 Text label = button.GetComponentInChildren<Text>(true);
                 if (label != null)
                 {
-                    label.text = herb.DisplayName;
+                    label.text = herb.HerbIllustration == null ? herb.DisplayName : string.Empty;
+                }
+                if (illustration != null)
+                {
+                    illustration.sprite = herb.HerbIllustration;
+                    illustration.preserveAspect = herb.HerbIllustration != null;
+                    illustration.color = herb.HerbIllustration == null ? Color.clear : Color.white;
                 }
 
                 drag.Initialize(herb.StableId);

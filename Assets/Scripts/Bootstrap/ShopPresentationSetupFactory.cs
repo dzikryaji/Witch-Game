@@ -40,7 +40,7 @@ namespace Witch.Bootstrap
             foreach (string herbId in session.RunState.UnlockedHerbIds)
             {
                 HerbContent herb = content.HerbsById[herbId];
-                herbs.Add(new ShopHerbViewData(herb.StableId, herb.DisplayName));
+                herbs.Add(new ShopHerbViewData(herb.StableId, herb.DisplayName, herb.HerbIllustration));
             }
 
             var guidebook = new List<GuidebookPageViewData>();
@@ -66,7 +66,7 @@ namespace Witch.Bootstrap
                         + "\n" + herb.ScientificName
                         + "\n" + herb.TreatmentText
                         + "\nWarning: " + herb.WarningText,
-                    herb.GuidebookIllustration,
+                    herb.HerbIllustration,
                     herb.AccessibleLabel));
             }
 

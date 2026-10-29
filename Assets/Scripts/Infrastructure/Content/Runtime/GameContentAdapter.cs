@@ -43,7 +43,7 @@ namespace Witch.Infrastructure.Content
                     definition.ScientificName,
                     definition.TreatmentText,
                     definition.WarningText,
-                    definition.GuidebookIllustration,
+                    definition.HerbIllustration,
                     definition.AccessibleLabel,
                     definition.GuidebookPage,
                     definition.ClueIds),
