@@ -34,7 +34,8 @@ namespace Witch.Application.Flow
 
             if (session.RewindCompletionApplied
                 && !session.AttemptMetadata.PendingRewind
-                && session.CurrentPhase == GamePhase.ShopPreparation)
+                && (session.CurrentPhase == GamePhase.ShopPreparation
+                    || session.CurrentPhase == GamePhase.CustomerEncounter))
             {
                 return RewindTransactionResult.Success(null, alreadyApplied: true);
             }
@@ -79,7 +80,8 @@ namespace Witch.Application.Flow
                 return RewindTransactionResult.Failure(RewindTransactionError.SaveFailed, save.ErrorMessage);
             }
 
-            session.CompleteRewind(snapshot, metadata);
+            if (session.CanResumeInPlace) session.CompleteRewindInPlace(snapshot, metadata);
+            else session.CompleteRewind(snapshot, metadata);
             SceneLoadResult scene = await sceneLoader.LoadAsync(SceneId.Shop, cancellationToken);
             return scene.Succeeded
                 ? RewindTransactionResult.Success(null)

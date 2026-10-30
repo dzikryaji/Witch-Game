@@ -91,6 +91,13 @@ namespace Witch.Application.Flow
 
         internal bool RewindCompletionApplied { get; private set; }
 
+        private RunState resumeRunState;   // run state as it was before the last customer was served
+
+        internal bool CanResumeInPlace =>
+            resumeRunState != null
+            && AttemptState.ActiveOrder != null
+            && TimerState.RemainingTime > TimeSpan.Zero;
+
         private DateTimeOffset? lastTimerSampleUtc;
 
         public GamePhase CurrentPhase { get; private set; }
@@ -125,6 +132,8 @@ namespace Witch.Application.Flow
 
             ServiceCommitted = false;
             ClearWorkbench();
+
+            resumeRunState = RunState;
 
             var usedOrderIds = new System.Collections.Generic.List<string>(AttemptState.UsedOrderIds);
             if (!usedOrderIds.Contains(order.OrderId))
@@ -291,16 +300,34 @@ namespace Witch.Application.Flow
         }
 
         internal void CompleteRewind(
+    DayStartSnapshot dayStartSnapshot,
+    ActiveAttemptMetadata attemptMetadata)
+        {
+            ReplaceAttempt(dayStartSnapshot, attemptMetadata);
+            RewindCompletionApplied = true;
+            TryTransition(GamePhase.ShopPreparation);
+        }
+
+        internal void CompleteRewindInPlace(
             DayStartSnapshot dayStartSnapshot,
             ActiveAttemptMetadata attemptMetadata)
         {
-            TimeSpan remaining = TimerState.RemainingTime; // time left when the minigame started
+            DayStartSnapshot = dayStartSnapshot ?? throw new ArgumentNullException(nameof(dayStartSnapshot));
+            AttemptMetadata = attemptMetadata ?? throw new ArgumentNullException(nameof(attemptMetadata));
+            RunState = resumeRunState.WithProgress(
+                attemptMetadata.DayNumber,
+                resumeRunState.Money,
+                attemptMetadata.Suspicion,       // reset by the use case
+                attemptMetadata.RewindCount);    // incremented once by the use case
 
-            ReplaceAttempt(dayStartSnapshot, attemptMetadata);
-
-            TimerState = new ShopTimerState(remaining, false);
+            ClearWorkbench();
+            ServiceCommitted = false;            // the same customer can be served again
             RewindCompletionApplied = true;
-            TryTransition(GamePhase.ShopPreparation);
+
+            TimerStopped = false;
+            TimerPaused = true;                  // frozen until the Shop scene un-pauses it
+            TimerState = new ShopTimerState(TimerState.RemainingTime, true);
+            TryTransition(GamePhase.CustomerEncounter);
         }
 
         internal void BeginExpenseCheck()
@@ -371,6 +398,7 @@ namespace Witch.Application.Flow
             TimerStopped = false;
             ServiceCommitted = false;
             RewindCompletionApplied = false;
+            resumeRunState = null;
             ClearWorkbench();
         }
 
