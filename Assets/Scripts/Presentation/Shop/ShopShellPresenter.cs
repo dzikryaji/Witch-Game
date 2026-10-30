@@ -26,12 +26,9 @@ namespace Witch.Presentation.Shop
         [SerializeField] private PotionServeDropZone potionServeDropZone;
         [SerializeField] private Button grindButton;
         [SerializeField] private Button ejectGrinderButton;
-        [SerializeField] private Button addToPotButton;
         [SerializeField] private Button discardGroundButton;
-        [SerializeField] private Button undoLastIngredientButton;
         [SerializeField] private Button emptyPotButton;
         [SerializeField] private Button brewButton;
-        [SerializeField] private Button discardButton;
         [SerializeField] private Button serveButton;
         [SerializeField] private Button guidebookButton;
         [SerializeField] private Button guidebookPreviousButton;
@@ -46,7 +43,6 @@ namespace Witch.Presentation.Shop
         [SerializeField] private Text groundHerbText;
         [SerializeField] private GameObject preparedPotionObject;
         [SerializeField] private Text preparedPotionText;
-        [SerializeField] private GameObject badPotionIndicator;
         [SerializeField] private GameObject hunterWarningPanel;
         [SerializeField] private GameObject progressionPanel;
         [SerializeField] private Text progressionText;
@@ -91,7 +87,6 @@ namespace Witch.Presentation.Shop
         private string loadedGrinderHerbId;
         private IReadOnlyList<GuidebookPageViewData> guidebookPages = Array.Empty<GuidebookPageViewData>();
         private int guidebookPageIndex;
-        private Coroutine badPotionRoutine;
 
         public bool IsInitialized => sessionStore != null;
         public GameSession ActiveSession => sessionStore?.ActiveSession;
@@ -113,12 +108,9 @@ namespace Witch.Presentation.Shop
             && potionServeDropZone != null
             && grindButton != null
             && ejectGrinderButton != null
-            && addToPotButton != null
             && discardGroundButton != null
-            && undoLastIngredientButton != null
             && emptyPotButton != null
             && brewButton != null
-            && discardButton != null
             && serveButton != null
             && guidebookPreviousButton != null
             && guidebookNextButton != null
@@ -132,7 +124,6 @@ namespace Witch.Presentation.Shop
             && groundHerbText != null
             && preparedPotionObject != null
             && preparedPotionText != null
-            && badPotionIndicator != null
             && hunterWarningPanel != null
             && progressionPanel != null
             && progressionText != null
@@ -147,6 +138,7 @@ namespace Witch.Presentation.Shop
             && tutorialContinueButton != null
             && tutorialHighlights != null
             && tutorialHighlights.Length == 5
+            && Array.TrueForAll(tutorialHighlights, highlight => highlight != null)
             && inputActions != null;
 
         public void ConfigurePolish(
@@ -223,7 +215,6 @@ namespace Witch.Presentation.Shop
             tutorialPanel.SetActive(false);
             groundHerbObject.SetActive(false);
             preparedPotionObject.SetActive(false);
-            badPotionIndicator.SetActive(false);
             hudView.ClearCustomer();
             audioService?.PlayMusic(GameAudioCueIds.ShopMusic);
             audioService?.PlayAmbience(GameAudioCueIds.ShopAmbience);
@@ -241,7 +232,7 @@ namespace Witch.Presentation.Shop
 
         private void Update()
         {
-            if (!IsInitialized || updateTimer == null || ActiveSession == null || Time.unscaledTime < nextRefresh)
+            if (!viewBound || !IsInitialized || updateTimer == null || ActiveSession == null || Time.unscaledTime < nextRefresh)
             {
                 return;
             }
@@ -370,15 +361,6 @@ namespace Witch.Presentation.Shop
         {
             PreparationResult result = preparation.DiscardGroundHerb(ActiveSession);
             SetStatus(result.Succeeded ? "Ground herb discarded." : result.ErrorMessage);
-            if (result.Succeeded) audioService?.Play(GameAudioCueIds.Discard);
-            Render();
-            return result;
-        }
-
-        public PreparationResult UndoLastPotIngredient()
-        {
-            PreparationResult result = preparation.UndoLastPotIngredient(ActiveSession);
-            SetStatus(result.Succeeded ? "Last ingredient removed from cauldron." : result.ErrorMessage);
             if (result.Succeeded) audioService?.Play(GameAudioCueIds.Discard);
             Render();
             return result;
@@ -722,12 +704,9 @@ namespace Witch.Presentation.Shop
             potionServeDropZone.Initialize(this);
             grindButton.onClick.AddListener(() => GrindLoadedHerb());
             ejectGrinderButton.onClick.AddListener(EjectLoadedHerb);
-            addToPotButton.onClick.AddListener(() => AddGroundHerbToPot());
             discardGroundButton.onClick.AddListener(() => DiscardGroundHerb());
-            undoLastIngredientButton.onClick.AddListener(() => UndoLastPotIngredient());
             emptyPotButton.onClick.AddListener(() => Discard());
             brewButton.onClick.AddListener(() => Brew());
-            discardButton.onClick.AddListener(() => Discard());
             serveButton.onClick.AddListener(OnServeClicked);
             if (guidebookButton != null) guidebookButton.onClick.AddListener(ToggleGuidebook);
             guidebookPreviousButton.onClick.AddListener(PreviousGuidebookPage);
@@ -963,20 +942,6 @@ namespace Witch.Presentation.Shop
                     tutorialHighlights[index].SetActive(index == activeIndex);
                 }
             }
-        }
-
-        private void ShowBadPotionBriefly()
-        {
-            if (badPotionRoutine != null) StopCoroutine(badPotionRoutine);
-            badPotionRoutine = StartCoroutine(BadPotionRoutine());
-        }
-
-        private System.Collections.IEnumerator BadPotionRoutine()
-        {
-            badPotionIndicator.SetActive(true);
-            yield return new WaitForSecondsRealtime(0.9f);
-            badPotionIndicator.SetActive(false);
-            badPotionRoutine = null;
         }
 
     }

@@ -45,7 +45,6 @@ namespace Witch.Bootstrap.PlayModeTests
                 HerbDragItem borage = FindHerb("herb.borage");
                 Button grind = GameObject.Find("Grind").GetComponent<Button>();
                 Button brew = GameObject.Find("Brew").GetComponent<Button>();
-                Button discardPotion = GameObject.Find("Discard").GetComponent<Button>();
                 GrinderDropZone grinder = Object.FindAnyObjectByType<GrinderDropZone>();
                 CauldronDropZone cauldron = Object.FindAnyObjectByType<CauldronDropZone>();
                 PotionServeDropZone customerSlot = Object.FindAnyObjectByType<PotionServeDropZone>();
@@ -122,7 +121,7 @@ namespace Witch.Bootstrap.PlayModeTests
                         ref potionHomePosition,
                         "brewed potion");
                     Assert.That(potion.GetComponent<CanvasGroup>().blocksRaycasts, Is.True);
-                    yield return ClickUi(mouse, discardPotion.GetComponent<RectTransform>());
+                    Assert.That(presenter.Discard().Succeeded, Is.True);
                     Assert.That(presenter.ActiveSession.PreparedRecipe, Is.Null);
                 }
                 else
@@ -388,11 +387,20 @@ namespace Witch.Bootstrap.PlayModeTests
             Assert.That(presenter.TutorialVisible, Is.True);
             Assert.That(presenter.ActiveSession.CurrentPhase, Is.EqualTo(GamePhase.ShopPreparation));
             Assert.That(presenter.ActiveSession.TimerStartedAtUtc, Is.Null);
-            presenter.AdvanceTutorial();
-            presenter.AdvanceTutorial();
-            presenter.AdvanceTutorial();
-            presenter.AdvanceTutorial();
-            presenter.AdvanceTutorial();
+            string[] tutorialHighlightNames =
+            {
+                "Customer Tutorial Highlight",
+                "Guidebook Tutorial Highlight",
+                "Shelf Tutorial Highlight",
+                "Grinder Tutorial Highlight",
+                "Cauldron Tutorial Highlight"
+            };
+            foreach (string highlightName in tutorialHighlightNames)
+            {
+                Assert.That(GameObject.Find(highlightName), Is.Not.Null,
+                    highlightName + " must be visible on its tutorial beat.");
+                presenter.AdvanceTutorial();
+            }
 
             Assert.That(presenter.TutorialVisible, Is.False);
             Assert.That(presenter.ActiveSession.CurrentPhase, Is.EqualTo(GamePhase.CustomerEncounter));
@@ -554,8 +562,11 @@ namespace Witch.Bootstrap.PlayModeTests
 
         private static void AssertRenderedInFront(Transform item, string label)
         {
+            Canvas rootCanvas = item.GetComponentInParent<Canvas>().rootCanvas;
+            Assert.That(item.parent, Is.SameAs(rootCanvas.transform),
+                label + " must move to the root Canvas while dragged.");
             Assert.That(item.GetSiblingIndex(), Is.EqualTo(item.parent.childCount - 1),
-                label + " must render above its Workbench siblings while dragged.");
+                label + " must render above all Canvas content while dragged.");
         }
 
         private static void AssertShelfHerbCopied(HerbDragItem item, string label)
