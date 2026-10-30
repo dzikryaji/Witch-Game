@@ -13,18 +13,9 @@ MonoBehaviour:
   m_Name: Guidebook_WarmCool
   m_EditorClassIdentifier: Witch.Infrastructure::Witch.Infrastructure.Content.GuidebookEntryDefinition
   stableId: guidebook.warm-cool
-  title: Warm and Cool Herbs
+  title: Warming and Cooling Herbs
   categoryId: category.warm-cool
-  bodyText: "WARM — Ginger: knotted tan root. Cinnamon: rolled brown bark. Together they make the fireside warming tonic.\n\nCOOL — Mint: small cool green leaves. Aloe: thick jagged leaves with clear gel. Together they make the fever cooling draught."
-  herbIds:
-  - herb.ginger
-  - herb.cinnamon
-  - herb.mint
-  - herb.aloe
+  bodyText: "WARMING \u2014 Herbs that bring heat back to the body.\n\nCOOLING \u2014 Herbs that bring heat down and calm the blood."
   clueIds:
-  - clue.ginger.knotted-root
-  - clue.cinnamon.rolled-bark
-  - clue.mint.cool-leaf
-  - clue.aloe.clear-gel
   - clue.warm.fireside
   - clue.cool.fever

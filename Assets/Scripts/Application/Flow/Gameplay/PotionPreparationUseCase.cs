@@ -101,12 +101,6 @@ namespace Witch.Application.Flow
                 session.PotionDraft.Ingredients[0].HerbId,
                 session.PotionDraft.Ingredients[1].HerbId);
             BrewOutcome outcome = rules.Brew(pair);
-            if (outcome.Kind == BrewOutcomeKind.InvalidRecipe)
-            {
-                session.ClearWorkbench();
-                return PreparationResult.Success(PreparationResultKind.InvalidRecipeDiscarded);
-            }
-
             session.SetPreparedRecipe(outcome.Recipe);
             return PreparationResult.Success(PreparationResultKind.Prepared);
         }

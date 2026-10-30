@@ -9,6 +9,7 @@ namespace Witch.Domain.Progression
     {
         public const int FirstDay = 1;
         public const int RewindSuspicionThreshold = 3;
+        public const string RunCompletedFlagId = "run.completed";
 
         private readonly ReadOnlyCollection<string> unlockedCategoryIds;
         private readonly ReadOnlyCollection<string> unlockedHerbIds;
@@ -94,6 +95,9 @@ namespace Witch.Domain.Progression
 
         public IReadOnlyDictionary<string, bool> NarrativeFlags => readOnlyNarrativeFlags;
 
+        public bool RunCompleted =>
+            NarrativeFlags.TryGetValue(RunCompletedFlagId, out bool completed) && completed;
+
         public RunState WithEconomy(int money, int suspicion)
         {
             return WithProgress(CurrentDayNumber, money, suspicion, RewindCount);
@@ -117,6 +121,29 @@ namespace Witch.Domain.Progression
                 UnlockedGuidebookEntryIds,
                 TutorialFlags,
                 NarrativeFlags);
+        }
+
+        public RunState MarkCompleted()
+        {
+            var flags = new Dictionary<string, bool>(StringComparer.Ordinal);
+            foreach (KeyValuePair<string, bool> flag in NarrativeFlags)
+            {
+                flags.Add(flag.Key, flag.Value);
+            }
+
+            flags[RunCompletedFlagId] = true;
+            return new RunState(
+                RunId,
+                CurrentDayNumber,
+                Money,
+                Suspicion,
+                RewindCount,
+                UnlockedCategoryIds,
+                UnlockedHerbIds,
+                UnlockedRecipeIds,
+                UnlockedGuidebookEntryIds,
+                TutorialFlags,
+                flags);
         }
 
         private static ReadOnlyCollection<string> CopyIds(IReadOnlyList<string> source, string parameterName)

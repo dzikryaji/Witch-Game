@@ -1,22 +1,47 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using UnityEngine;
 using Witch.Domain.Orders;
 
 namespace Witch.Infrastructure.Content
 {
     public sealed class HerbContent
     {
-        public HerbContent(string stableId, string displayName, string categoryId)
+        public HerbContent(
+            string stableId,
+            string displayName,
+            string categoryId,
+            string scientificName,
+            string treatmentText,
+            string warningText,
+            Sprite herbIllustration,
+            string accessibleLabel,
+            int guidebookPage,
+            IReadOnlyList<string> clueIds)
         {
             StableId = stableId;
             DisplayName = displayName;
             CategoryId = categoryId;
+            ScientificName = scientificName;
+            TreatmentText = treatmentText;
+            WarningText = warningText;
+            HerbIllustration = herbIllustration;
+            AccessibleLabel = accessibleLabel;
+            GuidebookPage = guidebookPage;
+            ClueIds = new List<string>(clueIds).AsReadOnly();
         }
 
         public string StableId { get; }
         public string DisplayName { get; }
         public string CategoryId { get; }
+        public string ScientificName { get; }
+        public string TreatmentText { get; }
+        public string WarningText { get; }
+        public Sprite HerbIllustration { get; }
+        public string AccessibleLabel { get; }
+        public int GuidebookPage { get; }
+        public IReadOnlyList<string> ClueIds { get; }
     }
 
     public sealed class OrderContent
@@ -74,14 +99,12 @@ namespace Witch.Infrastructure.Content
             string stableId,
             string title,
             string categoryId,
-            IReadOnlyList<string> herbIds,
             IReadOnlyList<string> clueIds,
             string bodyText = "")
         {
             StableId = stableId;
             Title = title;
             CategoryId = categoryId;
-            HerbIds = new List<string>(herbIds).AsReadOnly();
             ClueIds = new List<string>(clueIds).AsReadOnly();
             BodyText = bodyText ?? string.Empty;
         }
@@ -89,7 +112,6 @@ namespace Witch.Infrastructure.Content
         public string StableId { get; }
         public string Title { get; }
         public string CategoryId { get; }
-        public IReadOnlyList<string> HerbIds { get; }
         public IReadOnlyList<string> ClueIds { get; }
         public string BodyText { get; }
     }
@@ -101,15 +123,13 @@ namespace Witch.Infrastructure.Content
             string categoryId,
             int firstDay,
             IReadOnlyList<string> herbIds,
-            IReadOnlyList<string> recipeIds,
-            IReadOnlyList<string> guidebookEntryIds)
+            IReadOnlyList<string> recipeIds)
         {
             StableId = stableId;
             CategoryId = categoryId;
             FirstDay = firstDay;
             HerbIds = new List<string>(herbIds).AsReadOnly();
             RecipeIds = new List<string>(recipeIds).AsReadOnly();
-            GuidebookEntryIds = new List<string>(guidebookEntryIds).AsReadOnly();
         }
 
         public string StableId { get; }
@@ -117,7 +137,6 @@ namespace Witch.Infrastructure.Content
         public int FirstDay { get; }
         public IReadOnlyList<string> HerbIds { get; }
         public IReadOnlyList<string> RecipeIds { get; }
-        public IReadOnlyList<string> GuidebookEntryIds { get; }
     }
 
     public sealed class RewindCardContent

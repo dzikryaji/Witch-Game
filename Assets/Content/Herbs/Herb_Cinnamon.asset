@@ -15,3 +15,11 @@ MonoBehaviour:
   stableId: herb.cinnamon
   displayName: Cinnamon
   categoryId: category.warm
+  scientificName: Cinnamomum
+  treatmentText: A spicy, sweet tree bark brought from the East that rapidly sweats out severe and intense tissue fatigue.
+  warningText: Cinnamon causes a sudden, severe increase in internal body temperature. It can cause fatal heatstroke in a patient who already has a high fever.
+  herbIllustration: {fileID: 21300000, guid: 6eb0ab9a22b3645a5b7eb7a3eb9e9740, type: 3}
+  accessibleLabel: Cinnamon
+  guidebookPage: 6
+  clueIds:
+  - clue.cinnamon.rolled-bark

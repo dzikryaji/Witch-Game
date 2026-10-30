@@ -2,7 +2,7 @@
 
 ## Current status
 
-This file describes the implemented three-day prototype as of October 24, 2026. The fourteen-day documents remain the release target; features explicitly listed as deferred below are not claimed as implemented.
+This file describes the implemented three-day prototype as of October 28, 2026. The fourteen-day documents remain the release target; features explicitly listed as deferred below are not claimed as implemented.
 
 Unity project facts:
 
@@ -43,9 +43,9 @@ Domain and Application assembly definitions use `noEngineReferences: true`. Sour
 4. loads Main Menu;
 5. injects Main Menu, Shop, or Rewind presenters whenever a production scene loads.
 
-Scenes and prefabs own visual hierarchy, layout, colors, fonts, and component references. Presentation scripts bind authored controls, dispatch interactions, and render state; they do not create GameObjects, add visual components, or calculate layout at runtime. Six reusable herb slots and sixteen reusable rewind-card slots are authored in advance and activated/configured from content. Recipes, orders, timers, payments, expenses, unlocks, and rewind difficulty still come from content definitions or Domain configuration, not scene objects.
+Scenes and prefabs own visual hierarchy, layout, colors, fonts, and component references. Presentation scripts bind authored controls, dispatch interactions, and render state; they do not create GameObjects, add visual components, or calculate layout at runtime. Twenty-five reusable herb slots and sixteen reusable rewind-card slots are authored in advance and activated/configured from content. Recipes, orders, timers, payments, expenses, unlocks, guidebook pages, rewind symbols, and rewind difficulty come from content definitions or Domain configuration, not scene objects.
 
-The current implementation creates no GameObjects or components at runtime. Bootstrap, Cameras, audio channels, interface hierarchy, herb slots, and maximum rewind-card slots are all authored. Scripts only configure content, state, activity, and behavior.
+The current implementation creates no GameObjects or components at runtime. Bootstrap, fixed-aspect controller, Cameras, audio channels, interface hierarchy, herb slots, and maximum rewind-card slots are all authored. Scripts only configure content, state, activity, and behavior. Each loaded Canvas uses its scene Camera so the whole interface stays inside a centered `16:9` landscape viewport; wider displays show black pillarboxes.
 
 ## Implemented content and folders
 
@@ -61,13 +61,13 @@ Assets/
 └── Tests/{EditMode,PlayMode,Fixtures}
 ```
 
-The catalog contains six herbs, three exact recipes, 15 orders, three days, two guidebook entries, two unlock sets, eight rewind symbols, prototype economy, and run configuration. Day 3 applies Soothe unlocks before building its first Shop view.
+The catalog contains 25 herbs, three exact recipes, 15 orders, three days, two guidebook entries, two unlock sets, eight rewind symbols, prototype economy, and run configuration. The current three-day progression unlocks a subset of those herbs. Day 3 applies Soothe unlocks before building its first Shop view.
 
 No active script, content asset, or production scene references newspaper gameplay, Hunter customers/deduction, magical-herb variants, hexes, or finite herb stock.
 
 ## State and persistence
 
-- `RunState`: run ID, current day, money, unlock IDs, suspicion, rewind count, threshold.
+- `RunState`: run ID, current day, money, unlock IDs, suspicion, rewind count, threshold, and persisted completion flag.
 - `DayStartSnapshot`: immutable start-of-day run, timer, expense, save version/time.
 - `DayAttemptState`: active seed, timer, nonrepeating used-order IDs, active encounter, earnings, workbench.
 - `ActiveAttemptMetadata`: immediately persisted suspicion, rewind count, pending rewind, board seed, active order seed, run/day identity.
@@ -84,17 +84,17 @@ Timer runs during customer/order, guidebook, and preparation. Pause freezes it. 
 
 ### Rewind
 
-Suspicion `3` is persisted as pending before scene navigation. Rewind reconstructs a deterministic 3–8-pair symbol board from saved metadata. There is no timer or failure. Mismatches flip back after the selected accessibility delay. Completion atomically restores day-start money/timer/workbench, resets suspicion, increments rewind count, changes order seed, and reloads Shop.
+Suspicion `3` is persisted as pending before scene navigation. Rewind reconstructs a deterministic content-configured symbol board from saved metadata. There is no timer or failure. Mismatches flip back after the selected accessibility delay. Completion atomically restores day-start money/timer/workbench, resets suspicion, increments rewind count, changes order seed, and reloads Shop.
 
 ### Expense and progression
 
-Closing resolves the configured expense. Success deducts the full amount; failure deducts nothing and is the only game-over route. Retry restores the same day and seed. Days 1–2 create the next snapshot with timer progression and unlocks. Paying Day 3 expense produces prototype victory and its medieval-fanfare placeholder cue.
+Closing resolves the configured expense. Success deducts the full amount; failure deducts nothing and is the only game-over route. Retry restores the same day and seed. Days 1–2 create the next snapshot with timer progression and unlocks. Paying Day 3 expense persists completion before entering prototype victory and playing its medieval-fanfare placeholder cue.
 
 ## Audio and accessibility
 
 `UnityAudioService` owns independent Music, SFX, Ambience, and UI sources routed through the authored `WitchAudio` mixer groups. It prevents rapid repeated-cue stacking, applies persistent volume settings, and validates every required cue during Bootstrap startup. All current clips are original generated WAV placeholders; there is no runtime synthesis fallback and no downloaded audio ships. Ownership is recorded in `../Witch Vaults/AUDIO_LICENSE.md`; future CC0 recommendations remain in the current game specification.
 
-All uGUI buttons are Selectables for keyboard navigation. Rewind card identity uses text/symbol IDs in addition to color. Settings provide master/music/SFX volumes and reduced mismatch delay. Pause stops the authoritative Shop timer; guidebook does not.
+All uGUI buttons are Selectables for keyboard navigation. Herb pointer clicks do not load the grinder; pointer users drag, while focused herb controls retain explicit keyboard Submit support. Rewind card identity uses authored text/symbol IDs in addition to color. Settings provide master/music/SFX volumes and reduced mismatch delay. Pause stops the authoritative Shop timer; guidebook does not.
 
 ## Verification
 

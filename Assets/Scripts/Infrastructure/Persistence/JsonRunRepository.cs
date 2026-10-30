@@ -328,7 +328,7 @@ namespace Witch.Infrastructure.Persistence
                 state.suspicion,
                 state.rewindCount,
                 state.categoryIds ?? new string[0],
-                state.herbIds ?? new string[0],
+                MigrateHerbIds(state.herbIds),
                 state.recipeIds ?? new string[0],
                 state.guidebookIds ?? new string[0],
                 FromFlags(state.tutorialFlags),
@@ -379,6 +379,20 @@ namespace Witch.Infrastructure.Persistence
             for (int index = 0; index < values.Count; index++)
             {
                 copy[index] = values[index];
+            }
+
+            return copy;
+        }
+
+        private static string[] MigrateHerbIds(string[] values)
+        {
+            string[] copy = values == null ? new string[0] : (string[])values.Clone();
+            for (int index = 0; index < copy.Length; index++)
+            {
+                if (string.Equals(copy[index], "herb.aloe", StringComparison.Ordinal))
+                {
+                    copy[index] = "herb.borage";
+                }
             }
 
             return copy;

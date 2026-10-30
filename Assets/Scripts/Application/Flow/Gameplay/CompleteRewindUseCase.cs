@@ -37,7 +37,14 @@ namespace Witch.Application.Flow
                 && (session.CurrentPhase == GamePhase.ShopPreparation
                     || session.CurrentPhase == GamePhase.CustomerEncounter))
             {
-                return RewindTransactionResult.Success(null, alreadyApplied: true);
+                SceneLoadResult retryScene = await sceneLoader.LoadAsync(SceneId.Shop, cancellationToken);
+                if (retryScene.Succeeded)
+                {
+                    return RewindTransactionResult.Success(null, alreadyApplied: true);
+                }
+
+                await sceneLoader.LoadAsync(SceneId.MainMenu, cancellationToken);
+                return RewindTransactionResult.Failure(RewindTransactionError.SceneLoadFailed, retryScene.ErrorMessage);
             }
 
             if (session.CurrentPhase != GamePhase.RewindMinigame || !session.AttemptMetadata.PendingRewind)
@@ -83,9 +90,13 @@ namespace Witch.Application.Flow
             if (session.CanResumeInPlace) session.CompleteRewindInPlace(snapshot, metadata);
             else session.CompleteRewind(snapshot, metadata);
             SceneLoadResult scene = await sceneLoader.LoadAsync(SceneId.Shop, cancellationToken);
-            return scene.Succeeded
-                ? RewindTransactionResult.Success(null)
-                : RewindTransactionResult.Failure(RewindTransactionError.SceneLoadFailed, scene.ErrorMessage);
+            if (scene.Succeeded)
+            {
+                return RewindTransactionResult.Success(null);
+            }
+
+            await sceneLoader.LoadAsync(SceneId.MainMenu, cancellationToken);
+            return RewindTransactionResult.Failure(RewindTransactionError.SceneLoadFailed, scene.ErrorMessage);
         }
     }
 }

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Order_Day1Warm03
   m_EditorClassIdentifier: Witch.Infrastructure::Witch.Infrastructure.Content.OrderDefinition
   stableId: order.day1.warm-03
-  clueText: Please mix ginger and cinnamon. My knees now predict snow better than the crows.
-  clueIds: [clue.ginger.knotted-root, clue.cinnamon.rolled-bark]
-  firstHerbId: herb.ginger
-  secondHerbId: herb.cinnamon
+  clueText: Please mix mustard seed and ginger. My knees now predict snow better than the crows.
+  clueIds: []
+  firstHerbId: herb.mustardSeed
+  secondHerbId: herb.ginger

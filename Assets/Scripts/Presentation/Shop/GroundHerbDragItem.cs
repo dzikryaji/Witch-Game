@@ -10,6 +10,7 @@ namespace Witch.Presentation.Shop
 
         private int homeSiblingIndex;
         private Vector2 homeAnchoredPosition;
+        private Transform homeParent;
         private RectTransform rectTransform;
         private Canvas rootCanvas;
         private bool isDragging;
@@ -19,6 +20,7 @@ namespace Witch.Presentation.Shop
             rectTransform = (RectTransform)transform;
             rootCanvas = GetComponentInParent<Canvas>()?.rootCanvas;
             if (canvasGroup == null) canvasGroup = GetComponent<CanvasGroup>();
+            homeParent = transform.parent;
             homeSiblingIndex = transform.GetSiblingIndex();
             homeAnchoredPosition = rectTransform.anchoredPosition;
         }
@@ -30,7 +32,7 @@ namespace Witch.Presentation.Shop
 
         private void OnDisable()
         {
-            RestoreHome(false);
+            ResetCanvasState();
         }
 
         public void OnBeginDrag(PointerEventData eventData)
@@ -38,6 +40,7 @@ namespace Witch.Presentation.Shop
             if (rootCanvas == null || canvasGroup == null) return;
             RestoreHome();
             isDragging = true;
+            transform.SetParent(rootCanvas.transform, true);
             transform.SetAsLastSibling();
             canvasGroup.blocksRaycasts = false;
             canvasGroup.alpha = 0.82f;
@@ -57,6 +60,10 @@ namespace Witch.Presentation.Shop
         private void RestoreHome(bool restoreSiblingOrder = true)
         {
             if (rectTransform == null || canvasGroup == null) return;
+            if (homeParent != null && transform.parent != homeParent)
+            {
+                transform.SetParent(homeParent, true);
+            }
             if (restoreSiblingOrder)
             {
                 transform.SetSiblingIndex(homeSiblingIndex);

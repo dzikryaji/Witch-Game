@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3e818c3e737a74c9aa0c16008d87df53, type: 3}
+  m_Name: Herb_SennaLeaf
+  m_EditorClassIdentifier: Witch.Infrastructure::Witch.Infrastructure.Content.HerbDefinition
+  stableId: herb.sennaLeaf
+  displayName: Senna Leaf
+  categoryId: category.cleanse
+  scientificName: Senna alexandrina
+  treatmentText: A tough, drying leaf that absorbs harmful stomach toxins and quickly prevents severe food poisoning from spreading.
+  warningText: Senna Leaf becomes a thick, dehydrating substance that sticks together in the intestines. It can cause a fatal bowel blockage in someone who is constipated.
+  guidebookIllustration: {fileID: 0}
+  accessibleLabel: Senna Leaf
+  guidebookPage: 21

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Order_Day1Cool04
   m_EditorClassIdentifier: Witch.Infrastructure::Witch.Infrastructure.Content.OrderDefinition
   stableId: order.day1.cool-04
-  clueText: Mint and aloe, quickly. I am sweating in places the church forbids discussing.
-  clueIds: [clue.mint.cool-leaf, clue.aloe.clear-gel]
-  firstHerbId: herb.mint
-  secondHerbId: herb.aloe
+  clueText: Borage and elderflower, quickly. I am sweating in places the church forbids discussing.
+  clueIds: []
+  firstHerbId: herb.borage
+  secondHerbId: herb.elderflower

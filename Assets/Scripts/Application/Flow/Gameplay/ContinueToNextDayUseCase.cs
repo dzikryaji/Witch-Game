@@ -33,6 +33,7 @@ namespace Witch.Application.Flow
             SceneLoadResult scene = await sceneLoader.LoadAsync(SceneId.Shop, cancellationToken);
             if (!scene.Succeeded)
             {
+                await sceneLoader.LoadAsync(SceneId.MainMenu, cancellationToken);
                 return ExpenseResolutionResult.Failure(ExpenseResolutionError.SceneLoadFailed, scene.ErrorMessage);
             }
 

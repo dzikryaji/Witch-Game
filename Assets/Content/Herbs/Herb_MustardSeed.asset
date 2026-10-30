@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3e818c3e737a74c9aa0c16008d87df53, type: 3}
+  m_Name: Herb_MustardSeed
+  m_EditorClassIdentifier: Witch.Infrastructure::Witch.Infrastructure.Content.HerbDefinition
+  stableId: herb.mustardSeed
+  displayName: Mustard Seed
+  categoryId: category.warm
+  scientificName: Sinapis alba
+  treatmentText: Small, rough yellow seeds that can be crushed into a paste to help remove severe chills and mucus from the chest.
+  warningText: Mustard Seed is harsh on exposed skin and can cause painful chemical burns and blisters when used on open wounds or scraped skin.
+  herbIllustration: {fileID: 21300000, guid: 61c9016b21a3d44fabc58e0f154d658e, type: 3}
+  accessibleLabel: Mustard Seed
+  guidebookPage: 4
+  clueIds: []

@@ -52,6 +52,34 @@ namespace Witch.Application.Tests
         }
 
         [Test]
+        public async Task Enter_SceneFailureFallsBackToMenuAndCanRetry()
+        {
+            GameSession session = CreatePendingRewindSession(0);
+            var operations = new List<string>();
+            var scenes = new FakeSceneLoader { Operations = operations };
+            scenes.Results.Enqueue(SceneLoadResult.Failure(SceneLoadError.LoadFailed, "rewind unavailable"));
+            scenes.Results.Enqueue(SceneLoadResult.Success());
+            var useCase = new EnterRewindUseCase(
+                new FakeSaveRepository { Operations = operations },
+                scenes,
+                new FakeRandomSource { NextValue = 707 });
+
+            RewindTransactionResult failed = await useCase.ExecuteAsync(session);
+            RewindTransactionResult retry = await useCase.ExecuteAsync(session);
+
+            Assert.That(failed.Error, Is.EqualTo(RewindTransactionError.SceneLoadFailed));
+            Assert.That(retry.Succeeded, Is.True, retry.ErrorMessage);
+            Assert.That(retry.AlreadyApplied, Is.True);
+            Assert.That(operations, Is.EqualTo(new[]
+            {
+                "save",
+                "scene:RewindMinigame",
+                "scene:MainMenu",
+                "scene:RewindMinigame"
+            }));
+        }
+
+        [Test]
         public async Task Complete_RestoresSnapshotAndDuplicateDoesNotApplyTwice()
         {
             GameSession session = CreatePendingRewindSession(9);
@@ -76,6 +104,28 @@ namespace Witch.Application.Tests
             Assert.That(session.CurrentPhase, Is.EqualTo(GamePhase.ShopPreparation));
             Assert.That(saves.SaveCallCount, Is.EqualTo(2));
             Assert.That(random.CallCount, Is.EqualTo(1));
+        }
+
+        [Test]
+        public async Task Complete_SceneFailureFallsBackToMenuAndCanRetry()
+        {
+            GameSession session = CreatePendingRewindSession(9);
+            var saves = new FakeSaveRepository();
+            var scenes = new FakeSceneLoader();
+            await new EnterRewindUseCase(saves, scenes, new FakeRandomSource { NextValue = 707 })
+                .ExecuteAsync(session);
+            scenes.Results.Enqueue(SceneLoadResult.Failure(SceneLoadError.LoadFailed, "shop unavailable"));
+            scenes.Results.Enqueue(SceneLoadResult.Success());
+            var complete = new CompleteRewindUseCase(saves, scenes, new FakeRandomSource { NextValue = 808 });
+
+            RewindTransactionResult failed = await complete.ExecuteAsync(session);
+            RewindTransactionResult retry = await complete.ExecuteAsync(session);
+
+            Assert.That(failed.Error, Is.EqualTo(RewindTransactionError.SceneLoadFailed));
+            Assert.That(retry.Succeeded, Is.True, retry.ErrorMessage);
+            Assert.That(retry.AlreadyApplied, Is.True);
+            Assert.That(session.CurrentPhase, Is.EqualTo(GamePhase.ShopPreparation));
+            Assert.That(scenes.LoadCallCount, Is.EqualTo(4));
         }
 
         private static GameSession CreatePendingRewindSession(int startingMoney)

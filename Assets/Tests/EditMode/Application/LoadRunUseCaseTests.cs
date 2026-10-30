@@ -89,6 +89,28 @@ namespace Witch.Application.Tests
         }
 
         [Test]
+        public async Task Execute_WithCompletedRun_RestoresVictoryInShop()
+        {
+            GameSaveState savedState = CreateSavedGame("run.complete", runCompleted: true);
+            var repository = new FakeSaveRepository
+            {
+                LatestLoadResult = LoadStateResult.Success(savedState)
+            };
+            var sceneLoader = new FakeSceneLoader();
+            var useCase = new LoadRunUseCase(
+                repository,
+                repository,
+                new GameSessionStore(),
+                sceneLoader);
+
+            LoadRunResult result = await useCase.ExecuteAsync(LoadRunCommand.Latest());
+
+            Assert.That(result.Succeeded, Is.True, result.ErrorMessage);
+            Assert.That(result.Session.CurrentPhase, Is.EqualTo(Witch.Domain.GamePhase.Victory));
+            Assert.That(sceneLoader.LastRequestedScene, Is.EqualTo(SceneId.Shop));
+        }
+
+        [Test]
         public async Task Execute_WhenNoSaveExists_ReturnsTypedFailureWithoutLoadingScene()
         {
             var repository = new FakeSaveRepository();
@@ -120,7 +142,10 @@ namespace Witch.Application.Tests
             Assert.That(sceneLoader.LoadCallCount, Is.Zero);
         }
 
-        private static GameSaveState CreateSavedGame(string runId, bool pendingRewind = false)
+        private static GameSaveState CreateSavedGame(
+            string runId,
+            bool pendingRewind = false,
+            bool runCompleted = false)
         {
             var runState = new RunState(
                 runId,
@@ -132,8 +157,18 @@ namespace Witch.Application.Tests
                 new[] { "herb.ginger", "herb.mint" },
                 new[] { "recipe.warming-tonic" },
                 new[] { "guidebook.warm" });
+            RunState snapshotState = runState.WithProgress(
+                1,
+                0,
+                0,
+                pendingRewind ? 0 : runState.RewindCount);
+            if (runCompleted)
+            {
+                snapshotState = snapshotState.MarkCompleted();
+            }
+
             var snapshot = new DayStartSnapshot(
-                runState.WithProgress(1, 0, 0, pendingRewind ? 0 : runState.RewindCount),
+                snapshotState,
                 1234,
                 System.TimeSpan.FromMinutes(4),
                 "expense.day.1",

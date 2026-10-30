@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 using Witch.Application.Flow;
 using Witch.Infrastructure.Content;
 using Witch.Presentation.Shop;
@@ -40,15 +40,34 @@ namespace Witch.Bootstrap
             foreach (string herbId in session.RunState.UnlockedHerbIds)
             {
                 HerbContent herb = content.HerbsById[herbId];
-                herbs.Add(new ShopHerbViewData(herb.StableId, herb.DisplayName));
+                herbs.Add(new ShopHerbViewData(herb.StableId, herb.DisplayName, herb.HerbIllustration));
             }
 
-            var guidebook = new StringBuilder();
-            foreach (string entryId in session.RunState.UnlockedGuidebookEntryIds)
+            var guidebook = new List<GuidebookPageViewData>();
+            var unlockedCategories = new HashSet<string>(
+                session.RunState.UnlockedCategoryIds,
+                StringComparer.Ordinal);
+            foreach (GuidebookEntryContent entry in content.GuidebookEntriesById.Values
+                         .Where(value => unlockedCategories.Contains(value.CategoryId))
+                         .OrderBy(value => value.Title, StringComparer.Ordinal))
             {
-                GuidebookEntryContent entry = content.GuidebookEntriesById[entryId];
-                if (guidebook.Length > 0) guidebook.Append("\n\n");
-                guidebook.Append(entry.Title).Append("\n").Append(entry.BodyText);
+                guidebook.Add(new GuidebookPageViewData(
+                    guidebook.Count + 1,
+                    entry.Title + "\n" + entry.BodyText));
+            }
+
+            foreach (HerbContent herb in session.RunState.UnlockedHerbIds
+                         .Select(herbId => content.HerbsById[herbId])
+                         .OrderBy(value => value.GuidebookPage))
+            {
+                guidebook.Add(new GuidebookPageViewData(
+                    herb.GuidebookPage,
+                    herb.AccessibleLabel
+                        + "\n" + herb.ScientificName
+                        + "\n" + herb.TreatmentText
+                        + "\nWarning: " + herb.WarningText,
+                    herb.HerbIllustration,
+                    herb.AccessibleLabel));
             }
 
             bool showTutorial = session.RunState.CurrentDayNumber == 1
@@ -56,7 +75,7 @@ namespace Witch.Bootstrap
             return new ShopPresentationSetup(
                 encounters,
                 herbs,
-                guidebook.ToString(),
+                guidebook,
                 session.RunState.CurrentDayNumber,
                 showTutorial,
                 session.AttemptMetadata.ActiveOrderSeed,

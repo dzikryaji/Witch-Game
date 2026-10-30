@@ -15,11 +15,30 @@ MonoBehaviour:
   stableId: catalog.game
   herbs:
   - {fileID: 11400000, guid: 10000000000000000000000000000001, type: 2}
-  - {fileID: 11400000, guid: 10000000000000000000000000000002, type: 2}
+  - {fileID: 11400000, guid: 50585cca1515e4346b06875efe610868, type: 2}
+  - {fileID: 11400000, guid: c4f1d7a9d553f41e386402dfa6b1da4f, type: 2}
   - {fileID: 11400000, guid: 20000000000000000000000000000001, type: 2}
+  - {fileID: 11400000, guid: d2bbb07e9ae8a4594ba3ea3bec66d76a, type: 2}
+  - {fileID: 11400000, guid: 10000000000000000000000000000002, type: 2}
+  - {fileID: 11400000, guid: 7266f6f76cae9483ea3295a7191e2d11, type: 2}
+  - {fileID: 11400000, guid: 92354e8b44d0a4c0f9588ef7156cf241, type: 2}
+  - {fileID: 11400000, guid: 555a6f21471c9494aa6b2d0b9086caa3, type: 2}
   - {fileID: 11400000, guid: 20000000000000000000000000000002, type: 2}
-  - {fileID: 11400000, guid: 20000000000000000000000000000003, type: 2}
   - {fileID: 11400000, guid: 20000000000000000000000000000004, type: 2}
+  - {fileID: 11400000, guid: ddad9b5f40e6f4979b3129dc0b72249c, type: 2}
+  - {fileID: 11400000, guid: 20000000000000000000000000000003, type: 2}
+  - {fileID: 11400000, guid: aec768c746c634b55b951b6067b66400, type: 2}
+  - {fileID: 11400000, guid: 3c15db54d2b944e068d5ef06b5ebd07c, type: 2}
+  - {fileID: 11400000, guid: df3c6efb1058f4554bcb0b33999a3935, type: 2}
+  - {fileID: 11400000, guid: 82ba3fa1ad39049408e42e19349e2c47, type: 2}
+  - {fileID: 11400000, guid: 5800999145bcd473a9f26dfd658b4f8d, type: 2}
+  - {fileID: 11400000, guid: 11fbcec7db0a84484ad85eefd04d600b, type: 2}
+  - {fileID: 11400000, guid: deae620fc996b4a339006d4a20781969, type: 2}
+  - {fileID: 11400000, guid: 6006b7713414f4c55ad9bb8c1d07fc9a, type: 2}
+  - {fileID: 11400000, guid: 46ecc67df2fa742e585c3c28a5e50015, type: 2}
+  - {fileID: 11400000, guid: 73a572606d87b4c68aa38b3737fa2a95, type: 2}
+  - {fileID: 11400000, guid: d08834a593af04c95bf679269c9fe2a5, type: 2}
+  - {fileID: 11400000, guid: f55d0919c998944c2ada93916ff97a86, type: 2}
   recipes:
   - {fileID: 11400000, guid: 10000000000000000000000000000003, type: 2}
   - {fileID: 11400000, guid: 20000000000000000000000000000005, type: 2}

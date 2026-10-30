@@ -13,7 +13,6 @@ namespace Witch.Presentation.Shop
     /// <summary>Authored Shop HUD. Owns visual rendering; contains no game-flow decisions.</summary>
     public sealed class ShopHudView : MonoBehaviour
     {
-        [SerializeField] private Text statusText;
         [SerializeField] private Text dayText;
         [SerializeField] private Text timerText;
         [SerializeField] private Text moneyText;
@@ -30,8 +29,7 @@ namespace Witch.Presentation.Shop
         private Coroutine entranceRoutine;
         private Vector2 customerRestPosition;
 
-        public bool IsAuthored => statusText != null
-            && dayText != null
+        public bool IsAuthored => dayText != null
             && timerText != null
             && moneyText != null
             && suspicionText != null
@@ -51,11 +49,6 @@ namespace Witch.Presentation.Shop
             {
                 customerRestPosition = customerPanel.anchoredPosition;
             }
-        }
-
-        public void SetStatus(string message)
-        {
-            statusText.text = message ?? string.Empty;
         }
 
         public void SetCustomer(string customerName, string clueText)

@@ -35,15 +35,19 @@ namespace Witch.Application.Flow
             if (session.CurrentPhase == GamePhase.RewindMinigame && session.AttemptMetadata.PendingRewind)
             {
                 SceneLoadResult retryScene = await sceneLoader.LoadAsync(SceneId.RewindMinigame, cancellationToken);
-                return retryScene.Succeeded
-                    ? RewindTransactionResult.Success(
+                if (retryScene.Succeeded)
+                {
+                    return RewindTransactionResult.Success(
                         RewindBoard.Create(
                             session.AttemptMetadata.MinigameBoardSeed,
                             session.AttemptMetadata.RewindCount),
-                        alreadyApplied: true)
-                    : RewindTransactionResult.Failure(
-                        RewindTransactionError.SceneLoadFailed,
-                        retryScene.ErrorMessage);
+                        alreadyApplied: true);
+                }
+
+                await sceneLoader.LoadAsync(SceneId.MainMenu, cancellationToken);
+                return RewindTransactionResult.Failure(
+                    RewindTransactionError.SceneLoadFailed,
+                    retryScene.ErrorMessage);
             }
 
             if (session.CurrentPhase != GamePhase.RewindPending)
@@ -71,9 +75,13 @@ namespace Witch.Application.Flow
             session.EnterRewind(metadata);
             RewindBoard board = RewindBoard.Create(boardSeed, metadata.RewindCount);
             SceneLoadResult scene = await sceneLoader.LoadAsync(SceneId.RewindMinigame, cancellationToken);
-            return scene.Succeeded
-                ? RewindTransactionResult.Success(board)
-                : RewindTransactionResult.Failure(RewindTransactionError.SceneLoadFailed, scene.ErrorMessage);
+            if (scene.Succeeded)
+            {
+                return RewindTransactionResult.Success(board);
+            }
+
+            await sceneLoader.LoadAsync(SceneId.MainMenu, cancellationToken);
+            return RewindTransactionResult.Failure(RewindTransactionError.SceneLoadFailed, scene.ErrorMessage);
         }
     }
 }

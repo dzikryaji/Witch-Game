@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: Witch.Infrastructure::Witch.Infrastructure.Content.RecipeDefinition
   stableId: recipe.cooling-draught
   firstHerbId: herb.mint
-  secondHerbId: herb.aloe
+  secondHerbId: herb.borage

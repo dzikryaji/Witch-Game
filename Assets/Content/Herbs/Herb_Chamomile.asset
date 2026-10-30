@@ -15,3 +15,11 @@ MonoBehaviour:
   stableId: herb.chamomile
   displayName: Chamomile
   categoryId: category.soothe
+  scientificName: Matricaria chamomilla
+  treatmentText: Small, fragrant flowers that ease muscle cramps, calm mild chest coughs, and settle the nerves.
+  warningText: Chamomile can cause serious breathing problems and anaphylaxis. It may completely block the throat when the patient is allergic to pollen or spring flowers.
+  herbIllustration: {fileID: 21300000, guid: a3ec0b9537a7b4c8992950fc43c72999, type: 3}
+  accessibleLabel: Chamomile
+  guidebookPage: 13
+  clueIds:
+  - clue.chamomile.apple-scent

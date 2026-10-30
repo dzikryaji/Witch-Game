@@ -24,7 +24,7 @@ namespace Witch.Bootstrap.PlayModeTests
     public sealed class ShopVerticalSlicePlayModeTests : InputTestFixture
     {
         [UnityTest]
-        public IEnumerator RepeatedMintThenAloeGroundHerbsAndPotionsStayVisibleAndDraggable()
+        public IEnumerator RepeatedMintThenBorageGroundHerbsAndPotionsStayVisibleAndDraggable()
         {
             yield return LoadShop();
             Mouse mouse = InputSystem.AddDevice<Mouse>();
@@ -42,14 +42,19 @@ namespace Witch.Bootstrap.PlayModeTests
             for (int cycle = 0; cycle < 3; cycle++)
             {
                 HerbDragItem mint = FindHerb("herb.mint");
-                HerbDragItem aloe = FindHerb("herb.aloe");
+                HerbDragItem borage = FindHerb("herb.borage");
                 Button grind = GameObject.Find("Grind").GetComponent<Button>();
                 Button brew = GameObject.Find("Brew").GetComponent<Button>();
-                Button discardPotion = GameObject.Find("Discard").GetComponent<Button>();
+                GrinderDropZone grinder = Object.FindAnyObjectByType<GrinderDropZone>();
                 CauldronDropZone cauldron = Object.FindAnyObjectByType<CauldronDropZone>();
                 PotionServeDropZone customerSlot = Object.FindAnyObjectByType<PotionServeDropZone>();
 
-                yield return ClickUi(mouse, mint.GetComponent<RectTransform>());
+                yield return DragUi(
+                    mouse,
+                    mint.GetComponent<RectTransform>(),
+                    grinder.GetComponent<RectTransform>(),
+                    () => AssertShelfHerbCopied(mint, "mint herb"));
+                AssertDragVisualRemoved(mint, "mint herb");
                 yield return ClickUi(mouse, grind.GetComponent<RectTransform>());
 
                 GroundHerbDragItem ground = Object.FindAnyObjectByType<GroundHerbDragItem>();
@@ -68,12 +73,17 @@ namespace Witch.Bootstrap.PlayModeTests
                     () => AssertRenderedInFront(ground.transform, "ground herb"));
                 Assert.That(presenter.ActiveSession.PotionDraft.Ingredients.Count, Is.EqualTo(1));
 
-                yield return ClickUi(mouse, aloe.GetComponent<RectTransform>());
+                yield return DragUi(
+                    mouse,
+                    borage.GetComponent<RectTransform>(),
+                    grinder.GetComponent<RectTransform>(),
+                    () => AssertShelfHerbCopied(borage, "borage herb"));
+                AssertDragVisualRemoved(borage, "borage herb");
                 yield return ClickUi(mouse, grind.GetComponent<RectTransform>());
 
                 ground = Object.FindAnyObjectByType<GroundHerbDragItem>();
                 Assert.That(ground, Is.Not.Null, "Second grinding must reveal the same draggable output.");
-                AssertGroundHerbVisible(ground, "Aloe");
+                AssertGroundHerbVisible(ground, "Borage");
                 Assert.That(ground.GetComponent<CanvasGroup>().blocksRaycasts, Is.True);
                 RememberOrAssertHome(
                     ground.GetComponent<RectTransform>(),
@@ -111,7 +121,7 @@ namespace Witch.Bootstrap.PlayModeTests
                         ref potionHomePosition,
                         "brewed potion");
                     Assert.That(potion.GetComponent<CanvasGroup>().blocksRaycasts, Is.True);
-                    yield return ClickUi(mouse, discardPotion.GetComponent<RectTransform>());
+                    Assert.That(presenter.Discard().Succeeded, Is.True);
                     Assert.That(presenter.ActiveSession.PreparedRecipe, Is.Null);
                 }
                 else
@@ -150,6 +160,14 @@ namespace Witch.Bootstrap.PlayModeTests
 
             HerbDragItem ginger = FindHerb("herb.ginger");
             GrinderDropZone grinder = Object.FindAnyObjectByType<GrinderDropZone>();
+            ginger.GetComponent<Button>().onClick.Invoke();
+            Assert.That(presenter.GrindLoadedHerb().Succeeded, Is.False, "Clicking a herb must not load the grinder.");
+            ExecuteEvents.Execute<ISubmitHandler>(
+                ginger.gameObject,
+                new BaseEventData(EventSystem.current),
+                ExecuteEvents.submitHandler);
+            Assert.That(presenter.GrindLoadedHerb().Succeeded, Is.True, "Keyboard submit must load the grinder.");
+            presenter.DiscardGroundHerb();
             var pointer = new PointerEventData(EventSystem.current) { pointerDrag = ginger.gameObject };
             grinder.OnDrop(pointer);
             Assert.That(presenter.ActiveSession.GroundHerbId, Is.Null);
@@ -189,15 +207,15 @@ namespace Witch.Bootstrap.PlayModeTests
         }
 
         [UnityTest]
-        public IEnumerator InvalidDiscardAndTimerZeroClosingBehaveAsSpecified()
+        public IEnumerator MixedPairBrewsAndTimerZeroClosingBehaveAsSpecified()
         {
             yield return LoadShop();
             Harness harness = CreateHarness();
             ShopShellPresenter presenter = InitializePresenter(harness);
 
             PreparePair(presenter, "herb.mint", "herb.lavender");
-            Assert.That(presenter.Brew().Kind, Is.EqualTo(PreparationResultKind.InvalidRecipeDiscarded));
-            Assert.That(presenter.ActiveSession.PotionDraft.Ingredients, Is.Empty);
+            Assert.That(presenter.Brew().Kind, Is.EqualTo(PreparationResultKind.Prepared));
+            Assert.That(presenter.ActiveSession.PreparedRecipe, Is.Not.Null);
 
             presenter.GrindHerb("herb.ginger");
             Assert.That(presenter.Discard().Kind, Is.EqualTo(PreparationResultKind.Discarded));
@@ -276,7 +294,7 @@ namespace Witch.Bootstrap.PlayModeTests
         public void RandomEncounterDeckUsesBalancedBagsAndNeverRunsOneRecipeMoreThanTwice()
         {
             HerbPair warm = new HerbPair("herb.ginger", "herb.cinnamon");
-            HerbPair cool = new HerbPair("herb.mint", "herb.aloe");
+            HerbPair cool = new HerbPair("herb.mint", "herb.borage");
             HerbPair soothe = new HerbPair("herb.lavender", "herb.chamomile");
             var encounters = new List<ShopEncounterViewData>();
             for (int index = 0; index < 5; index++)
@@ -290,7 +308,7 @@ namespace Witch.Bootstrap.PlayModeTests
                     "customer.test",
                     "Test Villager",
                     new OrderRequest("order.cool." + index, cool),
-                    "Mint and aloe."));
+                    "Peppermint and borage."));
                 encounters.Add(new ShopEncounterViewData(
                     "customer.test",
                     "Test Villager",
@@ -369,11 +387,20 @@ namespace Witch.Bootstrap.PlayModeTests
             Assert.That(presenter.TutorialVisible, Is.True);
             Assert.That(presenter.ActiveSession.CurrentPhase, Is.EqualTo(GamePhase.ShopPreparation));
             Assert.That(presenter.ActiveSession.TimerStartedAtUtc, Is.Null);
-            presenter.AdvanceTutorial();
-            presenter.AdvanceTutorial();
-            presenter.AdvanceTutorial();
-            presenter.AdvanceTutorial();
-            presenter.AdvanceTutorial();
+            string[] tutorialHighlightNames =
+            {
+                "Customer Tutorial Highlight",
+                "Guidebook Tutorial Highlight",
+                "Shelf Tutorial Highlight",
+                "Grinder Tutorial Highlight",
+                "Cauldron Tutorial Highlight"
+            };
+            foreach (string highlightName in tutorialHighlightNames)
+            {
+                Assert.That(GameObject.Find(highlightName), Is.Not.Null,
+                    highlightName + " must be visible on its tutorial beat.");
+                presenter.AdvanceTutorial();
+            }
 
             Assert.That(presenter.TutorialVisible, Is.False);
             Assert.That(presenter.ActiveSession.CurrentPhase, Is.EqualTo(GamePhase.CustomerEncounter));
@@ -399,7 +426,7 @@ namespace Witch.Bootstrap.PlayModeTests
             var setup = new NewRunSetup(
                 0,
                 new[] { "category.test" },
-                new[] { "herb.ginger", "herb.mint", "herb.aloe", "herb.sage", "herb.lavender" },
+                new[] { "herb.ginger", "herb.mint", "herb.borage", "herb.sage", "herb.lavender" },
                 new[] { "recipe.correct", "recipe.cool", "recipe.wrong" },
                 new[] { "guide.test" },
                 TimeSpan.FromSeconds(60),
@@ -420,7 +447,7 @@ namespace Witch.Bootstrap.PlayModeTests
             var recipes = new RecipeCatalog(new[]
             {
                 new Recipe("recipe.correct", new HerbPair("herb.ginger", "herb.mint")),
-                new Recipe("recipe.cool", new HerbPair("herb.mint", "herb.aloe")),
+                new Recipe("recipe.cool", new HerbPair("herb.mint", "herb.borage")),
                 new Recipe("recipe.wrong", new HerbPair("herb.ginger", "herb.sage"))
             });
             var rules = new PotionServiceRules(10, recipes);
@@ -470,8 +497,8 @@ namespace Witch.Bootstrap.PlayModeTests
                 encounters[index] = new ShopEncounterViewData(
                     "customer.stress." + index,
                     "Stress Villager " + index,
-                    new OrderRequest("order.stress." + index, new HerbPair("herb.mint", "herb.aloe")),
-                    "Mint and aloe.");
+                    new OrderRequest("order.stress." + index, new HerbPair("herb.mint", "herb.borage")),
+                    "Peppermint and borage.");
             }
 
             presenter.Initialize(
@@ -486,7 +513,7 @@ namespace Witch.Bootstrap.PlayModeTests
                     new[]
                     {
                         new ShopHerbViewData("herb.mint", "Mint"),
-                        new ShopHerbViewData("herb.aloe", "Aloe")
+                        new ShopHerbViewData("herb.borage", "Borage")
                     }));
             return presenter;
         }
@@ -535,8 +562,26 @@ namespace Witch.Bootstrap.PlayModeTests
 
         private static void AssertRenderedInFront(Transform item, string label)
         {
+            Canvas rootCanvas = item.GetComponentInParent<Canvas>().rootCanvas;
+            Assert.That(item.parent, Is.SameAs(rootCanvas.transform),
+                label + " must move to the root Canvas while dragged.");
             Assert.That(item.GetSiblingIndex(), Is.EqualTo(item.parent.childCount - 1),
-                label + " must render above its Workbench siblings while dragged.");
+                label + " must render above all Canvas content while dragged.");
+        }
+
+        private static void AssertShelfHerbCopied(HerbDragItem item, string label)
+        {
+            Assert.That(item.GetComponentInParent<GridLayoutGroup>(), Is.Not.Null,
+                label + " source must stay in the shelf grid while dragged.");
+            GameObject copy = GameObject.Find(item.gameObject.name + " Drag Visual");
+            Assert.That(copy, Is.Not.Null, label + " must drag a visual copy.");
+            Assert.That(copy.GetComponent<CanvasGroup>().blocksRaycasts, Is.False);
+        }
+
+        private static void AssertDragVisualRemoved(HerbDragItem item, string label)
+        {
+            Assert.That(GameObject.Find(item.gameObject.name + " Drag Visual"), Is.Null,
+                label + " drag visual must disappear after drop.");
         }
 
         private static Vector2 ScreenCenter(RectTransform target)

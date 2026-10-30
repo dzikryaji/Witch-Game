@@ -15,3 +15,11 @@ MonoBehaviour:
   stableId: herb.lavender
   displayName: Lavender
   categoryId: category.soothe
+  scientificName: Lavandula
+  treatmentText: A sweet-smelling purple stem that gently eases intense headache pain and helps stop panic attacks.
+  warningText: Lavender quickly lowers blood pressure. It can be dangerous for someone who is dizzy, faint, weak, or suffering heavy blood loss.
+  guidebookIllustration: {fileID: 0}
+  accessibleLabel: Lavender
+  guidebookPage: 15
+  clueIds:
+  - clue.lavender.purple-bloom

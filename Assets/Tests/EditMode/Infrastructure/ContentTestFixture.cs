@@ -38,15 +38,13 @@ namespace Witch.Infrastructure.Tests
                 "guidebook.warm",
                 "Warm Herbs",
                 "category.warm",
-                new[] { ginger.StableId, mint.StableId },
                 new[] { "clue.ginger", "clue.mint" });
             CategoryUnlockDefinition unlock = DefinitionFactory.Unlock(
                 "unlock.warm",
                 "category.warm",
                 1,
                 new[] { ginger.StableId, mint.StableId },
-                new[] { recipe.StableId },
-                new[] { guidebook.StableId });
+                new[] { recipe.StableId });
             RewindDifficultyDefinition difficulty = DefinitionFactory.Difficulty("rewind.difficulty.default", 3, 3);
             RunConfigurationDefinition run = DefinitionFactory.RunConfiguration(0, 1, 1);
             var catalog = ScriptableObject.CreateInstance<GameContentCatalogDefinition>();
@@ -77,6 +75,12 @@ namespace Witch.Infrastructure.Tests
         {
             var value = ScriptableObject.CreateInstance<HerbDefinition>();
             value.Configure(id, name, category);
+            value.ConfigureGuidebook(
+                name + " scientific name",
+                name + " treatment text",
+                name + " warning text",
+                name,
+                1);
             return value;
         }
 
@@ -119,11 +123,10 @@ namespace Witch.Infrastructure.Tests
             string id,
             string title,
             string category,
-            string[] herbs,
             string[] clues)
         {
             var value = ScriptableObject.CreateInstance<GuidebookEntryDefinition>();
-            value.Configure(id, title, category, herbs, clues);
+            value.Configure(id, title, category, clues);
             return value;
         }
 
@@ -132,11 +135,10 @@ namespace Witch.Infrastructure.Tests
             string category,
             int day,
             string[] herbs,
-            string[] recipes,
-            string[] guidebook)
+            string[] recipes)
         {
             var value = ScriptableObject.CreateInstance<CategoryUnlockDefinition>();
-            value.Configure(id, category, day, herbs, recipes, guidebook);
+            value.Configure(id, category, day, herbs, recipes);
             return value;
         }
 

@@ -10,8 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3e818c3e737a74c9aa0c16008d87df53, type: 3}
-  m_Name: Herb_Aloe
+  m_Name: Herb_WhiteWillow
   m_EditorClassIdentifier: Witch.Infrastructure::Witch.Infrastructure.Content.HerbDefinition
-  stableId: herb.aloe
-  displayName: Aloe
+  stableId: herb.whiteWillow
+  displayName: White Willow
   categoryId: category.cool
+  scientificName: Salix alba
+  treatmentText: A tough strip of bark that eases sore joints and severe muscle pain.
+  warningText: White Willow can greatly slow breathing. It can be deadly for people with asthma or weak lungs.
+  herbIllustration: {fileID: 21300000, guid: f78daeebfecb4409cad483e37495a004, type: 3}
+  accessibleLabel: White Willow
+  guidebookPage: 10
+  clueIds: []

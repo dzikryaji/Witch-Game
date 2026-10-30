@@ -39,7 +39,14 @@ namespace Witch.Infrastructure.Content
                 definition => new HerbContent(
                     definition.StableId,
                     definition.DisplayName,
-                    definition.CategoryId),
+                    definition.CategoryId,
+                    definition.ScientificName,
+                    definition.TreatmentText,
+                    definition.WarningText,
+                    definition.HerbIllustration,
+                    definition.AccessibleLabel,
+                    definition.GuidebookPage,
+                    definition.ClueIds),
                 StringComparer.Ordinal);
             var orders = catalog.Orders.ToDictionary(
                 definition => definition.StableId,
@@ -68,7 +75,6 @@ namespace Witch.Infrastructure.Content
                     definition.StableId,
                     definition.Title,
                     definition.CategoryId,
-                    definition.HerbIds,
                     definition.ClueIds,
                     definition.BodyText),
                 StringComparer.Ordinal);
@@ -78,8 +84,7 @@ namespace Witch.Infrastructure.Content
                     definition.CategoryId,
                     definition.FirstDay,
                     definition.HerbIds,
-                    definition.RecipeIds,
-                    definition.GuidebookEntryIds)).ToList();
+                    definition.RecipeIds)).ToList();
             var cards = catalog.RewindCards.Select(definition =>
                 new RewindCardContent(definition.StableId, definition.SymbolKey)).ToList();
             var difficulty = new RewindDifficultyContent(
@@ -100,14 +105,12 @@ namespace Witch.Infrastructure.Content
                 .Distinct(StringComparer.Ordinal).ToArray();
             string[] recipeIds = firstDayUnlocks.SelectMany(value => value.RecipeIds)
                 .Distinct(StringComparer.Ordinal).ToArray();
-            string[] guidebookIds = firstDayUnlocks.SelectMany(value => value.GuidebookEntryIds)
-                .Distinct(StringComparer.Ordinal).ToArray();
             var newRun = new NewRunSetup(
                 catalog.RunConfiguration.StartingMoney,
                 categoryIds,
                 herbIds,
                 recipeIds,
-                guidebookIds,
+                Array.Empty<string>(),
                 firstDay.TimerDuration,
                 catalog.Economy.ExpenseIdPrefix + firstDayNumber,
                 catalog.Economy.DailyExpense,
@@ -124,7 +127,7 @@ namespace Witch.Infrastructure.Content
                     new[] { value.CategoryId },
                     value.HerbIds,
                     value.RecipeIds,
-                    value.GuidebookEntryIds)).ToArray());
+                    Array.Empty<string>())).ToArray());
 
             return GameContentLoadResult.Success(new GameRuntimeContent(
                 recipes,

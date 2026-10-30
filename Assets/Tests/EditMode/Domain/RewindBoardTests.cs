@@ -19,5 +19,12 @@ namespace Witch.Domain.Tests
                 Assert.That(System.Linq.Enumerable.Count(first.Cards, card => card == pair), Is.EqualTo(2));
             }
         }
+
+        [Test]
+        public void Create_UsesAuthoredDifficultyRange()
+        {
+            Assert.That(RewindBoard.Create(42, 0, 2, 4).PairCount, Is.EqualTo(2));
+            Assert.That(RewindBoard.Create(42, 9, 2, 4).PairCount, Is.EqualTo(4));
+        }
     }
 }

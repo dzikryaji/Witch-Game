@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 using Witch.Domain.Orders;
 
 namespace Witch.Presentation.Shop
@@ -21,16 +23,38 @@ namespace Witch.Presentation.Shop
 
     public sealed class ShopHerbViewData
     {
-        public ShopHerbViewData(string stableId, string displayName)
+        public ShopHerbViewData(string stableId, string displayName, Sprite herbIllustration = null)
         {
             StableId = string.IsNullOrWhiteSpace(stableId)
                 ? throw new ArgumentException("Herb ID is required.", nameof(stableId))
                 : stableId;
             DisplayName = string.IsNullOrWhiteSpace(displayName) ? stableId : displayName;
+            HerbIllustration = herbIllustration;
         }
 
         public string StableId { get; }
         public string DisplayName { get; }
+        public Sprite HerbIllustration { get; }
+    }
+
+    public sealed class GuidebookPageViewData
+    {
+        public GuidebookPageViewData(
+            int pageNumber,
+            string text,
+            Sprite illustration = null,
+            string accessibleLabel = "")
+        {
+            PageNumber = pageNumber;
+            Text = text ?? string.Empty;
+            Illustration = illustration;
+            AccessibleLabel = accessibleLabel ?? string.Empty;
+        }
+
+        public int PageNumber { get; }
+        public string Text { get; }
+        public Sprite Illustration { get; }
+        public string AccessibleLabel { get; }
     }
 
     public sealed class ShopPresentationSetup
@@ -56,11 +80,33 @@ namespace Witch.Presentation.Shop
             bool showOpeningTutorial = false,
             int encounterSeed = 0,
             bool randomizeEncounters = false)
+            : this(
+                encounters,
+                herbs,
+                (guidebookText ?? string.Empty)
+                    .Split(new[] { "\n\n" }, StringSplitOptions.RemoveEmptyEntries)
+                    .Select((text, index) => new GuidebookPageViewData(index + 1, text))
+                    .ToArray(),
+                dayNumber,
+                showOpeningTutorial,
+                encounterSeed,
+                randomizeEncounters)
+        {
+        }
+
+        public ShopPresentationSetup(
+            IReadOnlyList<ShopEncounterViewData> encounters,
+            IReadOnlyList<ShopHerbViewData> herbs,
+            IReadOnlyList<GuidebookPageViewData> guidebookPages,
+            int dayNumber = 1,
+            bool showOpeningTutorial = false,
+            int encounterSeed = 0,
+            bool randomizeEncounters = false)
         {
             Encounters = encounters ?? throw new ArgumentNullException(nameof(encounters));
             if (Encounters.Count == 0) throw new ArgumentException("At least one encounter is required.", nameof(encounters));
             Herbs = herbs ?? throw new ArgumentNullException(nameof(herbs));
-            GuidebookText = guidebookText ?? string.Empty;
+            GuidebookPages = guidebookPages ?? throw new ArgumentNullException(nameof(guidebookPages));
             DayNumber = dayNumber;
             ShowOpeningTutorial = showOpeningTutorial;
             EncounterSeed = encounterSeed;
@@ -73,7 +119,7 @@ namespace Witch.Presentation.Shop
         public OrderRequest Order => Encounters[0].Order;
         public string ClueText => Encounters[0].ClueText;
         public IReadOnlyList<ShopHerbViewData> Herbs { get; }
-        public string GuidebookText { get; }
+        public IReadOnlyList<GuidebookPageViewData> GuidebookPages { get; }
         public int DayNumber { get; }
         public bool ShowOpeningTutorial { get; }
         public int EncounterSeed { get; }

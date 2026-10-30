@@ -69,6 +69,44 @@ namespace Witch.Infrastructure.Tests
         }
 
         [Test]
+        public async Task JsonRepository_MigratesLegacyAloeHerbIdToBorage()
+        {
+            var repository = new JsonRunRepository(temporaryDirectory, 1);
+            GameSaveState save = CreateSave("run.legacy-aloe", suspicion: 0, seed: 222);
+            await repository.SaveRunStateAsync(save.DayStartSnapshot, save.AttemptMetadata);
+            string path = Path.Combine(temporaryDirectory, JsonRunRepository.CurrentRunFileName);
+            File.WriteAllText(path, File.ReadAllText(path).Replace("herb.mint", "herb.aloe"));
+
+            LoadStateResult load = await repository.LoadLatestAsync();
+
+            Assert.That(load.Succeeded, Is.True, load.ErrorMessage);
+            Assert.That(load.SavedGame.DayStartSnapshot.RunState.UnlockedHerbIds, Does.Contain("herb.borage"));
+            Assert.That(load.SavedGame.DayStartSnapshot.RunState.UnlockedHerbIds, Does.Not.Contain("herb.aloe"));
+        }
+
+        [Test]
+        public async Task JsonRepository_RoundTripsCompletedRunFlag()
+        {
+            GameSaveState save = CreateSave("run.complete", suspicion: 0, seed: 223);
+            DayStartSnapshot source = save.DayStartSnapshot;
+            var completedSnapshot = new DayStartSnapshot(
+                source.RunState.MarkCompleted(),
+                source.OrderSeed,
+                source.TimerDuration,
+                source.ExpenseId,
+                source.ExpenseValue,
+                source.SaveVersion,
+                source.CapturedAtUtc);
+            var repository = new JsonRunRepository(temporaryDirectory, 1);
+
+            await repository.SaveRunStateAsync(completedSnapshot, save.AttemptMetadata);
+            LoadStateResult load = await repository.LoadLatestAsync();
+
+            Assert.That(load.Succeeded, Is.True, load.ErrorMessage);
+            Assert.That(load.SavedGame.DayStartSnapshot.RunState.RunCompleted, Is.True);
+        }
+
+        [Test]
         public async Task JsonRepository_MissingAndUnsupportedDataReturnTypedErrors()
         {
             var fileStore = new MemoryAtomicFileStore();

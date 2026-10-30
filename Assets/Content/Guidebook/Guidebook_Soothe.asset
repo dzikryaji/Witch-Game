@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Guidebook_Soothe
   m_EditorClassIdentifier: Witch.Infrastructure::Witch.Infrastructure.Content.GuidebookEntryDefinition
   stableId: guidebook.soothe
-  title: Soothe Herbs
+  title: Soothing Herbs
   categoryId: category.soothe
-  bodyText: 'SOOTHE — Lavender: purple flower spikes. Chamomile: tiny white petals, yellow hearts, apple scent. Together they make the graveyard-nap soothing cordial.'
-  herbIds: [herb.lavender, herb.chamomile]
-  clueIds: [clue.lavender.purple-bloom, clue.chamomile.apple-scent, clue.soothe.graveyard-nap]
+  bodyText: "SOOTHING \u2014 Herbs that quiet the nerves and settle the mind."
+  clueIds:
+  - clue.soothe.graveyard-nap

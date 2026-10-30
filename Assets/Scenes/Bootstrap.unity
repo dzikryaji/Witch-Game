@@ -130,6 +130,7 @@ GameObject:
   - component: {fileID: 1001}
   - component: {fileID: 1002}
   - component: {fileID: 1003}
+  - component: {fileID: 1004}
   m_Layer: 0
   m_Name: Bootstrap
   m_TagString: Untagged
@@ -247,6 +248,18 @@ MonoBehaviour:
   sfx: {fileID: 1048499787}
   ambience: {fileID: 313298146}
   ui: {fileID: 1079864491}
+--- !u!114 &1004
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4cb8f4c41e8e84fcaa3347c1a79c5dee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Witch.Bootstrap::Witch.Bootstrap.FixedAspectRatioController
 --- !u!1 &313298145
 GameObject:
   m_ObjectHideFlags: 0

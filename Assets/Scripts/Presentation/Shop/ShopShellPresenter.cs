@@ -26,12 +26,9 @@ namespace Witch.Presentation.Shop
         [SerializeField] private PotionServeDropZone potionServeDropZone;
         [SerializeField] private Button grindButton;
         [SerializeField] private Button ejectGrinderButton;
-        [SerializeField] private Button addToPotButton;
         [SerializeField] private Button discardGroundButton;
-        [SerializeField] private Button undoLastIngredientButton;
         [SerializeField] private Button emptyPotButton;
         [SerializeField] private Button brewButton;
-        [SerializeField] private Button discardButton;
         [SerializeField] private Button serveButton;
         [SerializeField] private Button guidebookButton;
         [SerializeField] private Button guidebookPreviousButton;
@@ -40,12 +37,12 @@ namespace Witch.Presentation.Shop
         [SerializeField] private GameObject guidebookPanel;
         [SerializeField] private Text guidebookPageText;
         [SerializeField] private Text guidebookPageNumberText;
+        [SerializeField] private Image guidebookIllustration;
         [SerializeField] private Text grinderInputText;
         [SerializeField] private GameObject groundHerbObject;
         [SerializeField] private Text groundHerbText;
         [SerializeField] private GameObject preparedPotionObject;
         [SerializeField] private Text preparedPotionText;
-        [SerializeField] private GameObject badPotionIndicator;
         [SerializeField] private GameObject hunterWarningPanel;
         [SerializeField] private GameObject progressionPanel;
         [SerializeField] private Text progressionText;
@@ -88,9 +85,8 @@ namespace Witch.Presentation.Shop
         private InputAction guidebookAction;
         private readonly List<HerbDragItem> herbSlots = new List<HerbDragItem>();
         private string loadedGrinderHerbId;
-        private string[] guidebookPages = Array.Empty<string>();
+        private IReadOnlyList<GuidebookPageViewData> guidebookPages = Array.Empty<GuidebookPageViewData>();
         private int guidebookPageIndex;
-        private Coroutine badPotionRoutine;
 
         public bool IsInitialized => sessionStore != null;
         public GameSession ActiveSession => sessionStore?.ActiveSession;
@@ -103,7 +99,8 @@ namespace Witch.Presentation.Shop
             && hudView.IsAuthored
             && guidebookText != null
             && herbButtons != null
-            && herbButtons.Length == 24
+            && herbButtons.Length == 25
+            && Array.TrueForAll(herbButtons, button => button != null)
             && herbButtonContainer != null
             && grinderDropZone != null
             && cauldronDropZone != null
@@ -111,12 +108,9 @@ namespace Witch.Presentation.Shop
             && potionServeDropZone != null
             && grindButton != null
             && ejectGrinderButton != null
-            && addToPotButton != null
             && discardGroundButton != null
-            && undoLastIngredientButton != null
             && emptyPotButton != null
             && brewButton != null
-            && discardButton != null
             && serveButton != null
             && guidebookPreviousButton != null
             && guidebookNextButton != null
@@ -124,12 +118,12 @@ namespace Witch.Presentation.Shop
             && guidebookPanel != null
             && guidebookPageText != null
             && guidebookPageNumberText != null
+            && guidebookIllustration != null
             && grinderInputText != null
             && groundHerbObject != null
             && groundHerbText != null
             && preparedPotionObject != null
             && preparedPotionText != null
-            && badPotionIndicator != null
             && hunterWarningPanel != null
             && progressionPanel != null
             && progressionText != null
@@ -144,6 +138,7 @@ namespace Witch.Presentation.Shop
             && tutorialContinueButton != null
             && tutorialHighlights != null
             && tutorialHighlights.Length == 5
+            && Array.TrueForAll(tutorialHighlights, highlight => highlight != null)
             && inputActions != null;
 
         public void ConfigurePolish(
@@ -220,7 +215,6 @@ namespace Witch.Presentation.Shop
             tutorialPanel.SetActive(false);
             groundHerbObject.SetActive(false);
             preparedPotionObject.SetActive(false);
-            badPotionIndicator.SetActive(false);
             hudView.ClearCustomer();
             audioService?.PlayMusic(GameAudioCueIds.ShopMusic);
             audioService?.PlayAmbience(GameAudioCueIds.ShopAmbience);
@@ -239,7 +233,7 @@ namespace Witch.Presentation.Shop
 
         private void Update()
         {
-            if (!IsInitialized || updateTimer == null || ActiveSession == null || Time.unscaledTime < nextRefresh)
+            if (!viewBound || !IsInitialized || updateTimer == null || ActiveSession == null || Time.unscaledTime < nextRefresh)
             {
                 return;
             }
@@ -308,18 +302,19 @@ namespace Witch.Presentation.Shop
             return result;
         }
 
-        public void LoadHerbIntoGrinder(string herbId)
+        public bool LoadHerbIntoGrinder(string herbId)
         {
             if (ActiveSession == null || ActiveSession.CurrentPhase != Witch.Domain.GamePhase.CustomerEncounter)
             {
                 SetStatus("Wait for a customer before preparing medicine.");
-                return;
+                return false;
             }
 
-            if (string.IsNullOrWhiteSpace(herbId)) return;
+            if (string.IsNullOrWhiteSpace(herbId)) return false;
             loadedGrinderHerbId = herbId;
             SetStatus(DisplayName(herbId) + " loaded. Press Grind, or Eject to change it.");
             Render();
+            return true;
         }
 
         public PreparationResult GrindLoadedHerb()
@@ -372,33 +367,16 @@ namespace Witch.Presentation.Shop
             return result;
         }
 
-        public PreparationResult UndoLastPotIngredient()
-        {
-            PreparationResult result = preparation.UndoLastPotIngredient(ActiveSession);
-            SetStatus(result.Succeeded ? "Last ingredient removed from cauldron." : result.ErrorMessage);
-            if (result.Succeeded) audioService?.Play(GameAudioCueIds.Discard);
-            Render();
-            return result;
-        }
-
         public PreparationResult Brew()
         {
             PreparationResult result = preparation.Brew(ActiveSession);
             string message = !result.Succeeded
                 ? result.ErrorMessage
-                : result.Kind == PreparationResultKind.InvalidRecipeDiscarded
-                    ? "Bad potion! Black fumes form a skull. It is discarded immediately."
-                    : "Potion brewed. Drag it into the customer Potion slot.";
+                : "Potion brewed. Drag it into the customer Potion slot.";
             SetStatus(message);
             if (result.Succeeded)
             {
-                audioService?.Play(result.Kind == PreparationResultKind.InvalidRecipeDiscarded
-                    ? GameAudioCueIds.BrewInvalid
-                    : GameAudioCueIds.BrewSuccess);
-            }
-            if (result.Succeeded && result.Kind == PreparationResultKind.InvalidRecipeDiscarded)
-            {
-                ShowBadPotionBriefly();
+                audioService?.Play(GameAudioCueIds.BrewSuccess);
             }
             Render();
             return result;
@@ -469,7 +447,12 @@ namespace Witch.Presentation.Shop
             CancellationToken cancellationToken = lifetimeCancellation?.Token ?? CancellationToken.None;
             ExpenseResolutionResult result = await resolveExpense.ExecuteAsync(ActiveSession, cancellationToken);
             SetStatus(result.Succeeded ? "Daily expense resolved." : result.ErrorMessage);
-            if (result.Succeeded && ActiveSession.CurrentPhase == Witch.Domain.GamePhase.Victory)
+            if (result.Succeeded && ActiveSession.CurrentPhase == Witch.Domain.GamePhase.GameOver)
+            {
+                audioService?.Play(GameAudioCueIds.ExpenseFail);
+                audioService?.PlayMusic(GameAudioCueIds.GameOverMusic);
+            }
+            else if (result.Succeeded && ActiveSession.CurrentPhase == Witch.Domain.GamePhase.Victory)
             {
                 audioService?.Play(GameAudioCueIds.ExpensePay);
                 audioService?.PlayMusic(GameAudioCueIds.VictoryMusic);
@@ -477,11 +460,6 @@ namespace Witch.Presentation.Shop
             else if (result.Succeeded)
             {
                 audioService?.Play(GameAudioCueIds.ExpensePay);
-            }
-            else if (ActiveSession.CurrentPhase == Witch.Domain.GamePhase.GameOver)
-            {
-                audioService?.Play(GameAudioCueIds.ExpenseFail);
-                audioService?.PlayMusic(GameAudioCueIds.GameOverMusic);
             }
             Render();
             return result;
@@ -512,16 +490,16 @@ namespace Witch.Presentation.Shop
 
         public void PreviousGuidebookPage()
         {
-            if (guidebookPages.Length == 0) return;
-            guidebookPageIndex = (guidebookPageIndex - 1 + guidebookPages.Length) % guidebookPages.Length;
+            if (guidebookPages.Count == 0) return;
+            guidebookPageIndex = (guidebookPageIndex - 1 + guidebookPages.Count) % guidebookPages.Count;
             RenderGuidebookPage();
             audioService?.Play(GameAudioCueIds.GuidebookClose);
         }
 
         public void NextGuidebookPage()
         {
-            if (guidebookPages.Length == 0) return;
-            guidebookPageIndex = (guidebookPageIndex + 1) % guidebookPages.Length;
+            if (guidebookPages.Count == 0) return;
+            guidebookPageIndex = (guidebookPageIndex + 1) % guidebookPages.Count;
             RenderGuidebookPage();
             audioService?.Play(GameAudioCueIds.GuidebookOpen);
         }
@@ -727,12 +705,9 @@ namespace Witch.Presentation.Shop
             potionServeDropZone.Initialize(this);
             grindButton.onClick.AddListener(() => GrindLoadedHerb());
             ejectGrinderButton.onClick.AddListener(EjectLoadedHerb);
-            addToPotButton.onClick.AddListener(() => AddGroundHerbToPot());
             discardGroundButton.onClick.AddListener(() => DiscardGroundHerb());
-            undoLastIngredientButton.onClick.AddListener(() => UndoLastPotIngredient());
             emptyPotButton.onClick.AddListener(() => Discard());
             brewButton.onClick.AddListener(() => Brew());
-            discardButton.onClick.AddListener(() => Discard());
             serveButton.onClick.AddListener(OnServeClicked);
             if (guidebookButton != null) guidebookButton.onClick.AddListener(ToggleGuidebook);
             guidebookPreviousButton.onClick.AddListener(PreviousGuidebookPage);
@@ -771,16 +746,21 @@ namespace Witch.Presentation.Shop
                 }
                 bool active = index < setup.Herbs.Count;
                 button.gameObject.SetActive(true);
+                Image illustration = button.image;
                 if (!active)
                 {
-                    drag.Unbind();
+                    drag.UnbindSubmit();
                     drag.Initialize(null);
                     button.interactable = false;
                     Text lockedLabel = button.GetComponentInChildren<Text>(true);
                     if (lockedLabel != null)
                     {
-                        lockedLabel.text = "LOCKED";
-                        lockedLabel.color = new Color32(30, 23, 22, 255);
+                        lockedLabel.text = string.Empty;
+                    }
+                    if (illustration != null)
+                    {
+                        illustration.sprite = null;
+                        illustration.color = Color.clear;
                     }
                     continue;
                 }
@@ -791,13 +771,18 @@ namespace Witch.Presentation.Shop
                 Text label = button.GetComponentInChildren<Text>(true);
                 if (label != null)
                 {
-                    label.text = herb.DisplayName;
-                    label.color = new Color32(255, 244, 218, 255);
+                    label.text = herb.HerbIllustration == null ? herb.DisplayName : string.Empty;
+                }
+                if (illustration != null)
+                {
+                    illustration.sprite = herb.HerbIllustration;
+                    illustration.preserveAspect = herb.HerbIllustration != null;
+                    illustration.color = herb.HerbIllustration == null ? Color.clear : Color.white;
                 }
 
                 drag.Initialize(herb.StableId);
                 string herbId = herb.StableId;
-                drag.Bind(() => LoadHerbIntoGrinder(herbId));
+                drag.BindSubmit(() => LoadHerbIntoGrinder(herbId));
             }
 
             if (herbSlots.Count > 0)
@@ -827,12 +812,12 @@ namespace Witch.Presentation.Shop
             if (hasGroundHerb) groundHerbText.text = "Ground\n" + DisplayName(session.GroundHerbId);
             bool hasPotion = session.PreparedRecipe != null;
             preparedPotionObject.SetActive(hasPotion);
-            if (hasPotion) preparedPotionText.text = "Brewed Potion\n" + session.PreparedRecipe.RecipeId;
-            if (!string.IsNullOrWhiteSpace(LastStatus))
+            if (hasPotion)
             {
-                hudView.SetStatus(LastStatus);
+                HerbPair pair = session.PreparedRecipe.HerbPair;
+                preparedPotionText.text = "Brewed Potion\n"
+                    + DisplayName(pair.FirstHerbId) + " + " + DisplayName(pair.SecondHerbId);
             }
-
             RenderProgression(session);
         }
 
@@ -922,20 +907,14 @@ namespace Witch.Presentation.Shop
         private void SetStatus(string message)
         {
             LastStatus = message;
-            if (hudView != null)
-            {
-                hudView.SetStatus(message);
-            }
         }
 
         private void ConfigureGuidebook()
         {
-            guidebookPages = setup.GuidebookText.Split(
-                new[] { "\n\n" },
-                StringSplitOptions.RemoveEmptyEntries);
-            if (guidebookPages.Length == 0)
+            guidebookPages = setup.GuidebookPages;
+            if (guidebookPages.Count == 0)
             {
-                guidebookPages = new[] { "No remedies unlocked." };
+                guidebookPages = new[] { new GuidebookPageViewData(1, "No remedies unlocked.") };
             }
             guidebookPageIndex = 0;
             RenderGuidebookPage();
@@ -943,10 +922,16 @@ namespace Witch.Presentation.Shop
 
         private void RenderGuidebookPage()
         {
-            string page = guidebookPages[Math.Min(guidebookPageIndex, guidebookPages.Length - 1)];
-            guidebookText.text = page;
-            guidebookPageText.text = page;
-            guidebookPageNumberText.text = (guidebookPageIndex + 1) + " / " + guidebookPages.Length;
+            GuidebookPageViewData page = guidebookPages[Math.Min(guidebookPageIndex, guidebookPages.Count - 1)];
+            guidebookText.text = page.Text;
+            guidebookPageText.text = page.Text;
+            int totalPages = guidebookPages.Max(value => value.PageNumber);
+            guidebookPageNumberText.text = page.PageNumber + " / " + totalPages;
+            if (guidebookIllustration != null)
+            {
+                guidebookIllustration.sprite = page.Illustration;
+                guidebookIllustration.gameObject.SetActive(page.Illustration != null);
+            }
         }
 
         private void SetTutorialHighlight(int activeIndex)
@@ -958,20 +943,6 @@ namespace Witch.Presentation.Shop
                     tutorialHighlights[index].SetActive(index == activeIndex);
                 }
             }
-        }
-
-        private void ShowBadPotionBriefly()
-        {
-            if (badPotionRoutine != null) StopCoroutine(badPotionRoutine);
-            badPotionRoutine = StartCoroutine(BadPotionRoutine());
-        }
-
-        private System.Collections.IEnumerator BadPotionRoutine()
-        {
-            badPotionIndicator.SetActive(true);
-            yield return new WaitForSecondsRealtime(0.9f);
-            badPotionIndicator.SetActive(false);
-            badPotionRoutine = null;
         }
 
         private bool IsResumingEncounter() =>
