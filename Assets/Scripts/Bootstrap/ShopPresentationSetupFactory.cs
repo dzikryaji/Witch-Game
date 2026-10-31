@@ -43,32 +43,7 @@ namespace Witch.Bootstrap
                 herbs.Add(new ShopHerbViewData(herb.StableId, herb.DisplayName, herb.HerbIllustration));
             }
 
-            var guidebook = new List<GuidebookPageViewData>();
-            var unlockedCategories = new HashSet<string>(
-                session.RunState.UnlockedCategoryIds,
-                StringComparer.Ordinal);
-            foreach (GuidebookEntryContent entry in content.GuidebookEntriesById.Values
-                         .Where(value => unlockedCategories.Contains(value.CategoryId))
-                         .OrderBy(value => value.Title, StringComparer.Ordinal))
-            {
-                guidebook.Add(new GuidebookPageViewData(
-                    guidebook.Count + 1,
-                    entry.Title + "\n" + entry.BodyText));
-            }
-
-            foreach (HerbContent herb in session.RunState.UnlockedHerbIds
-                         .Select(herbId => content.HerbsById[herbId])
-                         .OrderBy(value => value.GuidebookPage))
-            {
-                guidebook.Add(new GuidebookPageViewData(
-                    herb.GuidebookPage,
-                    herb.AccessibleLabel
-                        + "\n" + herb.ScientificName
-                        + "\n" + herb.TreatmentText
-                        + "\nWarning: " + herb.WarningText,
-                    herb.HerbIllustration,
-                    herb.AccessibleLabel));
-            }
+            List<GuidebookPageViewData> guidebook = CreateGuidebookPages(session);
 
             bool showTutorial = session.RunState.CurrentDayNumber == 1
                 && tutorialShownRunIds.Add(session.RunState.RunId);
@@ -80,6 +55,71 @@ namespace Witch.Bootstrap
                 showTutorial,
                 session.AttemptMetadata.ActiveOrderSeed,
                 randomizeEncounters: true);
+        }
+
+        /// <summary>Contents page first (unlocked categories, in unlock order), then one page per unlocked herb.</summary>
+        private List<GuidebookPageViewData> CreateGuidebookPages(GameSession session)
+        {
+            var categoryLabels = new Dictionary<string, string>(StringComparer.Ordinal);
+            foreach (GuidebookContentsItemContent item in content.GuidebookEntriesById.Values
+                         .SelectMany(entry => entry.ContentsItems))
+            {
+                if (!string.IsNullOrEmpty(item.CategoryId) && !categoryLabels.ContainsKey(item.CategoryId))
+                {
+                    categoryLabels.Add(item.CategoryId, item.Name);
+                }
+            }
+
+            // Herb pages come right after the Contents page (index 0), in guidebook order.
+            List<HerbContent> herbPages = session.RunState.UnlockedHerbIds
+                .Select(herbId => content.HerbsById[herbId])
+                .OrderBy(value => value.GuidebookPage)
+                .ToList();
+            var firstPageOfCategory = new Dictionary<string, int>(StringComparer.Ordinal);
+            for (int index = 0; index < herbPages.Count; index++)
+            {
+                string categoryId = herbPages[index].CategoryId;
+                if (!string.IsNullOrEmpty(categoryId) && !firstPageOfCategory.ContainsKey(categoryId))
+                {
+                    firstPageOfCategory.Add(categoryId, index + 1);
+                }
+            }
+
+            var rows = new List<GuidebookContentsRow>();
+            foreach (string categoryId in session.RunState.UnlockedCategoryIds)
+            {
+                foreach (GuidebookEntryContent entry in content.GuidebookEntriesById.Values
+                             .Where(value => value.CategoryId == categoryId)
+                             .OrderBy(value => value.Title, StringComparer.Ordinal))
+                {
+                    foreach (GuidebookContentsItemContent item in entry.ContentsItems)
+                    {
+                        int target = firstPageOfCategory.TryGetValue(item.CategoryId ?? string.Empty, out int page) ? page : -1;
+                        rows.Add(new GuidebookContentsRow(item.Name, item.Description, target));
+                    }
+                }
+            }
+
+            var pages = new List<GuidebookPageViewData>
+            {
+                GuidebookPageViewData.Contents(1, "Content", rows)
+            };
+
+            foreach (HerbContent herb in herbPages)
+            {
+                string categoryLabel = null;
+                if (!string.IsNullOrEmpty(herb.CategoryId)) categoryLabels.TryGetValue(herb.CategoryId, out categoryLabel);
+                pages.Add(GuidebookPageViewData.Herb(
+                    pages.Count + 1,
+                    herb.DisplayName,
+                    herb.ScientificName,
+                    herb.TreatmentText,
+                    herb.WarningText,
+                    categoryLabel,
+                    herb.HerbIllustration));
+            }
+
+            return pages;
         }
 
         private static int PositiveModulo(int value, int count)

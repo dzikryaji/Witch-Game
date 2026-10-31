@@ -100,13 +100,16 @@ namespace Witch.Infrastructure.Content
             string title,
             string categoryId,
             IReadOnlyList<string> clueIds,
-            string bodyText = "")
+            string bodyText = "",
+            IReadOnlyList<GuidebookContentsItemContent> contentsItems = null)
         {
             StableId = stableId;
             Title = title;
             CategoryId = categoryId;
             ClueIds = new List<string>(clueIds).AsReadOnly();
             BodyText = bodyText ?? string.Empty;
+            ContentsItems = new List<GuidebookContentsItemContent>(
+                contentsItems ?? Array.Empty<GuidebookContentsItemContent>()).AsReadOnly();
         }
 
         public string StableId { get; }
@@ -114,6 +117,21 @@ namespace Witch.Infrastructure.Content
         public string CategoryId { get; }
         public IReadOnlyList<string> ClueIds { get; }
         public string BodyText { get; }
+        public IReadOnlyList<GuidebookContentsItemContent> ContentsItems { get; }
+    }
+
+    public sealed class GuidebookContentsItemContent
+    {
+        public GuidebookContentsItemContent(string categoryId, string name, string description)
+        {
+            CategoryId = categoryId ?? string.Empty;
+            Name = name ?? string.Empty;
+            Description = description ?? string.Empty;
+        }
+
+        public string CategoryId { get; }
+        public string Name { get; }
+        public string Description { get; }
     }
 
     public sealed class CategoryUnlockContent
