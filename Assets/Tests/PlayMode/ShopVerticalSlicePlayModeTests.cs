@@ -151,6 +151,7 @@ namespace Witch.Bootstrap.PlayModeTests
             Assert.That(presenter.ActiveSession.TimerStartedAtUtc, Is.Not.Null);
             Assert.That(GameObject.Find("Shop Canvas"), Is.Not.Null);
             Assert.That(presenter.HasAuthoredView, Is.True);
+            Assert.That(presenter.GuidebookVisible, Is.False);
 
             presenter.ToggleGuidebook();
             Assert.That(presenter.GuidebookVisible, Is.True);
