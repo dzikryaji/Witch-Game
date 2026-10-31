@@ -211,7 +211,6 @@ namespace Witch.Presentation.Shop
             RequireAndBindAuthoredView();
             ConfigureHerbButtons();
             ConfigureGuidebook();
-            guidebookPanel.SetActive(true);
             hunterWarningPanel.SetActive(false);
             progressionPanel.SetActive(false);
             pausePanel.SetActive(false);
@@ -221,7 +220,8 @@ namespace Witch.Presentation.Shop
             hudView.ClearCustomer();
             audioService?.PlayMusic(GameAudioCueIds.ShopMusic);
             audioService?.PlayAmbience(GameAudioCueIds.ShopAmbience);
-            if (setup.ShowOpeningTutorial) ShowTutorialBeat();
+            if (IsResumingEncounter()) ResumeEncounter();
+            else if (setup.ShowOpeningTutorial) ShowTutorialBeat();
             else BeginArrival();
             Render();
             if ((ActiveSession.CurrentPhase == Witch.Domain.GamePhase.RewindPending
@@ -235,7 +235,7 @@ namespace Witch.Presentation.Shop
 
         private void Update()
         {
-            if (!viewBound || !IsInitialized || updateTimer == null || ActiveSession == null || Time.unscaledTime < nextRefresh)
+            if (!IsInitialized || updateTimer == null || ActiveSession == null || Time.unscaledTime < nextRefresh)
             {
                 return;
             }
@@ -487,6 +487,7 @@ namespace Witch.Presentation.Shop
         {
             if (guidebookPanel == null) return;
             guidebookPanel.SetActive(true);
+            guidebookPanel.GetComponent<Animator>().SetTrigger("Open");
             SetStatus("Guidebook stays on the table. Timer continues while you read.");
         }
 
@@ -972,6 +973,23 @@ namespace Witch.Presentation.Shop
                     tutorialHighlights[index].SetActive(index == activeIndex);
                 }
             }
+        }
+
+        private bool IsResumingEncounter() =>
+            ActiveSession.CurrentPhase == Witch.Domain.GamePhase.CustomerEncounter
+            && ActiveSession.AttemptState.ActiveOrder != null;
+
+        private void ResumeEncounter()
+        {
+            string orderId = ActiveSession.AttemptState.ActiveOrder.OrderId;
+            ShopEncounterViewData encounter = setup.Encounters
+                .FirstOrDefault(e => e.Order != null && e.Order.OrderId == orderId);
+
+            Debug.Log($"[Resume] order={orderId} found={encounter != null}");
+            if (encounter != null) hudView.SetCustomer(encounter.CustomerName, encounter.ClueText);
+
+            setTimerPaused?.Execute(ActiveSession, false); // clock continues from the remaining time
+            SetStatus("The spell worked. Time is back. Serve the order again.");
         }
 
     }
