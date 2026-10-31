@@ -76,7 +76,11 @@ namespace Witch.Infrastructure.Content
                     definition.Title,
                     definition.CategoryId,
                     definition.ClueIds,
-                    definition.BodyText),
+                    definition.BodyText,
+                    definition.ContentsItems
+                        .Where(item => item != null)
+                        .Select(item => new GuidebookContentsItemContent(item.CategoryId, item.Name, item.Description))
+                        .ToList()),
                 StringComparer.Ordinal);
             var unlocks = catalog.CategoryUnlocks.Select(definition =>
                 new CategoryUnlockContent(
