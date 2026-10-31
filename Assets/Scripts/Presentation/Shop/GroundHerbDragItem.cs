@@ -32,7 +32,7 @@ namespace Witch.Presentation.Shop
 
         private void OnDisable()
         {
-            RestoreHome(false);
+            ResetCanvasState();
         }
 
         public void OnBeginDrag(PointerEventData eventData)
