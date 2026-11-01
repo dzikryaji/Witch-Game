@@ -10,17 +10,25 @@ namespace Witch.Presentation.Shop
 
     public sealed class ShopEncounterViewData
     {
-        public ShopEncounterViewData(string customerId, string customerName, OrderRequest order, string clueText)
+        public ShopEncounterViewData(
+            string customerId,
+            string customerName,
+            OrderRequest order,
+            IReadOnlyList<string> orderSentences)
         {
             CustomerId = customerId;
             CustomerName = customerName;
             Order = order ?? throw new ArgumentNullException(nameof(order));
-            ClueText = clueText ?? string.Empty;
+            OrderSentences = orderSentences ?? throw new ArgumentNullException(nameof(orderSentences));
         }
+
+        public ShopEncounterViewData(string customerId, string customerName, OrderRequest order, string orderSentence)
+            : this(customerId, customerName, order, new[] { orderSentence ?? string.Empty }) { }
+
         public string CustomerId { get; }
         public string CustomerName { get; }
         public OrderRequest Order { get; }
-        public string ClueText { get; }
+        public IReadOnlyList<string> OrderSentences { get; }
     }
 
     public sealed class ShopHerbViewData
@@ -222,7 +230,7 @@ namespace Witch.Presentation.Shop
         public string CustomerId => Encounters[0].CustomerId;
         public string CustomerName => Encounters[0].CustomerName;
         public OrderRequest Order => Encounters[0].Order;
-        public string ClueText => Encounters[0].ClueText;
+        public IReadOnlyList<string> OrderSentences => Encounters[0].OrderSentences;
         public IReadOnlyList<ShopHerbViewData> Herbs { get; }
         public IReadOnlyList<GuidebookPageViewData> GuidebookPages { get; }
         public int DayNumber { get; }

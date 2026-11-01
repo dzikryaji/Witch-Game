@@ -64,6 +64,10 @@ namespace Witch.Infrastructure.Content
 
             foreach (OrderDefinition order in catalog.Orders.Where(value => value != null))
             {
+                if (order.OrderSentences.Count == 0 || order.OrderSentences.Any(string.IsNullOrWhiteSpace))
+                {
+                    errors.Add("Order '" + order.StableId + "' needs at least one non-empty sentence.");
+                }
                 ValidateReference(order.FirstHerbId, herbIds, "Order '" + order.StableId + "' first herb", errors);
                 ValidateReference(order.SecondHerbId, herbIds, "Order '" + order.StableId + "' second herb", errors);
                 if (string.Equals(order.FirstHerbId, order.SecondHerbId, StringComparison.Ordinal))

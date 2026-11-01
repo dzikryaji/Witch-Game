@@ -33,7 +33,7 @@ namespace Witch.Bootstrap
                     customer.StableId,
                     customer.DisplayName,
                     order.Request,
-                    order.ClueText));
+                    order.OrderSentences));
             }
 
             var herbs = new List<ShopHerbViewData>();

@@ -46,15 +46,15 @@ namespace Witch.Infrastructure.Content
 
     public sealed class OrderContent
     {
-        public OrderContent(OrderRequest request, string clueText, IReadOnlyList<string> clueIds)
+        public OrderContent(OrderRequest request, IReadOnlyList<string> orderSentences, IReadOnlyList<string> clueIds)
         {
             Request = request;
-            ClueText = clueText;
+            OrderSentences = new List<string>(orderSentences).AsReadOnly();
             ClueIds = new List<string>(clueIds).AsReadOnly();
         }
 
         public OrderRequest Request { get; }
-        public string ClueText { get; }
+        public IReadOnlyList<string> OrderSentences { get; }
         public IReadOnlyList<string> ClueIds { get; }
     }
 

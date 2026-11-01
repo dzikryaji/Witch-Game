@@ -54,7 +54,7 @@ namespace Witch.Infrastructure.Content
                     new OrderRequest(
                         definition.StableId,
                         new HerbPair(definition.FirstHerbId, definition.SecondHerbId)),
-                    definition.ClueText,
+                    definition.OrderSentences,
                     definition.ClueIds),
                 StringComparer.Ordinal);
             var customers = catalog.Customers.ToDictionary(

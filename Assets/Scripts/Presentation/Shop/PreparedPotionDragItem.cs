@@ -57,7 +57,7 @@ namespace Witch.Presentation.Shop
             RestoreHome();
         }
 
-        private void RestoreHome(bool restoreSiblingOrder = true)
+        public void RestoreHome(bool restoreSiblingOrder = true)
         {
             if (rectTransform == null || canvasGroup == null) return;
             if (homeParent != null && transform.parent != homeParent)

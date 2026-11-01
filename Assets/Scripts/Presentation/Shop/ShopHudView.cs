@@ -20,14 +20,20 @@ namespace Witch.Presentation.Shop
         [SerializeField] private UnityEngine.UI.Image suspicionFill;
         [SerializeField] private Text potText;
         [SerializeField] private Text customerText;
-        [SerializeField] private Text orderText;
-        [SerializeField] private Text[] orderBubbleTexts;
-        [SerializeField] private RectTransform customerPanel;
-        [SerializeField] private CanvasGroup customerCanvasGroup;
-        [SerializeField] private GameObject customerVisual;
+        [SerializeField] private GameObject orderBubblePrefab;
+        [SerializeField] private RectTransform orderBubbleContent;
+        [SerializeField] private UnityEngine.UI.ScrollRect orderBubbleScrollRect;
+        [SerializeField] private RectTransform customerPortrait;
+        [SerializeField] private CanvasGroup customerPortraitCanvasGroup;
 
         private Coroutine entranceRoutine;
-        private Vector2 customerRestPosition;
+        private readonly List<RectTransform> orderBubbles = new List<RectTransform>();
+        private Vector2 portraitRestPosition;
+        private bool playerScrolledOrders;
+
+        private const float AnimationDistance = 260f;
+        private const float AnimationDuration = 0.28f;
+        private const float BubbleDelay = 0.12f;
 
         public bool IsAuthored => dayText != null
             && timerText != null
@@ -36,76 +42,91 @@ namespace Witch.Presentation.Shop
             && suspicionFill != null
             && potText != null
             && customerText != null
-            && orderText != null
-            && orderBubbleTexts != null
-            && orderBubbleTexts.Length == 3
-            && customerPanel != null
-            && customerCanvasGroup != null
-            && customerVisual != null;
+            && orderBubblePrefab != null
+            && orderBubbleContent != null
+            && orderBubbleScrollRect != null
+            && customerPortrait != null
+            && customerPortraitCanvasGroup != null;
 
         private void Awake()
         {
-            if (customerPanel != null)
+            if (customerPortrait != null)
             {
-                customerRestPosition = customerPanel.anchoredPosition;
+                portraitRestPosition = customerPortrait.anchoredPosition;
             }
         }
 
-        public void SetCustomer(string customerName, string clueText)
+        public void SetCustomer(string customerName, IReadOnlyList<string> orderSentences)
         {
-            customerVisual.SetActive(true);
+            StopEntrance();
+            ClearOrderBubbles();
+            customerPortrait.gameObject.SetActive(true);
             customerText.text = customerName ?? string.Empty;
-            string[] lines = SplitOrderIntoThreeLines(clueText ?? string.Empty);
-            orderText.text = lines[0];
-            for (int index = 0; index < orderBubbleTexts.Length; index++)
+            playerScrolledOrders = false;
+            SetScrollPosition(1f);
+
+            foreach (string sentence in orderSentences ?? Array.Empty<string>())
             {
-                orderBubbleTexts[index].text = string.Empty;
+                if (string.IsNullOrWhiteSpace(sentence)) continue;
+                GameObject bubble = Instantiate(orderBubblePrefab, orderBubbleContent);
+                bubble.name = "Order Bubble " + (orderBubbles.Count + 1);
+                Text bubbleText = bubble.GetComponentInChildren<Text>(true);
+                bubbleText.text = sentence;
+                RectTransform bubbleRect = bubble.GetComponent<RectTransform>();
+                UnityEngine.UI.LayoutElement layout = bubble.GetComponent<UnityEngine.UI.LayoutElement>();
+                layout.preferredHeight = Mathf.Max(layout.minHeight, bubbleText.preferredHeight + 16f);
+                orderBubbles.Add(bubbleRect);
+                bubble.SetActive(false);
             }
-            if (entranceRoutine != null) StopCoroutine(entranceRoutine);
-            entranceRoutine = StartCoroutine(AnimateCustomerEntrance(lines));
+
+            entranceRoutine = StartCoroutine(AnimateCustomerEntrance());
         }
 
         public void ClearCustomer()
         {
-            if (entranceRoutine != null)
-            {
-                StopCoroutine(entranceRoutine);
-                entranceRoutine = null;
-            }
+            StopEntrance();
             customerText.text = string.Empty;
-            orderText.text = string.Empty;
-            foreach (Text bubble in orderBubbleTexts)
-            {
-                if (bubble != null) bubble.text = string.Empty;
-            }
-            customerVisual.SetActive(false);
-            customerPanel.anchoredPosition = customerRestPosition;
-            customerCanvasGroup.alpha = 1f;
+            ClearOrderBubbles();
+            customerPortrait.gameObject.SetActive(false);
+            customerPortrait.anchoredPosition = portraitRestPosition;
+            customerPortraitCanvasGroup.alpha = 1f;
         }
 
         public async Task PlayCustomerExitAsync(CancellationToken cancellationToken)
         {
-            if (customerPanel == null || customerCanvasGroup == null) return;
-            if (entranceRoutine != null)
-            {
-                StopCoroutine(entranceRoutine);
-                entranceRoutine = null;
-            }
+            if (customerPortrait == null || customerPortraitCanvasGroup == null) return;
+            StopEntrance();
 
             float startedAt = Time.unscaledTime;
-            const float duration = 0.24f;
-            while (Time.unscaledTime - startedAt < duration)
+            Vector2 portraitStartPosition = customerPortrait.anchoredPosition;
+            float portraitStartAlpha = customerPortraitCanvasGroup.alpha;
+            var bubbleStartAlphas = new float[orderBubbles.Count];
+            for (int index = 0; index < orderBubbles.Count; index++)
+            {
+                CanvasGroup group = orderBubbles[index].GetComponent<CanvasGroup>();
+                bubbleStartAlphas[index] = group.alpha;
+            }
+
+            while (Time.unscaledTime - startedAt < AnimationDuration)
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                float progress = Mathf.Clamp01((Time.unscaledTime - startedAt) / duration);
-                customerPanel.anchoredPosition = customerRestPosition + Vector2.right * Mathf.Lerp(0f, 260f, progress);
-                customerCanvasGroup.alpha = 1f - progress;
+                float progress = Mathf.Clamp01((Time.unscaledTime - startedAt) / AnimationDuration);
+                customerPortrait.anchoredPosition = Vector2.Lerp(
+                    portraitStartPosition,
+                    portraitRestPosition + Vector2.right * AnimationDistance,
+                    progress);
+                customerPortraitCanvasGroup.alpha = portraitStartAlpha * (1f - progress);
+                for (int index = 0; index < orderBubbles.Count; index++)
+                {
+                    orderBubbles[index].GetComponent<CanvasGroup>().alpha = bubbleStartAlphas[index] * (1f - progress);
+                }
                 await Task.Yield();
             }
 
-            customerPanel.anchoredPosition = customerRestPosition + Vector2.right * 260f;
-            customerCanvasGroup.alpha = 0f;
-            customerVisual.SetActive(false);
+            customerPortrait.anchoredPosition = portraitRestPosition + Vector2.right * AnimationDistance;
+            customerPortraitCanvasGroup.alpha = 0f;
+            customerPortrait.gameObject.SetActive(false);
+            ClearOrderBubbles();
         }
 
         public void Render(GameSession session, Func<string, string> displayName)
@@ -130,45 +151,70 @@ namespace Witch.Presentation.Shop
             potText.text = ingredientNames.Count == 0 ? "Cauldron empty" : string.Join(" + ", ingredientNames);
         }
 
-        private IEnumerator AnimateCustomerEntrance(string[] orderLines)
+        private IEnumerator AnimateCustomerEntrance()
         {
-            if (customerPanel == null || customerCanvasGroup == null) yield break;
-            customerPanel.anchoredPosition = customerRestPosition + Vector2.right * 260f;
-            customerCanvasGroup.alpha = 0f;
-            float startedAt = Time.unscaledTime;
-            const float duration = 0.28f;
-            while (Time.unscaledTime - startedAt < duration)
+            if (customerPortrait == null || customerPortraitCanvasGroup == null) yield break;
+            yield return AnimateEntry(customerPortrait, customerPortraitCanvasGroup, false);
+
+            foreach (RectTransform bubble in orderBubbles)
             {
-                float progress = Mathf.Clamp01((Time.unscaledTime - startedAt) / duration);
-                float eased = 1f - Mathf.Pow(1f - progress, 3f);
-                customerPanel.anchoredPosition = customerRestPosition + Vector2.right * Mathf.Lerp(260f, 0f, eased);
-                customerCanvasGroup.alpha = eased;
-                yield return null;
+                bubble.gameObject.SetActive(true);
+                Canvas.ForceUpdateCanvases();
+                UnityEngine.UI.LayoutRebuilder.ForceRebuildLayoutImmediate(orderBubbleContent);
+                yield return AnimateEntry(bubble, bubble.GetComponent<CanvasGroup>(), true);
+                yield return new WaitForSecondsRealtime(BubbleDelay);
             }
-            customerPanel.anchoredPosition = customerRestPosition;
-            customerCanvasGroup.alpha = 1f;
-            for (int index = 0; index < orderBubbleTexts.Length; index++)
-            {
-                orderBubbleTexts[index].text = orderLines[index];
-                yield return new WaitForSecondsRealtime(0.12f);
-            }
+
             entranceRoutine = null;
         }
 
-        private static string[] SplitOrderIntoThreeLines(string clue)
+        private IEnumerator AnimateEntry(RectTransform target, CanvasGroup group, bool scrollToNewest)
         {
-            var result = new[] { string.Empty, string.Empty, string.Empty };
-            if (string.IsNullOrWhiteSpace(clue)) return result;
-            string[] words = clue.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-            int wordsPerLine = Mathf.Max(1, Mathf.CeilToInt(words.Length / 3f));
-            for (int line = 0; line < result.Length; line++)
+            Vector2 restPosition = target == customerPortrait ? portraitRestPosition : target.anchoredPosition;
+            target.anchoredPosition = restPosition + Vector2.right * AnimationDistance;
+            group.alpha = 0f;
+            float scrollStart = orderBubbleScrollRect.verticalNormalizedPosition;
+            float startedAt = Time.unscaledTime;
+            while (Time.unscaledTime - startedAt < AnimationDuration)
             {
-                int start = line * wordsPerLine;
-                if (start >= words.Length) break;
-                int count = Mathf.Min(wordsPerLine, words.Length - start);
-                result[line] = string.Join(" ", words, start, count);
+                float progress = Mathf.Clamp01((Time.unscaledTime - startedAt) / AnimationDuration);
+                float eased = 1f - Mathf.Pow(1f - progress, 3f);
+                target.anchoredPosition = restPosition + Vector2.right * Mathf.Lerp(AnimationDistance, 0f, eased);
+                group.alpha = eased;
+                if (scrollToNewest && !playerScrolledOrders)
+                {
+                    SetScrollPosition(Mathf.Lerp(scrollStart, 0f, eased));
+                }
+                yield return null;
             }
-            return result;
+
+            target.anchoredPosition = restPosition;
+            group.alpha = 1f;
+        }
+
+        private void SetScrollPosition(float value)
+        {
+            orderBubbleScrollRect.verticalNormalizedPosition = value;
+        }
+
+        public void StopOrderBubbleAutoScroll() => playerScrolledOrders = true;
+
+        private void StopEntrance()
+        {
+            if (entranceRoutine == null) return;
+            StopCoroutine(entranceRoutine);
+            entranceRoutine = null;
+        }
+
+        private void ClearOrderBubbles()
+        {
+            foreach (RectTransform bubble in orderBubbles)
+            {
+                if (bubble == null) continue;
+                bubble.gameObject.SetActive(false);
+                Destroy(bubble.gameObject);
+            }
+            orderBubbles.Clear();
         }
     }
 }
