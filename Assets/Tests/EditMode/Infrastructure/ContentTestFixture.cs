@@ -94,7 +94,7 @@ namespace Witch.Infrastructure.Tests
         public static OrderDefinition Order(string id, string text, string[] clues, string first, string second)
         {
             var value = ScriptableObject.CreateInstance<OrderDefinition>();
-            value.Configure(id, text, clues, first, second);
+            value.Configure(id, new[] { text }, clues, first, second);
             return value;
         }
 

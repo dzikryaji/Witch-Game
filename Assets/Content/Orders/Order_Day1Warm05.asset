@@ -13,7 +13,9 @@ MonoBehaviour:
   m_Name: Order_Day1Warm05
   m_EditorClassIdentifier: Witch.Infrastructure::Witch.Infrastructure.Content.OrderDefinition
   stableId: order.day1.warm-05
-  clueText: Clove and mustard seed, please. If I sneeze again, my hat may inherit the farm.
+  orderSentences:
+  - Clove and mustard seed, please.
+  - If I sneeze again, my hat may inherit the farm.
   clueIds: []
   firstHerbId: herb.clove
   secondHerbId: herb.mustardSeed

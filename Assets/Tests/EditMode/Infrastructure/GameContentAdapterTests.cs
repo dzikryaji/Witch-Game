@@ -19,6 +19,9 @@ namespace Witch.Infrastructure.Tests
             Assert.That(catalog, Is.Not.Null);
             Assert.That(result.Succeeded, Is.True, string.Join("\n", result.Errors));
             Assert.That(result.Content.OrdersById.Count, Is.EqualTo(15));
+            Assert.That(
+                result.Content.OrdersById["order.day1.direct-warm"].OrderSentences,
+                Is.EqualTo(new[] { "I need ginger and cinnamon.", "Please do not improvise; I already did that once." }));
             Assert.That(result.Content.DaysByNumber.Count, Is.EqualTo(3));
             Assert.That(result.Content.DaysByNumber[1].TimerDuration, Is.EqualTo(TimeSpan.FromMinutes(4)));
             Assert.That(result.Content.DaysByNumber[2].TimerDuration, Is.EqualTo(TimeSpan.FromMinutes(4) + TimeSpan.FromSeconds(20)));
@@ -92,6 +95,22 @@ namespace Witch.Infrastructure.Tests
         }
 
         [Test]
+        public void Validate_OrderWithoutSentencesReturnsClearError()
+        {
+            GameContentCatalogDefinition catalog = ContentTestFixture.CreateValidCatalog();
+            catalog.Orders[0].Configure(
+                "order.direct",
+                Array.Empty<string>(),
+                Array.Empty<string>(),
+                "herb.ginger",
+                "herb.mint");
+
+            ContentValidationReport report = new GameContentValidator().Validate(catalog);
+
+            Assert.That(report.Errors.Any(error => error.Contains("needs at least one non-empty sentence")), Is.True);
+        }
+
+        [Test]
         public void Validate_MissingHerbGuidebookContentReturnsClearErrors()
         {
             GameContentCatalogDefinition catalog = ContentTestFixture.CreateValidCatalog();
@@ -124,7 +143,7 @@ namespace Witch.Infrastructure.Tests
             GameContentCatalogDefinition catalog = ContentTestFixture.CreateValidCatalog();
             catalog.Orders[0].Configure(
                 "order.direct",
-                "Bring ginger and sage.",
+                new[] { "Bring ginger and sage." },
                 new[] { "clue.unknown" },
                 "herb.ginger",
                 "herb.sage");

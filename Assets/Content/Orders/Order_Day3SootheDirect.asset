@@ -13,7 +13,11 @@ MonoBehaviour:
   m_Name: Order_Day3SootheDirect
   m_EditorClassIdentifier: Witch.Infrastructure::Witch.Infrastructure.Content.OrderDefinition
   stableId: order.day3.soothe-direct
-  clueText: Lavender and chamomile. I have heard enough church bells inside my skull.
-  clueIds: [clue.lavender.purple-bloom, clue.chamomile.apple-scent]
+  orderSentences:
+  - Lavender and chamomile.
+  - I have heard enough church bells inside my skull.
+  clueIds:
+  - clue.lavender.purple-bloom
+  - clue.chamomile.apple-scent
   firstHerbId: herb.lavender
   secondHerbId: herb.chamomile

@@ -13,7 +13,11 @@ MonoBehaviour:
   m_Name: Order_Day3Soothe04
   m_EditorClassIdentifier: Witch.Infrastructure::Witch.Infrastructure.Content.OrderDefinition
   stableId: order.day3.soothe-04
-  clueText: Lavender and chamomile, quickly. I have counted every ceiling spider twice.
-  clueIds: [clue.lavender.purple-bloom, clue.chamomile.apple-scent]
+  orderSentences:
+  - Lavender and chamomile, quickly.
+  - I have counted every ceiling spider twice.
+  clueIds:
+  - clue.lavender.purple-bloom
+  - clue.chamomile.apple-scent
   firstHerbId: herb.lavender
   secondHerbId: herb.chamomile

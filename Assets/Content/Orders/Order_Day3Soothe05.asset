@@ -13,7 +13,11 @@ MonoBehaviour:
   m_Name: Order_Day3Soothe05
   m_EditorClassIdentifier: Witch.Infrastructure::Witch.Infrastructure.Content.OrderDefinition
   stableId: order.day3.soothe-05
-  clueText: I need lavender and chamomile. If I stay awake longer, the moon may charge rent.
-  clueIds: [clue.lavender.purple-bloom, clue.chamomile.apple-scent]
+  orderSentences:
+  - I need lavender and chamomile.
+  - If I stay awake longer, the moon may charge rent.
+  clueIds:
+  - clue.lavender.purple-bloom
+  - clue.chamomile.apple-scent
   firstHerbId: herb.lavender
   secondHerbId: herb.chamomile

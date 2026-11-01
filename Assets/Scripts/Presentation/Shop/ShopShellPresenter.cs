@@ -609,7 +609,7 @@ namespace Witch.Presentation.Shop
                 if (arrival.Succeeded) audioService?.Play(GameAudioCueIds.CustomerBell);
                 if (arrival.Succeeded)
                 {
-                    hudView.SetCustomer(encounter.CustomerName, encounter.ClueText);
+                    hudView.SetCustomer(encounter.CustomerName, encounter.OrderSentences);
                 }
             }
         }
@@ -830,6 +830,10 @@ namespace Witch.Presentation.Shop
             groundHerbObject.SetActive(hasGroundHerb);
             if (hasGroundHerb) groundHerbText.text = "Ground\n" + DisplayName(session.GroundHerbId);
             bool hasPotion = session.PreparedRecipe != null;
+            if (!hasPotion && preparedPotionObject.activeSelf)
+            {
+                preparedPotionObject.GetComponent<PreparedPotionDragItem>()?.RestoreHome(false);
+            }
             preparedPotionObject.SetActive(hasPotion);
             if (hasPotion)
             {
@@ -986,7 +990,7 @@ namespace Witch.Presentation.Shop
                 .FirstOrDefault(e => e.Order != null && e.Order.OrderId == orderId);
 
             Debug.Log($"[Resume] order={orderId} found={encounter != null}");
-            if (encounter != null) hudView.SetCustomer(encounter.CustomerName, encounter.ClueText);
+            if (encounter != null) hudView.SetCustomer(encounter.CustomerName, encounter.OrderSentences);
 
             setTimerPaused?.Execute(ActiveSession, false); // clock continues from the remaining time
             SetStatus("The spell worked. Time is back. Serve the order again.");

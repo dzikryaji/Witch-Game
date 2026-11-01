@@ -7,6 +7,7 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.UI;
 using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 using UnityEngine.UI;
@@ -23,6 +24,67 @@ namespace Witch.Bootstrap.PlayModeTests
 {
     public sealed class ShopVerticalSlicePlayModeTests : InputTestFixture
     {
+        [SetUp]
+        public override void Setup()
+        {
+            DisableInputOwners();
+            base.Setup();
+        }
+
+        [TearDown]
+        public override void TearDown()
+        {
+            DisableInputOwners();
+            base.TearDown();
+        }
+
+        private static void DisableInputOwners()
+        {
+            foreach (ShopShellPresenter presenter in Object.FindObjectsByType<ShopShellPresenter>(
+                         FindObjectsInactive.Include,
+                         FindObjectsSortMode.None))
+            {
+                presenter.enabled = false;
+            }
+
+            foreach (InputSystemUIInputModule inputModule in Object.FindObjectsByType<InputSystemUIInputModule>(
+                         FindObjectsInactive.Include,
+                         FindObjectsSortMode.None))
+            {
+                inputModule.enabled = false;
+            }
+        }
+
+        [UnityTest]
+        public IEnumerator OrderBubblesMatchSentenceCountAndScrollbarNeed()
+        {
+            yield return LoadShop();
+            ShopHudView view = Object.FindAnyObjectByType<ShopHudView>();
+            ScrollRect scroll = GameObject.Find("OrderBubbleScrollView").GetComponent<ScrollRect>();
+
+            view.SetCustomer("Test Villager", new[] { "One sentence." });
+            yield return new WaitForSecondsRealtime(0.8f);
+
+            Assert.That(scroll.content.childCount, Is.EqualTo(1));
+            Assert.That(scroll.verticalScrollbar.gameObject.activeSelf, Is.False);
+
+            view.SetCustomer("Test Villager", new[] { "One.", "Two.", "Three.", "Four." });
+            yield return new WaitForSecondsRealtime(2f);
+
+            Assert.That(scroll.content.childCount, Is.EqualTo(4));
+            Assert.That(scroll.verticalScrollbar.gameObject.activeSelf, Is.True);
+            Assert.That(scroll.verticalNormalizedPosition, Is.LessThan(0.05f));
+
+            view.SetCustomer("Test Villager", new[] { "One.", "Two.", "Three.", "Four." });
+            yield return new WaitForSecondsRealtime(1.6f);
+            scroll.verticalScrollbar.GetComponent<OrderBubbleScrollInput>()
+                .OnPointerDown(new PointerEventData(EventSystem.current));
+            scroll.verticalNormalizedPosition = 1f;
+            yield return new WaitForSecondsRealtime(0.5f);
+
+            Assert.That(scroll.verticalNormalizedPosition, Is.GreaterThan(0.95f));
+        }
+
         [UnityTest]
         public IEnumerator RepeatedMintThenBorageGroundHerbsAndPotionsStayVisibleAndDraggable()
         {
@@ -394,7 +456,7 @@ namespace Witch.Bootstrap.PlayModeTests
                 "Guidebook Tutorial Highlight",
                 "Shelf Tutorial Highlight",
                 "Grinder Tutorial Highlight",
-                "Cauldron Tutorial Highlight"
+                "Potion Slot Tutorial Highlight"
             };
             foreach (string highlightName in tutorialHighlightNames)
             {
