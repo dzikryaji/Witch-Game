@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8cd729b84e9534c7dac3bfff94f98ea9, type: 3}
+  m_Name: RewindSymbolLibrary
+  m_EditorClassIdentifier: Witch.Presentation::Witch.Presentation.Rewind.RewindSymbolLibrary
+  entries:
+  - symbolKey: borage
+    sprite: {fileID: 21300000, guid: b488e6e0c16d44d10b0a755bf897600e, type: 3}
+  - symbolKey: chamomile
+    sprite: {fileID: 21300000, guid: a3ec0b9537a7b4c8992950fc43c72999, type: 3}
+  - symbolKey: cinnamon
+    sprite: {fileID: 21300000, guid: 6eb0ab9a22b3645a5b7eb7a3eb9e9740, type: 3}
+  - symbolKey: clove
+    sprite: {fileID: 21300000, guid: 030816f0481c2421da9c238ddea97882, type: 3}
+  - symbolKey: elderflower
+    sprite: {fileID: 21300000, guid: 1f019f9a9bd704ebba38dcead8280f37, type: 3}
+  - symbolKey: Cinnamon
+    sprite: {fileID: 21300000, guid: 6eb0ab9a22b3645a5b7eb7a3eb9e9740, type: 3}
+  - symbolKey: ginger
+    sprite: {fileID: 21300000, guid: 8e99e7a21ed5f4ab6b18b66291d4bfaa, type: 3}
+  - symbolKey: peppermint
+    sprite: {fileID: 21300000, guid: 28bed1a70c196401d92b13eee99db344, type: 3}
+  - symbolKey: henbane
+    sprite: {fileID: 21300000, guid: 221509c6c0e4243748b52233179c156f, type: 3}
