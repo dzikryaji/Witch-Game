@@ -19,3 +19,10 @@ MonoBehaviour:
   clueIds:
   - clue.warm.fireside
   - clue.cool.fever
+  contentsItems:
+  - categoryId: category.warm
+    name: Warming
+    description: Herbs that bring heat back to the body.
+  - categoryId: category.cool
+    name: Cooling
+    description: Herbs that bring heat down and calm the blood.

@@ -13,7 +13,9 @@ MonoBehaviour:
   m_Name: Order_DirectWarm
   m_EditorClassIdentifier: Witch.Infrastructure::Witch.Infrastructure.Content.OrderDefinition
   stableId: order.day1.direct-warm
-  clueText: I need ginger and cinnamon. Please do not improvise; I already did that once.
+  orderSentences:
+  - I need ginger and cinnamon.
+  - Please do not improvise; I already did that once.
   clueIds:
   - clue.ginger.knotted-root
   - clue.cinnamon.rolled-bark

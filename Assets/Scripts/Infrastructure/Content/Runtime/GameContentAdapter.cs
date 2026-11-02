@@ -54,7 +54,7 @@ namespace Witch.Infrastructure.Content
                     new OrderRequest(
                         definition.StableId,
                         new HerbPair(definition.FirstHerbId, definition.SecondHerbId)),
-                    definition.ClueText,
+                    definition.OrderSentences,
                     definition.ClueIds),
                 StringComparer.Ordinal);
             var customers = catalog.Customers.ToDictionary(
@@ -76,7 +76,11 @@ namespace Witch.Infrastructure.Content
                     definition.Title,
                     definition.CategoryId,
                     definition.ClueIds,
-                    definition.BodyText),
+                    definition.BodyText,
+                    definition.ContentsItems
+                        .Where(item => item != null)
+                        .Select(item => new GuidebookContentsItemContent(item.CategoryId, item.Name, item.Description))
+                        .ToList()),
                 StringComparer.Ordinal);
             var unlocks = catalog.CategoryUnlocks.Select(definition =>
                 new CategoryUnlockContent(

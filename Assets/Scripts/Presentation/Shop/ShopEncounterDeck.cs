@@ -42,7 +42,7 @@ namespace Witch.Presentation.Shop
                 template.CustomerId,
                 template.CustomerName,
                 new OrderRequest(orderId, template.Order.RequestedPair),
-                template.ClueText);
+                template.OrderSentences);
         }
 
         private int DrawRandomizedTemplateIndex(int admissionIndex)

@@ -13,7 +13,12 @@ MonoBehaviour:
   m_Name: Order_Day3SootheAlias
   m_EditorClassIdentifier: Witch.Infrastructure::Witch.Infrastructure.Content.OrderDefinition
   stableId: order.day3.soothe-alias
-  clueText: Lavender and chamomile, please. Sleep has stopped returning my letters.
-  clueIds: [clue.soothe.graveyard-nap, clue.lavender.purple-bloom, clue.chamomile.apple-scent]
+  orderSentences:
+  - Lavender and chamomile, please.
+  - Sleep has stopped returning my letters.
+  clueIds:
+  - clue.soothe.graveyard-nap
+  - clue.lavender.purple-bloom
+  - clue.chamomile.apple-scent
   firstHerbId: herb.lavender
   secondHerbId: herb.chamomile

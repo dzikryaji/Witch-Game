@@ -16,7 +16,6 @@ namespace Witch.Presentation.Shop
     {
         [Header("Authored View")]
         [SerializeField] private ShopHudView hudView;
-        [SerializeField] private Text guidebookText;
         [SerializeField] private Button[] herbButtons;
         [SerializeField] private HerbDragItem herbButtonPrefab;
         [SerializeField] private RectTransform herbButtonContainer;
@@ -35,9 +34,10 @@ namespace Witch.Presentation.Shop
         [SerializeField] private Button guidebookNextButton;
         [SerializeField] private Button pauseButton;
         [SerializeField] private GameObject guidebookPanel;
-        [SerializeField] private Text guidebookPageText;
+        [SerializeField] private GuidebookPageView guidebookLeftPage;
+        [SerializeField] private GuidebookPageView guidebookRightPage;
         [SerializeField] private Text guidebookPageNumberText;
-        [SerializeField] private Image guidebookIllustration;
+        [SerializeField] private Text guidebookLeftPageNumberText;
         [SerializeField] private Text grinderInputText;
         [SerializeField] private GameObject groundHerbObject;
         [SerializeField] private Text groundHerbText;
@@ -87,6 +87,7 @@ namespace Witch.Presentation.Shop
         private string loadedGrinderHerbId;
         private IReadOnlyList<GuidebookPageViewData> guidebookPages = Array.Empty<GuidebookPageViewData>();
         private int guidebookPageIndex;
+        private int guidebookSpreadCount => (guidebookPages.Count + 1) / 2;
 
         public bool IsInitialized => sessionStore != null;
         public GameSession ActiveSession => sessionStore?.ActiveSession;
@@ -97,7 +98,6 @@ namespace Witch.Presentation.Shop
         public bool MinigameIntroVisible => minigameIntroPopup != null && minigameIntroPopup.IsVisible;
         public bool HasAuthoredView => hudView != null
             && hudView.IsAuthored
-            && guidebookText != null
             && herbButtons != null
             && herbButtons.Length == 25
             && Array.TrueForAll(herbButtons, button => button != null)
@@ -116,9 +116,12 @@ namespace Witch.Presentation.Shop
             && guidebookNextButton != null
             && pauseButton != null
             && guidebookPanel != null
-            && guidebookPageText != null
+            && guidebookLeftPage != null
+            && guidebookLeftPage.IsAuthored
+            && guidebookRightPage != null
+            && guidebookRightPage.IsAuthored
             && guidebookPageNumberText != null
-            && guidebookIllustration != null
+            && guidebookLeftPageNumberText != null
             && grinderInputText != null
             && groundHerbObject != null
             && groundHerbText != null
@@ -208,7 +211,6 @@ namespace Witch.Presentation.Shop
             RequireAndBindAuthoredView();
             ConfigureHerbButtons();
             ConfigureGuidebook();
-            guidebookPanel.SetActive(true);
             hunterWarningPanel.SetActive(false);
             progressionPanel.SetActive(false);
             pausePanel.SetActive(false);
@@ -233,7 +235,7 @@ namespace Witch.Presentation.Shop
 
         private void Update()
         {
-            if (!viewBound || !IsInitialized || updateTimer == null || ActiveSession == null || Time.unscaledTime < nextRefresh)
+            if (!IsInitialized || updateTimer == null || ActiveSession == null || Time.unscaledTime < nextRefresh)
             {
                 return;
             }
@@ -485,13 +487,16 @@ namespace Witch.Presentation.Shop
         {
             if (guidebookPanel == null) return;
             guidebookPanel.SetActive(true);
+            guidebookPanel.GetComponent<Animator>().SetTrigger("Open");
             SetStatus("Guidebook stays on the table. Timer continues while you read.");
         }
 
         public void PreviousGuidebookPage()
         {
             if (guidebookPages.Count == 0) return;
-            guidebookPageIndex = (guidebookPageIndex - 1 + guidebookPages.Count) % guidebookPages.Count;
+            int spread = guidebookPageIndex / 2;
+            spread = (spread - 1 + guidebookSpreadCount) % guidebookSpreadCount; 
+            guidebookPageIndex = spread * 2;
             RenderGuidebookPage();
             audioService?.Play(GameAudioCueIds.GuidebookClose);
         }
@@ -499,7 +504,19 @@ namespace Witch.Presentation.Shop
         public void NextGuidebookPage()
         {
             if (guidebookPages.Count == 0) return;
-            guidebookPageIndex = (guidebookPageIndex + 1) % guidebookPages.Count;
+            int spread = guidebookPageIndex / 2; 
+            spread = (spread + 1) % guidebookSpreadCount; 
+            guidebookPageIndex = spread * 2; 
+            RenderGuidebookPage();
+            audioService?.Play(GameAudioCueIds.GuidebookOpen);
+        }
+
+        /// <summary>Opens the spread that contains <paramref name="pageIndex"/> (zero-based), e.g. from a Contents link.</summary>
+        public void GoToGuidebookPage(int pageIndex)
+        {
+            if (guidebookPages.Count == 0) return;
+            int page = Math.Max(0, Math.Min(pageIndex, guidebookPages.Count - 1));
+            guidebookPageIndex = page - (page % 2);
             RenderGuidebookPage();
             audioService?.Play(GameAudioCueIds.GuidebookOpen);
         }
@@ -592,7 +609,7 @@ namespace Witch.Presentation.Shop
                 if (arrival.Succeeded) audioService?.Play(GameAudioCueIds.CustomerBell);
                 if (arrival.Succeeded)
                 {
-                    hudView.SetCustomer(encounter.CustomerName, encounter.ClueText);
+                    hudView.SetCustomer(encounter.CustomerName, encounter.OrderSentences);
                 }
             }
         }
@@ -712,6 +729,8 @@ namespace Witch.Presentation.Shop
             if (guidebookButton != null) guidebookButton.onClick.AddListener(ToggleGuidebook);
             guidebookPreviousButton.onClick.AddListener(PreviousGuidebookPage);
             guidebookNextButton.onClick.AddListener(NextGuidebookPage);
+            guidebookLeftPage.BindPageLinks(GoToGuidebookPage);
+            guidebookRightPage.BindPageLinks(GoToGuidebookPage);
             pauseButton.onClick.AddListener(TogglePause);
             resumeButton.onClick.AddListener(TogglePause);
             mainMenuButton.onClick.AddListener(OnMainMenuClicked);
@@ -811,6 +830,10 @@ namespace Witch.Presentation.Shop
             groundHerbObject.SetActive(hasGroundHerb);
             if (hasGroundHerb) groundHerbText.text = "Ground\n" + DisplayName(session.GroundHerbId);
             bool hasPotion = session.PreparedRecipe != null;
+            if (!hasPotion && preparedPotionObject.activeSelf)
+            {
+                preparedPotionObject.GetComponent<PreparedPotionDragItem>()?.RestoreHome(false);
+            }
             preparedPotionObject.SetActive(hasPotion);
             if (hasPotion)
             {
@@ -922,16 +945,27 @@ namespace Witch.Presentation.Shop
 
         private void RenderGuidebookPage()
         {
-            GuidebookPageViewData page = guidebookPages[Math.Min(guidebookPageIndex, guidebookPages.Count - 1)];
-            guidebookText.text = page.Text;
-            guidebookPageText.text = page.Text;
-            int totalPages = guidebookPages.Max(value => value.PageNumber);
-            guidebookPageNumberText.text = page.PageNumber + " / " + totalPages;
-            if (guidebookIllustration != null)
-            {
-                guidebookIllustration.sprite = page.Illustration;
-                guidebookIllustration.gameObject.SetActive(page.Illustration != null);
-            }
+            int leftIndex = guidebookPageIndex - (guidebookPageIndex % 2);
+            int rightIndex = leftIndex + 1;
+
+            guidebookLeftPage.Render(PageAt(leftIndex));
+            guidebookRightPage.Render(PageAt(rightIndex));
+
+            // Left page = odd numbers, right page = even numbers, each out of the total.
+            guidebookLeftPageNumberText.text = PageNumberLabel(leftIndex);
+            guidebookPageNumberText.text = PageNumberLabel(rightIndex);
+        }
+
+        private string PageNumberLabel(int index)
+        {
+            return index >= 0 && index < guidebookPages.Count
+                ? (index + 1) + " / " + guidebookPages.Count
+                : string.Empty;
+        }
+
+        private GuidebookPageViewData PageAt(int index)
+        {
+            return index >= 0 && index < guidebookPages.Count ? guidebookPages[index] : null;
         }
 
         private void SetTutorialHighlight(int activeIndex)
@@ -956,7 +990,7 @@ namespace Witch.Presentation.Shop
                 .FirstOrDefault(e => e.Order != null && e.Order.OrderId == orderId);
 
             Debug.Log($"[Resume] order={orderId} found={encounter != null}");
-            if (encounter != null) hudView.SetCustomer(encounter.CustomerName, encounter.ClueText);
+            if (encounter != null) hudView.SetCustomer(encounter.CustomerName, encounter.OrderSentences);
 
             setTimerPaused?.Execute(ActiveSession, false); // clock continues from the remaining time
             SetStatus("The spell worked. Time is back. Serve the order again.");
