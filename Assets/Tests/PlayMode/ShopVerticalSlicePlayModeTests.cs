@@ -86,6 +86,66 @@ namespace Witch.Bootstrap.PlayModeTests
         }
 
         [UnityTest]
+        public IEnumerator OrderBubbleFitsTextAndAlignsRight()
+        {
+            yield return LoadShop();
+            ShopHudView view = Object.FindAnyObjectByType<ShopHudView>();
+            ScrollRect scroll = GameObject.Find("OrderBubbleScrollView").GetComponent<ScrollRect>();
+
+            view.SetCustomer("Test Villager", new[] { "One sentence." });
+            yield return new WaitForSecondsRealtime(0.8f);
+
+            RectTransform shortBubble = (RectTransform)scroll.content.GetChild(0);
+            float shortBubbleHeight = shortBubble.rect.height;
+            Assert.That(shortBubble.rect.width, Is.LessThan(scroll.content.rect.width));
+            var contentCorners = new Vector3[4];
+            var bubbleCorners = new Vector3[4];
+            var viewportCorners = new Vector3[4];
+            scroll.content.GetWorldCorners(contentCorners);
+            shortBubble.GetWorldCorners(bubbleCorners);
+            scroll.viewport.GetWorldCorners(viewportCorners);
+            Assert.That(bubbleCorners[2].x, Is.EqualTo(contentCorners[2].x).Within(1f));
+            Assert.That(bubbleCorners[0].y, Is.EqualTo(viewportCorners[0].y).Within(1f));
+
+            view.SetCustomer("Test Villager", new[]
+            {
+                "This deliberately long order sentence must wrap across several lines so its bubble grows in both width and height to fit all text."
+            });
+            yield return new WaitForSecondsRealtime(0.8f);
+
+            RectTransform longBubble = (RectTransform)scroll.content.GetChild(0);
+            Assert.That(longBubble.rect.width, Is.EqualTo(scroll.content.rect.width).Within(1f));
+            Assert.That(longBubble.rect.height, Is.GreaterThan(shortBubbleHeight));
+        }
+
+        [UnityTest]
+        public IEnumerator OrderBubblesShiftUpBeforeNextBubbleSlidesIn()
+        {
+            yield return LoadShop();
+            ShopHudView view = Object.FindAnyObjectByType<ShopHudView>();
+            ScrollRect scroll = GameObject.Find("OrderBubbleScrollView").GetComponent<ScrollRect>();
+
+            view.SetCustomer("Test Villager", new[] { "One.", "Two.", "Three." });
+            yield return new WaitForSecondsRealtime(0.6f);
+
+            RectTransform first = (RectTransform)scroll.content.GetChild(0);
+            RectTransform second = (RectTransform)scroll.content.GetChild(1);
+            float bottomSlot = first.position.y;
+            Assert.That(first.gameObject.activeSelf, Is.True);
+            Assert.That(second.gameObject.activeSelf, Is.False);
+
+            yield return new WaitForSecondsRealtime(0.22f);
+
+            Assert.That(second.gameObject.activeSelf, Is.True);
+            Assert.That(second.GetComponent<CanvasGroup>().alpha, Is.EqualTo(0f).Within(0.01f));
+            Assert.That(first.position.y, Is.GreaterThan(bottomSlot));
+
+            yield return new WaitForSecondsRealtime(0.3f);
+
+            Assert.That(second.GetComponent<CanvasGroup>().alpha, Is.GreaterThan(0f));
+        }
+
+        [UnityTest]
         public IEnumerator RepeatedMintThenBorageGroundHerbsAndPotionsStayVisibleAndDraggable()
         {
             yield return LoadShop();
