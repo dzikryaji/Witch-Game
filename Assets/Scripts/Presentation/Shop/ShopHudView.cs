@@ -25,6 +25,7 @@ namespace Witch.Presentation.Shop
         [SerializeField] private UnityEngine.UI.ScrollRect orderBubbleScrollRect;
         [SerializeField] private RectTransform customerPortrait;
         [SerializeField] private CanvasGroup customerPortraitCanvasGroup;
+        [SerializeField] private ShopDayCycleView dayCycleView;
 
         private Coroutine entranceRoutine;
         private readonly List<RectTransform> orderBubbles = new List<RectTransform>();
@@ -46,7 +47,9 @@ namespace Witch.Presentation.Shop
             && orderBubbleContent != null
             && orderBubbleScrollRect != null
             && customerPortrait != null
-            && customerPortraitCanvasGroup != null;
+            && customerPortraitCanvasGroup != null
+            && dayCycleView != null
+            && dayCycleView.IsAuthored;
 
         private void Awake()
         {
@@ -134,6 +137,7 @@ namespace Witch.Presentation.Shop
             if (session == null) return;
 
             TimeSpan remaining = session.TimerState.RemainingTime;
+            dayCycleView?.Render(remaining, session.DayStartSnapshot.TimerDuration);
             dayText.text = "Day " + session.RunState.CurrentDayNumber + "/14";
             timerText.text = "Time  " + ((int)remaining.TotalMinutes).ToString("00") + ":" + remaining.Seconds.ToString("00");
             moneyText.text = "Coins: $" + session.RunState.Money;

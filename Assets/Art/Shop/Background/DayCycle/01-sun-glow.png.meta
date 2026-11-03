@@ -1,0 +1,1822 @@
+fileFormatVersion: 2
+guid: 828f35fe099e446feb468ceb3cbcfd07
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 415931767845922634
+    second: 01-sun-glow_0
+  - first:
+      213: -5182587879092701405
+    second: 01-sun-glow_1
+  - first:
+      213: -1722612725127000509
+    second: 01-sun-glow_2
+  - first:
+      213: -7334532635735174768
+    second: 01-sun-glow_3
+  - first:
+      213: -4947383053964737649
+    second: 01-sun-glow_4
+  - first:
+      213: -4692899730275423964
+    second: 01-sun-glow_5
+  - first:
+      213: 7577421373722426205
+    second: 01-sun-glow_6
+  - first:
+      213: 2760939698910913429
+    second: 01-sun-glow_7
+  - first:
+      213: 6587691941646393632
+    second: 01-sun-glow_8
+  - first:
+      213: -1772404415609968856
+    second: 01-sun-glow_9
+  - first:
+      213: 4663741759074883291
+    second: 01-sun-glow_10
+  - first:
+      213: -8827017307309594688
+    second: 01-sun-glow_11
+  - first:
+      213: -2904814725019934588
+    second: 01-sun-glow_12
+  - first:
+      213: 4277641718449069851
+    second: 01-sun-glow_13
+  - first:
+      213: 6021537079754524978
+    second: 01-sun-glow_14
+  - first:
+      213: -4340218390555897059
+    second: 01-sun-glow_15
+  - first:
+      213: -5038339420848596846
+    second: 01-sun-glow_16
+  - first:
+      213: -1398774367607075670
+    second: 01-sun-glow_17
+  - first:
+      213: -3824078538224560178
+    second: 01-sun-glow_18
+  - first:
+      213: 2489481848348045886
+    second: 01-sun-glow_19
+  - first:
+      213: -8802662327705217333
+    second: 01-sun-glow_20
+  - first:
+      213: 8663639051685390408
+    second: 01-sun-glow_21
+  - first:
+      213: 4698982625845095368
+    second: 01-sun-glow_22
+  - first:
+      213: -5654305361945476505
+    second: 01-sun-glow_23
+  - first:
+      213: -1930633199591650528
+    second: 01-sun-glow_24
+  - first:
+      213: -410932067149318719
+    second: 01-sun-glow_25
+  - first:
+      213: 8039806310977894426
+    second: 01-sun-glow_26
+  - first:
+      213: 7239107105564978076
+    second: 01-sun-glow_27
+  - first:
+      213: 7998820020960550308
+    second: 01-sun-glow_28
+  - first:
+      213: 5142041402196589840
+    second: 01-sun-glow_29
+  - first:
+      213: 6041872316869924578
+    second: 01-sun-glow_30
+  - first:
+      213: 9009755555440464132
+    second: 01-sun-glow_31
+  - first:
+      213: -4160199438889816936
+    second: 01-sun-glow_32
+  - first:
+      213: 7394207174093132632
+    second: 01-sun-glow_33
+  - first:
+      213: 7610569990012013639
+    second: 01-sun-glow_34
+  - first:
+      213: -6278485738127649353
+    second: 01-sun-glow_35
+  - first:
+      213: -2738963324564066141
+    second: 01-sun-glow_36
+  - first:
+      213: 7344232206558748813
+    second: 01-sun-glow_37
+  - first:
+      213: 870970516251698402
+    second: 01-sun-glow_38
+  - first:
+      213: -3313535495451003134
+    second: 01-sun-glow_39
+  - first:
+      213: 2871839091698783944
+    second: 01-sun-glow_40
+  - first:
+      213: 8128604006378139732
+    second: 01-sun-glow_41
+  - first:
+      213: -8702101421181466883
+    second: 01-sun-glow_42
+  - first:
+      213: -3626684166227108047
+    second: 01-sun-glow_43
+  - first:
+      213: -178896505918459040
+    second: 01-sun-glow_44
+  - first:
+      213: 7129353541887091059
+    second: 01-sun-glow_45
+  - first:
+      213: 2281790279249564592
+    second: 01-sun-glow_46
+  - first:
+      213: 1891137837464814799
+    second: 01-sun-glow_47
+  - first:
+      213: 5163520214785852458
+    second: 01-sun-glow_48
+  - first:
+      213: -297412126779691398
+    second: 01-sun-glow_49
+  - first:
+      213: -4679664389592768494
+    second: 01-sun-glow_50
+  - first:
+      213: -784012375829126052
+    second: 01-sun-glow_51
+  - first:
+      213: 3226138057073627346
+    second: 01-sun-glow_52
+  - first:
+      213: -2204978062480809347
+    second: 01-sun-glow_53
+  - first:
+      213: -1140239703147677794
+    second: 01-sun-glow_54
+  - first:
+      213: 7267018454318094032
+    second: 01-sun-glow_55
+  - first:
+      213: 3063551530799291292
+    second: 01-sun-glow_56
+  - first:
+      213: 2858824875631365267
+    second: 01-sun-glow_57
+  - first:
+      213: 1231373826164642302
+    second: 01-sun-glow_58
+  - first:
+      213: -4059091377999328128
+    second: 01-sun-glow_59
+  - first:
+      213: 187863173185299250
+    second: 01-sun-glow_60
+  - first:
+      213: -7226853617531866875
+    second: 01-sun-glow_61
+  - first:
+      213: 2494664901039339060
+    second: 01-sun-glow_62
+  - first:
+      213: 6364138434859747064
+    second: 01-sun-glow_63
+  - first:
+      213: -2059668664296140978
+    second: 01-sun-glow_64
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 1
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationMethod: 0
+  spriteTessellationDetail: -1
+  spriteGeometrySubdivision: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: 01-sun-glow_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 1230
+        height: 1278
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a47a1493dbfa5c500800000000000000
+      internalID: 415931767845922634
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 01-sun-glow_1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1267
+        width: 9
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3273f6158cfb318b0800000000000000
+      internalID: -5182587879092701405
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 01-sun-glow_2
+      rect:
+        serializedVersion: 2
+        x: 1198
+        y: 1202
+        width: 17
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 34ecc317adc0818e0800000000000000
+      internalID: -1722612725127000509
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 01-sun-glow_3
+      rect:
+        serializedVersion: 2
+        x: 38
+        y: 1143
+        width: 18
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 091de758d61863a90800000000000000
+      internalID: -7334532635735174768
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 01-sun-glow_4
+      rect:
+        serializedVersion: 2
+        x: 67
+        y: 1162
+        width: 9
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f8305a4235d575bb0800000000000000
+      internalID: -4947383053964737649
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 01-sun-glow_5
+      rect:
+        serializedVersion: 2
+        x: 1185
+        y: 1137
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 42928623f887fdeb0800000000000000
+      internalID: -4692899730275423964
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 01-sun-glow_6
+      rect:
+        serializedVersion: 2
+        x: 1182
+        y: 1119
+        width: 9
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d5b7d2ea798682960800000000000000
+      internalID: 7577421373722426205
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 01-sun-glow_7
+      rect:
+        serializedVersion: 2
+        x: 1198
+        y: 1111
+        width: 7
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 593ebdf2704d05620800000000000000
+      internalID: 2760939698910913429
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 01-sun-glow_8
+      rect:
+        serializedVersion: 2
+        x: 1204
+        y: 1109
+        width: 9
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0216987faee2c6b50800000000000000
+      internalID: 6587691941646393632
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 01-sun-glow_9
+      rect:
+        serializedVersion: 2
+        x: 40
+        y: 1081
+        width: 8
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 827eb3913972767e0800000000000000
+      internalID: -1772404415609968856
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 01-sun-glow_10
+      rect:
+        serializedVersion: 2
+        x: 83
+        y: 1085
+        width: 7
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bd650d99b60f8b040800000000000000
+      internalID: 4663741759074883291
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 01-sun-glow_11
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 1061
+        width: 8
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0c7269bc682208580800000000000000
+      internalID: -8827017307309594688
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 01-sun-glow_12
+      rect:
+        serializedVersion: 2
+        x: 75
+        y: 1048
+        width: 23
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 480ecd0e56600b7d0800000000000000
+      internalID: -2904814725019934588
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 01-sun-glow_13
+      rect:
+        serializedVersion: 2
+        x: 1115
+        y: 937
+        width: 82
+        height: 143
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b1f5c80aa7c3d5b30800000000000000
+      internalID: 4277641718449069851
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 01-sun-glow_14
+      rect:
+        serializedVersion: 2
+        x: 34
+        y: 984
+        width: 32
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2398c90121cc09350800000000000000
+      internalID: 6021537079754524978
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 01-sun-glow_15
+      rect:
+        serializedVersion: 2
+        x: 1192
+        y: 1002
+        width: 7
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d135c478e5274c3c0800000000000000
+      internalID: -4340218390555897059
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 01-sun-glow_16
+      rect:
+        serializedVersion: 2
+        x: 1206
+        y: 1002
+        width: 11
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 298d872bdf8341ab0800000000000000
+      internalID: -5038339420848596846
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 01-sun-glow_17
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 978
+        width: 8
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aaccbd9af1e869ce0800000000000000
+      internalID: -1398774367607075670
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 01-sun-glow_18
+      rect:
+        serializedVersion: 2
+        x: 55
+        y: 969
+        width: 13
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ec71eef84d42eeac0800000000000000
+      internalID: -3824078538224560178
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 01-sun-glow_19
+      rect:
+        serializedVersion: 2
+        x: 13
+        y: 884
+        width: 41
+        height: 58
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e32719d1d8a6c8220800000000000000
+      internalID: 2489481848348045886
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 01-sun-glow_20
+      rect:
+        serializedVersion: 2
+        x: 1173
+        y: 903
+        width: 14
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bc6da6f5049a6d580800000000000000
+      internalID: -8802662327705217333
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 01-sun-glow_21
+      rect:
+        serializedVersion: 2
+        x: 1179
+        y: 917
+        width: 20
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 848e8e9c0dd6b3870800000000000000
+      internalID: 8663639051685390408
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 01-sun-glow_22
+      rect:
+        serializedVersion: 2
+        x: 1187
+        y: 903
+        width: 6
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8cbaa3b4dc3263140800000000000000
+      internalID: 4698982625845095368
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 01-sun-glow_23
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 833
+        width: 27
+        height: 58
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 76247a92b3fd781b0800000000000000
+      internalID: -5654305361945476505
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 01-sun-glow_24
+      rect:
+        serializedVersion: 2
+        x: 1189
+        y: 887
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 02b83ca75530535e0800000000000000
+      internalID: -1930633199591650528
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 01-sun-glow_25
+      rect:
+        serializedVersion: 2
+        x: 1192
+        y: 856
+        width: 17
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1c57fbe46731c4af0800000000000000
+      internalID: -410932067149318719
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 01-sun-glow_26
+      rect:
+        serializedVersion: 2
+        x: 1185
+        y: 858
+        width: 8
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a18f7cc3e31239f60800000000000000
+      internalID: 8039806310977894426
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 01-sun-glow_27
+      rect:
+        serializedVersion: 2
+        x: 1208
+        y: 862
+        width: 9
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c9be43ede89767460800000000000000
+      internalID: 7239107105564978076
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 01-sun-glow_28
+      rect:
+        serializedVersion: 2
+        x: 22
+        y: 840
+        width: 9
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4add2a3fd64810f60800000000000000
+      internalID: 7998820020960550308
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 01-sun-glow_29
+      rect:
+        serializedVersion: 2
+        x: 8
+        y: 814
+        width: 15
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 01d774e59633c5740800000000000000
+      internalID: 5142041402196589840
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 01-sun-glow_30
+      rect:
+        serializedVersion: 2
+        x: 1222
+        y: 808
+        width: 6
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2e65c496cda09d350800000000000000
+      internalID: 6041872316869924578
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 01-sun-glow_31
+      rect:
+        serializedVersion: 2
+        x: 1155
+        y: 765
+        width: 7
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 401912321f4190d70800000000000000
+      internalID: 9009755555440464132
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 01-sun-glow_32
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 667
+        width: 7
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 89c613ae6a00446c0800000000000000
+      internalID: -4160199438889816936
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 01-sun-glow_33
+      rect:
+        serializedVersion: 2
+        x: 103
+        y: 646
+        width: 7
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8535777af308d9660800000000000000
+      internalID: 7394207174093132632
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 01-sun-glow_34
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 487
+        width: 5
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 74c0ae8551d2e9960800000000000000
+      internalID: 7610569990012013639
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 01-sun-glow_35
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 446
+        width: 29
+        height: 44
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7b59b8b6c765ed8a0800000000000000
+      internalID: -6278485738127649353
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 01-sun-glow_36
+      rect:
+        serializedVersion: 2
+        x: 24
+        y: 392
+        width: 7
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3a039823e5f3df9d0800000000000000
+      internalID: -2738963324564066141
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 01-sun-glow_37
+      rect:
+        serializedVersion: 2
+        x: 30
+        y: 369
+        width: 42
+        height: 41
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d80eaebc744fbe560800000000000000
+      internalID: 7344232206558748813
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 01-sun-glow_38
+      rect:
+        serializedVersion: 2
+        x: 1157
+        y: 193
+        width: 73
+        height: 230
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2e46507e11f461c00800000000000000
+      internalID: 870970516251698402
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 01-sun-glow_39
+      rect:
+        serializedVersion: 2
+        x: 57
+        y: 355
+        width: 7
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 207bef2d505f302d0800000000000000
+      internalID: -3313535495451003134
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 01-sun-glow_40
+      rect:
+        serializedVersion: 2
+        x: 34
+        y: 348
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8c659c03072dad720800000000000000
+      internalID: 2871839091698783944
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 01-sun-glow_41
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 333
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4507cffc64a9ec070800000000000000
+      internalID: 8128604006378139732
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 01-sun-glow_42
+      rect:
+        serializedVersion: 2
+        x: 55
+        y: 335
+        width: 7
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: df68e07fcdceb3780800000000000000
+      internalID: -8702101421181466883
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 01-sun-glow_43
+      rect:
+        serializedVersion: 2
+        x: 16
+        y: 314
+        width: 7
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 13fdf7f37fd6badc0800000000000000
+      internalID: -3626684166227108047
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 01-sun-glow_44
+      rect:
+        serializedVersion: 2
+        x: 75
+        y: 313
+        width: 7
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 063fb21639e648df0800000000000000
+      internalID: -178896505918459040
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 01-sun-glow_45
+      rect:
+        serializedVersion: 2
+        x: 81
+        y: 317
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3716a5ef54d80f260800000000000000
+      internalID: 7129353541887091059
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 01-sun-glow_46
+      rect:
+        serializedVersion: 2
+        x: 87
+        y: 314
+        width: 9
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0b31c966b2c8aaf10800000000000000
+      internalID: 2281790279249564592
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 01-sun-glow_47
+      rect:
+        serializedVersion: 2
+        x: 63
+        y: 240
+        width: 37
+        height: 62
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fc4046fe7dbae3a10800000000000000
+      internalID: 1891137837464814799
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 01-sun-glow_48
+      rect:
+        serializedVersion: 2
+        x: 86
+        y: 161
+        width: 18
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a240cd0274288a740800000000000000
+      internalID: 5163520214785852458
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 01-sun-glow_49
+      rect:
+        serializedVersion: 2
+        x: 1177
+        y: 140
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a7e27671f316fdbf0800000000000000
+      internalID: -297412126779691398
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 01-sun-glow_50
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 74
+        width: 14
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2102746180e7e0fb0800000000000000
+      internalID: -4679664389592768494
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 01-sun-glow_51
+      rect:
+        serializedVersion: 2
+        x: 289
+        y: 72
+        width: 9
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c54e137e5e0ae15f0800000000000000
+      internalID: -784012375829126052
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 01-sun-glow_52
+      rect:
+        serializedVersion: 2
+        x: 332
+        y: 62
+        width: 74
+        height: 61
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2d01e38587b85cc20800000000000000
+      internalID: 3226138057073627346
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 01-sun-glow_53
+      rect:
+        serializedVersion: 2
+        x: 405
+        y: 11
+        width: 86
+        height: 80
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d726d4872285661e0800000000000000
+      internalID: -2204978062480809347
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 01-sun-glow_54
+      rect:
+        serializedVersion: 2
+        x: 798
+        y: 23
+        width: 174
+        height: 89
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e97f51ff70e0d20f0800000000000000
+      internalID: -1140239703147677794
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 01-sun-glow_55
+      rect:
+        serializedVersion: 2
+        x: 973
+        y: 67
+        width: 7
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0d696d928c2a9d460800000000000000
+      internalID: 7267018454318094032
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 01-sun-glow_56
+      rect:
+        serializedVersion: 2
+        x: 985
+        y: 41
+        width: 38
+        height: 46
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c9b5568c2ebe38a20800000000000000
+      internalID: 3063551530799291292
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 01-sun-glow_57
+      rect:
+        serializedVersion: 2
+        x: 144
+        y: 21
+        width: 17
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 39cce03e3169ca720800000000000000
+      internalID: 2858824875631365267
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 01-sun-glow_58
+      rect:
+        serializedVersion: 2
+        x: 386
+        y: 29
+        width: 18
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ef1d14688f7b61110800000000000000
+      internalID: 1231373826164642302
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 01-sun-glow_59
+      rect:
+        serializedVersion: 2
+        x: 469
+        y: 11
+        width: 30
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 08ccf7fc5e53ba7c0800000000000000
+      internalID: -4059091377999328128
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 01-sun-glow_60
+      rect:
+        serializedVersion: 2
+        x: 761
+        y: 27
+        width: 15
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 23366188f8c6b9200800000000000000
+      internalID: 187863173185299250
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 01-sun-glow_61
+      rect:
+        serializedVersion: 2
+        x: 769
+        y: 14
+        width: 29
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5013443acee05bb90800000000000000
+      internalID: -7226853617531866875
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 01-sun-glow_62
+      rect:
+        serializedVersion: 2
+        x: 390
+        y: 7
+        width: 18
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 436b51c9284de9220800000000000000
+      internalID: 2494664901039339060
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 01-sun-glow_63
+      rect:
+        serializedVersion: 2
+        x: 453
+        y: 9
+        width: 7
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8f6c9371036f15850800000000000000
+      internalID: 6364138434859747064
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 01-sun-glow_64
+      rect:
+        serializedVersion: 2
+        x: 744
+        y: 7
+        width: 12
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e4f00ad23469a63e0800000000000000
+      internalID: -2059668664296140978
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      01-sun-glow_0: 415931767845922634
+      01-sun-glow_1: -5182587879092701405
+      01-sun-glow_10: 4663741759074883291
+      01-sun-glow_11: -8827017307309594688
+      01-sun-glow_12: -2904814725019934588
+      01-sun-glow_13: 4277641718449069851
+      01-sun-glow_14: 6021537079754524978
+      01-sun-glow_15: -4340218390555897059
+      01-sun-glow_16: -5038339420848596846
+      01-sun-glow_17: -1398774367607075670
+      01-sun-glow_18: -3824078538224560178
+      01-sun-glow_19: 2489481848348045886
+      01-sun-glow_2: -1722612725127000509
+      01-sun-glow_20: -8802662327705217333
+      01-sun-glow_21: 8663639051685390408
+      01-sun-glow_22: 4698982625845095368
+      01-sun-glow_23: -5654305361945476505
+      01-sun-glow_24: -1930633199591650528
+      01-sun-glow_25: -410932067149318719
+      01-sun-glow_26: 8039806310977894426
+      01-sun-glow_27: 7239107105564978076
+      01-sun-glow_28: 7998820020960550308
+      01-sun-glow_29: 5142041402196589840
+      01-sun-glow_3: -7334532635735174768
+      01-sun-glow_30: 6041872316869924578
+      01-sun-glow_31: 9009755555440464132
+      01-sun-glow_32: -4160199438889816936
+      01-sun-glow_33: 7394207174093132632
+      01-sun-glow_34: 7610569990012013639
+      01-sun-glow_35: -6278485738127649353
+      01-sun-glow_36: -2738963324564066141
+      01-sun-glow_37: 7344232206558748813
+      01-sun-glow_38: 870970516251698402
+      01-sun-glow_39: -3313535495451003134
+      01-sun-glow_4: -4947383053964737649
+      01-sun-glow_40: 2871839091698783944
+      01-sun-glow_41: 8128604006378139732
+      01-sun-glow_42: -8702101421181466883
+      01-sun-glow_43: -3626684166227108047
+      01-sun-glow_44: -178896505918459040
+      01-sun-glow_45: 7129353541887091059
+      01-sun-glow_46: 2281790279249564592
+      01-sun-glow_47: 1891137837464814799
+      01-sun-glow_48: 5163520214785852458
+      01-sun-glow_49: -297412126779691398
+      01-sun-glow_5: -4692899730275423964
+      01-sun-glow_50: -4679664389592768494
+      01-sun-glow_51: -784012375829126052
+      01-sun-glow_52: 3226138057073627346
+      01-sun-glow_53: -2204978062480809347
+      01-sun-glow_54: -1140239703147677794
+      01-sun-glow_55: 7267018454318094032
+      01-sun-glow_56: 3063551530799291292
+      01-sun-glow_57: 2858824875631365267
+      01-sun-glow_58: 1231373826164642302
+      01-sun-glow_59: -4059091377999328128
+      01-sun-glow_6: 7577421373722426205
+      01-sun-glow_60: 187863173185299250
+      01-sun-glow_61: -7226853617531866875
+      01-sun-glow_62: 2494664901039339060
+      01-sun-glow_63: 6364138434859747064
+      01-sun-glow_64: -2059668664296140978
+      01-sun-glow_7: 2760939698910913429
+      01-sun-glow_8: 6587691941646393632
+      01-sun-glow_9: -1772404415609968856
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
