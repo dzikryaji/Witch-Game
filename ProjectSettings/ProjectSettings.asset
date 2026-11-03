@@ -172,7 +172,7 @@ PlayerSettings:
   applicationIdentifier:
     Standalone: com.dzikryaji.witch
   buildNumber:
-    Standalone: 1
+    Standalone: 2
     VisionOS: 0
     iPhone: 0
     tvOS: 0
