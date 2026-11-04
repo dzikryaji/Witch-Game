@@ -36,6 +36,12 @@ namespace Witch.Presentation.Shop
         [SerializeField] private GameObject guidebookPanel;
         [SerializeField] private GuidebookPageView guidebookLeftPage;
         [SerializeField] private GuidebookPageView guidebookRightPage;
+        [Tooltip("Optional. Without it the guidebook changes pages instantly.")]
+        [SerializeField] private PageFlipAnimator guidebookFlipAnimator;
+        [SerializeField] private GuidebookPageView guidebookFlipFront;
+        [SerializeField] private GuidebookPageView guidebookFlipBack;
+        [Tooltip("Optional. Jumps back to the Contents spread; hidden while the Contents spread is open.")]
+        [SerializeField] private Button guidebookContentsButton;
         [SerializeField] private Text guidebookPageNumberText;
         [SerializeField] private Text guidebookLeftPageNumberText;
         [SerializeField] private Text grinderInputText;
@@ -488,37 +494,85 @@ namespace Witch.Presentation.Shop
             if (guidebookPanel == null) return;
             guidebookPanel.SetActive(true);
             guidebookPanel.GetComponent<Animator>().SetTrigger("Open");
+            // A turn interrupted by hiding the book leaves the two pages out of step; redraw them.
+            if (!GuidebookTurning && guidebookPages.Count > 0) RenderGuidebookPage();
             SetStatus("Guidebook stays on the table. Timer continues while you read.");
         }
 
         public void PreviousGuidebookPage()
         {
-            if (guidebookPages.Count == 0) return;
+            if (guidebookPages.Count == 0 || GuidebookTurning) return;
             int spread = guidebookPageIndex / 2;
-            spread = (spread - 1 + guidebookSpreadCount) % guidebookSpreadCount; 
-            guidebookPageIndex = spread * 2;
-            RenderGuidebookPage();
+            spread = (spread - 1 + guidebookSpreadCount) % guidebookSpreadCount;
+            TurnGuidebookTo(spread * 2, FlipDirection.Backward);
             audioService?.Play(GameAudioCueIds.GuidebookClose);
         }
 
         public void NextGuidebookPage()
         {
-            if (guidebookPages.Count == 0) return;
-            int spread = guidebookPageIndex / 2; 
-            spread = (spread + 1) % guidebookSpreadCount; 
-            guidebookPageIndex = spread * 2; 
-            RenderGuidebookPage();
+            if (guidebookPages.Count == 0 || GuidebookTurning) return;
+            int spread = guidebookPageIndex / 2;
+            spread = (spread + 1) % guidebookSpreadCount;
+            TurnGuidebookTo(spread * 2, FlipDirection.Forward);
             audioService?.Play(GameAudioCueIds.GuidebookOpen);
         }
 
         /// <summary>Opens the spread that contains <paramref name="pageIndex"/> (zero-based), e.g. from a Contents link.</summary>
         public void GoToGuidebookPage(int pageIndex)
         {
-            if (guidebookPages.Count == 0) return;
+            if (guidebookPages.Count == 0 || GuidebookTurning) return;
             int page = Math.Max(0, Math.Min(pageIndex, guidebookPages.Count - 1));
-            guidebookPageIndex = page - (page % 2);
-            RenderGuidebookPage();
+            int target = page - (page % 2);
+            int current = guidebookPageIndex - (guidebookPageIndex % 2);
+            TurnGuidebookTo(target, target >= current ? FlipDirection.Forward : FlipDirection.Backward);
             audioService?.Play(GameAudioCueIds.GuidebookOpen);
+        }
+
+        /// <summary>Turns straight back to the Contents page (always the first page of the guidebook).</summary>
+        public void OpenGuidebookContents()
+        {
+            GoToGuidebookPage(0);
+        }
+
+        private bool GuidebookTurning => guidebookFlipAnimator != null && guidebookFlipAnimator.IsPlaying;
+
+        /// <summary>
+        /// Moves to the spread whose left page is <paramref name="targetLeftIndex"/>. With a page-turn
+        /// animator the turning page shows the old page on its front and the new page on its back;
+        /// without one (or while the book is hidden) the pages change instantly.
+        /// </summary>
+        private void TurnGuidebookTo(int targetLeftIndex, FlipDirection direction)
+        {
+            int currentLeftIndex = guidebookPageIndex - (guidebookPageIndex % 2);
+            guidebookPageIndex = targetLeftIndex;
+
+            bool canAnimate = targetLeftIndex != currentLeftIndex
+                && guidebookFlipAnimator != null
+                && guidebookFlipAnimator.isActiveAndEnabled
+                && guidebookFlipFront != null
+                && guidebookFlipBack != null;
+            if (!canAnimate)
+            {
+                RenderGuidebookPage();
+                return;
+            }
+
+            SetGuidebookContentsButtonVisible(false); // it does not turn with the page; bring it back on landing
+            // Everything is rendered in the same frame as Play, so nothing flashes.
+            if (direction == FlipDirection.Forward)
+            {
+                guidebookFlipFront.Render(PageAt(currentLeftIndex + 1), GuidebookPageSide.Right); // front of the turning page
+                guidebookFlipBack.Render(PageAt(targetLeftIndex), GuidebookPageSide.Left);         // its back = new left page
+                guidebookRightPage.Render(PageAt(targetLeftIndex + 1), GuidebookPageSide.Right);   // revealed underneath
+            }
+            else
+            {
+                guidebookFlipFront.Render(PageAt(currentLeftIndex), GuidebookPageSide.Left);
+                guidebookFlipBack.Render(PageAt(targetLeftIndex + 1), GuidebookPageSide.Right);
+                guidebookLeftPage.Render(PageAt(targetLeftIndex), GuidebookPageSide.Left);
+            }
+
+            if (!guidebookFlipAnimator.Play(direction, RenderGuidebookPage)) RenderGuidebookPage();
         }
 
         public void AdvanceTutorial()
@@ -729,6 +783,7 @@ namespace Witch.Presentation.Shop
             if (guidebookButton != null) guidebookButton.onClick.AddListener(ToggleGuidebook);
             guidebookPreviousButton.onClick.AddListener(PreviousGuidebookPage);
             guidebookNextButton.onClick.AddListener(NextGuidebookPage);
+            if (guidebookContentsButton != null) guidebookContentsButton.onClick.AddListener(OpenGuidebookContents);
             guidebookLeftPage.BindPageLinks(GoToGuidebookPage);
             guidebookRightPage.BindPageLinks(GoToGuidebookPage);
             pauseButton.onClick.AddListener(TogglePause);
@@ -948,12 +1003,18 @@ namespace Witch.Presentation.Shop
             int leftIndex = guidebookPageIndex - (guidebookPageIndex % 2);
             int rightIndex = leftIndex + 1;
 
-            guidebookLeftPage.Render(PageAt(leftIndex));
-            guidebookRightPage.Render(PageAt(rightIndex));
+            guidebookLeftPage.Render(PageAt(leftIndex), GuidebookPageSide.Left);
+            guidebookRightPage.Render(PageAt(rightIndex), GuidebookPageSide.Right);
 
             // Left page = odd numbers, right page = even numbers, each out of the total.
             guidebookLeftPageNumberText.text = PageNumberLabel(leftIndex);
             guidebookPageNumberText.text = PageNumberLabel(rightIndex);
+            SetGuidebookContentsButtonVisible(leftIndex > 0);
+        }
+
+        private void SetGuidebookContentsButtonVisible(bool visible)
+        {
+            if (guidebookContentsButton != null) guidebookContentsButton.gameObject.SetActive(visible);
         }
 
         private string PageNumberLabel(int index)

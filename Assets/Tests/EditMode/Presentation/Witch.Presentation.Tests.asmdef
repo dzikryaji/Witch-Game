@@ -1,0 +1,21 @@
+{
+    "name": "Witch.Presentation.Tests",
+    "rootNamespace": "Witch.Presentation.Tests",
+    "references": [
+        "Witch.Presentation"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false,
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ]
+}
