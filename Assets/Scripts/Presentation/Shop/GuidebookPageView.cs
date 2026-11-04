@@ -1,9 +1,13 @@
 using System;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Witch.Presentation.Shop
 {
+    /// <summary>Which side of the open book a page is shown on.</summary>
+    public enum GuidebookPageSide { Left, Right }
+
     /// <summary>
     /// Renders one side of the open guidebook. The visual layout lives in the scene/prefab;
     /// this component only fills authored slots and toggles which layout is visible.
@@ -12,7 +16,7 @@ namespace Witch.Presentation.Shop
     public sealed class GuidebookPageView : MonoBehaviour
     {
         [Header("Always required")]
-        [SerializeField] private Text plainText;
+        [SerializeField] private TMP_Text plainText;
         [SerializeField] private Image illustration;
 
         [Header("Layouts (optional)")]
@@ -21,22 +25,38 @@ namespace Witch.Presentation.Shop
         [SerializeField] private GameObject contentsLayout;
 
         [Header("Herb page (optional)")]
-        [SerializeField] private Text title;
-        [SerializeField] private Text scientificName;
-        [SerializeField] private Text description;
-        [SerializeField] private Text warning;
+        [SerializeField] private TMP_Text title;
+        [SerializeField] private TMP_Text scientificName;
+        [SerializeField] private TMP_Text description;
+        [SerializeField] private TMP_Text warning;
         [SerializeField] private GameObject categoryTag;
-        [SerializeField] private Text categoryLabel;
+        [SerializeField] private TMP_Text categoryLabel;
+
+        [Header("Book (optional)")]
+        [Tooltip("Shadow along the spine, authored on the left edge of a right-hand page. Mirrored on left pages.")]
+        [SerializeField] private RectTransform spineShadow;
 
         [Header("Contents page (optional)")]
-        [SerializeField] private Text contentsTitle;
+        [SerializeField] private TMP_Text contentsTitle;
         [SerializeField] private GameObject[] contentsRows = new GameObject[0];
-        [SerializeField] private Text[] contentsRowNames = new Text[0];
-        [SerializeField] private Text[] contentsRowDescriptions = new Text[0];
+        [SerializeField] private TMP_Text[] contentsRowNames = new TMP_Text[0];
+        [SerializeField] private TMP_Text[] contentsRowDescriptions = new TMP_Text[0];
         [Tooltip("Optional: one Button per row, same order as Contents Rows. Clicking jumps to that category.")]
         [SerializeField] private Button[] contentsRowButtons = new Button[0];
 
         private int[] rowTargets = new int[0];
+
+        // Side-dependent parts are authored for a right-hand page and mirrored for a left-hand page.
+        private AuthoredRect authoredTag;
+        private AuthoredRect authoredSpineShadow;
+
+        private sealed class AuthoredRect
+        {
+            public Vector2 AnchorMin;
+            public Vector2 AnchorMax;
+            public Vector2 Position;
+            public Vector3 Scale;
+        }
         private Action<int> pageLinkRequested;
         private bool linksBound;
 
@@ -72,6 +92,13 @@ namespace Witch.Presentation.Shop
         /// <summary>Shows a page, or clears this side of the book when <paramref name="page"/> is null.</summary>
         public void Render(GuidebookPageViewData page)
         {
+            Render(page, GuidebookPageSide.Right);
+        }
+
+        /// <summary>Shows a page on the given side of the book; the category tag sits on that side's outer edge.</summary>
+        public void Render(GuidebookPageViewData page, GuidebookPageSide side)
+        {
+            PlaceOnSide(side);
             bool showHerb = page != null && page.Kind == GuidebookPageKind.Herb && HasHerbLayout;
             bool showContents = page != null && page.Kind == GuidebookPageKind.Contents && HasContentsLayout;
             bool showText = page != null && !showHerb && !showContents;
@@ -94,6 +121,47 @@ namespace Witch.Presentation.Shop
             if (showHerb) RenderHerb(page);
             else if (showContents) RenderContents(page);
             else plainText.text = page == null ? string.Empty : page.Text;
+        }
+
+        /// <summary>
+        /// A left page is the mirror image of a right page: the category tag and the spine shadow are
+        /// flipped over to the other edge. The tag's label is flipped back so it stays readable.
+        /// </summary>
+        private void PlaceOnSide(GuidebookPageSide side)
+        {
+            bool mirror = side == GuidebookPageSide.Left;
+            Mirror(categoryTag != null ? categoryTag.transform as RectTransform : null, ref authoredTag, mirror);
+            Mirror(spineShadow, ref authoredSpineShadow, mirror);
+
+            if (categoryLabel != null)
+            {
+                Vector3 scale = categoryLabel.rectTransform.localScale;
+                scale.x = mirror ? -Mathf.Abs(scale.x) : Mathf.Abs(scale.x);
+                categoryLabel.rectTransform.localScale = scale;
+            }
+        }
+
+        private static void Mirror(RectTransform rect, ref AuthoredRect authored, bool mirror)
+        {
+            if (rect == null) return;
+            if (authored == null)
+            {
+                authored = new AuthoredRect
+                {
+                    AnchorMin = rect.anchorMin,
+                    AnchorMax = rect.anchorMax,
+                    Position = rect.anchoredPosition,
+                    Scale = rect.localScale
+                };
+            }
+
+            // Flipping the scale around the unchanged pivot lands the rect exactly on the mirrored edge.
+            rect.anchorMin = mirror ? new Vector2(1f - authored.AnchorMax.x, authored.AnchorMin.y) : authored.AnchorMin;
+            rect.anchorMax = mirror ? new Vector2(1f - authored.AnchorMin.x, authored.AnchorMax.y) : authored.AnchorMax;
+            rect.anchoredPosition = mirror ? new Vector2(-authored.Position.x, authored.Position.y) : authored.Position;
+            rect.localScale = mirror
+                ? new Vector3(-Mathf.Abs(authored.Scale.x), authored.Scale.y, authored.Scale.z)
+                : authored.Scale;
         }
 
         private void HideHerbParts()
@@ -140,7 +208,7 @@ namespace Witch.Presentation.Shop
         }
 
         // An empty part is hidden so a Vertical Layout Group closes the gap.
-        private static void SetText(Text target, string value)
+        private static void SetText(TMP_Text target, string value)
         {
             if (target == null) return;
             target.text = value ?? string.Empty;
