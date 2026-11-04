@@ -23,11 +23,17 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 030816f0481c2421da9c238ddea97882, type: 3}
   - symbolKey: elderflower
     sprite: {fileID: 21300000, guid: 1f019f9a9bd704ebba38dcead8280f37, type: 3}
-  - symbolKey: Cinnamon
-    sprite: {fileID: 21300000, guid: 6eb0ab9a22b3645a5b7eb7a3eb9e9740, type: 3}
+  - symbolKey: mustard seed
+    sprite: {fileID: 21300000, guid: 61c9016b21a3d44fabc58e0f154d658e, type: 3}
   - symbolKey: ginger
     sprite: {fileID: 21300000, guid: 8e99e7a21ed5f4ab6b18b66291d4bfaa, type: 3}
   - symbolKey: peppermint
     sprite: {fileID: 21300000, guid: 28bed1a70c196401d92b13eee99db344, type: 3}
   - symbolKey: henbane
     sprite: {fileID: 21300000, guid: 221509c6c0e4243748b52233179c156f, type: 3}
+  - symbolKey: valerian
+    sprite: {fileID: 21300000, guid: 031883b51c5ba457dab1ef1195ac874b, type: 3}
+  - symbolKey: white willow
+    sprite: {fileID: 21300000, guid: f78daeebfecb4409cad483e37495a004, type: 3}
+  - symbolKey: cayenne pepper
+    sprite: {fileID: 21300000, guid: 029cfc59c70b34854b45fb77fe583dbc, type: 3}
