@@ -63,6 +63,10 @@ namespace Witch.Presentation.Shop
         {
             StopEntrance();
             ClearOrderBubbles();
+            orderBubbleContent.anchorMin = new Vector2(orderBubbleContent.anchorMin.x, 0f);
+            orderBubbleContent.anchorMax = new Vector2(orderBubbleContent.anchorMax.x, 0f);
+            orderBubbleContent.pivot = new Vector2(orderBubbleContent.pivot.x, 0f);
+            orderBubbleContent.GetComponent<VerticalLayoutGroup>().childAlignment = TextAnchor.LowerRight;
             customerPortrait.gameObject.SetActive(true);
             customerText.text = customerName ?? string.Empty;
             playerScrolledOrders = false;
@@ -77,6 +81,9 @@ namespace Witch.Presentation.Shop
                 bubbleText.text = sentence;
                 RectTransform bubbleRect = bubble.GetComponent<RectTransform>();
                 UnityEngine.UI.LayoutElement layout = bubble.GetComponent<UnityEngine.UI.LayoutElement>();
+                float textWidthRatio = bubbleText.rectTransform.anchorMax.x - bubbleText.rectTransform.anchorMin.x;
+                layout.preferredWidth = Mathf.Min(orderBubbleContent.rect.width, bubbleText.preferredWidth / textWidthRatio);
+                bubbleRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, layout.preferredWidth);
                 layout.preferredHeight = Mathf.Max(layout.minHeight, bubbleText.preferredHeight + 16f);
                 orderBubbles.Add(bubbleRect);
                 bubble.SetActive(false);
@@ -160,11 +167,48 @@ namespace Witch.Presentation.Shop
             if (customerPortrait == null || customerPortraitCanvasGroup == null) yield break;
             yield return AnimateEntry(customerPortrait, customerPortraitCanvasGroup, false);
 
-            foreach (RectTransform bubble in orderBubbles)
+            for (int bubbleIndex = 0; bubbleIndex < orderBubbles.Count; bubbleIndex++)
             {
+                RectTransform bubble = orderBubbles[bubbleIndex];
+                var previousPositions = new Vector3[bubbleIndex];
+                for (int index = 0; index < bubbleIndex; index++)
+                {
+                    previousPositions[index] = orderBubbles[index].position;
+                }
+
+                bubble.GetComponent<CanvasGroup>().alpha = 0f;
                 bubble.gameObject.SetActive(true);
                 Canvas.ForceUpdateCanvases();
                 UnityEngine.UI.LayoutRebuilder.ForceRebuildLayoutImmediate(orderBubbleContent);
+                if (!playerScrolledOrders) SetScrollPosition(0f);
+
+                if (bubbleIndex > 0)
+                {
+                    var layoutPositions = new Vector3[bubbleIndex];
+                    for (int index = 0; index < bubbleIndex; index++)
+                    {
+                        layoutPositions[index] = orderBubbles[index].position;
+                        orderBubbles[index].position = previousPositions[index];
+                    }
+
+                    float shiftStartedAt = Time.unscaledTime;
+                    while (Time.unscaledTime - shiftStartedAt < AnimationDuration)
+                    {
+                        float progress = Mathf.Clamp01((Time.unscaledTime - shiftStartedAt) / AnimationDuration);
+                        float eased = 1f - Mathf.Pow(1f - progress, 3f);
+                        for (int index = 0; index < bubbleIndex; index++)
+                        {
+                            orderBubbles[index].position = Vector3.Lerp(previousPositions[index], layoutPositions[index], eased);
+                        }
+                        yield return null;
+                    }
+
+                    for (int index = 0; index < bubbleIndex; index++)
+                    {
+                        orderBubbles[index].position = layoutPositions[index];
+                    }
+                }
+
                 yield return AnimateEntry(bubble, bubble.GetComponent<CanvasGroup>(), true);
                 yield return new WaitForSecondsRealtime(BubbleDelay);
             }
