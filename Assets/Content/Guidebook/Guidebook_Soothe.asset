@@ -16,8 +16,6 @@ MonoBehaviour:
   title: Soothing Herbs
   categoryId: category.soothe
   bodyText: "SOOTHING \u2014 Herbs that quiet the nerves and settle the mind."
-  clueIds:
-  - clue.soothe.graveyard-nap
   contentsItems:
   - categoryId: category.soothe
     name: Soothing

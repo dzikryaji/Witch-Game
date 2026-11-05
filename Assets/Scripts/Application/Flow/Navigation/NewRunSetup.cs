@@ -8,14 +8,12 @@ namespace Witch.Application.Flow
     {
         private readonly ReadOnlyCollection<string> unlockedCategoryIds;
         private readonly ReadOnlyCollection<string> unlockedHerbIds;
-        private readonly ReadOnlyCollection<string> unlockedRecipeIds;
         private readonly ReadOnlyCollection<string> unlockedGuidebookEntryIds;
 
         public NewRunSetup(
             int startingMoney,
             IReadOnlyList<string> unlockedCategoryIds,
             IReadOnlyList<string> unlockedHerbIds,
-            IReadOnlyList<string> unlockedRecipeIds,
             IReadOnlyList<string> unlockedGuidebookEntryIds,
             TimeSpan firstDayTimerDuration,
             string firstDayExpenseId,
@@ -35,11 +33,6 @@ namespace Witch.Application.Flow
             if (unlockedHerbIds == null)
             {
                 throw new ArgumentNullException(nameof(unlockedHerbIds));
-            }
-
-            if (unlockedRecipeIds == null)
-            {
-                throw new ArgumentNullException(nameof(unlockedRecipeIds));
             }
 
             if (unlockedGuidebookEntryIds == null)
@@ -70,7 +63,6 @@ namespace Witch.Application.Flow
             StartingMoney = startingMoney;
             this.unlockedCategoryIds = new List<string>(unlockedCategoryIds).AsReadOnly();
             this.unlockedHerbIds = new List<string>(unlockedHerbIds).AsReadOnly();
-            this.unlockedRecipeIds = new List<string>(unlockedRecipeIds).AsReadOnly();
             this.unlockedGuidebookEntryIds = new List<string>(unlockedGuidebookEntryIds).AsReadOnly();
             FirstDayTimerDuration = firstDayTimerDuration;
             FirstDayExpenseId = firstDayExpenseId;
@@ -83,8 +75,6 @@ namespace Witch.Application.Flow
         public IReadOnlyList<string> UnlockedCategoryIds => unlockedCategoryIds;
 
         public IReadOnlyList<string> UnlockedHerbIds => unlockedHerbIds;
-
-        public IReadOnlyList<string> UnlockedRecipeIds => unlockedRecipeIds;
 
         public IReadOnlyList<string> UnlockedGuidebookEntryIds => unlockedGuidebookEntryIds;
 
@@ -106,7 +96,6 @@ namespace Witch.Application.Flow
                 StartingMoney,
                 UnlockedCategoryIds,
                 UnlockedHerbIds,
-                UnlockedRecipeIds,
                 UnlockedGuidebookEntryIds,
                 firstDayOrderSeed,
                 FirstDayTimerDuration,

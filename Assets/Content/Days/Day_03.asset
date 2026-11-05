@@ -15,15 +15,9 @@ MonoBehaviour:
   stableId: day.3
   dayNumber: 3
   timerSeconds: 280
-  orderIds:
-  - order.day1.direct-warm
-  - order.day1.visual-warm
-  - order.day1.warm-03
-  - order.day1.warm-04
-  - order.day1.warm-05
-  - order.day1.direct-cool
-  - order.day1.visual-cool
-  - order.day1.cool-03
-  - order.day1.cool-04
-  - order.day1.cool-05
+  dailyExpense: 20
+  unlockedCategoryIds:
+  - category.soothe
+  orderDifficulties:
+  - 0
   customerIds: [customer.nervous-villager]

@@ -16,8 +16,8 @@ MonoBehaviour:
   displayName: Belladonna Berry
   categoryId: category.soothe
   scientificName: Atropa belladonna
-  treatmentText: A dark, sweet-tasting nightshade berry that completely relaxes the throat muscles to stop continuous coughing fits.
-  warningText: Belladonna Berry can severely dry the throat and temporarily prevent swallowing. It is dangerous for a patient with a swollen throat or someone who needs to call for help.
-  guidebookIllustration: {fileID: 0}
+  treatmentText: A dark, sweet-tasting nightshade berry that totally relaxes the throat muscles to stop continuous coughing fits.
+  warningText: It can severely dry out the throat and temporarily stop the ability to swallow, which can be very dangerous if a patient has swollen throat or needs to call for help.
+  herbIllustration: {fileID: 21300000, guid: ac72302f565aa47e4baa287e25652a39, type: 3}
   accessibleLabel: Belladonna Berry
   guidebookPage: 17

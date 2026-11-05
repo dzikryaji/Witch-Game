@@ -12,7 +12,7 @@ namespace Witch.Application.Tests
     public sealed class PotionPreparationAndServeUseCaseTests
     {
         [Test]
-        public void GrindAddAndBrew_KnownPairPreparesRecipe()
+        public void GrindAddAndBrew_TwoDifferentHerbsPreparePotion()
         {
             GameSession session = CreateEncounterSession();
             var preparation = new PotionPreparationUseCase(CreateRules());
@@ -25,11 +25,11 @@ namespace Witch.Application.Tests
 
             Assert.That(result.Succeeded, Is.True, result.ErrorMessage);
             Assert.That(result.Kind, Is.EqualTo(PreparationResultKind.Prepared));
-            Assert.That(session.PreparedRecipe.RecipeId, Is.EqualTo("recipe.warming-tonic"));
+            Assert.That(session.PreparedPotion.HerbPair, Is.EqualTo(new HerbPair("herb.ginger", "herb.mint")));
         }
 
         [Test]
-        public void Brew_UnknownPairPreparesFreeformPotion()
+        public void Brew_AnyDifferentPairPreparesPotion()
         {
             GameSession session = CreateEncounterSession();
             var preparation = new PotionPreparationUseCase(CreateRules());
@@ -42,7 +42,7 @@ namespace Witch.Application.Tests
 
             Assert.That(result.Kind, Is.EqualTo(PreparationResultKind.Prepared));
             Assert.That(session.PotionDraft.Ingredients.Count, Is.EqualTo(2));
-            Assert.That(session.PreparedRecipe.HerbPair, Is.EqualTo(new HerbPair("herb.ginger", "herb.sage")));
+            Assert.That(session.PreparedPotion.HerbPair, Is.EqualTo(new HerbPair("herb.ginger", "herb.sage")));
             Assert.That(session.RunState.Suspicion, Is.Zero);
         }
 
@@ -115,17 +115,7 @@ namespace Witch.Application.Tests
 
         private static PotionServiceRules CreateRules()
         {
-            return new PotionServiceRules(
-                10,
-                new RecipeCatalog(new[]
-                {
-                    new Recipe(
-                        "recipe.warming-tonic",
-                        new HerbPair("herb.ginger", "herb.mint")),
-                    new Recipe(
-                        "recipe.cooling-tonic",
-                        new HerbPair("herb.mint", "herb.sage"))
-                }));
+            return new PotionServiceRules(10);
         }
 
         private static GameSession CreateEncounterSession()
@@ -135,7 +125,6 @@ namespace Witch.Application.Tests
                 0,
                 new[] { "category.warm" },
                 new[] { "herb.ginger", "herb.mint", "herb.sage" },
-                new[] { "recipe.warming-tonic", "recipe.cooling-tonic" },
                 new[] { "guidebook.warm" },
                 1234,
                 TimeSpan.FromMinutes(4),

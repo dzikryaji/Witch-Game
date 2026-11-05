@@ -21,9 +21,9 @@ namespace Witch.Domain.Orders
 
         public HerbPair RequestedPair { get; }
 
-        public bool IsCorrect(Recipe servedRecipe)
+        public bool IsCorrect(PreparedPotion servedPotion)
         {
-            return servedRecipe != null && RequestedPair.Equals(servedRecipe.HerbPair);
+            return servedPotion != null && RequestedPair.Equals(servedPotion.HerbPair);
         }
     }
 }

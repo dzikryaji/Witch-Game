@@ -118,10 +118,10 @@ TextureImporter:
       name: Chamomile_0
       rect:
         serializedVersion: 2
-        x: 87
-        y: 8
-        width: 50
-        height: 70
+        x: 208
+        y: 86
+        width: 414
+        height: 597
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}

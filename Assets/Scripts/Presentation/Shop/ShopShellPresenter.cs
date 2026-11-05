@@ -28,7 +28,6 @@ namespace Witch.Presentation.Shop
         [SerializeField] private Button discardGroundButton;
         [SerializeField] private Button emptyPotButton;
         [SerializeField] private Button brewButton;
-        [SerializeField] private Button serveButton;
         [SerializeField] private Button guidebookButton;
         [SerializeField] private Button guidebookPreviousButton;
         [SerializeField] private Button guidebookNextButton;
@@ -117,7 +116,6 @@ namespace Witch.Presentation.Shop
             && discardGroundButton != null
             && emptyPotButton != null
             && brewButton != null
-            && serveButton != null
             && guidebookPreviousButton != null
             && guidebookNextButton != null
             && pauseButton != null
@@ -212,7 +210,11 @@ namespace Witch.Presentation.Shop
             encounterDeck = new ShopEncounterDeck(
                 setup.Encounters,
                 setup.EncounterSeed,
-                setup.RandomizeEncounters);
+                setup.RandomizeEncounters,
+                setup.SeenOrderIds,
+                setup.IntroductionOrderId,
+                setup.OneTimeIntroduction,
+                setup.IntroductionCategoryOrderIds);
 
             RequireAndBindAuthoredView();
             ConfigureHerbButtons();
@@ -380,7 +382,7 @@ namespace Witch.Presentation.Shop
             PreparationResult result = preparation.Brew(ActiveSession);
             string message = !result.Succeeded
                 ? result.ErrorMessage
-                : "Potion brewed. Drag it into the customer Potion slot.";
+                : "Potion brewed. Drag it onto the customer counter.";
             SetStatus(message);
             if (result.Succeeded)
             {
@@ -663,7 +665,7 @@ namespace Witch.Presentation.Shop
                 if (arrival.Succeeded) audioService?.Play(GameAudioCueIds.CustomerBell);
                 if (arrival.Succeeded)
                 {
-                    hudView.SetCustomer(encounter.CustomerName, encounter.OrderSentences);
+                    hudView.SetCustomer(encounter.CustomerName, encounter.OrderBubbles);
                 }
             }
         }
@@ -677,7 +679,7 @@ namespace Witch.Presentation.Shop
                 "Guidebook stays on the table. Turn pages to compare remedies.",
                 "Drag an unlocked herb from the shelf into the grinder.",
                 "Press Grind. Drag the ground herb into the cauldron. Undo or empty it if needed.",
-                "Brew two herbs, then drag the finished potion into the customer Potion slot."
+                "Brew two herbs, then drag the finished potion onto the customer counter."
             };
             tutorialText.text = beats[Math.Min(tutorialBeat, beats.Length - 1)];
             tutorialPanel.SetActive(true);
@@ -779,7 +781,6 @@ namespace Witch.Presentation.Shop
             discardGroundButton.onClick.AddListener(() => DiscardGroundHerb());
             emptyPotButton.onClick.AddListener(() => Discard());
             brewButton.onClick.AddListener(() => Brew());
-            serveButton.onClick.AddListener(OnServeClicked);
             if (guidebookButton != null) guidebookButton.onClick.AddListener(ToggleGuidebook);
             guidebookPreviousButton.onClick.AddListener(PreviousGuidebookPage);
             guidebookNextButton.onClick.AddListener(NextGuidebookPage);
@@ -865,8 +866,6 @@ namespace Witch.Presentation.Shop
             }
         }
 
-        private void OnServeClicked() => RunUiAction(ServeAsync);
-
         public void RequestServe() => RunUiAction(ServeAsync);
 
         private void Render()
@@ -884,7 +883,7 @@ namespace Witch.Presentation.Shop
             bool hasGroundHerb = !string.IsNullOrWhiteSpace(session.GroundHerbId);
             groundHerbObject.SetActive(hasGroundHerb);
             if (hasGroundHerb) groundHerbText.text = "Ground\n" + DisplayName(session.GroundHerbId);
-            bool hasPotion = session.PreparedRecipe != null;
+            bool hasPotion = session.PreparedPotion != null;
             if (!hasPotion && preparedPotionObject.activeSelf)
             {
                 preparedPotionObject.GetComponent<PreparedPotionDragItem>()?.RestoreHome(false);
@@ -892,7 +891,7 @@ namespace Witch.Presentation.Shop
             preparedPotionObject.SetActive(hasPotion);
             if (hasPotion)
             {
-                HerbPair pair = session.PreparedRecipe.HerbPair;
+                HerbPair pair = session.PreparedPotion.HerbPair;
                 preparedPotionText.text = "Brewed Potion\n"
                     + DisplayName(pair.FirstHerbId) + " + " + DisplayName(pair.SecondHerbId);
             }
@@ -1051,7 +1050,7 @@ namespace Witch.Presentation.Shop
                 .FirstOrDefault(e => e.Order != null && e.Order.OrderId == orderId);
 
             Debug.Log($"[Resume] order={orderId} found={encounter != null}");
-            if (encounter != null) hudView.SetCustomer(encounter.CustomerName, encounter.OrderSentences);
+            if (encounter != null) hudView.SetCustomer(encounter.CustomerName, encounter.OrderBubbles);
 
             setTimerPaused?.Execute(ActiveSession, false); // clock continues from the remaining time
             SetStatus("The spell worked. Time is back. Serve the order again.");

@@ -1,7 +1,5 @@
 using UnityEngine;
 using UnityEngine.Serialization;
-using System;
-using System.Collections.Generic;
 
 namespace Witch.Infrastructure.Content
 {
@@ -17,7 +15,6 @@ namespace Witch.Infrastructure.Content
         [SerializeField] private Sprite herbIllustration;
         [SerializeField] private string accessibleLabel;
         [SerializeField, Min(1)] private int guidebookPage;
-        [SerializeField] private string[] clueIds = Array.Empty<string>();
 
         public string DisplayName => displayName;
         public string CategoryId => categoryId;
@@ -27,7 +24,6 @@ namespace Witch.Infrastructure.Content
         public Sprite HerbIllustration => herbIllustration;
         public string AccessibleLabel => accessibleLabel;
         public int GuidebookPage => guidebookPage;
-        public IReadOnlyList<string> ClueIds => clueIds;
 
         public void Configure(string id, string name, string category)
         {
@@ -42,7 +38,6 @@ namespace Witch.Infrastructure.Content
             string warning,
             string accessibilityLabel,
             int page,
-            string[] clues = null,
             Sprite illustration = null)
         {
             scientificName = scientific;
@@ -50,7 +45,6 @@ namespace Witch.Infrastructure.Content
             warningText = warning;
             accessibleLabel = accessibilityLabel;
             guidebookPage = page;
-            clueIds = clues == null ? Array.Empty<string>() : (string[])clues.Clone();
             herbIllustration = illustration;
         }
     }

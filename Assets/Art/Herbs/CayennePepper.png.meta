@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 029cfc59c70b34854b45fb77fe583dbc
+guid: 4c15413e161cf4f7f9bed882491537e5
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -6798385273324512311
-    second: CayennePepper_0
+      213: 1013484167934910938
+    second: Cayenne_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -115,13 +115,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: CayennePepper_0
+      name: Cayenne_0
       rect:
         serializedVersion: 2
-        x: 72
-        y: 4
-        width: 80
-        height: 76
+        x: 119
+        y: 144
+        width: 570
+        height: 557
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -130,8 +130,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 9cbde310d9847a1a0800000000000000
-      internalID: -6798385273324512311
+      spriteID: ad12e372b7e901e00800000000000000
+      internalID: 1013484167934910938
       vertices: []
       indices: 
       edges: []
@@ -150,7 +150,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      CayennePepper_0: -6798385273324512311
+      Cayenne_0: 1013484167934910938
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

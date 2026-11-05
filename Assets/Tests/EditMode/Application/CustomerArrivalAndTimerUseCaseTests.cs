@@ -90,12 +90,7 @@ namespace Witch.Application.Tests
             GameSession session = CreateOpenSession();
             var clock = new FakeClock();
             AdmitFirstCustomer(session, clock);
-            var rules = new PotionServiceRules(
-                10,
-                new RecipeCatalog(new[]
-                {
-                    new Recipe("recipe.warming-tonic", new HerbPair("herb.ginger", "herb.mint"))
-                }));
+            var rules = new PotionServiceRules(10);
             var preparation = new PotionPreparationUseCase(rules);
             preparation.Grind(session, "herb.ginger");
             preparation.AddToPot(session);
@@ -130,7 +125,6 @@ namespace Witch.Application.Tests
                 0,
                 new[] { "category.warm" },
                 new[] { "herb.ginger", "herb.mint" },
-                new[] { "recipe.warming-tonic" },
                 new[] { "guidebook.warm" },
                 1234,
                 TimeSpan.FromMinutes(4),

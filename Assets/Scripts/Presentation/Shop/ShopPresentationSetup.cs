@@ -14,21 +14,21 @@ namespace Witch.Presentation.Shop
             string customerId,
             string customerName,
             OrderRequest order,
-            IReadOnlyList<string> orderSentences)
+            IReadOnlyList<string> orderBubbles)
         {
             CustomerId = customerId;
             CustomerName = customerName;
             Order = order ?? throw new ArgumentNullException(nameof(order));
-            OrderSentences = orderSentences ?? throw new ArgumentNullException(nameof(orderSentences));
+            OrderBubbles = orderBubbles ?? throw new ArgumentNullException(nameof(orderBubbles));
         }
 
-        public ShopEncounterViewData(string customerId, string customerName, OrderRequest order, string orderSentence)
-            : this(customerId, customerName, order, new[] { orderSentence ?? string.Empty }) { }
+        public ShopEncounterViewData(string customerId, string customerName, OrderRequest order, string orderBubble)
+            : this(customerId, customerName, order, new[] { orderBubble ?? string.Empty }) { }
 
         public string CustomerId { get; }
         public string CustomerName { get; }
         public OrderRequest Order { get; }
-        public IReadOnlyList<string> OrderSentences { get; }
+        public IReadOnlyList<string> OrderBubbles { get; }
     }
 
     public sealed class ShopHerbViewData
@@ -176,10 +176,10 @@ namespace Witch.Presentation.Shop
             string customerId,
             string customerName,
             OrderRequest order,
-            string clueText,
+            string orderBubble,
             IReadOnlyList<ShopHerbViewData> herbs)
             : this(
-                new[] { new ShopEncounterViewData(customerId, customerName, order, clueText) },
+                new[] { new ShopEncounterViewData(customerId, customerName, order, orderBubble) },
                 herbs,
                 "GUIDEBOOK\n\nGinger: knotted warming root\nMint: cool green leaves\n\nThe shop clock keeps moving while you read.")
         {
@@ -192,7 +192,11 @@ namespace Witch.Presentation.Shop
             int dayNumber = 1,
             bool showOpeningTutorial = false,
             int encounterSeed = 0,
-            bool randomizeEncounters = false)
+            bool randomizeEncounters = false,
+            IReadOnlyList<string> seenOrderIds = null,
+            string introductionOrderId = null,
+            bool oneTimeIntroduction = false,
+            IReadOnlyList<string> introductionCategoryOrderIds = null)
             : this(
                 encounters,
                 herbs,
@@ -203,7 +207,11 @@ namespace Witch.Presentation.Shop
                 dayNumber,
                 showOpeningTutorial,
                 encounterSeed,
-                randomizeEncounters)
+                randomizeEncounters,
+                seenOrderIds,
+                introductionOrderId,
+                oneTimeIntroduction,
+                introductionCategoryOrderIds)
         {
         }
 
@@ -214,7 +222,11 @@ namespace Witch.Presentation.Shop
             int dayNumber = 1,
             bool showOpeningTutorial = false,
             int encounterSeed = 0,
-            bool randomizeEncounters = false)
+            bool randomizeEncounters = false,
+            IReadOnlyList<string> seenOrderIds = null,
+            string introductionOrderId = null,
+            bool oneTimeIntroduction = false,
+            IReadOnlyList<string> introductionCategoryOrderIds = null)
         {
             Encounters = encounters ?? throw new ArgumentNullException(nameof(encounters));
             if (Encounters.Count == 0) throw new ArgumentException("At least one encounter is required.", nameof(encounters));
@@ -224,18 +236,26 @@ namespace Witch.Presentation.Shop
             ShowOpeningTutorial = showOpeningTutorial;
             EncounterSeed = encounterSeed;
             RandomizeEncounters = randomizeEncounters;
+            SeenOrderIds = seenOrderIds ?? Array.Empty<string>();
+            IntroductionOrderId = introductionOrderId;
+            OneTimeIntroduction = oneTimeIntroduction;
+            IntroductionCategoryOrderIds = introductionCategoryOrderIds ?? Array.Empty<string>();
         }
 
         public IReadOnlyList<ShopEncounterViewData> Encounters { get; }
         public string CustomerId => Encounters[0].CustomerId;
         public string CustomerName => Encounters[0].CustomerName;
         public OrderRequest Order => Encounters[0].Order;
-        public IReadOnlyList<string> OrderSentences => Encounters[0].OrderSentences;
+        public IReadOnlyList<string> OrderBubbles => Encounters[0].OrderBubbles;
         public IReadOnlyList<ShopHerbViewData> Herbs { get; }
         public IReadOnlyList<GuidebookPageViewData> GuidebookPages { get; }
         public int DayNumber { get; }
         public bool ShowOpeningTutorial { get; }
         public int EncounterSeed { get; }
         public bool RandomizeEncounters { get; }
+        public IReadOnlyList<string> SeenOrderIds { get; }
+        public string IntroductionOrderId { get; }
+        public bool OneTimeIntroduction { get; }
+        public IReadOnlyList<string> IntroductionCategoryOrderIds { get; }
     }
 }

@@ -25,7 +25,6 @@ namespace Witch.Application.Flow
                     0,
                     command.UnlockedCategoryIds,
                     command.UnlockedHerbIds,
-                    command.UnlockedRecipeIds,
                     command.UnlockedGuidebookEntryIds,
                     command.TutorialFlags,
                     command.NarrativeFlags);

@@ -118,10 +118,10 @@ TextureImporter:
       name: Clove_0
       rect:
         serializedVersion: 2
-        x: 57
-        y: 5
-        width: 107
-        height: 65
+        x: 157
+        y: 174
+        width: 606
+        height: 381
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}

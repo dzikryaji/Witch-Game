@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f5f76fe6c3f7d450e98c5e1ef5f66046, type: 3}
+  m_Name: Order_Simple_Cool12
+  m_EditorClassIdentifier: Witch.Infrastructure::Witch.Infrastructure.Content.OrderDefinition
+  stableId: order.simple.c12
+  difficulty: 0
+  orderBubbles:
+  - My husband pulled every muscle fighting a broken oven door,
+  - then scraped his arm on a filthy hinge.
+  - Now the pain is severe
+  - and heat is spreading from the cut.
+  - His lungs are strong, he has no asthma,
+  - and he is sweating rather than cold.
+  - Joan's notes recommend Salix alba for the pain
+  - and Borago officinalis when infection may enter the blood.
+  - Brew both. The oven has already won enough.
+  firstHerbId: herb.whiteWillow
+  secondHerbId: herb.borage

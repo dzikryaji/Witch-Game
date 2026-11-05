@@ -59,7 +59,7 @@ namespace Witch.Presentation.Shop
             }
         }
 
-        public void SetCustomer(string customerName, IReadOnlyList<string> orderSentences)
+        public void SetCustomer(string customerName, IReadOnlyList<string> orderBubbles)
         {
             StopEntrance();
             ClearOrderBubbles();
@@ -72,20 +72,26 @@ namespace Witch.Presentation.Shop
             playerScrolledOrders = false;
             SetScrollPosition(1f);
 
-            foreach (string sentence in orderSentences ?? Array.Empty<string>())
+            foreach (string bubbleContent in orderBubbles ?? Array.Empty<string>())
             {
-                if (string.IsNullOrWhiteSpace(sentence)) continue;
+                if (string.IsNullOrWhiteSpace(bubbleContent)) continue;
                 GameObject bubble = Instantiate(orderBubblePrefab, orderBubbleContent);
-                bubble.name = "Order Bubble " + (orderBubbles.Count + 1);
+                bubble.name = "Order Bubble " + (this.orderBubbles.Count + 1);
                 Text bubbleText = bubble.GetComponentInChildren<Text>(true);
-                bubbleText.text = sentence;
+                bubbleText.text = bubbleContent;
                 RectTransform bubbleRect = bubble.GetComponent<RectTransform>();
+                RectTransform textRect = bubbleText.rectTransform;
                 UnityEngine.UI.LayoutElement layout = bubble.GetComponent<UnityEngine.UI.LayoutElement>();
-                float textWidthRatio = bubbleText.rectTransform.anchorMax.x - bubbleText.rectTransform.anchorMin.x;
-                layout.preferredWidth = Mathf.Min(orderBubbleContent.rect.width, bubbleText.preferredWidth / textWidthRatio);
+                float textWidthRatio = Mathf.Max(0.01f, textRect.anchorMax.x - textRect.anchorMin.x);
+                layout.preferredWidth = Mathf.Min(
+                    orderBubbleContent.rect.width,
+                    (bubbleText.preferredWidth - textRect.sizeDelta.x) / textWidthRatio);
                 bubbleRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, layout.preferredWidth);
-                layout.preferredHeight = Mathf.Max(layout.minHeight, bubbleText.preferredHeight + 16f);
-                orderBubbles.Add(bubbleRect);
+                float textHeightRatio = Mathf.Max(0.01f, textRect.anchorMax.y - textRect.anchorMin.y);
+                layout.preferredHeight = Mathf.Max(
+                    layout.minHeight,
+                    (bubbleText.preferredHeight - textRect.sizeDelta.y) / textHeightRatio);
+                this.orderBubbles.Add(bubbleRect);
                 bubble.SetActive(false);
             }
 

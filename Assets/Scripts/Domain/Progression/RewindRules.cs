@@ -55,7 +55,8 @@ namespace Witch.Domain.Progression
                 dayStartSnapshot.RunState.CurrentDayNumber,
                 dayStartSnapshot.RunState.Money,
                 0,
-                failedAttemptRunState.RewindCount + 1);
+                failedAttemptRunState.RewindCount + 1)
+                .WithSeenOrders(failedAttemptRunState.SeenOrderIds);
             return new RewindOutcome(restored, nextAttemptSeed);
         }
     }

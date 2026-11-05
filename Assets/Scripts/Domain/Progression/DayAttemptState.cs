@@ -19,7 +19,7 @@ namespace Witch.Domain.Progression
             OrderRequest activeOrder,
             int earnedMoney,
             PotionDraft potionDraft,
-            Recipe preparedRecipe)
+            PreparedPotion preparedPotion)
         {
             if (remainingTime < TimeSpan.Zero)
             {
@@ -45,7 +45,7 @@ namespace Witch.Domain.Progression
             ActiveOrder = activeOrder;
             EarnedMoney = earnedMoney;
             PotionDraft = potionDraft ?? throw new ArgumentNullException(nameof(potionDraft));
-            PreparedRecipe = preparedRecipe;
+            PreparedPotion = preparedPotion;
         }
 
         public int AttemptSeed { get; }
@@ -62,7 +62,7 @@ namespace Witch.Domain.Progression
 
         public PotionDraft PotionDraft { get; }
 
-        public Recipe PreparedRecipe { get; }
+        public PreparedPotion PreparedPotion { get; }
 
         private static ReadOnlyCollection<string> CopyIds(IReadOnlyList<string> source)
         {
@@ -72,17 +72,11 @@ namespace Witch.Domain.Progression
             }
 
             var copy = new List<string>(source.Count);
-            var uniqueIds = new HashSet<string>(StringComparer.Ordinal);
             foreach (string id in source)
             {
                 if (string.IsNullOrWhiteSpace(id))
                 {
                     throw new ArgumentException("Used order IDs must not be empty.", nameof(source));
-                }
-
-                if (!uniqueIds.Add(id))
-                {
-                    throw new ArgumentException("Used order IDs must not contain duplicates.", nameof(source));
                 }
 
                 copy.Add(id);

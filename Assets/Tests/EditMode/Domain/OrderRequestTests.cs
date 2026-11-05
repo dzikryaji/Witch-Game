@@ -12,24 +12,22 @@ namespace Witch.Domain.Tests
             var order = new OrderRequest(
                 "order.fever.direct",
                 new HerbPair("herb.ginger", "herb.mint"));
-            var servedRecipe = new Recipe(
-                "recipe.warming-tonic",
+            var servedPotion = new PreparedPotion(
                 new HerbPair("herb.mint", "herb.ginger"));
 
-            Assert.That(order.IsCorrect(servedRecipe), Is.True);
+            Assert.That(order.IsCorrect(servedPotion), Is.True);
         }
 
         [Test]
-        public void DifferentValidRecipe_IsWrongForCurrentOrder()
+        public void DifferentPair_IsWrongForCurrentOrder()
         {
             var order = new OrderRequest(
                 "order.fever.direct",
                 new HerbPair("herb.ginger", "herb.mint"));
-            var otherValidRecipe = new Recipe(
-                "recipe.cooling-tonic",
+            var otherPotion = new PreparedPotion(
                 new HerbPair("herb.mint", "herb.sage"));
 
-            Assert.That(order.IsCorrect(otherValidRecipe), Is.False);
+            Assert.That(order.IsCorrect(otherPotion), Is.False);
         }
     }
 }

@@ -1,29 +1,43 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Witch.Infrastructure.Content
 {
+    public enum OrderDifficulty
+    {
+        Simple = 0,
+        Mid = 1,
+        Hard = 2
+    }
+
     [CreateAssetMenu(menuName = "Witch/Content/Order", fileName = "Order_")]
     public sealed class OrderDefinition : StableContentDefinition
     {
-        [SerializeField, TextArea] private string[] orderSentences = Array.Empty<string>();
-        [SerializeField] private string[] clueIds = Array.Empty<string>();
+        [SerializeField] private OrderDifficulty difficulty = OrderDifficulty.Simple;
+        [FormerlySerializedAs("orderSentences")]
+        [SerializeField, TextArea] private string[] orderBubbles = Array.Empty<string>();
         [SerializeField] private string firstHerbId;
         [SerializeField] private string secondHerbId;
 
-        public IReadOnlyList<string> OrderSentences => orderSentences;
-        public IReadOnlyList<string> ClueIds => clueIds;
+        public OrderDifficulty Difficulty => difficulty;
+        public IReadOnlyList<string> OrderBubbles => orderBubbles;
         public string FirstHerbId => firstHerbId;
         public string SecondHerbId => secondHerbId;
 
-        public void Configure(string id, string[] sentences, string[] clues, string firstHerb, string secondHerb)
+        public void Configure(
+            string id,
+            string[] bubbles,
+            string firstHerb,
+            string secondHerb,
+            OrderDifficulty difficulty = OrderDifficulty.Simple)
         {
             SetStableId(id);
-            orderSentences = sentences == null ? Array.Empty<string>() : (string[])sentences.Clone();
-            clueIds = clues == null ? Array.Empty<string>() : (string[])clues.Clone();
+            orderBubbles = bubbles == null ? Array.Empty<string>() : (string[])bubbles.Clone();
             firstHerbId = firstHerb;
             secondHerbId = secondHerb;
+            this.difficulty = difficulty;
         }
     }
 }

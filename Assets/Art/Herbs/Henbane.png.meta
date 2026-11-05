@@ -118,10 +118,10 @@ TextureImporter:
       name: Henbane_0
       rect:
         serializedVersion: 2
-        x: 77
-        y: 8
-        width: 64
-        height: 72
+        x: 120
+        y: 90
+        width: 542
+        height: 613
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}

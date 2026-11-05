@@ -16,8 +16,8 @@ MonoBehaviour:
   displayName: Dandelion
   categoryId: category.cleanse
   scientificName: Taraxacum officinale
-  treatmentText: A sharp-edged leaf and yellow flower that reduce bloating and help the body quickly eliminate excess water.
-  warningText: Dandelion is a strong diuretic that rapidly removes body fluids. It can kill people who cannot immediately drink plenty of water.
-  guidebookIllustration: {fileID: 0}
+  treatmentText: A sharp-edged leaf and a yellow flower that helps reduce bloating and allows the body to quickly eliminate extra water.
+  warningText: It works as a strong diuretic that quickly removes body fluids, which can lead to the death of people who can't drink a lot of water immediately.
+  herbIllustration: {fileID: 21300000, guid: ef58713d56d3949c1b4d17a4fcaacd78, type: 3}
   accessibleLabel: Dandelion
   guidebookPage: 18

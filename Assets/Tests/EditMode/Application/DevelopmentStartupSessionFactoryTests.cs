@@ -16,7 +16,6 @@ namespace Witch.Application.Tests
                 0,
                 new[] { "category.warm" },
                 new[] { "herb.ginger", "herb.cinnamon" },
-                new[] { "recipe.warm" },
                 new[] { "guide.warm" },
                 TimeSpan.FromMinutes(4),
                 "expense.day.1",

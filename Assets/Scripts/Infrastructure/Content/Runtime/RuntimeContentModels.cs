@@ -17,8 +17,7 @@ namespace Witch.Infrastructure.Content
             string warningText,
             Sprite herbIllustration,
             string accessibleLabel,
-            int guidebookPage,
-            IReadOnlyList<string> clueIds)
+            int guidebookPage)
         {
             StableId = stableId;
             DisplayName = displayName;
@@ -29,7 +28,6 @@ namespace Witch.Infrastructure.Content
             HerbIllustration = herbIllustration;
             AccessibleLabel = accessibleLabel;
             GuidebookPage = guidebookPage;
-            ClueIds = new List<string>(clueIds).AsReadOnly();
         }
 
         public string StableId { get; }
@@ -41,21 +39,30 @@ namespace Witch.Infrastructure.Content
         public Sprite HerbIllustration { get; }
         public string AccessibleLabel { get; }
         public int GuidebookPage { get; }
-        public IReadOnlyList<string> ClueIds { get; }
     }
 
     public sealed class OrderContent
     {
-        public OrderContent(OrderRequest request, IReadOnlyList<string> orderSentences, IReadOnlyList<string> clueIds)
+        public OrderContent(
+            OrderRequest request,
+            OrderDifficulty difficulty,
+            IReadOnlyList<string> orderBubbles)
         {
             Request = request;
-            OrderSentences = new List<string>(orderSentences).AsReadOnly();
-            ClueIds = new List<string>(clueIds).AsReadOnly();
+            Difficulty = difficulty;
+            OrderBubbles = new List<string>(orderBubbles).AsReadOnly();
         }
 
         public OrderRequest Request { get; }
-        public IReadOnlyList<string> OrderSentences { get; }
-        public IReadOnlyList<string> ClueIds { get; }
+        public OrderDifficulty Difficulty { get; }
+        public IReadOnlyList<string> OrderBubbles { get; }
+
+        public bool IsAvailable(ISet<string> unlockedHerbIds)
+        {
+            if (unlockedHerbIds == null) throw new ArgumentNullException(nameof(unlockedHerbIds));
+            return unlockedHerbIds.Contains(Request.RequestedPair.FirstHerbId)
+                   && unlockedHerbIds.Contains(Request.RequestedPair.SecondHerbId);
+        }
     }
 
     public sealed class CustomerContent
@@ -76,20 +83,26 @@ namespace Witch.Infrastructure.Content
             string stableId,
             int dayNumber,
             TimeSpan timerDuration,
-            IReadOnlyList<string> orderIds,
+            int dailyExpense,
+            IReadOnlyList<string> unlockedCategoryIds,
+            IReadOnlyList<OrderDifficulty> orderDifficulties,
             IReadOnlyList<string> customerIds)
         {
             StableId = stableId;
             DayNumber = dayNumber;
             TimerDuration = timerDuration;
-            OrderIds = new List<string>(orderIds).AsReadOnly();
+            DailyExpense = dailyExpense;
+            UnlockedCategoryIds = new List<string>(unlockedCategoryIds).AsReadOnly();
+            OrderDifficulties = new List<OrderDifficulty>(orderDifficulties).AsReadOnly();
             CustomerIds = new List<string>(customerIds).AsReadOnly();
         }
 
         public string StableId { get; }
         public int DayNumber { get; }
         public TimeSpan TimerDuration { get; }
-        public IReadOnlyList<string> OrderIds { get; }
+        public int DailyExpense { get; }
+        public IReadOnlyList<string> UnlockedCategoryIds { get; }
+        public IReadOnlyList<OrderDifficulty> OrderDifficulties { get; }
         public IReadOnlyList<string> CustomerIds { get; }
     }
 
@@ -99,14 +112,12 @@ namespace Witch.Infrastructure.Content
             string stableId,
             string title,
             string categoryId,
-            IReadOnlyList<string> clueIds,
             string bodyText = "",
             IReadOnlyList<GuidebookContentsItemContent> contentsItems = null)
         {
             StableId = stableId;
             Title = title;
             CategoryId = categoryId;
-            ClueIds = new List<string>(clueIds).AsReadOnly();
             BodyText = bodyText ?? string.Empty;
             ContentsItems = new List<GuidebookContentsItemContent>(
                 contentsItems ?? Array.Empty<GuidebookContentsItemContent>()).AsReadOnly();
@@ -115,7 +126,6 @@ namespace Witch.Infrastructure.Content
         public string StableId { get; }
         public string Title { get; }
         public string CategoryId { get; }
-        public IReadOnlyList<string> ClueIds { get; }
         public string BodyText { get; }
         public IReadOnlyList<GuidebookContentsItemContent> ContentsItems { get; }
     }
@@ -132,29 +142,6 @@ namespace Witch.Infrastructure.Content
         public string CategoryId { get; }
         public string Name { get; }
         public string Description { get; }
-    }
-
-    public sealed class CategoryUnlockContent
-    {
-        public CategoryUnlockContent(
-            string stableId,
-            string categoryId,
-            int firstDay,
-            IReadOnlyList<string> herbIds,
-            IReadOnlyList<string> recipeIds)
-        {
-            StableId = stableId;
-            CategoryId = categoryId;
-            FirstDay = firstDay;
-            HerbIds = new List<string>(herbIds).AsReadOnly();
-            RecipeIds = new List<string>(recipeIds).AsReadOnly();
-        }
-
-        public string StableId { get; }
-        public string CategoryId { get; }
-        public int FirstDay { get; }
-        public IReadOnlyList<string> HerbIds { get; }
-        public IReadOnlyList<string> RecipeIds { get; }
     }
 
     public sealed class RewindCardContent

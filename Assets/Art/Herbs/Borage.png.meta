@@ -118,10 +118,10 @@ TextureImporter:
       name: Borage_0
       rect:
         serializedVersion: 2
-        x: 84
-        y: 11
-        width: 51
-        height: 64
+        x: 189
+        y: 143
+        width: 429
+        height: 532
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
