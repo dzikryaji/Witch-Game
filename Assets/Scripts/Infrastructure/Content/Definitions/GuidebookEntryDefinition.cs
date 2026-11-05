@@ -33,22 +33,19 @@ namespace Witch.Infrastructure.Content
         [SerializeField] private string title;
         [SerializeField] private string categoryId;
         [SerializeField, TextArea] private string bodyText;
-        [SerializeField] private string[] clueIds = Array.Empty<string>();
         [SerializeField] private GuidebookContentsItemDefinition[] contentsItems = Array.Empty<GuidebookContentsItemDefinition>();
 
         public string Title => title;
         public string CategoryId => categoryId;
         public string BodyText => bodyText;
-        public IReadOnlyList<string> ClueIds => clueIds;
         public IReadOnlyList<GuidebookContentsItemDefinition> ContentsItems => contentsItems;
 
-        public void Configure(string id, string entryTitle, string category, string[] clues, string body = "")
+        public void Configure(string id, string entryTitle, string category, string body = "")
         {
             SetStableId(id);
             title = entryTitle;
             categoryId = category;
             bodyText = body;
-            clueIds = clues == null ? Array.Empty<string>() : (string[])clues.Clone();
         }
 
         public void ConfigureContents(params GuidebookContentsItemDefinition[] items)

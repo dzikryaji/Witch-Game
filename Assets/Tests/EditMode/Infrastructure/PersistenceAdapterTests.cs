@@ -66,6 +66,7 @@ namespace Witch.Infrastructure.Tests
             Assert.That(load.SavedGame.AttemptMetadata.Suspicion, Is.EqualTo(2));
             Assert.That(load.SavedGame.AttemptMetadata.ActiveOrderSeed, Is.EqualTo(222));
             Assert.That(load.SavedGame.DayStartSnapshot.RunState.TutorialFlags["tutorial.intro"], Is.True);
+            Assert.That(load.SavedGame.DayStartSnapshot.RunState.SeenOrderIds, Is.EqualTo(new[] { "order.seen" }));
         }
 
         [Test]
@@ -82,6 +83,22 @@ namespace Witch.Infrastructure.Tests
             Assert.That(load.Succeeded, Is.True, load.ErrorMessage);
             Assert.That(load.SavedGame.DayStartSnapshot.RunState.UnlockedHerbIds, Does.Contain("herb.borage"));
             Assert.That(load.SavedGame.DayStartSnapshot.RunState.UnlockedHerbIds, Does.Not.Contain("herb.aloe"));
+        }
+
+        [Test]
+        public async Task JsonRepository_MigratesLegacyWarmCoolCategory()
+        {
+            var repository = new JsonRunRepository(temporaryDirectory, 1);
+            GameSaveState save = CreateSave("run.legacy-category", suspicion: 0, seed: 222);
+            await repository.SaveRunStateAsync(save.DayStartSnapshot, save.AttemptMetadata);
+            string path = Path.Combine(temporaryDirectory, JsonRunRepository.CurrentRunFileName);
+            File.WriteAllText(path, File.ReadAllText(path).Replace("category.warm", "category.warm-cool"));
+
+            LoadStateResult load = await repository.LoadLatestAsync();
+
+            Assert.That(load.Succeeded, Is.True, load.ErrorMessage);
+            Assert.That(load.SavedGame.DayStartSnapshot.RunState.UnlockedCategoryIds,
+                Is.EquivalentTo(new[] { "category.warm", "category.cool" }));
         }
 
         [Test]
@@ -271,7 +288,6 @@ namespace Witch.Infrastructure.Tests
                 0,
                 new[] { "category.warm" },
                 new[] { "herb.ginger", "herb.mint", "herb.sage" },
-                new[] { "recipe.warming", "recipe.cooling" },
                 new[] { "guidebook.warm" },
                 777,
                 TimeSpan.FromMinutes(4),
@@ -283,13 +299,7 @@ namespace Witch.Infrastructure.Tests
 
         private static PotionServiceRules CreatePotionRules()
         {
-            return new PotionServiceRules(
-                10,
-                new RecipeCatalog(new[]
-                {
-                    new Recipe("recipe.warming", new HerbPair("herb.ginger", "herb.mint")),
-                    new Recipe("recipe.cooling", new HerbPair("herb.mint", "herb.sage"))
-                }));
+            return new PotionServiceRules(10);
         }
 
         private static GameSaveState CreateSave(string runId, int suspicion, int seed)
@@ -302,9 +312,9 @@ namespace Witch.Infrastructure.Tests
                 0,
                 new[] { "category.warm" },
                 new[] { "herb.ginger", "herb.mint" },
-                new[] { "recipe.warming" },
                 new[] { "guidebook.warm" },
-                new Dictionary<string, bool> { { "tutorial.intro", true } });
+                new Dictionary<string, bool> { { "tutorial.intro", true } },
+                seenOrderIds: new[] { "order.seen" });
             var snapshot = new DayStartSnapshot(
                 state,
                 seed,

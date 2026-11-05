@@ -17,7 +17,6 @@ namespace Witch.Domain.Tests
                 rewindCount: 0,
                 unlockedCategoryIds: new[] { "category.warm" },
                 unlockedHerbIds: new[] { "herb.ginger", "herb.mint" },
-                unlockedRecipeIds: new[] { "recipe.warming-tonic" },
                 unlockedGuidebookEntryIds: new[] { "guidebook.warm" },
                 tutorialFlags: new Dictionary<string, bool> { { "tutorial.arrival", false } },
                 narrativeFlags: new Dictionary<string, bool> { { "narrative.intro", true } });
@@ -29,10 +28,21 @@ namespace Witch.Domain.Tests
             Assert.That(run.RewindCount, Is.Zero);
             Assert.That(run.UnlockedCategoryIds, Is.EqualTo(new[] { "category.warm" }));
             Assert.That(run.UnlockedHerbIds, Is.EqualTo(new[] { "herb.ginger", "herb.mint" }));
-            Assert.That(run.UnlockedRecipeIds, Is.EqualTo(new[] { "recipe.warming-tonic" }));
             Assert.That(run.UnlockedGuidebookEntryIds, Is.EqualTo(new[] { "guidebook.warm" }));
             Assert.That(run.TutorialFlags["tutorial.arrival"], Is.False);
             Assert.That(run.NarrativeFlags["narrative.intro"], Is.True);
+        }
+
+        [Test]
+        public void MarkOrderSeen_TracksUniquePoolAndResetsWhenOrderRepeats()
+        {
+            var run = new RunState("run.test", 1, 0, 0, 0);
+
+            RunState firstCycle = run.MarkOrderSeen("order.one").MarkOrderSeen("order.two");
+            RunState nextCycle = firstCycle.MarkOrderSeen("order.one");
+
+            Assert.That(firstCycle.SeenOrderIds, Is.EqualTo(new[] { "order.one", "order.two" }));
+            Assert.That(nextCycle.SeenOrderIds, Is.EqualTo(new[] { "order.one" }));
         }
     }
 }

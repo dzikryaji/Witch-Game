@@ -101,7 +101,6 @@ namespace Witch.Bootstrap.PlayModeTests
                 0,
                 new[] { "category.test" },
                 new[] { "herb.ginger", "herb.mint", "herb.sage" },
-                new[] { "recipe.correct", "recipe.wrong" },
                 new[] { "guide.test" },
                 TimeSpan.FromSeconds(1),
                 "expense.day.1",
@@ -117,13 +116,7 @@ namespace Witch.Bootstrap.PlayModeTests
                 new IncreasingRandom()).ExecuteAsync(new StartNewGameCommand("three-day-playmode")).Result;
             Assert.That(start.Succeeded, Is.True, start.ErrorMessage);
 
-            var rules = new PotionServiceRules(
-                20,
-                new RecipeCatalog(new[]
-                {
-                    new Recipe("recipe.correct", new HerbPair("herb.ginger", "herb.mint")),
-                    new Recipe("recipe.wrong", new HerbPair("herb.mint", "herb.sage"))
-                }));
+            var rules = new PotionServiceRules(20);
             var daySetup = new DayProgressionSetup(
                 new DayTimingRules(TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(1)),
                 20,

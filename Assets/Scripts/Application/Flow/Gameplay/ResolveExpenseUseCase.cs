@@ -97,7 +97,7 @@ namespace Witch.Application.Flow
                 nextSeed,
                 setup.TimingRules.GetDuration(nextDay),
                 setup.GetExpenseId(nextDay),
-                setup.DailyExpenseValue,
+                setup.GetExpenseValue(nextDay),
                 setup.SaveVersion,
                 clock.UtcNow);
             var metadata = new ActiveAttemptMetadata(

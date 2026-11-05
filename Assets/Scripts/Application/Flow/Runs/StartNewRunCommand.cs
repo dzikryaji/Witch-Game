@@ -14,7 +14,6 @@ namespace Witch.Application.Flow
             int startingMoney,
             IReadOnlyList<string> unlockedCategoryIds,
             IReadOnlyList<string> unlockedHerbIds,
-            IReadOnlyList<string> unlockedRecipeIds,
             IReadOnlyList<string> unlockedGuidebookEntryIds,
             int firstDayOrderSeed,
             TimeSpan firstDayTimerDuration,
@@ -29,7 +28,6 @@ namespace Witch.Application.Flow
             StartingMoney = startingMoney;
             UnlockedCategoryIds = CopyIds(unlockedCategoryIds);
             UnlockedHerbIds = CopyIds(unlockedHerbIds);
-            UnlockedRecipeIds = CopyIds(unlockedRecipeIds);
             UnlockedGuidebookEntryIds = CopyIds(unlockedGuidebookEntryIds);
             FirstDayOrderSeed = firstDayOrderSeed;
             FirstDayTimerDuration = firstDayTimerDuration;
@@ -48,8 +46,6 @@ namespace Witch.Application.Flow
         public IReadOnlyList<string> UnlockedCategoryIds { get; }
 
         public IReadOnlyList<string> UnlockedHerbIds { get; }
-
-        public IReadOnlyList<string> UnlockedRecipeIds { get; }
 
         public IReadOnlyList<string> UnlockedGuidebookEntryIds { get; }
 

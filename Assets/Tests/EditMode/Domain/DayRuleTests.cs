@@ -105,7 +105,8 @@ namespace Witch.Domain.Tests
                 currentDayNumber: 2,
                 money: 35,
                 suspicion: 3,
-                rewindCount: 1);
+                rewindCount: 1)
+                .WithSeenOrders(new[] { "order.one", "order.two" });
 
             RewindOutcome outcome = RewindRules.Complete(snapshot, failedAttempt, nextAttemptSeed: 999);
 
@@ -113,6 +114,7 @@ namespace Witch.Domain.Tests
             Assert.That(outcome.RestoredRunState.Money, Is.EqualTo(5));
             Assert.That(outcome.RestoredRunState.Suspicion, Is.Zero);
             Assert.That(outcome.RestoredRunState.RewindCount, Is.EqualTo(2));
+            Assert.That(outcome.RestoredRunState.SeenOrderIds, Is.EqualTo(new[] { "order.one", "order.two" }));
             Assert.That(outcome.NextAttemptSeed, Is.EqualTo(999));
         }
 
@@ -126,7 +128,6 @@ namespace Witch.Domain.Tests
                 0,
                 new[] { "category.warm" },
                 new[] { "herb.ginger", "herb.mint" },
-                new[] { "recipe.warming-tonic" },
                 new[] { "guidebook.warm" });
         }
     }

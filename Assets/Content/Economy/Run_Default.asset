@@ -17,3 +17,6 @@ MonoBehaviour:
   saveVersion: 1
   firstDay: 1
   dailyTimerIncreaseSeconds: 20
+  correctOrderPayment: 10
+  completionDay: 3
+  expenseIdPrefix: expense.day.

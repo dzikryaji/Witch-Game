@@ -8,20 +8,18 @@ namespace Witch.Application.Flow
 {
     public sealed class DayUnlockSet
     {
-        public DayUnlockSet(int firstDay, IReadOnlyList<string> categories, IReadOnlyList<string> herbs, IReadOnlyList<string> recipes, IReadOnlyList<string> guidebookEntries)
+        public DayUnlockSet(int firstDay, IReadOnlyList<string> categories, IReadOnlyList<string> herbs, IReadOnlyList<string> guidebookEntries)
         {
             if (firstDay < 1) throw new ArgumentOutOfRangeException(nameof(firstDay));
             FirstDay = firstDay;
             CategoryIds = Copy(categories);
             HerbIds = Copy(herbs);
-            RecipeIds = Copy(recipes);
             GuidebookEntryIds = Copy(guidebookEntries);
         }
 
         public int FirstDay { get; }
         public IReadOnlyList<string> CategoryIds { get; }
         public IReadOnlyList<string> HerbIds { get; }
-        public IReadOnlyList<string> RecipeIds { get; }
         public IReadOnlyList<string> GuidebookEntryIds { get; }
 
         private static IReadOnlyList<string> Copy(IReadOnlyList<string> values) =>
@@ -36,11 +34,38 @@ namespace Witch.Application.Flow
             string expenseIdPrefix,
             int saveVersion,
             IReadOnlyList<DayUnlockSet> unlockSets = null)
+            : this(
+                timingRules,
+                new Dictionary<int, int>(),
+                dailyExpenseValue,
+                expenseIdPrefix,
+                saveVersion,
+                unlockSets)
+        {
+        }
+
+        public DayProgressionSetup(
+            DayTimingRules timingRules,
+            IReadOnlyDictionary<int, int> dailyExpenseValues,
+            string expenseIdPrefix,
+            int saveVersion,
+            IReadOnlyList<DayUnlockSet> unlockSets = null)
+            : this(timingRules, dailyExpenseValues, 0, expenseIdPrefix, saveVersion, unlockSets)
+        {
+        }
+
+        private DayProgressionSetup(
+            DayTimingRules timingRules,
+            IReadOnlyDictionary<int, int> dailyExpenseValues,
+            int fallbackDailyExpenseValue,
+            string expenseIdPrefix,
+            int saveVersion,
+            IReadOnlyList<DayUnlockSet> unlockSets)
         {
             TimingRules = timingRules ?? throw new ArgumentNullException(nameof(timingRules));
-            if (dailyExpenseValue < 0)
+            if (fallbackDailyExpenseValue < 0)
             {
-                throw new ArgumentOutOfRangeException(nameof(dailyExpenseValue));
+                throw new ArgumentOutOfRangeException(nameof(fallbackDailyExpenseValue));
             }
 
             if (string.IsNullOrWhiteSpace(expenseIdPrefix))
@@ -53,7 +78,9 @@ namespace Witch.Application.Flow
                 throw new ArgumentOutOfRangeException(nameof(saveVersion));
             }
 
-            DailyExpenseValue = dailyExpenseValue;
+            DailyExpenseValue = fallbackDailyExpenseValue;
+            DailyExpenseValues = new ReadOnlyDictionary<int, int>(
+                new Dictionary<int, int>(dailyExpenseValues ?? throw new ArgumentNullException(nameof(dailyExpenseValues))));
             ExpenseIdPrefix = expenseIdPrefix;
             SaveVersion = saveVersion;
             UnlockSets = new List<DayUnlockSet>(unlockSets ?? Array.Empty<DayUnlockSet>()).AsReadOnly();
@@ -61,6 +88,7 @@ namespace Witch.Application.Flow
 
         public DayTimingRules TimingRules { get; }
         public int DailyExpenseValue { get; }
+        public IReadOnlyDictionary<int, int> DailyExpenseValues { get; }
         public string ExpenseIdPrefix { get; }
         public int SaveVersion { get; }
         public IReadOnlyList<DayUnlockSet> UnlockSets { get; }
@@ -68,6 +96,11 @@ namespace Witch.Application.Flow
         public string GetExpenseId(int dayNumber)
         {
             return ExpenseIdPrefix + dayNumber;
+        }
+
+        public int GetExpenseValue(int dayNumber)
+        {
+            return DailyExpenseValues.TryGetValue(dayNumber, out int value) ? value : DailyExpenseValue;
         }
 
         public RunState ApplyUnlocks(RunState state)
@@ -82,10 +115,10 @@ namespace Witch.Application.Flow
                 state.RewindCount,
                 state.UnlockedCategoryIds.Concat(active.SelectMany(value => value.CategoryIds)).Distinct(StringComparer.Ordinal).ToArray(),
                 state.UnlockedHerbIds.Concat(active.SelectMany(value => value.HerbIds)).Distinct(StringComparer.Ordinal).ToArray(),
-                state.UnlockedRecipeIds.Concat(active.SelectMany(value => value.RecipeIds)).Distinct(StringComparer.Ordinal).ToArray(),
                 state.UnlockedGuidebookEntryIds.Concat(active.SelectMany(value => value.GuidebookEntryIds)).Distinct(StringComparer.Ordinal).ToArray(),
                 state.TutorialFlags,
-                state.NarrativeFlags);
+                state.NarrativeFlags,
+                state.SeenOrderIds);
         }
     }
 }

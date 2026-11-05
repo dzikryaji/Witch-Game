@@ -16,9 +16,6 @@ MonoBehaviour:
   title: Warming and Cooling Herbs
   categoryId: category.warm-cool
   bodyText: "WARMING \u2014 Herbs that bring heat back to the body.\n\nCOOLING \u2014 Herbs that bring heat down and calm the blood."
-  clueIds:
-  - clue.warm.fireside
-  - clue.cool.fever
   contentsItems:
   - categoryId: category.warm
     name: Warming

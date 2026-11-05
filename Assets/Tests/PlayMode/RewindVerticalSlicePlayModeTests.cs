@@ -110,7 +110,6 @@ namespace Witch.Bootstrap.PlayModeTests
                 9,
                 new[] { "category.test" },
                 new[] { "herb.ginger", "herb.mint", "herb.sage" },
-                new[] { "recipe.correct", "recipe.wrong" },
                 new[] { "guide.test" },
                 TimeSpan.FromSeconds(60),
                 "expense.day.1",
@@ -126,13 +125,7 @@ namespace Witch.Bootstrap.PlayModeTests
                 new FixedRandom(101)).ExecuteAsync(new StartNewGameCommand("rewind-playmode")).Result;
             Assert.That(start.Succeeded, Is.True, start.ErrorMessage);
 
-            var rules = new PotionServiceRules(
-                10,
-                new RecipeCatalog(new[]
-                {
-                    new Recipe("recipe.correct", new HerbPair("herb.ginger", "herb.mint")),
-                    new Recipe("recipe.wrong", new HerbPair("herb.mint", "herb.sage"))
-                }));
+            var rules = new PotionServiceRules(10);
             var open = new OpenShopUseCase();
             var admit = new AdmitCustomerUseCase(clock);
             var prepare = new PotionPreparationUseCase(rules);
