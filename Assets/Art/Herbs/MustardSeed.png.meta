@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 61c9016b21a3d44fabc58e0f154d658e
+guid: 45873bfb146be4a2b88d2398d4c79d51
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -2164090734141169979
-    second: MustardSeed_0
+      213: 7005188166646171919
+    second: Mustard Seed_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -115,13 +115,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: MustardSeed_0
+      name: Mustard Seed_0
       rect:
         serializedVersion: 2
-        x: 60
-        y: 6
-        width: 97
-        height: 68
+        x: 48
+        y: 172
+        width: 689
+        height: 471
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -130,8 +130,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 5ce1dc171fa97f1e0800000000000000
-      internalID: -2164090734141169979
+      spriteID: f0907b1c58d673160800000000000000
+      internalID: 7005188166646171919
       vertices: []
       indices: 
       edges: []
@@ -150,7 +150,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      MustardSeed_0: -2164090734141169979
+      Mustard Seed_0: 7005188166646171919
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

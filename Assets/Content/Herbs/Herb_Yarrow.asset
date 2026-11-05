@@ -16,8 +16,8 @@ MonoBehaviour:
   displayName: Yarrow
   categoryId: category.mend
   scientificName: Achillea millefolium
-  treatmentText: Feathery leaves and flat white flowers that quickly stop bleeding when pressed directly onto a cut and fade dark bruises.
-  warningText: Yarrow significantly reduces blood pressure. It can be deadly for older people or people with weak hearts.
-  guidebookIllustration: {fileID: 0}
+  treatmentText: Feathery leaves and flat white flowers that stop bleeding quickly when pressed directly on a cut and fade dark bruises.
+  warningText: It significantly reduces blood pressure, which can be deadly if given to older people or those with weak hearts.
+  herbIllustration: {fileID: 21300000, guid: 5a644e0269e7948398284e4b796ff207, type: 3}
   accessibleLabel: Yarrow
   guidebookPage: 24

@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f5f76fe6c3f7d450e98c5e1ef5f66046, type: 3}
+  m_Name: Order_Simple_Soothe12
+  m_EditorClassIdentifier: Witch.Infrastructure::Witch.Infrastructure.Content.OrderDefinition
+  stableId: order.simple.s12
+  difficulty: 0
+  orderBubbles:
+  - Something soothing, please.
+  - I get muscle cramps in my legs,
+  - and I keep having panic attacks.
+  - The apothecary prescribed Matricaria chamomilla for the cramps,
+  - and Lavandula for the panic attacks.
+  firstHerbId: herb.chamomile
+  secondHerbId: herb.lavender

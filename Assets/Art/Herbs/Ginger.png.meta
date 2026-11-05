@@ -118,10 +118,10 @@ TextureImporter:
       name: Ginger_0
       rect:
         serializedVersion: 2
-        x: 74
-        y: 7
-        width: 72
-        height: 67
+        x: 142
+        y: 182
+        width: 517
+        height: 485
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}

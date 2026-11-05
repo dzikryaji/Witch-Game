@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: f78daeebfecb4409cad483e37495a004
+guid: d5ff986d21570498ebab790890d95c24
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 6687591360785734959
-    second: WhiteWillow_0
+      213: -5581590325609418903
+    second: White Willow_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -115,13 +115,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: WhiteWillow_0
+      name: White Willow_0
       rect:
         serializedVersion: 2
-        x: 75
-        y: 4
-        width: 71
-        height: 77
+        x: 119
+        y: 85
+        width: 574
+        height: 632
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -130,8 +130,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: f2dda9609e81fcc50800000000000000
-      internalID: 6687591360785734959
+      spriteID: 96f2b40eb253a82b0800000000000000
+      internalID: -5581590325609418903
       vertices: []
       indices: 
       edges: []
@@ -150,7 +150,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      WhiteWillow_0: 6687591360785734959
+      White Willow_0: -5581590325609418903
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

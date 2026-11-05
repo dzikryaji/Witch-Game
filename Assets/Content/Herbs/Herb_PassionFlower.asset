@@ -16,8 +16,8 @@ MonoBehaviour:
   displayName: Passion Flower
   categoryId: category.soothe
   scientificName: Passiflora
-  treatmentText: A complex, unusual flower that acts as a strong sedative, relieves serious physical injuries, and soothes a hysterical patient.
-  warningText: Passion Flower causes severe mental confusion and extreme tiredness. It can be deadly for a town guard, soldier, or anyone who must remain fully awake and alert while on duty.
-  guidebookIllustration: {fileID: 0}
+  treatmentText: A complex, unusual flower that acts as a strong sedative, helping to relieve serious physical injuries and soothe hysterical patient.
+  warningText: It leads to severe mental confusion and extreme tiredness, which can be deadly if given to someone like a town guard, a soldier, or any person who needs to stay fully awake and alert while on duty.
+  herbIllustration: {fileID: 21300000, guid: 5ff7b0dcb997d48fd8a1b2f789a85e71, type: 3}
   accessibleLabel: Passion Flower
   guidebookPage: 16
