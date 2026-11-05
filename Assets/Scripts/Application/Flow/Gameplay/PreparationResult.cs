@@ -9,7 +9,6 @@ namespace Witch.Application.Flow
         GroundDiscarded,
         RemovedFromPot,
         Prepared,
-        InvalidRecipeDiscarded,
         Discarded
     }
 

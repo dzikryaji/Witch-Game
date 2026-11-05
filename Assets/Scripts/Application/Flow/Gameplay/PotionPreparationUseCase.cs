@@ -100,8 +100,7 @@ namespace Witch.Application.Flow
             var pair = new HerbPair(
                 session.PotionDraft.Ingredients[0].HerbId,
                 session.PotionDraft.Ingredients[1].HerbId);
-            BrewOutcome outcome = rules.Brew(pair);
-            session.SetPreparedRecipe(outcome.Recipe);
+            session.SetPreparedPotion(rules.Brew(pair));
             return PreparationResult.Success(PreparationResultKind.Prepared);
         }
 

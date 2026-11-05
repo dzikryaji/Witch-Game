@@ -6,9 +6,7 @@ namespace Witch.Domain.Potions
 {
     public sealed class PotionServiceRules
     {
-        private readonly RecipeCatalog recipeCatalog;
-
-        public PotionServiceRules(int correctPayment, RecipeCatalog recipeCatalog)
+        public PotionServiceRules(int correctPayment)
         {
             if (correctPayment <= 0)
             {
@@ -16,25 +14,21 @@ namespace Witch.Domain.Potions
             }
 
             CorrectPayment = correctPayment;
-            this.recipeCatalog = recipeCatalog ?? throw new ArgumentNullException(nameof(recipeCatalog));
         }
 
         public int CorrectPayment { get; }
 
-        public BrewOutcome Brew(HerbPair herbPair)
+        public PreparedPotion Brew(HerbPair herbPair)
         {
             if (herbPair == null)
             {
                 throw new ArgumentNullException(nameof(herbPair));
             }
 
-            return BrewOutcome.Valid(
-                recipeCatalog.TryFind(herbPair, out Recipe recipe)
-                    ? recipe
-                    : new Recipe("potion.freeform", herbPair));
+            return new PreparedPotion(herbPair);
         }
 
-        public ServiceOutcome Serve(RunState runState, OrderRequest order, Recipe servedRecipe)
+        public ServiceOutcome Serve(RunState runState, OrderRequest order, PreparedPotion servedPotion)
         {
             if (runState == null)
             {
@@ -46,9 +40,9 @@ namespace Witch.Domain.Potions
                 throw new ArgumentNullException(nameof(order));
             }
 
-            if (servedRecipe == null)
+            if (servedPotion == null)
             {
-                throw new ArgumentNullException(nameof(servedRecipe));
+                throw new ArgumentNullException(nameof(servedPotion));
             }
 
             if (runState.Suspicion >= RunState.RewindSuspicionThreshold)
@@ -56,7 +50,7 @@ namespace Witch.Domain.Potions
                 throw new InvalidOperationException("Service cannot continue while rewind is pending.");
             }
 
-            if (order.IsCorrect(servedRecipe))
+            if (order.IsCorrect(servedPotion))
             {
                 int updatedMoney = checked(runState.Money + CorrectPayment);
                 return new ServiceOutcome(

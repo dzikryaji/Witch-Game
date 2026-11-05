@@ -38,15 +38,15 @@ namespace Witch.Application.Flow
                 return ServePotionResult.Failure("No uncommitted customer encounter is active.");
             }
 
-            if (session.PreparedRecipe == null)
+            if (session.PreparedPotion == null)
             {
-                return ServePotionResult.Failure("A prepared recipe is required.");
+                return ServePotionResult.Failure("A prepared potion is required.");
             }
 
             ServiceOutcome outcome = rules.Serve(
                 session.RunState,
                 session.AttemptState.ActiveOrder,
-                session.PreparedRecipe);
+                session.PreparedPotion);
             session.CommitService(outcome);
             return ServePotionResult.Success(outcome);
         }
@@ -64,7 +64,7 @@ namespace Witch.Application.Flow
             ServiceOutcome outcome = rules.Serve(
                 session.RunState,
                 session.AttemptState.ActiveOrder,
-                session.PreparedRecipe);
+                session.PreparedPotion);
             if (outcome.Kind == ServiceOutcomeKind.WrongValid)
             {
                 if (attemptRepository == null)
@@ -105,8 +105,8 @@ namespace Witch.Application.Flow
                 return ServePotionResult.Failure("No uncommitted customer encounter is active.");
             }
 
-            return session.PreparedRecipe == null
-                ? ServePotionResult.Failure("A prepared recipe is required.")
+            return session.PreparedPotion == null
+                ? ServePotionResult.Failure("A prepared potion is required.")
                 : null;
         }
     }

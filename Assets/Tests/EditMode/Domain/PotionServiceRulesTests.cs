@@ -7,22 +7,20 @@ namespace Witch.Domain.Tests
 {
     public sealed class PotionServiceRulesTests
     {
-        private static readonly Recipe CorrectRecipe = new Recipe(
-            "recipe.warming-tonic",
+        private static readonly PreparedPotion CorrectPotion = new PreparedPotion(
             new HerbPair("herb.ginger", "herb.mint"));
 
-        private static readonly Recipe OtherRecipe = new Recipe(
-            "recipe.cooling-tonic",
+        private static readonly PreparedPotion OtherPotion = new PreparedPotion(
             new HerbPair("herb.mint", "herb.sage"));
 
         [Test]
-        public void CorrectRecipe_PaysFixedAmountWithoutSuspicion()
+        public void CorrectPotion_PaysFixedAmountWithoutSuspicion()
         {
             PotionServiceRules rules = CreateRules();
             RunState run = CreateRunState();
-            var order = new OrderRequest("order.fever", CorrectRecipe.HerbPair);
+            var order = new OrderRequest("order.fever", CorrectPotion.HerbPair);
 
-            ServiceOutcome outcome = rules.Serve(run, order, CorrectRecipe);
+            ServiceOutcome outcome = rules.Serve(run, order, CorrectPotion);
 
             Assert.That(outcome.Kind, Is.EqualTo(ServiceOutcomeKind.Correct));
             Assert.That(outcome.Payment, Is.EqualTo(10));
@@ -32,13 +30,13 @@ namespace Witch.Domain.Tests
         }
 
         [Test]
-        public void OtherValidRecipe_PaysNothingAndAddsOneSuspicion()
+        public void OtherPotion_PaysNothingAndAddsOneSuspicion()
         {
             PotionServiceRules rules = CreateRules();
             RunState run = CreateRunState();
-            var order = new OrderRequest("order.fever", CorrectRecipe.HerbPair);
+            var order = new OrderRequest("order.fever", CorrectPotion.HerbPair);
 
-            ServiceOutcome outcome = rules.Serve(run, order, OtherRecipe);
+            ServiceOutcome outcome = rules.Serve(run, order, OtherPotion);
 
             Assert.That(outcome.Kind, Is.EqualTo(ServiceOutcomeKind.WrongValid));
             Assert.That(outcome.Payment, Is.Zero);
@@ -48,39 +46,19 @@ namespace Witch.Domain.Tests
         }
 
         [Test]
-        public void UnknownPair_BrewsFreeformPotionAndDoesNotChangeRun()
+        public void AnyTwoDifferentHerbs_BrewPotionWithoutChangingRunState()
         {
             PotionServiceRules rules = CreateRules();
             RunState run = CreateRunState();
 
-            BrewOutcome brew = rules.Brew(new HerbPair("herb.ginger", "herb.sage"));
+            PreparedPotion potion = rules.Brew(new HerbPair("herb.ginger", "herb.sage"));
 
-            Assert.That(brew.Kind, Is.EqualTo(BrewOutcomeKind.ValidRecipe));
-            Assert.That(brew.Recipe.HerbPair, Is.EqualTo(new HerbPair("herb.ginger", "herb.sage")));
+            Assert.That(potion.HerbPair, Is.EqualTo(new HerbPair("herb.ginger", "herb.sage")));
             Assert.That(run.Money, Is.Zero);
             Assert.That(run.Suspicion, Is.Zero);
         }
 
-        [Test]
-        public void Discard_DoesNotChangeMoneyOrSuspicion()
-        {
-            PotionServiceRules rules = CreateRules();
-            RunState run = CreateRunState();
-
-            ServiceOutcome outcome = rules.Discard(run);
-
-            Assert.That(outcome.Kind, Is.EqualTo(ServiceOutcomeKind.Discarded));
-            Assert.That(outcome.Payment, Is.Zero);
-            Assert.That(outcome.SuspicionAdded, Is.Zero);
-            Assert.That(outcome.UpdatedRunState, Is.SameAs(run));
-        }
-
-        private static PotionServiceRules CreateRules()
-        {
-            return new PotionServiceRules(
-                10,
-                new RecipeCatalog(new[] { CorrectRecipe, OtherRecipe }));
-        }
+        private static PotionServiceRules CreateRules() => new PotionServiceRules(10);
 
         private static RunState CreateRunState()
         {
@@ -92,7 +70,6 @@ namespace Witch.Domain.Tests
                 0,
                 new[] { "category.warm" },
                 new[] { "herb.ginger", "herb.mint", "herb.sage" },
-                new[] { CorrectRecipe.RecipeId, OtherRecipe.RecipeId },
                 new[] { "guidebook.warm" });
         }
     }
