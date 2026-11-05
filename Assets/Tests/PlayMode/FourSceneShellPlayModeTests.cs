@@ -94,7 +94,6 @@ namespace Witch.Bootstrap.PlayModeTests
                 0,
                 new[] { "category.test" },
                 new[] { "herb.first", "herb.second" },
-                new[] { "recipe.test" },
                 new[] { "guide.test" },
                 TimeSpan.FromSeconds(60),
                 "expense.day.1",
