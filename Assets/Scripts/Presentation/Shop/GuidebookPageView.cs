@@ -44,6 +44,10 @@ namespace Witch.Presentation.Shop
         [Tooltip("Optional: one Button per row, same order as Contents Rows. Clicking jumps to that category.")]
         [SerializeField] private Button[] contentsRowButtons = new Button[0];
 
+        [Header("Page number (optional)")]
+        [Tooltip("Shown at the bottom of the page, e.g. \"3 / 11\". Turns with the page during a flip.")]
+        [SerializeField] private TMP_Text pageNumber;
+
         private int[] rowTargets = new int[0];
 
         // Side-dependent parts are authored for a right-hand page and mirrored for a left-hand page.
@@ -87,6 +91,14 @@ namespace Witch.Presentation.Shop
         private void OnRowClicked(int row)
         {
             if (row < rowTargets.Length && rowTargets[row] >= 0) pageLinkRequested?.Invoke(rowTargets[row]);
+        }
+
+        /// <summary>Writes this page's number; an empty label hides it (e.g. the blank side after the last page).</summary>
+        public void SetPageNumber(string label)
+        {
+            if (pageNumber == null) return;
+            pageNumber.text = label ?? string.Empty;
+            pageNumber.gameObject.SetActive(!string.IsNullOrEmpty(label));
         }
 
         /// <summary>Shows a page, or clears this side of the book when <paramref name="page"/> is null.</summary>
