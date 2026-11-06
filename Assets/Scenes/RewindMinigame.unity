@@ -306,6 +306,15 @@ MonoBehaviour:
   - {fileID: 1176608037}
   - {fileID: 1095341172}
   - {fileID: 1664039634}
+  - {fileID: 1664039634}
+  - {fileID: 1664039634}
+  - {fileID: 1664039634}
+  - {fileID: 1664039634}
+  - {fileID: 1664039634}
+  - {fileID: 1664039634}
+  - {fileID: 1664039634}
+  - {fileID: 1664039634}
+  boardLayout: {fileID: 1245532827}
 --- !u!4 &827382019
 Transform:
   m_ObjectHideFlags: 0
@@ -1037,6 +1046,7 @@ GameObject:
   - component: {fileID: 1245532826}
   - component: {fileID: 1245532825}
   - component: {fileID: 1245532824}
+  - component: {fileID: 1245532827}
   m_Layer: 0
   m_Name: Card Board
   m_TagString: Untagged
@@ -1141,6 +1151,30 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1245532822}
   m_CullTransparentMesh: 1
+--- !u!114 &1245532827
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1245532822}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 97f81fd1c0eb9498bb149cc233456dd4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Witch.Presentation::Witch.Presentation.Rewind.RewindBoardLayout
+  columnRules:
+  - cardCount: 6
+    columns: 3
+  - cardCount: 12
+    columns: 4
+  - cardCount: 18
+    columns: 6
+  - cardCount: 24
+    columns: 8
+  spacing: {x: 14, y: 14}
+  cardAspect: 0.71428573
+  maxCardWidth: 180
 --- !u!1 &1306166067
 GameObject:
   m_ObjectHideFlags: 0

@@ -13,6 +13,7 @@ namespace Witch.Presentation.Rewind
     {
         [Header("Authored View")]
         [SerializeField] private RewindCardView[] cardViews;
+        [SerializeField] private RewindBoardLayout boardLayout;
 
         private IGameSessionStore sessionStore;
         private CompleteRewindUseCase completeRewind;
@@ -113,6 +114,7 @@ namespace Witch.Presentation.Rewind
             matched = new bool[Board.Cards.Count];
             EnsureCardViews(Board.Cards.Count);
             BindCards();
+            if (boardLayout != null) boardLayout.Apply(Board.Cards.Count);
             RenderCards();
             audioService?.StopAmbience();
             audioService?.PlayMusic(GameAudioCueIds.RewindMusic);
