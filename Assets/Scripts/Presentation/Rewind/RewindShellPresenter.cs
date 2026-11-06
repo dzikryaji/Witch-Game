@@ -13,6 +13,7 @@ namespace Witch.Presentation.Rewind
     {
         [Header("Authored View")]
         [SerializeField] private RewindCardView[] cardViews;
+        [SerializeField] private RewindBoardLayout boardLayout;
 
         private IGameSessionStore sessionStore;
         private CompleteRewindUseCase completeRewind;
@@ -24,6 +25,8 @@ namespace Witch.Presentation.Rewind
         private readonly CancellationTokenSource lifetime = new CancellationTokenSource();
         private readonly List<RewindCardView> cardSlots = new List<RewindCardView>();
         private IReadOnlyList<string> symbols;
+        private const int CompletionHoldMs = 500;
+        private int FlipDelayMs(int index) => Mathf.CeilToInt(cardSlots[index].FlipDuration * 1000f);
 
         public bool IsInitialized => sessionStore != null;
         public GameSession ActiveSession => sessionStore?.ActiveSession;
@@ -111,6 +114,7 @@ namespace Witch.Presentation.Rewind
             matched = new bool[Board.Cards.Count];
             EnsureCardViews(Board.Cards.Count);
             BindCards();
+            if (boardLayout != null) boardLayout.Apply(Board.Cards.Count);
             RenderCards();
             audioService?.StopAmbience();
             audioService?.PlayMusic(GameAudioCueIds.RewindMusic);
@@ -134,11 +138,17 @@ namespace Witch.Presentation.Rewind
 
             int previous = firstIndex;
             firstIndex = -1;
+            IsResolvingMismatch = true;            // blocks input until this pair is resolved
             RenderCards();
+
+            // let the second card finish turning over before judging the pair
+            await Task.Delay(FlipDelayMs(index), lifetime.Token);
+
             if (Board.Cards[previous] == Board.Cards[index])
             {
                 matched[previous] = true;
                 matched[index] = true;
+                IsResolvingMismatch = false;
                 audioService?.Play(GameAudioCueIds.CardMatch);
                 if (AllMatched())
                 {
@@ -146,6 +156,7 @@ namespace Witch.Presentation.Rewind
                     RenderCards();
                     audioService?.Play(GameAudioCueIds.MinigameComplete);
                     audioService?.StopMusic();
+                    await Task.Delay(CompletionHoldMs, lifetime.Token);   // show the final match before leaving
                     RewindTransactionResult result = await completeRewind.ExecuteAsync(ActiveSession, lifetime.Token);
                     return result.Succeeded;
                 }
@@ -154,9 +165,7 @@ namespace Witch.Presentation.Rewind
                 return true;
             }
 
-            IsResolvingMismatch = true;
             audioService?.Play(GameAudioCueIds.CardMismatch);
-            RenderCards();
             await Task.Delay(settings.ReducedMismatchDelay ? 100 : 450, lifetime.Token);
             revealed[previous] = false;
             revealed[index] = false;
