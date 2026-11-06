@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f5f76fe6c3f7d450e98c5e1ef5f66046, type: 3}
+  m_Name: Order_Mid_Warm11
+  m_EditorClassIdentifier: Witch.Infrastructure::Witch.Infrastructure.Content.OrderDefinition
+  stableId: order.mid.w11
+  difficulty: 1
+  orderBubbles:
+  - Bad inn food and cold rain ended my journey.
+  - My stomach aches, while chills and mucus clog my chest.
+  - I have no wounds, scrapes, or bleeding ulcers.
+  - An inn healer calls the stomach root Zingiber officinale.
+  - He pairs it with Sinapis alba for chills and mucus.
+  firstHerbId: herb.ginger
+  secondHerbId: herb.mustardSeed

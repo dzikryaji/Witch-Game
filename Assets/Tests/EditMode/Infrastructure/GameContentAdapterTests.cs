@@ -9,7 +9,7 @@ namespace Witch.Infrastructure.Tests
     public sealed class GameContentAdapterTests
     {
         [Test]
-        public void Load_AuthoredThreeDayPrototypeContentIsValid()
+        public void Load_AuthoredEightDayContentIsValid()
         {
             GameContentCatalogDefinition catalog = AssetDatabase.LoadAssetAtPath<GameContentCatalogDefinition>(
                 "Assets/Content/GameContentCatalog.asset");
@@ -18,49 +18,73 @@ namespace Witch.Infrastructure.Tests
 
             Assert.That(catalog, Is.Not.Null);
             Assert.That(result.Succeeded, Is.True, string.Join("\n", result.Errors));
-            Assert.That(result.Content.OrdersById.Count, Is.EqualTo(15));
-            Assert.That(
-                result.Content.OrdersById["order.day1.direct-warm"].OrderSentences,
-                Is.EqualTo(new[] { "I need ginger and cinnamon.", "Please do not improvise; I already did that once." }));
-            Assert.That(result.Content.DaysByNumber.Count, Is.EqualTo(3));
-            Assert.That(result.Content.DaysByNumber[1].TimerDuration, Is.EqualTo(TimeSpan.FromMinutes(4)));
-            Assert.That(result.Content.DaysByNumber[2].TimerDuration, Is.EqualTo(TimeSpan.FromMinutes(4) + TimeSpan.FromSeconds(20)));
-            Assert.That(result.Content.DaysByNumber[3].TimerDuration, Is.EqualTo(TimeSpan.FromMinutes(4) + TimeSpan.FromSeconds(40)));
+            Assert.That(result.Content.OrdersById.Count, Is.EqualTo(150));
+            Assert.That(result.Content.OrdersById.Values.Select(order => order.Difficulty).Distinct(),
+                Is.EquivalentTo(new[] { OrderDifficulty.Simple, OrderDifficulty.Mid }));
+            Assert.That(result.Content.OrdersById["order.simple.w01"].OrderBubbles, Is.Not.Empty);
+            Assert.That(result.Content.DaysByNumber.Count, Is.EqualTo(8));
+            Assert.That(result.Content.DaysByNumber.Values.All(day => day.TimerDuration == TimeSpan.FromMinutes(4)), Is.True);
             Assert.That(result.Content.HerbsById.Count, Is.EqualTo(25));
             Assert.That(result.Content.HerbsById.ContainsKey("herb.lavender"), Is.True);
             Assert.That(result.Content.HerbsById["herb.ginger"].ScientificName, Is.EqualTo("Zingiber officinale"));
             Assert.That(result.Content.HerbsById["herb.ginger"].WarningText, Does.Contain("blood clotting"));
             Assert.That(result.Content.HerbsById["herb.ginger"].GuidebookPage, Is.EqualTo(3));
-            Assert.That(result.Content.HerbsById["herb.mint"].DisplayName, Is.EqualTo("Peppermint"));
-            Assert.That(result.Content.HerbsById["herb.mint"].ClueIds, Does.Contain("clue.mint.cool-leaf"));
+            Assert.That(result.Content.HerbsById["herb.peppermint"].DisplayName, Is.EqualTo("Peppermint"));
             Assert.That(result.Content.HerbsById["herb.borage"].DisplayName, Is.EqualTo("Borage"));
-            Assert.That(result.Content.HerbsById["herb.borage"].ClueIds, Does.Contain("clue.borage.blue-flower"));
             Assert.That(result.Content.HerbsById["herb.borage"].HerbIllustration, Is.Not.Null);
-            Assert.That(result.Content.GuidebookEntriesById.ContainsKey("guidebook.soothe"), Is.True);
-            Assert.That(result.Content.GuidebookEntriesById["guidebook.soothe"].BodyText, Does.Contain("quiet the nerves"));
-            Assert.That(result.Content.GuidebookEntriesById["guidebook.soothe"].BodyText, Does.Not.Contain("Lavender"));
-            Assert.That(result.Content.GuidebookEntriesById["guidebook.warm-cool"].BodyText, Does.Not.Contain("\\n"));
-            var warmCoolContents = result.Content.GuidebookEntriesById["guidebook.warm-cool"].ContentsItems;
-            Assert.That(warmCoolContents.Select(item => item.Name), Is.EqualTo(new[] { "Warming", "Cooling" }));
-            Assert.That(warmCoolContents[0].CategoryId, Is.EqualTo("category.warm"));
-            Assert.That(warmCoolContents[0].Description, Does.Contain("heat back to the body"));
-            Assert.That(result.Content.GuidebookEntriesById["guidebook.soothe"].ContentsItems.Single().Name, Is.EqualTo("Soothing"));
+            Assert.That(result.Content.HerbCategoriesById.Count, Is.EqualTo(5));
+            Assert.That(result.Content.HerbCategoriesById["category.warm"].DisplayName, Is.EqualTo("Warming"));
+            Assert.That(result.Content.HerbCategoriesById["category.warm"].Description,
+                Does.Contain("heat back to the body"));
+            Assert.That(result.Content.HerbCategoriesById["category.soothe"].DisplayName, Is.EqualTo("Soothing"));
             Assert.That(result.Content.NewRunSetup.UnlockedHerbIds.Count, Is.EqualTo(10));
-            Assert.That(result.Content.CategoryUnlocks.Single(value => value.CategoryId == "category.soothe").FirstDay, Is.EqualTo(4));
+            Assert.That(result.Content.DaysByNumber[3].UnlockedCategoryIds, Does.Contain("category.soothe"));
             var dayThreeState = result.Content.DayProgressionSetup.ApplyUnlocks(
                 new Witch.Domain.Progression.RunState("content-test", 3, 0, 0, 0));
-            Assert.That(dayThreeState.UnlockedHerbIds, Has.Count.EqualTo(10));
-            Assert.That(dayThreeState.UnlockedHerbIds, Does.Not.Contain("herb.lavender"));
-            var dayFourState = result.Content.DayProgressionSetup.ApplyUnlocks(
-                new Witch.Domain.Progression.RunState("content-test", 4, 0, 0, 0));
-            Assert.That(dayFourState.UnlockedHerbIds, Does.Contain("herb.lavender"));
-            Assert.That(dayFourState.UnlockedRecipeIds, Does.Contain("recipe.soothing-cordial"));
-            Assert.That(result.Content.DaysByNumber.Values.All(day => day.OrderIds.Distinct().Count() == day.OrderIds.Count), Is.True);
-            Assert.That(result.Content.DaysByNumber.Values.All(day => day.OrderIds.Count >= 3), Is.True);
-            Assert.That(result.Content.DaysByNumber.Values.All(day =>
-                (day.OrderIds.Count - 1) * result.Content.CorrectOrderPayment >= result.Content.NewRunSetup.FirstDayExpenseValue), Is.True);
+            Assert.That(dayThreeState.UnlockedCategoryIds, Does.Contain("category.soothe"));
+            Assert.That(dayThreeState.UnlockedHerbIds, Does.Contain("herb.lavender"));
+            int initiallyAvailableOrders = result.Content.OrdersById.Values.Count(order =>
+                order.IsAvailable(result.Content.NewRunSetup.UnlockedHerbIds.ToHashSet(StringComparer.Ordinal)));
+            Assert.That(initiallyAvailableOrders, Is.EqualTo(70));
+            Assert.That((initiallyAvailableOrders - 1) * result.Content.CorrectOrderPayment,
+                Is.GreaterThanOrEqualTo(result.Content.NewRunSetup.FirstDayExpenseValue));
             Assert.That(result.Content.RewindCardIds.Count, Is.EqualTo(8));
             Assert.That(result.Content.RewindDifficulty.MaximumPairCount, Is.EqualTo(8));
+        }
+
+        [Test]
+        public void OrderAvailability_FollowsUnlockedHerbs()
+        {
+            GameContentCatalogDefinition catalog = AssetDatabase.LoadAssetAtPath<GameContentCatalogDefinition>(
+                "Assets/Content/GameContentCatalog.asset");
+            GameRuntimeContent content = new GameContentAdapter().Load(catalog).Content;
+            var dayOneHerbs = content.NewRunSetup.UnlockedHerbIds.ToHashSet(StringComparer.Ordinal);
+            var dayFourHerbs = content.DayProgressionSetup.ApplyUnlocks(
+                    new Witch.Domain.Progression.RunState("content-test", 4, 0, 0, 0))
+                .UnlockedHerbIds.ToHashSet(StringComparer.Ordinal);
+
+            Assert.That(content.OrdersById["order.simple.w01"].IsAvailable(dayOneHerbs), Is.True);
+            Assert.That(content.OrdersById["order.simple.s01"].IsAvailable(dayOneHerbs), Is.False);
+            Assert.That(content.OrdersById["order.simple.s01"].IsAvailable(dayFourHerbs), Is.True);
+        }
+
+        [Test]
+        public void OrderDifficulty_ComesFromDayDefinition()
+        {
+            GameContentCatalogDefinition catalog = AssetDatabase.LoadAssetAtPath<GameContentCatalogDefinition>(
+                "Assets/Content/GameContentCatalog.asset");
+            GameRuntimeContent content = new GameContentAdapter().Load(catalog).Content;
+
+            Assert.That(content.DaysByNumber[1].OrderDifficulties, Is.EqualTo(new[] { OrderDifficulty.Simple }));
+            Assert.That(content.DaysByNumber[2].OrderDifficulties, Is.EqualTo(new[] { OrderDifficulty.Simple }));
+            Assert.That(content.DaysByNumber[3].OrderDifficulties, Is.EqualTo(new[] { OrderDifficulty.Simple }));
+            Assert.That(content.DaysByNumber[4].OrderDifficulties,
+                Is.EqualTo(new[] { OrderDifficulty.Simple, OrderDifficulty.Mid }));
+            Assert.That(content.DaysByNumber[5].OrderDifficulties,
+                Is.EqualTo(new[] { OrderDifficulty.Simple, OrderDifficulty.Mid }));
+            Assert.That(content.DaysByNumber[6].OrderDifficulties, Is.EqualTo(new[] { OrderDifficulty.Mid }));
+            Assert.That(content.DaysByNumber[7].UnlockedCategoryIds, Does.Contain("category.cleanse"));
+            Assert.That(content.DaysByNumber[8].OrderDifficulties, Is.EqualTo(new[] { OrderDifficulty.Mid }));
         }
 
         [Test]
@@ -71,12 +95,11 @@ namespace Witch.Infrastructure.Tests
             GameContentLoadResult result = new GameContentAdapter().Load(catalog);
 
             Assert.That(result.Succeeded, Is.True, string.Join("\n", result.Errors));
-            Assert.That(result.Content.Recipes.Recipes.Count, Is.EqualTo(1));
             Assert.That(result.Content.OrdersById.Count, Is.EqualTo(2));
             Assert.That(result.Content.NewRunSetup.StartingMoney, Is.Zero);
             Assert.That(result.Content.NewRunSetup.FirstDayTimerDuration, Is.EqualTo(TimeSpan.FromMinutes(4)));
             Assert.That(result.Content.NewRunSetup.FirstDayExpenseValue, Is.EqualTo(20));
-            Assert.That(result.Content.ExpenseRules.CompletionDay, Is.EqualTo(3));
+            Assert.That(result.Content.ExpenseRules.CompletionDay, Is.EqualTo(1));
             Assert.That(result.Content.RewindCardIds.Count, Is.EqualTo(3));
         }
 
@@ -101,13 +124,12 @@ namespace Witch.Infrastructure.Tests
             catalog.Orders[0].Configure(
                 "order.direct",
                 Array.Empty<string>(),
-                Array.Empty<string>(),
                 "herb.ginger",
                 "herb.mint");
 
             ContentValidationReport report = new GameContentValidator().Validate(catalog);
 
-            Assert.That(report.Errors.Any(error => error.Contains("needs at least one non-empty sentence")), Is.True);
+            Assert.That(report.Errors.Any(error => error.Contains("needs at least one non-empty bubble")), Is.True);
         }
 
         [Test]
@@ -127,6 +149,18 @@ namespace Witch.Infrastructure.Tests
         }
 
         [Test]
+        public void Validate_MissingCategoryContentReturnsClearErrors()
+        {
+            GameContentCatalogDefinition catalog = ContentTestFixture.CreateValidCatalog();
+            catalog.HerbCategories[0].Configure("category.warm", "", "");
+
+            ContentValidationReport report = new GameContentValidator().Validate(catalog);
+
+            Assert.That(report.Errors.Any(error => error.Contains("needs a display name")), Is.True);
+            Assert.That(report.Errors.Any(error => error.Contains("needs a description")), Is.True);
+        }
+
+        [Test]
         public void Validate_MixedCategoryOrderReturnsError()
         {
             GameContentCatalogDefinition catalog = ContentTestFixture.CreateValidCatalog();
@@ -138,36 +172,34 @@ namespace Witch.Infrastructure.Tests
         }
 
         [Test]
-        public void Validate_LockedHerbAndUnknownClueReturnsErrors()
+        public void Validate_LockedHerbReturnsError()
         {
             GameContentCatalogDefinition catalog = ContentTestFixture.CreateValidCatalog();
             catalog.Orders[0].Configure(
                 "order.direct",
                 new[] { "Bring ginger and sage." },
-                new[] { "clue.unknown" },
                 "herb.ginger",
                 "herb.sage");
 
             ContentValidationReport report = new GameContentValidator().Validate(catalog);
 
-            Assert.That(report.Errors.Any(error => error.Contains("locked or unknown herb 'herb.sage'")), Is.True);
-            Assert.That(report.Errors.Any(error => error.Contains("unknown guidebook clue 'clue.unknown'")), Is.True);
+            Assert.That(report.Errors.Any(error => error.Contains("unknown ID 'herb.sage'")), Is.True);
         }
 
         [Test]
-        public void Validate_DuplicateDayOrderAndSingleSeedPoolReturnsErrors()
+        public void Validate_DayWithTooFewAvailableOrdersReturnsError()
         {
             GameContentCatalogDefinition catalog = ContentTestFixture.CreateValidCatalog();
             catalog.Days[0].Configure(
                 "day.1",
                 1,
                 240,
-                new[] { "order.direct", "order.direct" },
-                new[] { "customer.villager" });
+                new[] { "customer.villager" },
+                20,
+                new[] { "category.unknown" });
 
             ContentValidationReport report = new GameContentValidator().Validate(catalog);
 
-            Assert.That(report.Errors.Any(error => error.Contains("repeats order 'order.direct'")), Is.True);
             Assert.That(report.Errors.Any(error => error.Contains("alternate order seed")), Is.True);
         }
 
@@ -179,7 +211,6 @@ namespace Witch.Infrastructure.Tests
                 "day.1",
                 1,
                 240,
-                new[] { "order.direct", "order.visual" },
                 Array.Empty<string>());
 
             ContentValidationReport report = new GameContentValidator().Validate(catalog);
@@ -188,15 +219,13 @@ namespace Witch.Infrastructure.Tests
         }
 
         [Test]
-        public void Validate_SameHerbRecipeAndSmallCardPoolReturnsErrors()
+        public void Validate_SmallCardPoolReturnsError()
         {
             GameContentCatalogDefinition catalog = ContentTestFixture.CreateValidCatalog();
-            catalog.Recipes[0].Configure("recipe.tonic", "herb.ginger", "herb.ginger");
             catalog.RewindDifficulty.Configure("rewind.difficulty.default", 3, 4);
 
             ContentValidationReport report = new GameContentValidator().Validate(catalog);
 
-            Assert.That(report.Errors.Any(error => error.Contains("two different herbs")), Is.True);
             Assert.That(report.Errors.Any(error => error.Contains("4 unique rewind cards")), Is.True);
         }
     }

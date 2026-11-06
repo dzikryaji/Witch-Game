@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Witch.Domain.Orders;
 using Witch.Domain.Potions;
 
@@ -10,11 +11,19 @@ namespace Witch.Presentation.Shop
         private readonly IReadOnlyList<ShopEncounterViewData> templates;
         private readonly int seed;
         private readonly bool randomize;
+        private readonly HashSet<string> initiallySeenOrderIds;
+        private readonly string introductionOrderId;
+        private readonly bool oneTimeIntroduction;
+        private readonly HashSet<string> introductionCategoryOrderIds;
 
         public ShopEncounterDeck(
             IReadOnlyList<ShopEncounterViewData> encounterTemplates,
             int encounterSeed,
-            bool randomizeEncounters)
+            bool randomizeEncounters,
+            IReadOnlyList<string> seenOrderIds = null,
+            string priorityIntroductionOrderId = null,
+            bool removeIntroductionAfterFirstBag = false,
+            IReadOnlyList<string> priorityCategoryOrderIds = null)
         {
             templates = encounterTemplates ?? throw new ArgumentNullException(nameof(encounterTemplates));
             if (templates.Count == 0)
@@ -24,6 +33,10 @@ namespace Witch.Presentation.Shop
 
             seed = encounterSeed;
             randomize = randomizeEncounters;
+            initiallySeenOrderIds = new HashSet<string>(seenOrderIds ?? Array.Empty<string>(), StringComparer.Ordinal);
+            introductionOrderId = priorityIntroductionOrderId;
+            oneTimeIntroduction = removeIntroductionAfterFirstBag;
+            introductionCategoryOrderIds = new HashSet<string>(priorityCategoryOrderIds ?? Array.Empty<string>(), StringComparer.Ordinal);
         }
 
         public ShopEncounterViewData Draw(int admissionIndex)
@@ -34,15 +47,11 @@ namespace Witch.Presentation.Shop
                 ? DrawRandomizedTemplateIndex(admissionIndex)
                 : admissionIndex % templates.Count;
             ShopEncounterViewData template = templates[templateIndex];
-            int cycle = admissionIndex / templates.Count;
-            string orderId = cycle == 0
-                ? template.Order.OrderId
-                : template.Order.OrderId + ".repeat." + cycle;
             return new ShopEncounterViewData(
                 template.CustomerId,
                 template.CustomerName,
-                new OrderRequest(orderId, template.Order.RequestedPair),
-                template.OrderSentences);
+                template.Order,
+                template.OrderBubbles);
         }
 
         private int DrawRandomizedTemplateIndex(int admissionIndex)
@@ -51,10 +60,24 @@ namespace Witch.Presentation.Shop
             var sequence = new List<int>();
             HerbPair previousPair = null;
             int previousRunLength = 0;
+            bool firstBag = true;
 
             while (sequence.Count <= admissionIndex)
             {
-                List<int> bag = CreateValidShuffledBag(random, previousPair, previousRunLength);
+                var candidates = new List<int>();
+                for (int index = 0; index < templates.Count; index++)
+                {
+                    string orderId = templates[index].Order.OrderId;
+                    if (!firstBag && oneTimeIntroduction && string.Equals(orderId, introductionOrderId, StringComparison.Ordinal)) continue;
+                    if (!firstBag || !initiallySeenOrderIds.Contains(orderId)) candidates.Add(index);
+                }
+                if (candidates.Count == 0)
+                {
+                    for (int index = 0; index < templates.Count; index++) candidates.Add(index);
+                }
+
+                List<int> bag = CreateValidShuffledBag(random, previousPair, previousRunLength, candidates);
+                if (firstBag) PlaceIntroductionInFirstThree(random, bag);
                 foreach (int index in bag)
                 {
                     HerbPair pair = templates[index].Order.RequestedPair;
@@ -66,18 +89,47 @@ namespace Witch.Presentation.Shop
                     }
                     sequence.Add(index);
                 }
+                firstBag = false;
             }
 
             return sequence[admissionIndex];
         }
 
-        private List<int> CreateValidShuffledBag(Random random, HerbPair previousPair, int previousRunLength)
+        private void PlaceIntroductionInFirstThree(Random random, List<int> bag)
+        {
+            if (string.IsNullOrEmpty(introductionOrderId)
+                || initiallySeenOrderIds.Contains(introductionOrderId)) return;
+
+            int introductionIndex = bag.FindIndex(index =>
+                string.Equals(templates[index].Order.OrderId, introductionOrderId, StringComparison.Ordinal));
+            if (introductionIndex < 0) return;
+
+            int introduction = bag[introductionIndex];
+            bag.RemoveAt(introductionIndex);
+            int normalCount = bag.Count(index =>
+                !introductionCategoryOrderIds.Contains(templates[index].Order.OrderId));
+            int target = random.Next(Math.Min(2, normalCount) + 1);
+            for (int index = 0; index < target; index++)
+            {
+                if (!introductionCategoryOrderIds.Contains(templates[bag[index]].Order.OrderId)) continue;
+                int replacement = bag.FindIndex(target, value =>
+                    !introductionCategoryOrderIds.Contains(templates[value].Order.OrderId));
+                (bag[index], bag[replacement]) = (bag[replacement], bag[index]);
+            }
+            bag.Insert(target, introduction);
+        }
+
+        private List<int> CreateValidShuffledBag(
+            Random random,
+            HerbPair previousPair,
+            int previousRunLength,
+            IReadOnlyList<int> candidates)
         {
             const int AttemptLimit = 1000;
+            List<int> bag = null;
             for (int attempt = 0; attempt < AttemptLimit; attempt++)
             {
-                var bag = new List<int>(templates.Count);
-                for (int index = 0; index < templates.Count; index++) bag.Add(index);
+                bag = new List<int>(candidates);
                 for (int index = bag.Count - 1; index > 0; index--)
                 {
                     int swapIndex = random.Next(index + 1);
@@ -87,8 +139,7 @@ namespace Witch.Presentation.Shop
                 if (HasMaximumPairRun(bag, previousPair, previousRunLength, 2)) return bag;
             }
 
-            throw new InvalidOperationException(
-                "Encounter templates cannot be shuffled without exceeding two consecutive orders for one recipe.");
+            return bag;
         }
 
         private bool HasMaximumPairRun(

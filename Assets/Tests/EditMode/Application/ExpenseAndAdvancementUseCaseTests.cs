@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
@@ -82,6 +83,7 @@ namespace Witch.Application.Tests
             Assert.That(session.DayStartSnapshot.OrderSeed, Is.EqualTo(originalSeed));
             Assert.That(session.RunState.Suspicion, Is.EqualTo(1));
             Assert.That(session.RunState.Money, Is.Zero);
+            Assert.That(session.RunState.SeenOrderIds, Is.Empty);
         }
 
         [Test]
@@ -182,9 +184,13 @@ namespace Witch.Application.Tests
         private static DayProgressionSetup CreateSetup()
         {
             return new DayProgressionSetup(
-                new DayTimingRules(TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(1)),
-                20,
-                "expense.day.",
+                new Dictionary<int, TimeSpan>
+                {
+                    [1] = TimeSpan.FromSeconds(1),
+                    [2] = TimeSpan.FromSeconds(2),
+                    [3] = TimeSpan.FromSeconds(3)
+                },
+                new Dictionary<int, int> { [1] = 20, [2] = 20, [3] = 20 },
                 1);
         }
 
@@ -195,7 +201,6 @@ namespace Witch.Application.Tests
                 0,
                 new[] { "category.warm" },
                 new[] { "herb.ginger", "herb.mint", "herb.sage" },
-                new[] { "recipe.warming", "recipe.cooling" },
                 new[] { "guidebook.warm" },
                 100,
                 TimeSpan.FromSeconds(1),
@@ -244,13 +249,7 @@ namespace Witch.Application.Tests
 
         private static PotionServiceRules CreatePotionRules()
         {
-            return new PotionServiceRules(
-                20,
-                new RecipeCatalog(new[]
-                {
-                    new Recipe("recipe.warming", new HerbPair("herb.ginger", "herb.mint")),
-                    new Recipe("recipe.cooling", new HerbPair("herb.mint", "herb.sage"))
-                }));
+            return new PotionServiceRules(20);
         }
     }
 }

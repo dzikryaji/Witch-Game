@@ -5,6 +5,7 @@
         "Witch.Application",
         "Witch.Domain",
         "Unity.ugui",
+        "Unity.TextMeshPro",
         "Unity.InputSystem"
     ],
     "includePlatforms": [],

@@ -16,8 +16,8 @@ MonoBehaviour:
   displayName: Pine Resin
   categoryId: category.mend
   scientificName: Pix resina
-  treatmentText: A thick, golden resin that easily removes deep splinters and perfectly seals small, everyday scratches.
-  warningText: Pine Resin traps body heat beneath the skin. It can cause a deadly increase in brain temperature when used on someone who already has a high fever.
-  guidebookIllustration: {fileID: 0}
+  treatmentText: A thick, golden resin that easily removes deep splinters and seals up small, everyday scratches perfectly
+  warningText: It holds in body heat beneath the skin, which can lead to a deadly increase in brain temperature if used on someone who already has a high fever.
+  herbIllustration: {fileID: 21300000, guid: 7c42e7549e227400da29d48aaff35b95, type: 3}
   accessibleLabel: Pine Resin
   guidebookPage: 25

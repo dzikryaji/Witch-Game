@@ -59,26 +59,39 @@ namespace Witch.Presentation.Shop
             }
         }
 
-        public void SetCustomer(string customerName, IReadOnlyList<string> orderSentences)
+        public void SetCustomer(string customerName, IReadOnlyList<string> orderBubbles)
         {
             StopEntrance();
             ClearOrderBubbles();
+            orderBubbleContent.anchorMin = new Vector2(orderBubbleContent.anchorMin.x, 0f);
+            orderBubbleContent.anchorMax = new Vector2(orderBubbleContent.anchorMax.x, 0f);
+            orderBubbleContent.pivot = new Vector2(orderBubbleContent.pivot.x, 0f);
+            orderBubbleContent.GetComponent<VerticalLayoutGroup>().childAlignment = TextAnchor.LowerRight;
             customerPortrait.gameObject.SetActive(true);
             customerText.text = customerName ?? string.Empty;
             playerScrolledOrders = false;
             SetScrollPosition(1f);
 
-            foreach (string sentence in orderSentences ?? Array.Empty<string>())
+            foreach (string bubbleContent in orderBubbles ?? Array.Empty<string>())
             {
-                if (string.IsNullOrWhiteSpace(sentence)) continue;
+                if (string.IsNullOrWhiteSpace(bubbleContent)) continue;
                 GameObject bubble = Instantiate(orderBubblePrefab, orderBubbleContent);
-                bubble.name = "Order Bubble " + (orderBubbles.Count + 1);
+                bubble.name = "Order Bubble " + (this.orderBubbles.Count + 1);
                 Text bubbleText = bubble.GetComponentInChildren<Text>(true);
-                bubbleText.text = sentence;
+                bubbleText.text = bubbleContent;
                 RectTransform bubbleRect = bubble.GetComponent<RectTransform>();
+                RectTransform textRect = bubbleText.rectTransform;
                 UnityEngine.UI.LayoutElement layout = bubble.GetComponent<UnityEngine.UI.LayoutElement>();
-                layout.preferredHeight = Mathf.Max(layout.minHeight, bubbleText.preferredHeight + 16f);
-                orderBubbles.Add(bubbleRect);
+                float textWidthRatio = Mathf.Max(0.01f, textRect.anchorMax.x - textRect.anchorMin.x);
+                layout.preferredWidth = Mathf.Min(
+                    orderBubbleContent.rect.width,
+                    (bubbleText.preferredWidth - textRect.sizeDelta.x) / textWidthRatio);
+                bubbleRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, layout.preferredWidth);
+                float textHeightRatio = Mathf.Max(0.01f, textRect.anchorMax.y - textRect.anchorMin.y);
+                layout.preferredHeight = Mathf.Max(
+                    layout.minHeight,
+                    (bubbleText.preferredHeight - textRect.sizeDelta.y) / textHeightRatio);
+                this.orderBubbles.Add(bubbleRect);
                 bubble.SetActive(false);
             }
 
@@ -160,11 +173,48 @@ namespace Witch.Presentation.Shop
             if (customerPortrait == null || customerPortraitCanvasGroup == null) yield break;
             yield return AnimateEntry(customerPortrait, customerPortraitCanvasGroup, false);
 
-            foreach (RectTransform bubble in orderBubbles)
+            for (int bubbleIndex = 0; bubbleIndex < orderBubbles.Count; bubbleIndex++)
             {
+                RectTransform bubble = orderBubbles[bubbleIndex];
+                var previousPositions = new Vector3[bubbleIndex];
+                for (int index = 0; index < bubbleIndex; index++)
+                {
+                    previousPositions[index] = orderBubbles[index].position;
+                }
+
+                bubble.GetComponent<CanvasGroup>().alpha = 0f;
                 bubble.gameObject.SetActive(true);
                 Canvas.ForceUpdateCanvases();
                 UnityEngine.UI.LayoutRebuilder.ForceRebuildLayoutImmediate(orderBubbleContent);
+                if (!playerScrolledOrders) SetScrollPosition(0f);
+
+                if (bubbleIndex > 0)
+                {
+                    var layoutPositions = new Vector3[bubbleIndex];
+                    for (int index = 0; index < bubbleIndex; index++)
+                    {
+                        layoutPositions[index] = orderBubbles[index].position;
+                        orderBubbles[index].position = previousPositions[index];
+                    }
+
+                    float shiftStartedAt = Time.unscaledTime;
+                    while (Time.unscaledTime - shiftStartedAt < AnimationDuration)
+                    {
+                        float progress = Mathf.Clamp01((Time.unscaledTime - shiftStartedAt) / AnimationDuration);
+                        float eased = 1f - Mathf.Pow(1f - progress, 3f);
+                        for (int index = 0; index < bubbleIndex; index++)
+                        {
+                            orderBubbles[index].position = Vector3.Lerp(previousPositions[index], layoutPositions[index], eased);
+                        }
+                        yield return null;
+                    }
+
+                    for (int index = 0; index < bubbleIndex; index++)
+                    {
+                        orderBubbles[index].position = layoutPositions[index];
+                    }
+                }
+
                 yield return AnimateEntry(bubble, bubble.GetComponent<CanvasGroup>(), true);
                 yield return new WaitForSecondsRealtime(BubbleDelay);
             }

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -13,6 +14,7 @@ namespace Witch.Infrastructure.Persistence
     public sealed class JsonRunRepository : ISaveRepository
     {
         public const string CurrentRunFileName = "current-run.json";
+        public const int CurrentSaveVersion = 1;
 
         private readonly string primaryPath;
         private readonly string previousPath;
@@ -252,8 +254,8 @@ namespace Witch.Infrastructure.Persistence
         public int rewindCount;
         public string[] categoryIds;
         public string[] herbIds;
-        public string[] recipeIds;
         public string[] guidebookIds;
+        public string[] seenOrderIds;
         public FlagDto[] tutorialFlags;
         public FlagDto[] narrativeFlags;
     }
@@ -327,12 +329,12 @@ namespace Witch.Infrastructure.Persistence
                 state.money,
                 state.suspicion,
                 state.rewindCount,
-                state.categoryIds ?? new string[0],
+                MigrateCategoryIds(state.categoryIds),
                 MigrateHerbIds(state.herbIds),
-                state.recipeIds ?? new string[0],
                 state.guidebookIds ?? new string[0],
                 FromFlags(state.tutorialFlags),
-                FromFlags(state.narrativeFlags));
+                FromFlags(state.narrativeFlags),
+                state.seenOrderIds ?? new string[0]);
             var snapshot = new DayStartSnapshot(
                 runState,
                 envelope.snapshot.orderSeed,
@@ -366,8 +368,8 @@ namespace Witch.Infrastructure.Persistence
                 rewindCount = state.RewindCount,
                 categoryIds = Copy(state.UnlockedCategoryIds),
                 herbIds = Copy(state.UnlockedHerbIds),
-                recipeIds = Copy(state.UnlockedRecipeIds),
                 guidebookIds = Copy(state.UnlockedGuidebookEntryIds),
+                seenOrderIds = Copy(state.SeenOrderIds),
                 tutorialFlags = ToFlags(state.TutorialFlags),
                 narrativeFlags = ToFlags(state.NarrativeFlags)
             };
@@ -396,6 +398,25 @@ namespace Witch.Infrastructure.Persistence
             }
 
             return copy;
+        }
+
+        private static string[] MigrateCategoryIds(string[] values)
+        {
+            var result = new List<string>();
+            foreach (string value in values ?? new string[0])
+            {
+                if (string.Equals(value, "category.warm-cool", StringComparison.Ordinal))
+                {
+                    result.Add("category.warm");
+                    result.Add("category.cool");
+                }
+                else
+                {
+                    result.Add(value);
+                }
+            }
+
+            return result.Distinct(StringComparer.Ordinal).ToArray();
         }
 
         private static FlagDto[] ToFlags(IReadOnlyDictionary<string, bool> flags)

@@ -118,10 +118,10 @@ TextureImporter:
       name: Valerian_0
       rect:
         serializedVersion: 2
-        x: 76
-        y: 7
-        width: 64
-        height: 70
+        x: 158
+        y: 91
+        width: 477
+        height: 553
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}

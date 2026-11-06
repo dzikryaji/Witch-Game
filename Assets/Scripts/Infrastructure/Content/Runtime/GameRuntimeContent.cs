@@ -10,13 +10,11 @@ namespace Witch.Infrastructure.Content
     public sealed class GameRuntimeContent
     {
         public GameRuntimeContent(
-            RecipeCatalog recipes,
             IDictionary<string, HerbContent> herbsById,
             IDictionary<string, OrderContent> ordersById,
             IDictionary<string, CustomerContent> customersById,
             IDictionary<int, DayContent> daysByNumber,
-            IDictionary<string, GuidebookEntryContent> guidebookEntriesById,
-            IReadOnlyList<CategoryUnlockContent> categoryUnlocks,
+            IDictionary<string, HerbCategoryContent> herbCategoriesById,
             IReadOnlyList<RewindCardContent> rewindCards,
             RewindDifficultyContent rewindDifficulty,
             NewRunSetup newRunSetup,
@@ -24,7 +22,6 @@ namespace Witch.Infrastructure.Content
             ExpenseRules expenseRules,
             int correctOrderPayment)
         {
-            Recipes = recipes;
             HerbsById = new ReadOnlyDictionary<string, HerbContent>(
                 new Dictionary<string, HerbContent>(herbsById));
             OrdersById = new ReadOnlyDictionary<string, OrderContent>(
@@ -33,9 +30,8 @@ namespace Witch.Infrastructure.Content
                 new Dictionary<string, CustomerContent>(customersById));
             DaysByNumber = new ReadOnlyDictionary<int, DayContent>(
                 new Dictionary<int, DayContent>(daysByNumber));
-            GuidebookEntriesById = new ReadOnlyDictionary<string, GuidebookEntryContent>(
-                new Dictionary<string, GuidebookEntryContent>(guidebookEntriesById));
-            CategoryUnlocks = new List<CategoryUnlockContent>(categoryUnlocks).AsReadOnly();
+            HerbCategoriesById = new ReadOnlyDictionary<string, HerbCategoryContent>(
+                new Dictionary<string, HerbCategoryContent>(herbCategoriesById));
             RewindCards = new List<RewindCardContent>(rewindCards).AsReadOnly();
             RewindDifficulty = rewindDifficulty;
             NewRunSetup = newRunSetup;
@@ -44,13 +40,11 @@ namespace Witch.Infrastructure.Content
             CorrectOrderPayment = correctOrderPayment;
         }
 
-        public RecipeCatalog Recipes { get; }
         public IReadOnlyDictionary<string, HerbContent> HerbsById { get; }
         public IReadOnlyDictionary<string, OrderContent> OrdersById { get; }
         public IReadOnlyDictionary<string, CustomerContent> CustomersById { get; }
         public IReadOnlyDictionary<int, DayContent> DaysByNumber { get; }
-        public IReadOnlyDictionary<string, GuidebookEntryContent> GuidebookEntriesById { get; }
-        public IReadOnlyList<CategoryUnlockContent> CategoryUnlocks { get; }
+        public IReadOnlyDictionary<string, HerbCategoryContent> HerbCategoriesById { get; }
         public IReadOnlyList<RewindCardContent> RewindCards { get; }
         public IReadOnlyList<string> RewindCardIds
         {

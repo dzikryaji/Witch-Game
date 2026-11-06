@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace Witch.Domain.Progression
 {
@@ -13,8 +14,8 @@ namespace Witch.Domain.Progression
 
         private readonly ReadOnlyCollection<string> unlockedCategoryIds;
         private readonly ReadOnlyCollection<string> unlockedHerbIds;
-        private readonly ReadOnlyCollection<string> unlockedRecipeIds;
         private readonly ReadOnlyCollection<string> unlockedGuidebookEntryIds;
+        private readonly ReadOnlyCollection<string> seenOrderIds;
         private readonly ReadOnlyDictionary<string, bool> readOnlyTutorialFlags;
         private readonly ReadOnlyDictionary<string, bool> readOnlyNarrativeFlags;
 
@@ -26,10 +27,10 @@ namespace Witch.Domain.Progression
             int rewindCount,
             IReadOnlyList<string> unlockedCategoryIds = null,
             IReadOnlyList<string> unlockedHerbIds = null,
-            IReadOnlyList<string> unlockedRecipeIds = null,
             IReadOnlyList<string> unlockedGuidebookEntryIds = null,
             IReadOnlyDictionary<string, bool> tutorialFlags = null,
-            IReadOnlyDictionary<string, bool> narrativeFlags = null)
+            IReadOnlyDictionary<string, bool> narrativeFlags = null,
+            IReadOnlyList<string> seenOrderIds = null)
         {
             if (string.IsNullOrWhiteSpace(runId))
             {
@@ -63,10 +64,10 @@ namespace Witch.Domain.Progression
             RewindCount = rewindCount;
             this.unlockedCategoryIds = CopyIds(unlockedCategoryIds, nameof(unlockedCategoryIds));
             this.unlockedHerbIds = CopyIds(unlockedHerbIds, nameof(unlockedHerbIds));
-            this.unlockedRecipeIds = CopyIds(unlockedRecipeIds, nameof(unlockedRecipeIds));
             this.unlockedGuidebookEntryIds = CopyIds(
                 unlockedGuidebookEntryIds,
                 nameof(unlockedGuidebookEntryIds));
+            this.seenOrderIds = CopyIds(seenOrderIds, nameof(seenOrderIds));
             readOnlyTutorialFlags = new ReadOnlyDictionary<string, bool>(
                 CopyFlags(tutorialFlags, nameof(tutorialFlags)));
             readOnlyNarrativeFlags = new ReadOnlyDictionary<string, bool>(
@@ -87,9 +88,9 @@ namespace Witch.Domain.Progression
 
         public IReadOnlyList<string> UnlockedHerbIds => unlockedHerbIds;
 
-        public IReadOnlyList<string> UnlockedRecipeIds => unlockedRecipeIds;
-
         public IReadOnlyList<string> UnlockedGuidebookEntryIds => unlockedGuidebookEntryIds;
+
+        public IReadOnlyList<string> SeenOrderIds => seenOrderIds;
 
         public IReadOnlyDictionary<string, bool> TutorialFlags => readOnlyTutorialFlags;
 
@@ -117,10 +118,46 @@ namespace Witch.Domain.Progression
                 rewindCount,
                 UnlockedCategoryIds,
                 UnlockedHerbIds,
-                UnlockedRecipeIds,
                 UnlockedGuidebookEntryIds,
                 TutorialFlags,
-                NarrativeFlags);
+                NarrativeFlags,
+                SeenOrderIds);
+        }
+
+        public RunState MarkOrderSeen(string orderId)
+        {
+            if (string.IsNullOrWhiteSpace(orderId)) throw new ArgumentException("Order ID must not be empty.", nameof(orderId));
+            IReadOnlyList<string> next = SeenOrderIds.Contains(orderId)
+                ? new[] { orderId }
+                : SeenOrderIds.Concat(new[] { orderId }).ToArray();
+            return new RunState(
+                RunId,
+                CurrentDayNumber,
+                Money,
+                Suspicion,
+                RewindCount,
+                UnlockedCategoryIds,
+                UnlockedHerbIds,
+                UnlockedGuidebookEntryIds,
+                TutorialFlags,
+                NarrativeFlags,
+                next);
+        }
+
+        public RunState WithSeenOrders(IReadOnlyList<string> orderIds)
+        {
+            return new RunState(
+                RunId,
+                CurrentDayNumber,
+                Money,
+                Suspicion,
+                RewindCount,
+                UnlockedCategoryIds,
+                UnlockedHerbIds,
+                UnlockedGuidebookEntryIds,
+                TutorialFlags,
+                NarrativeFlags,
+                orderIds);
         }
 
         public RunState MarkCompleted()
@@ -140,10 +177,10 @@ namespace Witch.Domain.Progression
                 RewindCount,
                 UnlockedCategoryIds,
                 UnlockedHerbIds,
-                UnlockedRecipeIds,
                 UnlockedGuidebookEntryIds,
                 TutorialFlags,
-                flags);
+                flags,
+                SeenOrderIds);
         }
 
         private static ReadOnlyCollection<string> CopyIds(IReadOnlyList<string> source, string parameterName)

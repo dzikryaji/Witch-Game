@@ -28,7 +28,6 @@ namespace Witch.Application.Flow
                 rewindCount,
                 setup.UnlockedCategoryIds,
                 setup.UnlockedHerbIds,
-                setup.UnlockedRecipeIds,
                 setup.UnlockedGuidebookEntryIds);
             var snapshot = new DayStartSnapshot(
                 runState,

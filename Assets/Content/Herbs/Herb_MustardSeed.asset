@@ -18,7 +18,6 @@ MonoBehaviour:
   scientificName: Sinapis alba
   treatmentText: Small, rough yellow seeds that can be crushed into a paste to help remove severe chills and mucus from the chest.
   warningText: Mustard Seed is harsh on exposed skin and can cause painful chemical burns and blisters when used on open wounds or scraped skin.
-  herbIllustration: {fileID: 21300000, guid: 61c9016b21a3d44fabc58e0f154d658e, type: 3}
+  herbIllustration: {fileID: 21300000, guid: 45873bfb146be4a2b88d2398d4c79d51, type: 3}
   accessibleLabel: Mustard Seed
   guidebookPage: 4
-  clueIds: []

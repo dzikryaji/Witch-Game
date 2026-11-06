@@ -85,7 +85,7 @@ namespace Witch.Application.Flow
 
         public PotionDraft PotionDraft { get; private set; }
 
-        public Recipe PreparedRecipe { get; private set; }
+        public PreparedPotion PreparedPotion { get; private set; }
 
         public bool ServiceCommitted { get; private set; }
 
@@ -133,13 +133,11 @@ namespace Witch.Application.Flow
             ServiceCommitted = false;
             ClearWorkbench();
 
+            RunState = RunState.MarkOrderSeen(order.OrderId);
             resumeRunState = RunState;
 
             var usedOrderIds = new System.Collections.Generic.List<string>(AttemptState.UsedOrderIds);
-            if (!usedOrderIds.Contains(order.OrderId))
-            {
-                usedOrderIds.Add(order.OrderId);
-            }
+            usedOrderIds.Add(order.OrderId);
 
             AttemptState = new DayAttemptState(
                 AttemptState.AttemptSeed,
@@ -149,7 +147,7 @@ namespace Witch.Application.Flow
                 order,
                 AttemptState.EarnedMoney,
                 AttemptState.PotionDraft,
-                AttemptState.PreparedRecipe);
+                AttemptState.PreparedPotion);
             TimerState = new ShopTimerState(TimerState.RemainingTime, true);
         }
 
@@ -228,12 +226,12 @@ namespace Witch.Application.Flow
             };
             PotionDraft = new PotionDraft(ingredients);
             GroundHerbId = null;
-            PreparedRecipe = null;
+            PreparedPotion = null;
         }
 
-        internal void SetPreparedRecipe(Recipe recipe)
+        internal void SetPreparedPotion(PreparedPotion potion)
         {
-            PreparedRecipe = recipe ?? throw new ArgumentNullException(nameof(recipe));
+            PreparedPotion = potion ?? throw new ArgumentNullException(nameof(potion));
         }
 
         internal void RemoveLastPotIngredient()
@@ -246,14 +244,14 @@ namespace Witch.Application.Flow
             var ingredients = new System.Collections.Generic.List<PotIngredient>(PotionDraft.Ingredients);
             ingredients.RemoveAt(ingredients.Count - 1);
             PotionDraft = new PotionDraft(ingredients);
-            PreparedRecipe = null;
+            PreparedPotion = null;
         }
 
         internal void ClearWorkbench()
         {
             GroundHerbId = null;
             PotionDraft = new PotionDraft();
-            PreparedRecipe = null;
+            PreparedPotion = null;
         }
 
         internal void CommitService(ServiceOutcome outcome)

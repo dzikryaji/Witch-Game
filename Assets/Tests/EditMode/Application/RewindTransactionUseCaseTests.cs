@@ -136,7 +136,6 @@ namespace Witch.Application.Tests
                 startingMoney,
                 new[] { "category.warm" },
                 new[] { "herb.ginger", "herb.mint", "herb.sage" },
-                new[] { "recipe.warming", "recipe.cooling" },
                 new[] { "guidebook.warm" },
                 101,
                 TimeSpan.FromMinutes(4),
@@ -172,13 +171,7 @@ namespace Witch.Application.Tests
 
         private static PotionServiceRules CreateRules()
         {
-            return new PotionServiceRules(
-                10,
-                new RecipeCatalog(new[]
-                {
-                    new Recipe("recipe.warming", new HerbPair("herb.ginger", "herb.mint")),
-                    new Recipe("recipe.cooling", new HerbPair("herb.mint", "herb.sage"))
-                }));
+            return new PotionServiceRules(10);
         }
     }
 }

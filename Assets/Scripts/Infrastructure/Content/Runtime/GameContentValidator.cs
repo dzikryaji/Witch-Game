@@ -16,16 +16,30 @@ namespace Witch.Infrastructure.Content
             }
 
             ValidateStableIds(catalog.Herbs, "Herb", errors);
-            ValidateStableIds(catalog.Recipes, "Recipe", errors);
             ValidateStableIds(catalog.Orders, "Order", errors);
             ValidateStableIds(catalog.Customers, "Customer", errors);
             ValidateStableIds(catalog.Days, "Day", errors);
-            ValidateStableIds(catalog.GuidebookEntries, "Guidebook entry", errors);
-            ValidateStableIds(catalog.CategoryUnlocks, "Category unlock", errors);
+            ValidateStableIds(catalog.HerbCategories, "Herb category", errors);
             ValidateStableIds(catalog.RewindCards, "Rewind card", errors);
-            ValidateRequiredDefinition(catalog.Economy, "Economy", errors);
             ValidateRequiredDefinition(catalog.RewindDifficulty, "Rewind difficulty", errors);
-            ValidateRequiredDefinition(catalog.RunConfiguration, "run configuration", errors);
+
+            if (catalog.StartingMoney < 0 || catalog.CorrectOrderPayment < 0)
+            {
+                errors.Add("Game catalog contains invalid economy values.");
+            }
+
+            foreach (HerbCategoryDefinition category in catalog.HerbCategories.Where(value => value != null))
+            {
+                if (string.IsNullOrWhiteSpace(category.DisplayName))
+                {
+                    errors.Add("Herb category '" + category.StableId + "' needs a display name.");
+                }
+
+                if (string.IsNullOrWhiteSpace(category.Description))
+                {
+                    errors.Add("Herb category '" + category.StableId + "' needs a description.");
+                }
+            }
 
             foreach (HerbDefinition herb in catalog.Herbs.Where(value => value != null))
             {
@@ -33,40 +47,31 @@ namespace Witch.Infrastructure.Content
             }
 
             var herbIds = IdSet(catalog.Herbs);
-            var recipeIds = IdSet(catalog.Recipes);
-            var orderIds = IdSet(catalog.Orders);
             var customerIds = IdSet(catalog.Customers);
+            var categoryIds = IdSet(catalog.HerbCategories);
             var herbsById = catalog.Herbs
                 .Where(value => value != null && !string.IsNullOrWhiteSpace(value.StableId))
                 .GroupBy(value => value.StableId, StringComparer.Ordinal)
                 .ToDictionary(group => group.Key, group => group.First(), StringComparer.Ordinal);
-            var clueIds = new HashSet<string>(StringComparer.Ordinal);
-            foreach (HerbDefinition herb in catalog.Herbs.Where(value => value != null))
+
+            foreach (HerbDefinition herb in herbsById.Values)
             {
-                AddNonEmpty(clueIds, herb.ClueIds);
+                ValidateReference(herb.CategoryId, categoryIds, "Herb '" + herb.StableId + "' category", errors);
             }
 
-            foreach (GuidebookEntryDefinition entry in catalog.GuidebookEntries.Where(value => value != null))
+            foreach (HerbCategoryDefinition category in catalog.HerbCategories.Where(value => value != null))
             {
-                AddNonEmpty(clueIds, entry.ClueIds);
-            }
-
-            foreach (RecipeDefinition recipe in catalog.Recipes.Where(value => value != null))
-            {
-                if (string.Equals(recipe.FirstHerbId, recipe.SecondHerbId, StringComparison.Ordinal))
+                if (!herbsById.Values.Any(herb => string.Equals(herb.CategoryId, category.StableId, StringComparison.Ordinal)))
                 {
-                    errors.Add("Recipe '" + recipe.StableId + "' must use two different herbs.");
+                    errors.Add("Herb category '" + category.StableId + "' needs at least one herb.");
                 }
-
-                ValidateReference(recipe.FirstHerbId, herbIds, "Recipe '" + recipe.StableId + "' first herb", errors);
-                ValidateReference(recipe.SecondHerbId, herbIds, "Recipe '" + recipe.StableId + "' second herb", errors);
             }
 
             foreach (OrderDefinition order in catalog.Orders.Where(value => value != null))
             {
-                if (order.OrderSentences.Count == 0 || order.OrderSentences.Any(string.IsNullOrWhiteSpace))
+                if (order.OrderBubbles.Count == 0 || order.OrderBubbles.Any(string.IsNullOrWhiteSpace))
                 {
-                    errors.Add("Order '" + order.StableId + "' needs at least one non-empty sentence.");
+                    errors.Add("Order '" + order.StableId + "' needs at least one non-empty bubble.");
                 }
                 ValidateReference(order.FirstHerbId, herbIds, "Order '" + order.StableId + "' first herb", errors);
                 ValidateReference(order.SecondHerbId, herbIds, "Order '" + order.StableId + "' second herb", errors);
@@ -80,33 +85,15 @@ namespace Witch.Infrastructure.Content
                 {
                     errors.Add("Order '" + order.StableId + "' herbs must share one category.");
                 }
-
-                foreach (string clueId in order.ClueIds)
-                {
-                    if (string.IsNullOrWhiteSpace(clueId) || !clueIds.Contains(clueId))
-                    {
-                        errors.Add("Order '" + order.StableId + "' uses unknown guidebook clue '" + clueId + "'.");
-                    }
-                }
-            }
-
-            foreach (CategoryUnlockDefinition unlock in catalog.CategoryUnlocks.Where(value => value != null))
-            {
-                if (unlock.FirstDay < 1)
-                {
-                    errors.Add("Category unlock '" + unlock.StableId + "' must start on Day 1 or later.");
-                }
-
-                ValidateReferences(unlock.HerbIds, herbIds, "Category unlock '" + unlock.StableId + "' herb", errors);
-                ValidateReferences(unlock.RecipeIds, recipeIds, "Category unlock '" + unlock.StableId + "' recipe", errors);
             }
 
             var daysSeen = new HashSet<int>();
+            var unlockedCategories = new HashSet<string>(StringComparer.Ordinal);
             var ordersById = catalog.Orders
                 .Where(value => value != null && !string.IsNullOrWhiteSpace(value.StableId))
                 .GroupBy(value => value.StableId, StringComparer.Ordinal)
                 .ToDictionary(group => group.Key, group => group.First(), StringComparer.Ordinal);
-            foreach (DayDefinition day in catalog.Days.Where(value => value != null))
+            foreach (DayDefinition day in catalog.Days.Where(value => value != null).OrderBy(value => value.DayNumber))
             {
                 if (day.DayNumber < 1 || !daysSeen.Add(day.DayNumber))
                 {
@@ -123,14 +110,37 @@ namespace Witch.Infrastructure.Content
                     errors.Add("Day '" + day.StableId + "' needs at least one customer.");
                 }
 
-                ValidateDayOrders(
-                    day,
-                    orderIds,
-                    ordersById,
-                    herbsById,
-                    catalog.GuidebookEntries,
-                    catalog.CategoryUnlocks,
-                    errors);
+                if (day.DailyExpense < 0)
+                {
+                    errors.Add("Day '" + day.StableId + "' expense must not be negative.");
+                }
+
+                if (day.OrderDifficulties.Count < 1
+                    || day.OrderDifficulties.Count > 2
+                    || day.OrderDifficulties.Distinct().Count() != day.OrderDifficulties.Count)
+                {
+                    errors.Add("Day '" + day.StableId + "' needs one or two unique order difficulties.");
+                }
+
+                foreach (string categoryId in day.UnlockedCategoryIds)
+                {
+                    if (string.IsNullOrWhiteSpace(categoryId) || !categoryIds.Contains(categoryId))
+                    {
+                        errors.Add("Day '" + day.StableId + "' unlocks unknown category '" + categoryId + "'.");
+                        continue;
+                    }
+
+                    if (!ordersById.Values.Any(order =>
+                            order.Difficulty == OrderDifficulty.Simple
+                            && OrderUsesCategory(order, categoryId, herbsById)))
+                    {
+                        errors.Add("Day '" + day.StableId + "' category '" + categoryId + "' needs a Simple introduction order.");
+                    }
+
+                    unlockedCategories.Add(categoryId);
+                }
+
+                ValidateAvailableOrders(day, ordersById.Values, herbsById, unlockedCategories, errors);
                 ValidateReferences(day.CustomerIds, customerIds, "Day '" + day.StableId + "' customer", errors);
             }
 
@@ -179,95 +189,34 @@ namespace Witch.Infrastructure.Content
             }
         }
 
-        private static void ValidateDayOrders(
+        private static void ValidateAvailableOrders(
             DayDefinition day,
-            ISet<string> knownOrderIds,
-            IReadOnlyDictionary<string, OrderDefinition> ordersById,
+            IEnumerable<OrderDefinition> orders,
             IReadOnlyDictionary<string, HerbDefinition> herbsById,
-            IReadOnlyList<GuidebookEntryDefinition> guidebookEntries,
-            IReadOnlyList<CategoryUnlockDefinition> unlocks,
+            ISet<string> unlockedCategories,
             ICollection<string> errors)
         {
-            var unique = new HashSet<string>(StringComparer.Ordinal);
-            foreach (string orderId in day.OrderIds)
+            int availableOrderCount = orders.Count(order =>
+                day.OrderDifficulties.Contains(order.Difficulty)
+                && herbsById.TryGetValue(order.FirstHerbId, out HerbDefinition firstHerb)
+                && herbsById.TryGetValue(order.SecondHerbId, out HerbDefinition secondHerb)
+                && unlockedCategories.Contains(firstHerb.CategoryId)
+                && unlockedCategories.Contains(secondHerb.CategoryId));
+            if (availableOrderCount < 2)
             {
-                if (!unique.Add(orderId))
-                {
-                    errors.Add("Day '" + day.StableId + "' repeats order '" + orderId + "'.");
-                }
-
-                if (string.IsNullOrWhiteSpace(orderId) || !knownOrderIds.Contains(orderId))
-                {
-                    errors.Add("Day '" + day.StableId + "' order references unknown ID '" + orderId + "'.");
-                }
-            }
-
-            if (unique.Count < 2)
-            {
-                errors.Add("Day '" + day.StableId + "' needs at least two distinct orders for an alternate order seed.");
-            }
-
-            var unlockedHerbs = new HashSet<string>(StringComparer.Ordinal);
-            var unlockedCategories = new HashSet<string>(StringComparer.Ordinal);
-            foreach (CategoryUnlockDefinition unlock in unlocks.Where(value =>
-                         value != null && value.FirstDay <= day.DayNumber))
-            {
-                AddNonEmpty(unlockedHerbs, unlock.HerbIds);
-                if (!string.IsNullOrWhiteSpace(unlock.CategoryId))
-                {
-                    unlockedCategories.Add(unlock.CategoryId);
-                }
-            }
-
-            var unlockedClues = new HashSet<string>(StringComparer.Ordinal);
-            foreach (string herbId in unlockedHerbs)
-            {
-                if (herbsById.TryGetValue(herbId, out HerbDefinition herb))
-                {
-                    AddNonEmpty(unlockedClues, herb.ClueIds);
-                }
-            }
-
-            foreach (GuidebookEntryDefinition entry in guidebookEntries.Where(value =>
-                         value != null && unlockedCategories.Contains(value.CategoryId)))
-            {
-                AddNonEmpty(unlockedClues, entry.ClueIds);
-            }
-
-            foreach (string orderId in unique)
-            {
-                if (!ordersById.TryGetValue(orderId, out OrderDefinition order))
-                {
-                    continue;
-                }
-
-                ValidateUnlockedHerb(day, order, order.FirstHerbId, unlockedHerbs, errors);
-                ValidateUnlockedHerb(day, order, order.SecondHerbId, unlockedHerbs, errors);
-                foreach (string clueId in order.ClueIds)
-                {
-                    if (!unlockedClues.Contains(clueId))
-                    {
-                        errors.Add(
-                            "Day '" + day.StableId + "' order '" + order.StableId
-                            + "' uses guidebook clue '" + clueId + "' before it is unlocked.");
-                    }
-                }
+                errors.Add("Day '" + day.StableId + "' needs at least two available orders for an alternate order seed.");
             }
         }
 
-        private static void ValidateUnlockedHerb(
-            DayDefinition day,
+        private static bool OrderUsesCategory(
             OrderDefinition order,
-            string herbId,
-            ISet<string> unlockedHerbs,
-            ICollection<string> errors)
+            string categoryId,
+            IReadOnlyDictionary<string, HerbDefinition> herbsById)
         {
-            if (string.IsNullOrWhiteSpace(herbId) || !unlockedHerbs.Contains(herbId))
-            {
-                errors.Add(
-                    "Day '" + day.StableId + "' order '" + order.StableId
-                    + "' uses locked or unknown herb '" + herbId + "'.");
-            }
+            return herbsById.TryGetValue(order.FirstHerbId, out HerbDefinition firstHerb)
+                   && herbsById.TryGetValue(order.SecondHerbId, out HerbDefinition secondHerb)
+                   && string.Equals(firstHerb.CategoryId, categoryId, StringComparison.Ordinal)
+                   && string.Equals(secondHerb.CategoryId, categoryId, StringComparison.Ordinal);
         }
 
         private static void ValidateConfiguration(
@@ -275,28 +224,13 @@ namespace Witch.Infrastructure.Content
             ISet<int> dayNumbers,
             ICollection<string> errors)
         {
-            if (catalog.RunConfiguration != null)
+            if (dayNumbers.Count == 0)
             {
-                if (!dayNumbers.Contains(catalog.RunConfiguration.FirstDay))
-                {
-                    errors.Add("Run configuration first day has no Day definition.");
-                }
-
-                if (catalog.RunConfiguration.StartingMoney < 0
-                    || catalog.RunConfiguration.SaveVersion < 1
-                    || catalog.RunConfiguration.DailyTimerIncreaseSeconds < 0)
-                {
-                    errors.Add("Run configuration contains invalid numeric values.");
-                }
+                errors.Add("Game catalog needs at least one day.");
             }
-
-            if (catalog.Economy != null
-                && (catalog.Economy.CorrectOrderPayment < 0
-                    || catalog.Economy.DailyExpense < 0
-                    || catalog.Economy.CompletionDay < 1
-                    || string.IsNullOrWhiteSpace(catalog.Economy.ExpenseIdPrefix)))
+            else if (!dayNumbers.SetEquals(Enumerable.Range(1, dayNumbers.Count)))
             {
-                errors.Add("Economy definition contains invalid values.");
+                errors.Add("Day definitions must be contiguous starting at day 1.");
             }
 
             if (catalog.RewindDifficulty != null)

@@ -155,7 +155,6 @@ namespace Witch.Application.Tests
                 pendingRewind ? 1 : 0,
                 new[] { "category.warm" },
                 new[] { "herb.ginger", "herb.mint" },
-                new[] { "recipe.warming-tonic" },
                 new[] { "guidebook.warm" });
             RunState snapshotState = runState.WithProgress(
                 1,

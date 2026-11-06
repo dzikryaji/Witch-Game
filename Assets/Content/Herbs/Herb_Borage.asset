@@ -16,10 +16,8 @@ MonoBehaviour:
   displayName: Borage
   categoryId: category.cool
   scientificName: Borago officinalis
-  treatmentText: A dry, rough leaf with delicate blue, star-like flowers that lowers the body's internal temperature to safely slow the spread of natural venoms or infections through the bloodstream.
-  warningText: Borage causes severe, freezing tiredness. It can be fatal for anyone who is already cold or has hypothermia.
+  treatmentText: A dry, rough leaf with delicate blue, star-like flowers that helps lower the body's internal temperature to safely slow the spread of natural venoms or infections through the bloodstream.
+  warningText: It causes a very severe, freezing tiredness that can be fatal to someone who is already cold or has hypothermia.
   herbIllustration: {fileID: 21300000, guid: b488e6e0c16d44d10b0a755bf897600e, type: 3}
   accessibleLabel: Borage
   guidebookPage: 12
-  clueIds:
-  - clue.borage.blue-flower

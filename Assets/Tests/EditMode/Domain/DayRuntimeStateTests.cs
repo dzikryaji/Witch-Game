@@ -57,7 +57,7 @@ namespace Witch.Domain.Tests
                 activeOrder: activeOrder,
                 earnedMoney: 10,
                 potionDraft: new PotionDraft(),
-                preparedRecipe: null);
+                preparedPotion: null);
             usedOrderIds.Add("order.changed-after-construction");
 
             Assert.That(attempt.AttemptSeed, Is.EqualTo(5678));
@@ -78,7 +78,6 @@ namespace Witch.Domain.Tests
                 0,
                 new[] { "category.warm" },
                 new[] { "herb.ginger", "herb.mint" },
-                new[] { "recipe.warming-tonic" },
                 new[] { "guidebook.warm" });
         }
     }

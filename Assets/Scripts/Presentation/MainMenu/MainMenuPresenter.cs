@@ -87,6 +87,14 @@ namespace Witch.Presentation.MainMenu
             applicationLifecycle = lifecycle ?? throw new ArgumentNullException(nameof(lifecycle));
             audioService = audio;
             RequireAndBindAuthoredView();
+            if (settingsPanel.GetComponentInParent<Canvas>() == null)
+            {
+                RectTransform panelRect = settingsPanel.GetComponent<RectTransform>();
+                panelRect.SetParent(settingsButton.GetComponentInParent<Canvas>().transform, false);
+                panelRect.anchoredPosition = Vector2.zero;
+                panelRect.sizeDelta = Vector2.zero;
+                panelRect.localScale = Vector3.one;
+            }
             IsInitialized = true;
             LastErrorMessage = null;
             RenderError();

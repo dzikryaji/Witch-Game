@@ -150,9 +150,8 @@ namespace Witch.Bootstrap
             }
             audioService = authoredAudio;
             IClock clock = new UnityMonotonicClock();
-            var potionRules = new Witch.Domain.Potions.PotionServiceRules(
-                content.CorrectOrderPayment,
-                content.Recipes);
+            IRandomSource orderRandom = new SystemRandomSource();
+            var potionRules = new Witch.Domain.Potions.PotionServiceRules(content.CorrectOrderPayment);
             openShop = new OpenShopUseCase();
             admitCustomer = new AdmitCustomerUseCase(clock);
             potionPreparation = new PotionPreparationUseCase(potionRules);
@@ -171,7 +170,7 @@ namespace Witch.Bootstrap
                 content.ExpenseRules,
                 content.DayProgressionSetup,
                 runRepository,
-                new DeterministicRandomSource(randomSeed + 3),
+                orderRandom,
                 clock);
             retryDay = new RetryDayUseCase(runRepository, sceneLoader);
             continueToNextDay = new ContinueToNextDayUseCase(sceneLoader);
@@ -184,7 +183,7 @@ namespace Witch.Bootstrap
                 sessionStore,
                 sceneLoader,
                 clock,
-                new DeterministicRandomSource(randomSeed));
+                orderRandom);
             loadRun = new LoadRunUseCase(
                 runRepository,
                 runRepository,

@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f5f76fe6c3f7d450e98c5e1ef5f66046, type: 3}
+  m_Name: Order_Simple_Warm12
+  m_EditorClassIdentifier: Witch.Infrastructure::Witch.Infrastructure.Content.OrderDefinition
+  stableId: order.simple.w12
+  difficulty: 0
+  orderBubbles:
+  - Nursing the village without rest exhausted my mother.
+  - She lost her appetite, and her stomach aches and churns.
+  - Her wheezing is unchanged, without fever, wounds, or bleeding ulcers.
+  - The village healer calls the fatigue bark Cinnamomum.
+  - She added Zingiber officinale for nausea and appetite.
+  firstHerbId: herb.ginger
+  secondHerbId: herb.cinnamon

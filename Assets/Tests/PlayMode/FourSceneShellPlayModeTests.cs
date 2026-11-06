@@ -76,6 +76,11 @@ namespace Witch.Bootstrap.PlayModeTests
             Canvas mainMenuCanvas = GameObject.Find("Main Menu Canvas").GetComponent<Canvas>();
             Assert.That(mainMenuCanvas.renderMode, Is.EqualTo(RenderMode.ScreenSpaceCamera));
             Assert.That(mainMenuCanvas.worldCamera, Is.Not.Null);
+            menu.ToggleSettings();
+            GameObject settingsPanel = GameObject.Find("Settings Panel");
+            Assert.That(settingsPanel, Is.Not.Null);
+            Assert.That(settingsPanel.GetComponentInParent<Canvas>(), Is.EqualTo(mainMenuCanvas));
+            menu.ToggleSettings();
             AssertNoMissingScripts(SceneManager.GetActiveScene());
 
             Object.Destroy(composition.gameObject);
@@ -89,7 +94,6 @@ namespace Witch.Bootstrap.PlayModeTests
                 0,
                 new[] { "category.test" },
                 new[] { "herb.first", "herb.second" },
-                new[] { "recipe.test" },
                 new[] { "guide.test" },
                 TimeSpan.FromSeconds(60),
                 "expense.day.1",

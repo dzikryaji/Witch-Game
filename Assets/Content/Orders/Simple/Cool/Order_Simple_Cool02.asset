@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f5f76fe6c3f7d450e98c5e1ef5f66046, type: 3}
+  m_Name: Order_Simple_Cool02
+  m_EditorClassIdentifier: Witch.Infrastructure::Witch.Infrastructure.Content.OrderDefinition
+  stableId: order.simple.c02
+  difficulty: 0
+  orderBubbles:
+  - River fog blocked my nose during a difficult boat haul.
+  - Now my shoulders and knees ache badly.
+  - Mint never troubles my stomach, and my lungs are strong.
+  - "An old ferryman\u2019s recipe pairs mint with Salix alba."
+  - He says the bark eases muscle and joint pain.
+  firstHerbId: herb.peppermint
+  secondHerbId: herb.whiteWillow

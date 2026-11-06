@@ -118,10 +118,10 @@ TextureImporter:
       name: Elderflower_0
       rect:
         serializedVersion: 2
-        x: 68
-        y: 5
-        width: 93
-        height: 72
+        x: 134
+        y: 161
+        width: 560
+        height: 414
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}

@@ -53,7 +53,6 @@ namespace Witch.Application.Tests
                 0,
                 new[] { "category.warm" },
                 new[] { "herb.ginger", "herb.mint" },
-                new[] { "recipe.warming-tonic" },
                 new[] { "guidebook.warm" },
                 firstDayOrderSeed: 1234,
                 firstDayTimerDuration: TimeSpan.FromMinutes(4),

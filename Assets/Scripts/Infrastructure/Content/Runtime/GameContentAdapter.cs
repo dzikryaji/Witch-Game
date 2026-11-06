@@ -5,6 +5,7 @@ using Witch.Application.Flow;
 using Witch.Domain.Orders;
 using Witch.Domain.Potions;
 using Witch.Domain.Progression;
+using Witch.Infrastructure.Persistence;
 
 namespace Witch.Infrastructure.Content
 {
@@ -30,10 +31,6 @@ namespace Witch.Infrastructure.Content
                 return GameContentLoadResult.Failure(report.Errors);
             }
 
-            var recipes = new RecipeCatalog(catalog.Recipes.Select(definition =>
-                new Recipe(
-                    definition.StableId,
-                    new HerbPair(definition.FirstHerbId, definition.SecondHerbId))));
             var herbs = catalog.Herbs.ToDictionary(
                 definition => definition.StableId,
                 definition => new HerbContent(
@@ -45,8 +42,7 @@ namespace Witch.Infrastructure.Content
                     definition.WarningText,
                     definition.HerbIllustration,
                     definition.AccessibleLabel,
-                    definition.GuidebookPage,
-                    definition.ClueIds),
+                    definition.GuidebookPage),
                 StringComparer.Ordinal);
             var orders = catalog.Orders.ToDictionary(
                 definition => definition.StableId,
@@ -54,8 +50,8 @@ namespace Witch.Infrastructure.Content
                     new OrderRequest(
                         definition.StableId,
                         new HerbPair(definition.FirstHerbId, definition.SecondHerbId)),
-                    definition.OrderSentences,
-                    definition.ClueIds),
+                    definition.Difficulty,
+                    definition.OrderBubbles),
                 StringComparer.Ordinal);
             var customers = catalog.Customers.ToDictionary(
                 definition => definition.StableId,
@@ -67,28 +63,17 @@ namespace Witch.Infrastructure.Content
                     definition.StableId,
                     definition.DayNumber,
                     TimeSpan.FromSeconds(definition.TimerSeconds),
-                    definition.OrderIds,
+                    definition.DailyExpense,
+                    definition.UnlockedCategoryIds,
+                    definition.OrderDifficulties,
                     definition.CustomerIds));
-            var guidebook = catalog.GuidebookEntries.ToDictionary(
+            var categories = catalog.HerbCategories.ToDictionary(
                 definition => definition.StableId,
-                definition => new GuidebookEntryContent(
+                definition => new HerbCategoryContent(
                     definition.StableId,
-                    definition.Title,
-                    definition.CategoryId,
-                    definition.ClueIds,
-                    definition.BodyText,
-                    definition.ContentsItems
-                        .Where(item => item != null)
-                        .Select(item => new GuidebookContentsItemContent(item.CategoryId, item.Name, item.Description))
-                        .ToList()),
+                    definition.DisplayName,
+                    definition.Description),
                 StringComparer.Ordinal);
-            var unlocks = catalog.CategoryUnlocks.Select(definition =>
-                new CategoryUnlockContent(
-                    definition.StableId,
-                    definition.CategoryId,
-                    definition.FirstDay,
-                    definition.HerbIds,
-                    definition.RecipeIds)).ToList();
             var cards = catalog.RewindCards.Select(definition =>
                 new RewindCardContent(definition.StableId, definition.SymbolKey)).ToList();
             var difficulty = new RewindDifficultyContent(
@@ -96,57 +81,54 @@ namespace Witch.Infrastructure.Content
                 catalog.RewindDifficulty.StartingPairCount,
                 catalog.RewindDifficulty.MaximumPairCount);
 
-            int firstDayNumber = catalog.RunConfiguration.FirstDay;
+            int firstDayNumber = days.Keys.Min();
+            int completionDay = days.Keys.Max();
             DayContent firstDay = days[firstDayNumber];
-            List<CategoryUnlockContent> firstDayUnlocks = unlocks
-                .Where(value => value.FirstDay <= firstDayNumber)
-                .ToList();
-            string[] categoryIds = firstDayUnlocks
-                .Select(value => value.CategoryId)
+            string[] categoryIds = days.Values
+                .Where(value => value.DayNumber <= firstDayNumber)
+                .SelectMany(value => value.UnlockedCategoryIds)
                 .Distinct(StringComparer.Ordinal)
                 .ToArray();
-            string[] herbIds = firstDayUnlocks.SelectMany(value => value.HerbIds)
-                .Distinct(StringComparer.Ordinal).ToArray();
-            string[] recipeIds = firstDayUnlocks.SelectMany(value => value.RecipeIds)
-                .Distinct(StringComparer.Ordinal).ToArray();
+            string[] herbIds = herbs.Values
+                .Where(value => categoryIds.Contains(value.CategoryId, StringComparer.Ordinal))
+                .Select(value => value.StableId)
+                .ToArray();
             var newRun = new NewRunSetup(
-                catalog.RunConfiguration.StartingMoney,
+                catalog.StartingMoney,
                 categoryIds,
                 herbIds,
-                recipeIds,
                 Array.Empty<string>(),
                 firstDay.TimerDuration,
-                catalog.Economy.ExpenseIdPrefix + firstDayNumber,
-                catalog.Economy.DailyExpense,
-                catalog.RunConfiguration.SaveVersion);
+                "expense.day." + firstDayNumber,
+                firstDay.DailyExpense,
+                JsonRunRepository.CurrentSaveVersion);
             var dayProgression = new DayProgressionSetup(
-                new DayTimingRules(
-                    firstDay.TimerDuration,
-                    TimeSpan.FromSeconds(catalog.RunConfiguration.DailyTimerIncreaseSeconds)),
-                catalog.Economy.DailyExpense,
-                catalog.Economy.ExpenseIdPrefix,
-                catalog.RunConfiguration.SaveVersion,
-                unlocks.Select(value => new DayUnlockSet(
-                    value.FirstDay,
-                    new[] { value.CategoryId },
-                    value.HerbIds,
-                    value.RecipeIds,
+                days.ToDictionary(value => value.Key, value => value.Value.TimerDuration),
+                days.ToDictionary(value => value.Key, value => value.Value.DailyExpense),
+                JsonRunRepository.CurrentSaveVersion,
+                days.Values
+                    .Where(value => value.UnlockedCategoryIds.Count > 0)
+                    .Select(value => new DayUnlockSet(
+                    value.DayNumber,
+                    value.UnlockedCategoryIds,
+                    herbs.Values
+                        .Where(herb => value.UnlockedCategoryIds.Contains(herb.CategoryId, StringComparer.Ordinal))
+                        .Select(herb => herb.StableId)
+                        .ToArray(),
                     Array.Empty<string>())).ToArray());
 
             return GameContentLoadResult.Success(new GameRuntimeContent(
-                recipes,
                 herbs,
                 orders,
                 customers,
                 days,
-                guidebook,
-                unlocks,
+                categories,
                 cards,
                 difficulty,
                 newRun,
                 dayProgression,
-                new ExpenseRules(catalog.Economy.CompletionDay),
-                catalog.Economy.CorrectOrderPayment));
+                new ExpenseRules(completionDay),
+                catalog.CorrectOrderPayment));
         }
     }
 }

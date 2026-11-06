@@ -118,10 +118,10 @@ TextureImporter:
       name: Peppermint_0
       rect:
         serializedVersion: 2
-        x: 84
-        y: 1
-        width: 51
-        height: 82
+        x: 215
+        y: 85
+        width: 370
+        height: 616
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}

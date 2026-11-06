@@ -24,16 +24,42 @@ namespace Witch.Bootstrap
 
             DayContent day = content.DaysByNumber[session.RunState.CurrentDayNumber];
             int customerStart = PositiveModulo(session.AttemptMetadata.ActiveOrderSeed, day.CustomerIds.Count);
-            var encounters = new List<ShopEncounterViewData>();
-            for (int offset = 0; offset < day.OrderIds.Count; offset++)
+            var unlockedHerbs = new HashSet<string>(session.RunState.UnlockedHerbIds, StringComparer.Ordinal);
+            List<OrderContent> availableOrders = content.OrdersById.Values
+                .Where(order => order.IsAvailable(unlockedHerbs)
+                    && day.OrderDifficulties.Contains(order.Difficulty))
+                .OrderBy(order => order.Request.OrderId, StringComparer.Ordinal)
+                .ToList();
+            string introductionOrderId = null;
+            string introductionCategoryId = null;
+            if (day.DayNumber > 1 && day.UnlockedCategoryIds.Count > 0)
             {
-                OrderContent order = content.OrdersById[day.OrderIds[offset]];
+                introductionCategoryId = day.UnlockedCategoryIds[0];
+                List<OrderContent> candidates = content.OrdersById.Values
+                    .Where(order => order.Difficulty == OrderDifficulty.Simple
+                        && OrderUsesCategory(order, introductionCategoryId))
+                    .OrderBy(order => order.Request.OrderId, StringComparer.Ordinal)
+                    .ToList();
+                if (candidates.Count > 0)
+                {
+                    OrderContent introduction = candidates[PositiveModulo(session.DayStartSnapshot.OrderSeed, candidates.Count)];
+                    introductionOrderId = introduction.Request.OrderId;
+                    if (availableOrders.All(value => value.Request.OrderId != introductionOrderId))
+                    {
+                        availableOrders.Add(introduction);
+                    }
+                }
+            }
+            var encounters = new List<ShopEncounterViewData>();
+            for (int offset = 0; offset < availableOrders.Count; offset++)
+            {
+                OrderContent order = availableOrders[offset];
                 CustomerContent customer = content.CustomersById[day.CustomerIds[(customerStart + offset) % day.CustomerIds.Count]];
                 encounters.Add(new ShopEncounterViewData(
                     customer.StableId,
                     customer.DisplayName,
                     order.Request,
-                    order.OrderSentences));
+                    order.OrderBubbles));
             }
 
             var herbs = new List<ShopHerbViewData>();
@@ -54,22 +80,28 @@ namespace Witch.Bootstrap
                 session.RunState.CurrentDayNumber,
                 showTutorial,
                 session.AttemptMetadata.ActiveOrderSeed,
-                randomizeEncounters: true);
+                randomizeEncounters: true,
+                seenOrderIds: session.RunState.SeenOrderIds,
+                introductionOrderId: introductionOrderId,
+                oneTimeIntroduction: introductionOrderId != null
+                    && !day.OrderDifficulties.Contains(OrderDifficulty.Simple),
+                introductionCategoryOrderIds: introductionCategoryId == null
+                    ? Array.Empty<string>()
+                    : content.OrdersById.Values
+                        .Where(order => OrderUsesCategory(order, introductionCategoryId))
+                        .Select(order => order.Request.OrderId)
+                        .ToArray());
+        }
+
+        private bool OrderUsesCategory(OrderContent order, string categoryId)
+        {
+            HerbContent herb = content.HerbsById[order.Request.RequestedPair.FirstHerbId];
+            return string.Equals(herb.CategoryId, categoryId, StringComparison.Ordinal);
         }
 
         /// <summary>Contents page first (unlocked categories, in unlock order), then one page per unlocked herb.</summary>
         private List<GuidebookPageViewData> CreateGuidebookPages(GameSession session)
         {
-            var categoryLabels = new Dictionary<string, string>(StringComparer.Ordinal);
-            foreach (GuidebookContentsItemContent item in content.GuidebookEntriesById.Values
-                         .SelectMany(entry => entry.ContentsItems))
-            {
-                if (!string.IsNullOrEmpty(item.CategoryId) && !categoryLabels.ContainsKey(item.CategoryId))
-                {
-                    categoryLabels.Add(item.CategoryId, item.Name);
-                }
-            }
-
             // Herb pages come right after the Contents page (index 0), in guidebook order.
             List<HerbContent> herbPages = session.RunState.UnlockedHerbIds
                 .Select(herbId => content.HerbsById[herbId])
@@ -88,15 +120,10 @@ namespace Witch.Bootstrap
             var rows = new List<GuidebookContentsRow>();
             foreach (string categoryId in session.RunState.UnlockedCategoryIds)
             {
-                foreach (GuidebookEntryContent entry in content.GuidebookEntriesById.Values
-                             .Where(value => value.CategoryId == categoryId)
-                             .OrderBy(value => value.Title, StringComparer.Ordinal))
+                if (content.HerbCategoriesById.TryGetValue(categoryId, out HerbCategoryContent category))
                 {
-                    foreach (GuidebookContentsItemContent item in entry.ContentsItems)
-                    {
-                        int target = firstPageOfCategory.TryGetValue(item.CategoryId ?? string.Empty, out int page) ? page : -1;
-                        rows.Add(new GuidebookContentsRow(item.Name, item.Description, target));
-                    }
+                    int target = firstPageOfCategory.TryGetValue(categoryId, out int page) ? page : -1;
+                    rows.Add(new GuidebookContentsRow(category.DisplayName, category.Description, target));
                 }
             }
 
@@ -107,8 +134,11 @@ namespace Witch.Bootstrap
 
             foreach (HerbContent herb in herbPages)
             {
-                string categoryLabel = null;
-                if (!string.IsNullOrEmpty(herb.CategoryId)) categoryLabels.TryGetValue(herb.CategoryId, out categoryLabel);
+                string categoryLabel = content.HerbCategoriesById.TryGetValue(
+                    herb.CategoryId,
+                    out HerbCategoryContent category)
+                    ? category.DisplayName
+                    : null;
                 pages.Add(GuidebookPageViewData.Herb(
                     pages.Count + 1,
                     herb.DisplayName,

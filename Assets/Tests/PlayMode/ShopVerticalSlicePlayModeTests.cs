@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
@@ -56,7 +57,7 @@ namespace Witch.Bootstrap.PlayModeTests
         }
 
         [UnityTest]
-        public IEnumerator OrderBubblesMatchSentenceCountAndScrollbarNeed()
+        public IEnumerator OrderBubblesMatchDefinitionCountAndScrollbarNeed()
         {
             yield return LoadShop();
             ShopHudView view = Object.FindAnyObjectByType<ShopHudView>();
@@ -83,6 +84,67 @@ namespace Witch.Bootstrap.PlayModeTests
             yield return new WaitForSecondsRealtime(0.5f);
 
             Assert.That(scroll.verticalNormalizedPosition, Is.GreaterThan(0.95f));
+        }
+
+        [UnityTest]
+        public IEnumerator OrderBubbleFitsTextAndAlignsRight()
+        {
+            yield return LoadShop();
+            ShopHudView view = Object.FindAnyObjectByType<ShopHudView>();
+            ScrollRect scroll = GameObject.Find("OrderBubbleScrollView").GetComponent<ScrollRect>();
+
+            view.SetCustomer("Test Villager", new[] { "One sentence." });
+            yield return new WaitForSecondsRealtime(0.8f);
+
+            RectTransform shortBubble = (RectTransform)scroll.content.GetChild(0);
+            float shortBubbleHeight = shortBubble.rect.height;
+            Assert.That(shortBubble.rect.width, Is.LessThan(scroll.content.rect.width));
+            var contentCorners = new Vector3[4];
+            var bubbleCorners = new Vector3[4];
+            var viewportCorners = new Vector3[4];
+            scroll.content.GetWorldCorners(contentCorners);
+            shortBubble.GetWorldCorners(bubbleCorners);
+            scroll.viewport.GetWorldCorners(viewportCorners);
+            Assert.That(bubbleCorners[2].x, Is.EqualTo(contentCorners[2].x).Within(1f));
+            Assert.That(bubbleCorners[0].y, Is.EqualTo(viewportCorners[0].y).Within(1f));
+
+            const string warmOrder = "Please mix mustard seed and ginger.";
+            view.SetCustomer("Test Villager", new[] { warmOrder });
+            yield return new WaitForSecondsRealtime(0.8f);
+
+            RectTransform longBubble = (RectTransform)scroll.content.GetChild(0);
+            Text longText = longBubble.GetComponentInChildren<Text>();
+            Assert.That(longText.text, Is.EqualTo(warmOrder));
+            Assert.That(longBubble.rect.width, Is.EqualTo(scroll.content.rect.width).Within(1f));
+            Assert.That(longBubble.rect.height, Is.GreaterThan(shortBubbleHeight));
+            Assert.That(longText.rectTransform.rect.height, Is.GreaterThanOrEqualTo(longText.preferredHeight - 0.1f));
+        }
+
+        [UnityTest]
+        public IEnumerator OrderBubblesShiftUpBeforeNextBubbleSlidesIn()
+        {
+            yield return LoadShop();
+            ShopHudView view = Object.FindAnyObjectByType<ShopHudView>();
+            ScrollRect scroll = GameObject.Find("OrderBubbleScrollView").GetComponent<ScrollRect>();
+
+            view.SetCustomer("Test Villager", new[] { "One.", "Two.", "Three." });
+            yield return new WaitForSecondsRealtime(0.6f);
+
+            RectTransform first = (RectTransform)scroll.content.GetChild(0);
+            RectTransform second = (RectTransform)scroll.content.GetChild(1);
+            float bottomSlot = first.position.y;
+            Assert.That(first.gameObject.activeSelf, Is.True);
+            Assert.That(second.gameObject.activeSelf, Is.False);
+
+            yield return new WaitForSecondsRealtime(0.22f);
+
+            Assert.That(second.gameObject.activeSelf, Is.True);
+            Assert.That(second.GetComponent<CanvasGroup>().alpha, Is.EqualTo(0f).Within(0.01f));
+            Assert.That(first.position.y, Is.GreaterThan(bottomSlot));
+
+            yield return new WaitForSecondsRealtime(0.3f);
+
+            Assert.That(second.GetComponent<CanvasGroup>().alpha, Is.GreaterThan(0f));
         }
 
         [UnityTest]
@@ -175,7 +237,7 @@ namespace Witch.Bootstrap.PlayModeTests
                         mouse,
                         potion.GetComponent<RectTransform>(),
                         () => AssertRenderedInFront(potion.transform, "brewed potion"));
-                    Assert.That(presenter.ActiveSession.PreparedRecipe, Is.Not.Null,
+                    Assert.That(presenter.ActiveSession.PreparedPotion, Is.Not.Null,
                         "Dropping outside a valid zone must keep the brewed potion.");
                     RememberOrAssertHome(
                         potion.GetComponent<RectTransform>(),
@@ -184,7 +246,7 @@ namespace Witch.Bootstrap.PlayModeTests
                         "brewed potion");
                     Assert.That(potion.GetComponent<CanvasGroup>().blocksRaycasts, Is.True);
                     Assert.That(presenter.Discard().Succeeded, Is.True);
-                    Assert.That(presenter.ActiveSession.PreparedRecipe, Is.Null);
+                    Assert.That(presenter.ActiveSession.PreparedPotion, Is.Null);
                 }
                 else
                 {
@@ -194,7 +256,7 @@ namespace Witch.Bootstrap.PlayModeTests
                         customerSlot.GetComponent<RectTransform>(),
                         () => AssertRenderedInFront(potion.transform, "brewed potion"));
                     yield return WaitUntil(
-                        () => presenter.ActiveSession.PreparedRecipe == null,
+                        () => presenter.ActiveSession.PreparedPotion == null,
                         "potion serve drop");
                 }
             }
@@ -278,7 +340,7 @@ namespace Witch.Bootstrap.PlayModeTests
 
             PreparePair(presenter, "herb.mint", "herb.lavender");
             Assert.That(presenter.Brew().Kind, Is.EqualTo(PreparationResultKind.Prepared));
-            Assert.That(presenter.ActiveSession.PreparedRecipe, Is.Not.Null);
+            Assert.That(presenter.ActiveSession.PreparedPotion, Is.Not.Null);
 
             presenter.GrindHerb("herb.ginger");
             Assert.That(presenter.Discard().Kind, Is.EqualTo(PreparationResultKind.Discarded));
@@ -348,13 +410,13 @@ namespace Witch.Bootstrap.PlayModeTests
 
             Assert.That(second.Result.Outcome.Kind, Is.EqualTo(ServiceOutcomeKind.Correct));
             Assert.That(presenter.ActiveSession.CurrentPhase, Is.EqualTo(GamePhase.CustomerEncounter));
-            Assert.That(presenter.ActiveSession.AttemptState.ActiveOrder.OrderId, Is.EqualTo("order.first.repeat.1"));
+            Assert.That(presenter.ActiveSession.AttemptState.ActiveOrder.OrderId, Is.EqualTo("order.first"));
             Assert.That(presenter.ActiveSession.AttemptState.UsedOrderIds,
-                Is.EqualTo(new[] { "order.first", "order.second", "order.first.repeat.1" }));
+                Is.EqualTo(new[] { "order.first", "order.second", "order.first" }));
         }
 
         [Test]
-        public void RandomEncounterDeckUsesBalancedBagsAndNeverRunsOneRecipeMoreThanTwice()
+        public void RandomEncounterDeckUsesBalancedBagsAndNeverRunsOneHerbPairMoreThanTwice()
         {
             HerbPair warm = new HerbPair("herb.ginger", "herb.cinnamon");
             HerbPair cool = new HerbPair("herb.mint", "herb.borage");
@@ -411,6 +473,77 @@ namespace Witch.Bootstrap.PlayModeTests
             }
         }
 
+        [Test]
+        public void RandomEncounterDeckSkipsSeenOrdersUntilEligiblePoolIsExhausted()
+        {
+            HerbPair pair = new HerbPair("herb.ginger", "herb.mint");
+            var encounters = new[]
+            {
+                new ShopEncounterViewData("customer.test", "Test", new OrderRequest("order.one", pair), "One."),
+                new ShopEncounterViewData("customer.test", "Test", new OrderRequest("order.two", pair), "Two."),
+                new ShopEncounterViewData("customer.test", "Test", new OrderRequest("order.three", pair), "Three.")
+            };
+            var deck = new ShopEncounterDeck(
+                encounters,
+                90421,
+                randomizeEncounters: true,
+                seenOrderIds: new[] { "order.one", "order.two" });
+
+            Assert.That(deck.Draw(0).Order.OrderId, Is.EqualTo("order.three"));
+            Assert.That(
+                new[] { deck.Draw(1).Order.OrderId, deck.Draw(2).Order.OrderId, deck.Draw(3).Order.OrderId },
+                Is.EquivalentTo(new[] { "order.one", "order.two", "order.three" }));
+        }
+
+        [Test]
+        public void RandomEncounterDeckIntroducesUnlockedCategoryWithinFirstThree()
+        {
+            HerbPair warm = new HerbPair("herb.ginger", "herb.cinnamon");
+            HerbPair soothe = new HerbPair("herb.lavender", "herb.chamomile");
+            var encounters = new[]
+            {
+                new ShopEncounterViewData("customer.test", "Test", new OrderRequest("order.warm.one", warm), "Warm."),
+                new ShopEncounterViewData("customer.test", "Test", new OrderRequest("order.warm.two", warm), "Warm."),
+                new ShopEncounterViewData("customer.test", "Test", new OrderRequest("order.soothe.intro", soothe), "Soothe."),
+                new ShopEncounterViewData("customer.test", "Test", new OrderRequest("order.soothe.mid", soothe), "Soothe.")
+            };
+            var deck = new ShopEncounterDeck(
+                encounters,
+                90421,
+                randomizeEncounters: true,
+                priorityIntroductionOrderId: "order.soothe.intro",
+                priorityCategoryOrderIds: new[] { "order.soothe.intro", "order.soothe.mid" });
+
+            string[] firstThree = { deck.Draw(0).Order.OrderId, deck.Draw(1).Order.OrderId, deck.Draw(2).Order.OrderId };
+            int introductionIndex = Array.IndexOf(firstThree, "order.soothe.intro");
+
+            Assert.That(introductionIndex, Is.GreaterThanOrEqualTo(0));
+            Assert.That(Array.IndexOf(firstThree, "order.soothe.mid"), Is.LessThan(0).Or.GreaterThan(introductionIndex));
+        }
+
+        [Test]
+        public void RandomEncounterDeckUsesRetiredDifficultyIntroductionOnlyOnce()
+        {
+            HerbPair pair = new HerbPair("herb.lavender", "herb.chamomile");
+            var encounters = new[]
+            {
+                new ShopEncounterViewData("customer.test", "Test", new OrderRequest("order.intro", pair), "Intro."),
+                new ShopEncounterViewData("customer.test", "Test", new OrderRequest("order.mid.one", pair), "Mid."),
+                new ShopEncounterViewData("customer.test", "Test", new OrderRequest("order.mid.two", pair), "Mid.")
+            };
+            var deck = new ShopEncounterDeck(
+                encounters,
+                90421,
+                randomizeEncounters: true,
+                priorityIntroductionOrderId: "order.intro",
+                removeIntroductionAfterFirstBag: true,
+                priorityCategoryOrderIds: new[] { "order.intro", "order.mid.one", "order.mid.two" });
+
+            string[] orders = Enumerable.Range(0, 9).Select(index => deck.Draw(index).Order.OrderId).ToArray();
+
+            Assert.That(orders.Count(value => value == "order.intro"), Is.EqualTo(1));
+        }
+
         [UnityTest]
         public IEnumerator TutorialGatesFirstBellAndPauseFreezesShopTime()
         {
@@ -456,7 +589,7 @@ namespace Witch.Bootstrap.PlayModeTests
                 "Guidebook Tutorial Highlight",
                 "Shelf Tutorial Highlight",
                 "Grinder Tutorial Highlight",
-                "Potion Slot Tutorial Highlight"
+                "Customer Counter Tutorial Highlight"
             };
             foreach (string highlightName in tutorialHighlightNames)
             {
@@ -490,7 +623,6 @@ namespace Witch.Bootstrap.PlayModeTests
                 0,
                 new[] { "category.test" },
                 new[] { "herb.ginger", "herb.mint", "herb.borage", "herb.sage", "herb.lavender" },
-                new[] { "recipe.correct", "recipe.cool", "recipe.wrong" },
                 new[] { "guide.test" },
                 TimeSpan.FromSeconds(60),
                 "expense.day.1",
@@ -507,13 +639,7 @@ namespace Witch.Bootstrap.PlayModeTests
             StartNewGameResult startResult = start.ExecuteAsync(new StartNewGameCommand("playmode-run")).Result;
             Assert.That(startResult.Succeeded, Is.True, startResult.ErrorMessage);
 
-            var recipes = new RecipeCatalog(new[]
-            {
-                new Recipe("recipe.correct", new HerbPair("herb.ginger", "herb.mint")),
-                new Recipe("recipe.cool", new HerbPair("herb.mint", "herb.borage")),
-                new Recipe("recipe.wrong", new HerbPair("herb.ginger", "herb.sage"))
-            });
-            var rules = new PotionServiceRules(10, recipes);
+            var rules = new PotionServiceRules(10);
             return new Harness(
                 store,
                 clock,

@@ -9,25 +9,35 @@ namespace Witch.Infrastructure.Content
     {
         [SerializeField, Min(1)] private int dayNumber = 1;
         [SerializeField, Min(1)] private int timerSeconds = 240;
-        [SerializeField] private string[] orderIds = Array.Empty<string>();
+        [SerializeField, Min(0)] private int dailyExpense = 20;
+        [SerializeField] private string[] unlockedCategoryIds = Array.Empty<string>();
+        [SerializeField] private OrderDifficulty[] orderDifficulties = { OrderDifficulty.Simple };
         [SerializeField] private string[] customerIds = Array.Empty<string>();
 
         public int DayNumber => dayNumber;
         public int TimerSeconds => timerSeconds;
-        public IReadOnlyList<string> OrderIds => orderIds;
+        public int DailyExpense => dailyExpense;
+        public IReadOnlyList<string> UnlockedCategoryIds => unlockedCategoryIds;
+        public IReadOnlyList<OrderDifficulty> OrderDifficulties => orderDifficulties;
         public IReadOnlyList<string> CustomerIds => customerIds;
 
         public void Configure(
             string id,
             int day,
             int seconds,
-            string[] orders,
-            string[] customers)
+            string[] customers,
+            int expense = 20,
+            string[] categoryUnlocks = null,
+            OrderDifficulty[] difficulties = null)
         {
             SetStableId(id);
             dayNumber = day;
             timerSeconds = seconds;
-            orderIds = orders == null ? Array.Empty<string>() : (string[])orders.Clone();
+            dailyExpense = expense;
+            unlockedCategoryIds = categoryUnlocks == null ? Array.Empty<string>() : (string[])categoryUnlocks.Clone();
+            orderDifficulties = difficulties == null
+                ? new[] { OrderDifficulty.Simple }
+                : (OrderDifficulty[])difficulties.Clone();
             customerIds = customers == null ? Array.Empty<string>() : (string[])customers.Clone();
         }
     }

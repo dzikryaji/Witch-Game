@@ -16,9 +16,8 @@ MonoBehaviour:
   displayName: Burdock Root
   categoryId: category.cleanse
   scientificName: Arctium lappa
-  treatmentText: A tough, earthy root that cleanses dirty blood and removes common mild toxins from the body.
-  warningText: Burdock Root causes intense, uncontrollable drowsiness. It can be deadly for a town guard, soldier, or anyone who must remain alert while on duty.
-  herbIllustration: {fileID: 21300000, guid: 4304180669c414427bb2eeff11497d8a, type: 3}
+  treatmentText: A tough, earthy root that cleanses dirty blood and removes everyday, mild toxins from the body.
+  warningText: It leads to intense, uncontrollable drowsiness, which can be deadly if given to a town guard, soldier, or anyone who needs to stay alert while on duty.
+  herbIllustration: {fileID: 21300000, guid: ac0e6813fd7f74694a2975f8d6ce5e4a, type: 3}
   accessibleLabel: Burdock Root
   guidebookPage: 20
-  clueIds: []

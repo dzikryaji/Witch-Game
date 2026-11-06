@@ -95,9 +95,9 @@ namespace Witch.Application.Flow
             var snapshot = new DayStartSnapshot(
                 nextRunState,
                 nextSeed,
-                setup.TimingRules.GetDuration(nextDay),
+                setup.GetTimerDuration(nextDay),
                 setup.GetExpenseId(nextDay),
-                setup.DailyExpenseValue,
+                setup.GetExpenseValue(nextDay),
                 setup.SaveVersion,
                 clock.UtcNow);
             var metadata = new ActiveAttemptMetadata(
