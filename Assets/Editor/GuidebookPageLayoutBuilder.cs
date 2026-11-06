@@ -14,7 +14,7 @@ namespace Witch.Editor
     /// <summary>
     /// Adds the herb, contents and plain-text layouts to GuidebookPage.prefab and wires its
     /// GuidebookPageView. Order, spacing and text sizes follow the old guidebook pages in
-    /// Shop.unity. The prefab is previewed with real data (Herb_Ginger + guidebook entries);
+    /// Shop.unity. The prefab is previewed with real data (Herb_Ginger + herb categories);
     /// in the game ShopShellPresenter renders every page from the HerbDefinitions.
     /// Runs at edit time only.
     /// </summary>
@@ -36,7 +36,7 @@ namespace Witch.Editor
         private const string HeadingFontPath = "Assets/Fonts/MedievalSharp.ttf";
         private const string CategoryTagPath = "Assets/Art/Guidebook/TagCategoryPlain.png"; // plain block, no ribbon notch
         private const string PreviewHerbPath = "Assets/Content/Herbs/Herb_Ginger.asset";
-        private const string GuidebookContentFolder = "Assets/Content/Guidebook";
+        private const string CategoryContentFolder = "Assets/Content/Categories";
         private const int ContentsRowCount = 6;
 
         private static readonly string[] GeneratedContentChildren = { "HerbLayout", "ContentsLayout", "PlainText" };
@@ -598,21 +598,15 @@ namespace Witch.Editor
         private static void FillPreview(PageParts parts)
         {
             Dictionary<string, string> categoryNames = new Dictionary<string, string>();
-            var contentsItems = new List<GuidebookContentsItemDefinition>();
-            foreach (GuidebookEntryDefinition entry in AssetDatabase
-                         .FindAssets("t:" + nameof(GuidebookEntryDefinition), new[] { GuidebookContentFolder })
-                         .Select(guid => AssetDatabase.LoadAssetAtPath<GuidebookEntryDefinition>(AssetDatabase.GUIDToAssetPath(guid)))
-                         .Where(entry => entry != null)
-                         .OrderBy(entry => entry.Title, System.StringComparer.Ordinal))
+            List<HerbCategoryDefinition> categories = AssetDatabase
+                .FindAssets("t:" + nameof(HerbCategoryDefinition), new[] { CategoryContentFolder })
+                .Select(guid => AssetDatabase.LoadAssetAtPath<HerbCategoryDefinition>(AssetDatabase.GUIDToAssetPath(guid)))
+                .Where(category => category != null)
+                .OrderBy(category => category.DisplayName, System.StringComparer.Ordinal)
+                .ToList();
+            foreach (HerbCategoryDefinition category in categories)
             {
-                foreach (GuidebookContentsItemDefinition item in entry.ContentsItems)
-                {
-                    contentsItems.Add(item);
-                    if (!string.IsNullOrEmpty(item.CategoryId) && !categoryNames.ContainsKey(item.CategoryId))
-                    {
-                        categoryNames.Add(item.CategoryId, item.Name);
-                    }
-                }
+                categoryNames[category.StableId] = category.DisplayName;
             }
 
             var herb = AssetDatabase.LoadAssetAtPath<HerbDefinition>(PreviewHerbPath);
@@ -631,11 +625,11 @@ namespace Witch.Editor
             parts.ContentsTitle.text = "Content";
             for (int index = 0; index < parts.Rows.Count; index++)
             {
-                bool used = index < contentsItems.Count;
+                bool used = index < categories.Count;
                 parts.Rows[index].SetActive(used);
                 if (!used) continue;
-                parts.RowNames[index].text = contentsItems[index].Name;
-                parts.RowDescriptions[index].text = contentsItems[index].Description;
+                parts.RowNames[index].text = categories[index].DisplayName;
+                parts.RowDescriptions[index].text = categories[index].Description;
             }
 
             parts.PlainText.text = string.Empty;

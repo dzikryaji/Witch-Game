@@ -95,7 +95,7 @@ namespace Witch.Application.Flow
             var snapshot = new DayStartSnapshot(
                 nextRunState,
                 nextSeed,
-                setup.TimingRules.GetDuration(nextDay),
+                setup.GetTimerDuration(nextDay),
                 setup.GetExpenseId(nextDay),
                 setup.GetExpenseValue(nextDay),
                 setup.SaveVersion,

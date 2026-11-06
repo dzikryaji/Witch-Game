@@ -19,10 +19,27 @@ namespace Witch.Infrastructure.Content
             ValidateStableIds(catalog.Orders, "Order", errors);
             ValidateStableIds(catalog.Customers, "Customer", errors);
             ValidateStableIds(catalog.Days, "Day", errors);
-            ValidateStableIds(catalog.GuidebookEntries, "Guidebook entry", errors);
+            ValidateStableIds(catalog.HerbCategories, "Herb category", errors);
             ValidateStableIds(catalog.RewindCards, "Rewind card", errors);
             ValidateRequiredDefinition(catalog.RewindDifficulty, "Rewind difficulty", errors);
-            ValidateRequiredDefinition(catalog.RunConfiguration, "run configuration", errors);
+
+            if (catalog.StartingMoney < 0 || catalog.CorrectOrderPayment < 0)
+            {
+                errors.Add("Game catalog contains invalid economy values.");
+            }
+
+            foreach (HerbCategoryDefinition category in catalog.HerbCategories.Where(value => value != null))
+            {
+                if (string.IsNullOrWhiteSpace(category.DisplayName))
+                {
+                    errors.Add("Herb category '" + category.StableId + "' needs a display name.");
+                }
+
+                if (string.IsNullOrWhiteSpace(category.Description))
+                {
+                    errors.Add("Herb category '" + category.StableId + "' needs a description.");
+                }
+            }
 
             foreach (HerbDefinition herb in catalog.Herbs.Where(value => value != null))
             {
@@ -31,10 +48,24 @@ namespace Witch.Infrastructure.Content
 
             var herbIds = IdSet(catalog.Herbs);
             var customerIds = IdSet(catalog.Customers);
+            var categoryIds = IdSet(catalog.HerbCategories);
             var herbsById = catalog.Herbs
                 .Where(value => value != null && !string.IsNullOrWhiteSpace(value.StableId))
                 .GroupBy(value => value.StableId, StringComparer.Ordinal)
                 .ToDictionary(group => group.Key, group => group.First(), StringComparer.Ordinal);
+
+            foreach (HerbDefinition herb in herbsById.Values)
+            {
+                ValidateReference(herb.CategoryId, categoryIds, "Herb '" + herb.StableId + "' category", errors);
+            }
+
+            foreach (HerbCategoryDefinition category in catalog.HerbCategories.Where(value => value != null))
+            {
+                if (!herbsById.Values.Any(herb => string.Equals(herb.CategoryId, category.StableId, StringComparison.Ordinal)))
+                {
+                    errors.Add("Herb category '" + category.StableId + "' needs at least one herb.");
+                }
+            }
 
             foreach (OrderDefinition order in catalog.Orders.Where(value => value != null))
             {
@@ -58,9 +89,6 @@ namespace Witch.Infrastructure.Content
 
             var daysSeen = new HashSet<int>();
             var unlockedCategories = new HashSet<string>(StringComparer.Ordinal);
-            var knownCategories = new HashSet<string>(
-                herbsById.Values.Select(value => value.CategoryId),
-                StringComparer.Ordinal);
             var ordersById = catalog.Orders
                 .Where(value => value != null && !string.IsNullOrWhiteSpace(value.StableId))
                 .GroupBy(value => value.StableId, StringComparer.Ordinal)
@@ -96,7 +124,7 @@ namespace Witch.Infrastructure.Content
 
                 foreach (string categoryId in day.UnlockedCategoryIds)
                 {
-                    if (string.IsNullOrWhiteSpace(categoryId) || !knownCategories.Contains(categoryId))
+                    if (string.IsNullOrWhiteSpace(categoryId) || !categoryIds.Contains(categoryId))
                     {
                         errors.Add("Day '" + day.StableId + "' unlocks unknown category '" + categoryId + "'.");
                         continue;
@@ -107,15 +135,6 @@ namespace Witch.Infrastructure.Content
                             && OrderUsesCategory(order, categoryId, herbsById)))
                     {
                         errors.Add("Day '" + day.StableId + "' category '" + categoryId + "' needs a Simple introduction order.");
-                    }
-
-                    bool hasGuidebookRow = catalog.GuidebookEntries
-                        .Where(value => value != null)
-                        .SelectMany(value => value.ContentsItems)
-                        .Any(value => value != null && string.Equals(value.CategoryId, categoryId, StringComparison.Ordinal));
-                    if (!hasGuidebookRow)
-                    {
-                        errors.Add("Day '" + day.StableId + "' category '" + categoryId + "' needs guidebook content.");
                     }
 
                     unlockedCategories.Add(categoryId);
@@ -205,22 +224,13 @@ namespace Witch.Infrastructure.Content
             ISet<int> dayNumbers,
             ICollection<string> errors)
         {
-            if (catalog.RunConfiguration != null)
+            if (dayNumbers.Count == 0)
             {
-                if (!dayNumbers.Contains(catalog.RunConfiguration.FirstDay))
-                {
-                    errors.Add("Run configuration first day has no Day definition.");
-                }
-
-                if (catalog.RunConfiguration.StartingMoney < 0
-                    || catalog.RunConfiguration.SaveVersion < 1
-                    || catalog.RunConfiguration.DailyTimerIncreaseSeconds < 0
-                    || catalog.RunConfiguration.CorrectOrderPayment < 0
-                    || catalog.RunConfiguration.CompletionDay < 1
-                    || string.IsNullOrWhiteSpace(catalog.RunConfiguration.ExpenseIdPrefix))
-                {
-                    errors.Add("Run configuration contains invalid numeric values.");
-                }
+                errors.Add("Game catalog needs at least one day.");
+            }
+            else if (!dayNumbers.SetEquals(Enumerable.Range(1, dayNumbers.Count)))
+            {
+                errors.Add("Day definitions must be contiguous starting at day 1.");
             }
 
             if (catalog.RewindDifficulty != null)

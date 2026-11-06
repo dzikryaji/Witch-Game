@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f5f76fe6c3f7d450e98c5e1ef5f66046, type: 3}
+  m_Name: Order_Mid_Cool16
+  m_EditorClassIdentifier: Witch.Infrastructure::Witch.Infrastructure.Content.OrderDefinition
+  stableId: order.mid.c16
+  difficulty: 1
+  orderBubbles:
+  - My younger brother has a high fever, swollen hands,
+  - and tremors violent enough to spoil every line he writes.
+  - He drinks plenty, has sound kidneys,
+  - and his heart is young and strong.
+  - A physician's margin note prescribes Sambucus nigra for the fever
+  - and Hyoscyamus niger for the fits.
+  - Please prepare those two.
+  - The parish can survive one day without his handwriting.
+  firstHerbId: herb.elderflower
+  secondHerbId: herb.henbane

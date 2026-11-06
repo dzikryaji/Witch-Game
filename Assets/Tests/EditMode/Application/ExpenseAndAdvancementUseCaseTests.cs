@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
@@ -183,9 +184,13 @@ namespace Witch.Application.Tests
         private static DayProgressionSetup CreateSetup()
         {
             return new DayProgressionSetup(
-                new DayTimingRules(TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(1)),
-                20,
-                "expense.day.",
+                new Dictionary<int, TimeSpan>
+                {
+                    [1] = TimeSpan.FromSeconds(1),
+                    [2] = TimeSpan.FromSeconds(2),
+                    [3] = TimeSpan.FromSeconds(3)
+                },
+                new Dictionary<int, int> { [1] = 20, [2] = 20, [3] = 20 },
                 1);
         }
 
