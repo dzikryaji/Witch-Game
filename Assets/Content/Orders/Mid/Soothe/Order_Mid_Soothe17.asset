@@ -15,10 +15,10 @@ MonoBehaviour:
   stableId: order.mid.s17
   difficulty: 1
   orderBubbles:
-  - Something soothing, please.
-  - I get muscle cramps in my legs,
-  - and I keep having panic attacks.
-  - The apothecary prescribed Matricaria chamomilla for the cramps,
-  - and Lavandula for the panic attacks.
-  firstHerbId: herb.chamomile
-  secondHerbId: herb.lavender
+  - Intense headaches and panic attacks trouble me frequently.
+  - Continuous coughing fits also irritate my throat.
+  - I am not dizzy, faint, or weak from blood loss.
+  - My throat is not swollen, and I can swallow.
+  - Find a sweet-smelling purple stem and dark, sweet-tasting nightshade berry.
+  firstHerbId: herb.lavender
+  secondHerbId: herb.belladonnaBerry

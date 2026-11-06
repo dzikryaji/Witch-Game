@@ -15,10 +15,9 @@ MonoBehaviour:
   stableId: order.mid.w11
   difficulty: 1
   orderBubbles:
-  - Bad inn food and cold rain ended my journey.
-  - My stomach aches, while chills and mucus clog my chest.
+  - Rain brought chills, chest mucus, and lost appetite.
+  - Bring the small, rough yellow seeds.
+  - Add the twisted, tough root with strong flavor.
   - I have no wounds, scrapes, or bleeding ulcers.
-  - An inn healer calls the stomach root Zingiber officinale.
-  - He pairs it with Sinapis alba for chills and mucus.
-  firstHerbId: herb.ginger
-  secondHerbId: herb.mustardSeed
+  firstHerbId: herb.mustardSeed
+  secondHerbId: herb.ginger

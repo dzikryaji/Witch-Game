@@ -15,9 +15,10 @@ MonoBehaviour:
   stableId: order.mid.c20
   difficulty: 1
   orderBubbles:
-  - Walking has become difficult over recent days.
-  - My swollen joints cause terrible muscle pain.
-  - A healer prescribed Sambucus nigra for the swelling.
-  - They added Salix alba for muscle and joint pain.
-  firstHerbId: herb.elderflower
-  secondHerbId: herb.whiteWillow
+  - Venom brings fever and violent fits to my sister.
+  - A healer prescribed Hyoscyamus niger.
+  - It is the hard leaf with an unpleasant smell.
+  - Add the dry, rough leaf with blue stars.
+  - Her heart is strong, and she remains warm.
+  firstHerbId: herb.henbane
+  secondHerbId: herb.borage

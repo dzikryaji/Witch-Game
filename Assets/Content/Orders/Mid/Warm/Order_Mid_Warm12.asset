@@ -15,10 +15,9 @@ MonoBehaviour:
   stableId: order.mid.w12
   difficulty: 1
   orderBubbles:
-  - Nursing the village without rest exhausted my mother.
-  - She lost her appetite, and her stomach aches and churns.
-  - Her wheezing is unchanged, without fever, wounds, or bleeding ulcers.
-  - The village healer calls the fatigue bark Cinnamomum.
-  - She added Zingiber officinale for nausea and appetite.
-  firstHerbId: herb.ginger
-  secondHerbId: herb.cinnamon
+  - My mouth is numb, and exhaustion drains all energy.
+  - Bring the tiny, dried bud.
+  - Add the bright red pepper.
+  - My heartbeat and lungs are strong, without asthma.
+  firstHerbId: herb.clove
+  secondHerbId: herb.cayennePepper

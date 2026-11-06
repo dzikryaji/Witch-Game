@@ -15,9 +15,10 @@ MonoBehaviour:
   stableId: order.mid.c19
   difficulty: 1
   orderBubbles:
-  - My head pounds, my nose is blocked, and fever persists.
-  - Folks call the sharp, dark leaf mint.
-  - A healer calls the white flowers Sambucus nigra.
-  - Please brew those two for me.
+  - A thorn wound gave my brother fever and pounding headache.
+  - Infection heat now spreads through his blood.
+  - His guide calls Mentha piperita the sharp-smelling dark leaf.
+  - Add the dry, rough leaf with blue stars.
+  - He remains warm, and reflux never troubles him.
   firstHerbId: herb.peppermint
-  secondHerbId: herb.elderflower
+  secondHerbId: herb.borage

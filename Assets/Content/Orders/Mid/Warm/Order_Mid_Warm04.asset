@@ -15,10 +15,9 @@ MonoBehaviour:
   stableId: order.mid.w04
   difficulty: 1
   orderBubbles:
-  - Sleepless work exhausted my husband before a cold struck.
-  - He dozes constantly, with blocked airways and nausea.
-  - His lungs are strong, without asthma, wounds, or ulcers.
-  - "A physician\u2019s apprentice prescribed Capsicum annuum for energy."
-  - His note pairs it with Ginger for nausea.
-  firstHerbId: herb.ginger
-  secondHerbId: herb.cayennePepper
+  - Exhaustion, blocked airways, and nausea overwhelm me.
+  - Bring the bright red pepper.
+  - Add the twisted, tough root with strong flavor.
+  - My lungs are strong, without asthma, wounds, or ulcers.
+  firstHerbId: herb.cayennePepper
+  secondHerbId: herb.ginger

@@ -15,9 +15,10 @@ MonoBehaviour:
   stableId: order.mid.s11
   difficulty: 1
   orderBubbles:
-  - Something to help me relax, please.
-  - I have a mild chest cough and a racing heart.
-  - My healer's notes prescribe Matricaria chamomilla for the cough,
-  - and Valeriana officianalis for my racing heart.
-  firstHerbId: herb.chamomile
-  secondHerbId: herb.valerian
+  - Anxiety makes my heart race and prevents deep sleep.
+  - A serious injury has left me distressed and restless.
+  - Frightening dreams do not usually scare me.
+  - I do not need to remain awake or alert.
+  - Find a strong, earthy root and complex, unusual flower.
+  firstHerbId: herb.valerian
+  secondHerbId: herb.passionFlower

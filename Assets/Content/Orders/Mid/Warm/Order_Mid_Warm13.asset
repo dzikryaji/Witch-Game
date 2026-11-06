@@ -15,11 +15,9 @@ MonoBehaviour:
   stableId: order.mid.w13
   difficulty: 1
   orderBubbles:
-  - Good day.
-  - I've barely eaten in two days
-  - because of this terrible nausea,
-  - and now I'm shivering uncontrollably.
-  - I need that twisted, strong-flavoured root called ginger,
-  - and the dried buds a spice merchant calls Syzygium aromaticum.
+  - Nausea accompanies muscles drained by deep fatigue.
+  - Bring the twisted, tough root with strong flavor.
+  - Add the spicy, sweet tree bark.
+  - I have no fever, wounds, or bleeding ulcers.
   firstHerbId: herb.ginger
-  secondHerbId: herb.clove
+  secondHerbId: herb.cinnamon
