@@ -15,9 +15,9 @@ MonoBehaviour:
   stableId: order.mid.w15
   difficulty: 1
   orderBubbles:
-  - Weakness has drained nearly all my energy.
-  - My appetite has vanished too.
-  - A travelling physician prescribed Capsicum annuum for weakness.
-  - They added ginger for my appetite.
-  firstHerbId: herb.cayennePepper
-  secondHerbId: herb.ginger
+  - Exhausted muscles leave me sluggish with blocked airways.
+  - Bring the spicy, sweet tree bark.
+  - Add the bright red pepper.
+  - I have no fever, asthma, or chest wounds.
+  firstHerbId: herb.cinnamon
+  secondHerbId: herb.cayennePepper

@@ -15,10 +15,10 @@ MonoBehaviour:
   stableId: order.mid.c15
   difficulty: 1
   orderBubbles:
-  - I was bitten by something poisonous
-  - while working in the fields.
-  - My body feels feverish, and my muscles ache terribly.
-  - A field healer prescribed blue-flowered Borago officinalis for the poison,
-  - and White Willow bark for the muscle pain.
-  firstHerbId: herb.borage
+  - "Persistent fever swells my husband\u2019s knees."
+  - His joints and muscles ache with every step.
+  - Bring the delicate white flowers brewed into light tea.
+  - Add the tough strip of bark.
+  - He drinks freely and breathes strongly.
+  firstHerbId: herb.elderflower
   secondHerbId: herb.whiteWillow

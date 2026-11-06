@@ -15,10 +15,9 @@ MonoBehaviour:
   stableId: order.mid.w02
   difficulty: 1
   orderBubbles:
-  - Sea travel caused nausea, while cold wind numbed my mouth.
-  - I cannot keep food down or feel my teeth.
-  - My heart is steady, without wounds or bleeding ulcers.
-  - "The ship\u2019s cook prescribed Syzygium aromaticum for numbness."
-  - His recipe pairs it with Ginger for seasickness.
-  firstHerbId: herb.clove
-  secondHerbId: herb.ginger
+  - Fever passed, but appetite vanished and my mouth numbed.
+  - Bring the twisted, tough root with strong flavor.
+  - Add the tiny, dried bud.
+  - My heartbeat is steady, without wounds or ulcers.
+  firstHerbId: herb.ginger
+  secondHerbId: herb.clove

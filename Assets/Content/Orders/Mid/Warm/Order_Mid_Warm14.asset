@@ -15,9 +15,9 @@ MonoBehaviour:
   stableId: order.mid.w14
   difficulty: 1
   orderBubbles:
-  - My chest is heavy with mucus.
-  - These dreadful chills have kept me awake all night.
-  - A healer prescribed Sinapis alba for chills and mucus.
-  - They paired it with Cinnamon for added warmth.
-  firstHerbId: herb.cinnamon
+  - Numb teeth accompany severe chills and chest mucus.
+  - Bring the tiny, dried bud.
+  - Add the small, rough yellow seeds.
+  - My heartbeat is steady, and my skin is unbroken.
+  firstHerbId: herb.clove
   secondHerbId: herb.mustardSeed

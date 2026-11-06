@@ -15,11 +15,9 @@ MonoBehaviour:
   stableId: order.mid.cl17
   difficulty: 1
   orderBubbles:
-  - My brother overate at the harvest feast.
-  - His stomach is bloated, heavy, and blocked.
-  - His body also retains too much water.
-  - He drinks freely, and no pregnant patient is involved.
-  - My notes prescribe Taraxacum officinale for excess water.
-  - They add Foeniculum vulgare for blocked digestion.
-  firstHerbId: herb.dandelion
-  secondHerbId: herb.fennel
+  - Too many dishes slowed digestion and caused bloating.
+  - I retain excess water despite drinking freely.
+  - Bring the feathery fronds with ridged seeds.
+  - Add the yellow flower with sharp-edged leaves.
+  firstHerbId: herb.fennel
+  secondHerbId: herb.dandelion

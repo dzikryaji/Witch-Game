@@ -15,10 +15,10 @@ MonoBehaviour:
   stableId: order.mid.s04
   difficulty: 1
   orderBubbles:
-  - I need something to settle me down.
-  - "I can\u2019t stop coughing in fits,"
-  - and I have muscle cramps in my ribs.
-  - My midwife prescribed Matricaria chamomilla for the cramps,
-  - and Atropa belladonna for the coughing fits.
+  - My nerves feel unsettled, and my muscles keep cramping.
+  - Intense headaches sometimes bring panic attacks.
+  - No pollen or spring-flower allergies trouble me.
+  - I have no dizziness, faintness, or blood-loss weakness.
+  - Find small, fragrant flowers beside a sweet-smelling purple stem.
   firstHerbId: herb.chamomile
-  secondHerbId: herb.belladonnaBerry
+  secondHerbId: herb.lavender

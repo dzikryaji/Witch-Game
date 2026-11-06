@@ -15,10 +15,9 @@ MonoBehaviour:
   stableId: order.mid.m12
   difficulty: 1
   orderBubbles:
-  - I fell while working in the fields
-  - and hurt my arm rather badly.
-  - There's a nasty cut, and the bone feels injured too.
-  - A field healer prescribed Symphytum officinale for the injured bone,
-  - and Achillea millefolium for the bleeding cut.
-  firstHerbId: herb.comfrey
-  secondHerbId: herb.yarrow
+  - My palm bleeds heavily, and my ankle keeps buckling.
+  - Bring the thick, flat weed.
+  - Add the bright yellow flower.
+  - My circulation and lungs remain strong.
+  firstHerbId: herb.plantainLeaf
+  secondHerbId: herb.arnicaFlower

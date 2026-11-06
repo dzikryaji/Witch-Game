@@ -15,9 +15,9 @@ MonoBehaviour:
   stableId: order.mid.m19
   difficulty: 1
   orderBubbles:
-  - Chopping wood drove a deep splinter into my palm.
-  - Removing it left several bleeding scratches.
-  - A woodcutter prescribed Pix resina for the splinter.
-  - They added Plantain Leaf for the bleeding scratches.
-  firstHerbId: herb.pineResin
-  secondHerbId: herb.plantainLeaf
+  - Rusty fencing cut me, while a thorn remains buried.
+  - Bring the feathery leaves with flat white flowers.
+  - Add the thick, golden resin.
+  - My heartbeat remains strong, and I have no fever.
+  firstHerbId: herb.yarrow
+  secondHerbId: herb.pineResin
