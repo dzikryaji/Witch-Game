@@ -17,10 +17,10 @@ namespace Witch.Presentation.Rewind
         [SerializeField]
         private ColumnRule[] columnRules =
         {
-            new ColumnRule { cardCount = 6, columns = 3 },    // 3:3
-            new ColumnRule { cardCount = 8, columns = 4 },    // 4:4
-            new ColumnRule { cardCount = 12, columns = 6 },   // 6:6
-            new ColumnRule { cardCount = 16, columns = 8 },   // 8:8
+            new ColumnRule { cardCount = 6, columns = 3 }, 
+            new ColumnRule { cardCount = 8, columns = 4 },  
+            new ColumnRule { cardCount = 12, columns = 6 },  
+            new ColumnRule { cardCount = 16, columns = 8 },  
         };
         [SerializeField] private Vector2 spacing = new Vector2(14f, 14f);
         [SerializeField, Range(0.4f, 1f)] private float cardAspect = 5f / 7f;   // width / height
@@ -60,7 +60,7 @@ namespace Witch.Presentation.Rewind
             {
                 if (rule.cardCount == cardCount) return rule.columns;
             }
-            return Mathf.Max(3, Mathf.CeilToInt(cardCount / 3f));   // fallback: three rows
+            return Mathf.CeilToInt(cardCount / 2f); // fallback: two rows
         }
 
         // Re-fit if the window or canvas size changes.
