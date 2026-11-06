@@ -102,16 +102,6 @@ namespace Witch.Bootstrap
         /// <summary>Contents page first (unlocked categories, in unlock order), then one page per unlocked herb.</summary>
         private List<GuidebookPageViewData> CreateGuidebookPages(GameSession session)
         {
-            var categoryLabels = new Dictionary<string, string>(StringComparer.Ordinal);
-            foreach (GuidebookContentsItemContent item in content.GuidebookEntriesById.Values
-                         .SelectMany(entry => entry.ContentsItems))
-            {
-                if (!string.IsNullOrEmpty(item.CategoryId) && !categoryLabels.ContainsKey(item.CategoryId))
-                {
-                    categoryLabels.Add(item.CategoryId, item.Name);
-                }
-            }
-
             // Herb pages come right after the Contents page (index 0), in guidebook order.
             List<HerbContent> herbPages = session.RunState.UnlockedHerbIds
                 .Select(herbId => content.HerbsById[herbId])
@@ -128,16 +118,12 @@ namespace Witch.Bootstrap
             }
 
             var rows = new List<GuidebookContentsRow>();
-            var unlockedCategories = new HashSet<string>(session.RunState.UnlockedCategoryIds, StringComparer.Ordinal);
-            foreach (GuidebookEntryContent entry in content.GuidebookEntriesById.Values
-                         .Where(value => value.ContentsItems.Any(item => unlockedCategories.Contains(item.CategoryId)))
-                         .OrderBy(value => value.Title, StringComparer.Ordinal))
+            foreach (string categoryId in session.RunState.UnlockedCategoryIds)
             {
-                foreach (GuidebookContentsItemContent item in entry.ContentsItems
-                             .Where(item => unlockedCategories.Contains(item.CategoryId)))
+                if (content.HerbCategoriesById.TryGetValue(categoryId, out HerbCategoryContent category))
                 {
-                    int target = firstPageOfCategory.TryGetValue(item.CategoryId ?? string.Empty, out int page) ? page : -1;
-                    rows.Add(new GuidebookContentsRow(item.Name, item.Description, target));
+                    int target = firstPageOfCategory.TryGetValue(categoryId, out int page) ? page : -1;
+                    rows.Add(new GuidebookContentsRow(category.DisplayName, category.Description, target));
                 }
             }
 
@@ -148,8 +134,11 @@ namespace Witch.Bootstrap
 
             foreach (HerbContent herb in herbPages)
             {
-                string categoryLabel = null;
-                if (!string.IsNullOrEmpty(herb.CategoryId)) categoryLabels.TryGetValue(herb.CategoryId, out categoryLabel);
+                string categoryLabel = content.HerbCategoriesById.TryGetValue(
+                    herb.CategoryId,
+                    out HerbCategoryContent category)
+                    ? category.DisplayName
+                    : null;
                 pages.Add(GuidebookPageViewData.Herb(
                     pages.Count + 1,
                     herb.DisplayName,

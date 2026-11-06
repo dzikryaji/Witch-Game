@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f5f76fe6c3f7d450e98c5e1ef5f66046, type: 3}
+  m_Name: Order_Mid_Cool15
+  m_EditorClassIdentifier: Witch.Infrastructure::Witch.Infrastructure.Content.OrderDefinition
+  stableId: order.mid.c15
+  difficulty: 1
+  orderBubbles:
+  - I was bitten by something poisonous
+  - while working in the fields.
+  - My body feels feverish, and my muscles ache terribly.
+  - A field healer prescribed blue-flowered Borago officinalis for the poison,
+  - and White Willow bark for the muscle pain.
+  firstHerbId: herb.borage
+  secondHerbId: herb.whiteWillow

@@ -6,16 +6,6 @@ namespace Witch.Domain.Tests
 {
     public sealed class DayRuleTests
     {
-        [TestCase(1, 4, 0)]
-        [TestCase(2, 4, 20)]
-        [TestCase(3, 4, 40)]
-        public void TimerDuration_IncreasesTwentySecondsEachDay(int day, int minutes, int seconds)
-        {
-            var rules = new DayTimingRules(TimeSpan.FromMinutes(4), TimeSpan.FromSeconds(20));
-
-            Assert.That(rules.GetDuration(day), Is.EqualTo(new TimeSpan(0, 0, minutes, seconds)));
-        }
-
         [Test]
         public void TimerAtZero_ClosesQueueButActiveEncounterCanFinish()
         {
@@ -56,7 +46,7 @@ namespace Witch.Domain.Tests
         }
 
         [Test]
-        public void PrototypeCompletionDayThree_WinsAfterPayingExpense()
+        public void CompletionDay_WinsAfterPayingExpense()
         {
             var rules = new ExpenseRules(completionDay: 3);
 

@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f5f76fe6c3f7d450e98c5e1ef5f66046, type: 3}
+  m_Name: Order_Mid_Cleanse18
+  m_EditorClassIdentifier: Witch.Infrastructure::Witch.Infrastructure.Content.OrderDefinition
+  stableId: order.mid.cl18
+  difficulty: 1
+  orderBubbles:
+  - Wild mushrooms and salted meat made my husband ill.
+  - Poison fills his stomach, while dirty blood leaves him sluggish.
+  - He is a resting miller, not a guard on duty.
+  - He has no acid illness or throat ulcers.
+  - Herbalists prescribe Helleborus niger for swallowed poison.
+  - They add Burdock Root to cleanse his blood.
+  firstHerbId: herb.blackHellebore
+  secondHerbId: herb.burdockRoot

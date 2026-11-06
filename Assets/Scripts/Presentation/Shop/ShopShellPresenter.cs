@@ -929,7 +929,8 @@ namespace Witch.Presentation.Shop
             }
             else
             {
-                progressionText.text = "THREE DAYS COMPLETE\nYou survived the current prototype.\nThe full game is planned for 14 days.";
+                progressionText.text = ActiveSession.RunState.CurrentDayNumber
+                    + " DAYS COMPLETE\nYou survived the current prototype.\nThe full game is planned for 14 days.";
             }
         }
 

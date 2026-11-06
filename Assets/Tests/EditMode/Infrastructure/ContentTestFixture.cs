@@ -27,27 +27,25 @@ namespace Witch.Infrastructure.Tests
                 240,
                 new[] { customer.StableId },
                 new[] { "category.warm" });
-            GuidebookEntryDefinition guidebook = DefinitionFactory.Guidebook(
-                "guidebook.warm",
-                "Warm Herbs",
-                "category.warm");
+            HerbCategoryDefinition category = DefinitionFactory.Category(
+                "category.warm",
+                "Warming",
+                "Herbs that bring heat back to the body.");
             RewindDifficultyDefinition difficulty = DefinitionFactory.Difficulty("rewind.difficulty.default", 3, 3);
-            RunConfigurationDefinition run = DefinitionFactory.RunConfiguration(0, 1, 1);
             var catalog = ScriptableObject.CreateInstance<GameContentCatalogDefinition>();
             catalog.Configure(
                 new[] { ginger, mint },
                 new[] { direct, visual },
                 new[] { customer },
                 new[] { day },
-                new[] { guidebook },
+                new[] { category },
                 new[]
                 {
                     DefinitionFactory.Card("rewind.card.moon", "moon"),
                     DefinitionFactory.Card("rewind.card.star", "star"),
                     DefinitionFactory.Card("rewind.card.eye", "eye")
                 },
-                difficulty,
-                run);
+                difficulty);
             return catalog;
         }
     }
@@ -88,14 +86,13 @@ namespace Witch.Infrastructure.Tests
             return value;
         }
 
-        public static GuidebookEntryDefinition Guidebook(
+        public static HerbCategoryDefinition Category(
             string id,
-            string title,
-            string category)
+            string displayName,
+            string description)
         {
-            var value = ScriptableObject.CreateInstance<GuidebookEntryDefinition>();
-            value.Configure(id, title, category);
-            value.ConfigureContents(GuidebookContentsItemDefinition.Create(category, title, title));
+            var value = ScriptableObject.CreateInstance<HerbCategoryDefinition>();
+            value.Configure(id, displayName, description);
             return value;
         }
 
@@ -113,11 +110,5 @@ namespace Witch.Infrastructure.Tests
             return value;
         }
 
-        public static RunConfigurationDefinition RunConfiguration(int money, int saveVersion, int firstDay)
-        {
-            var value = ScriptableObject.CreateInstance<RunConfigurationDefinition>();
-            value.Configure("run.default", money, saveVersion, firstDay, 20);
-            return value;
-        }
     }
 }

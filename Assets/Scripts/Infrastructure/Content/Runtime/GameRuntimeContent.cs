@@ -14,7 +14,7 @@ namespace Witch.Infrastructure.Content
             IDictionary<string, OrderContent> ordersById,
             IDictionary<string, CustomerContent> customersById,
             IDictionary<int, DayContent> daysByNumber,
-            IDictionary<string, GuidebookEntryContent> guidebookEntriesById,
+            IDictionary<string, HerbCategoryContent> herbCategoriesById,
             IReadOnlyList<RewindCardContent> rewindCards,
             RewindDifficultyContent rewindDifficulty,
             NewRunSetup newRunSetup,
@@ -30,8 +30,8 @@ namespace Witch.Infrastructure.Content
                 new Dictionary<string, CustomerContent>(customersById));
             DaysByNumber = new ReadOnlyDictionary<int, DayContent>(
                 new Dictionary<int, DayContent>(daysByNumber));
-            GuidebookEntriesById = new ReadOnlyDictionary<string, GuidebookEntryContent>(
-                new Dictionary<string, GuidebookEntryContent>(guidebookEntriesById));
+            HerbCategoriesById = new ReadOnlyDictionary<string, HerbCategoryContent>(
+                new Dictionary<string, HerbCategoryContent>(herbCategoriesById));
             RewindCards = new List<RewindCardContent>(rewindCards).AsReadOnly();
             RewindDifficulty = rewindDifficulty;
             NewRunSetup = newRunSetup;
@@ -44,7 +44,7 @@ namespace Witch.Infrastructure.Content
         public IReadOnlyDictionary<string, OrderContent> OrdersById { get; }
         public IReadOnlyDictionary<string, CustomerContent> CustomersById { get; }
         public IReadOnlyDictionary<int, DayContent> DaysByNumber { get; }
-        public IReadOnlyDictionary<string, GuidebookEntryContent> GuidebookEntriesById { get; }
+        public IReadOnlyDictionary<string, HerbCategoryContent> HerbCategoriesById { get; }
         public IReadOnlyList<RewindCardContent> RewindCards { get; }
         public IReadOnlyList<string> RewindCardIds
         {

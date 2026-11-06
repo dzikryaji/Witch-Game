@@ -5,6 +5,7 @@ using Witch.Application.Flow;
 using Witch.Domain.Orders;
 using Witch.Domain.Potions;
 using Witch.Domain.Progression;
+using Witch.Infrastructure.Persistence;
 
 namespace Witch.Infrastructure.Content
 {
@@ -66,17 +67,12 @@ namespace Witch.Infrastructure.Content
                     definition.UnlockedCategoryIds,
                     definition.OrderDifficulties,
                     definition.CustomerIds));
-            var guidebook = catalog.GuidebookEntries.ToDictionary(
+            var categories = catalog.HerbCategories.ToDictionary(
                 definition => definition.StableId,
-                definition => new GuidebookEntryContent(
+                definition => new HerbCategoryContent(
                     definition.StableId,
-                    definition.Title,
-                    definition.CategoryId,
-                    definition.BodyText,
-                    definition.ContentsItems
-                        .Where(item => item != null)
-                        .Select(item => new GuidebookContentsItemContent(item.CategoryId, item.Name, item.Description))
-                        .ToList()),
+                    definition.DisplayName,
+                    definition.Description),
                 StringComparer.Ordinal);
             var cards = catalog.RewindCards.Select(definition =>
                 new RewindCardContent(definition.StableId, definition.SymbolKey)).ToList();
@@ -85,7 +81,8 @@ namespace Witch.Infrastructure.Content
                 catalog.RewindDifficulty.StartingPairCount,
                 catalog.RewindDifficulty.MaximumPairCount);
 
-            int firstDayNumber = catalog.RunConfiguration.FirstDay;
+            int firstDayNumber = days.Keys.Min();
+            int completionDay = days.Keys.Max();
             DayContent firstDay = days[firstDayNumber];
             string[] categoryIds = days.Values
                 .Where(value => value.DayNumber <= firstDayNumber)
@@ -97,21 +94,18 @@ namespace Witch.Infrastructure.Content
                 .Select(value => value.StableId)
                 .ToArray();
             var newRun = new NewRunSetup(
-                catalog.RunConfiguration.StartingMoney,
+                catalog.StartingMoney,
                 categoryIds,
                 herbIds,
                 Array.Empty<string>(),
                 firstDay.TimerDuration,
-                catalog.RunConfiguration.ExpenseIdPrefix + firstDayNumber,
+                "expense.day." + firstDayNumber,
                 firstDay.DailyExpense,
-                catalog.RunConfiguration.SaveVersion);
+                JsonRunRepository.CurrentSaveVersion);
             var dayProgression = new DayProgressionSetup(
-                new DayTimingRules(
-                    firstDay.TimerDuration,
-                    TimeSpan.FromSeconds(catalog.RunConfiguration.DailyTimerIncreaseSeconds)),
+                days.ToDictionary(value => value.Key, value => value.Value.TimerDuration),
                 days.ToDictionary(value => value.Key, value => value.Value.DailyExpense),
-                catalog.RunConfiguration.ExpenseIdPrefix,
-                catalog.RunConfiguration.SaveVersion,
+                JsonRunRepository.CurrentSaveVersion,
                 days.Values
                     .Where(value => value.UnlockedCategoryIds.Count > 0)
                     .Select(value => new DayUnlockSet(
@@ -128,13 +122,13 @@ namespace Witch.Infrastructure.Content
                 orders,
                 customers,
                 days,
-                guidebook,
+                categories,
                 cards,
                 difficulty,
                 newRun,
                 dayProgression,
-                new ExpenseRules(catalog.RunConfiguration.CompletionDay),
-                catalog.RunConfiguration.CorrectOrderPayment));
+                new ExpenseRules(completionDay),
+                catalog.CorrectOrderPayment));
         }
     }
 }
