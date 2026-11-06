@@ -306,14 +306,6 @@ MonoBehaviour:
   - {fileID: 1176608037}
   - {fileID: 1095341172}
   - {fileID: 1664039634}
-  - {fileID: 1664039634}
-  - {fileID: 1664039634}
-  - {fileID: 1664039634}
-  - {fileID: 1664039634}
-  - {fileID: 1664039634}
-  - {fileID: 1664039634}
-  - {fileID: 1664039634}
-  - {fileID: 1664039634}
   boardLayout: {fileID: 1245532827}
 --- !u!4 &827382019
 Transform:
@@ -1166,11 +1158,11 @@ MonoBehaviour:
   columnRules:
   - cardCount: 6
     columns: 3
-  - cardCount: 12
+  - cardCount: 8
     columns: 4
-  - cardCount: 18
+  - cardCount: 12
     columns: 6
-  - cardCount: 24
+  - cardCount: 16
     columns: 8
   spacing: {x: 14, y: 14}
   cardAspect: 0.71428573
