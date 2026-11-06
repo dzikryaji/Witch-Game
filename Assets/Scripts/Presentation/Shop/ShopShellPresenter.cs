@@ -41,8 +41,6 @@ namespace Witch.Presentation.Shop
         [SerializeField] private GuidebookPageView guidebookFlipBack;
         [Tooltip("Optional. Jumps back to the Contents spread; hidden while the Contents spread is open.")]
         [SerializeField] private Button guidebookContentsButton;
-        [SerializeField] private Text guidebookPageNumberText;
-        [SerializeField] private Text guidebookLeftPageNumberText;
         [SerializeField] private Text grinderInputText;
         [SerializeField] private GameObject groundHerbObject;
         [SerializeField] private Text groundHerbText;
@@ -124,8 +122,6 @@ namespace Witch.Presentation.Shop
             && guidebookLeftPage.IsAuthored
             && guidebookRightPage != null
             && guidebookRightPage.IsAuthored
-            && guidebookPageNumberText != null
-            && guidebookLeftPageNumberText != null
             && grinderInputText != null
             && groundHerbObject != null
             && groundHerbText != null
@@ -505,8 +501,8 @@ namespace Witch.Presentation.Shop
         {
             if (guidebookPages.Count == 0 || GuidebookTurning) return;
             int spread = guidebookPageIndex / 2;
-            spread = (spread - 1 + guidebookSpreadCount) % guidebookSpreadCount;
-            TurnGuidebookTo(spread * 2, FlipDirection.Backward);
+            if (spread <= 0) return; // already on the first spread
+            TurnGuidebookTo((spread - 1) * 2, FlipDirection.Backward);
             audioService?.Play(GameAudioCueIds.GuidebookClose);
         }
 
@@ -514,8 +510,8 @@ namespace Witch.Presentation.Shop
         {
             if (guidebookPages.Count == 0 || GuidebookTurning) return;
             int spread = guidebookPageIndex / 2;
-            spread = (spread + 1) % guidebookSpreadCount;
-            TurnGuidebookTo(spread * 2, FlipDirection.Forward);
+            if (spread + 1 >= guidebookSpreadCount) return; // already on the last spread
+            TurnGuidebookTo((spread + 1) * 2, FlipDirection.Forward);
             audioService?.Play(GameAudioCueIds.GuidebookOpen);
         }
 
@@ -559,19 +555,20 @@ namespace Witch.Presentation.Shop
                 return;
             }
 
-            SetGuidebookContentsButtonVisible(false); // it does not turn with the page; bring it back on landing
+            SetGuidebookContentsButtonVisible(targetLeftIndex > 0); // sits outside the pages, so it stays put while they turn
+            UpdateGuidebookNavigation();
             // Everything is rendered in the same frame as Play, so nothing flashes.
             if (direction == FlipDirection.Forward)
             {
-                guidebookFlipFront.Render(PageAt(currentLeftIndex + 1), GuidebookPageSide.Right); // front of the turning page
-                guidebookFlipBack.Render(PageAt(targetLeftIndex), GuidebookPageSide.Left);         // its back = new left page
-                guidebookRightPage.Render(PageAt(targetLeftIndex + 1), GuidebookPageSide.Right);   // revealed underneath
+                RenderGuidebookSide(guidebookFlipFront, currentLeftIndex + 1, GuidebookPageSide.Right); // front of the turning page
+                RenderGuidebookSide(guidebookFlipBack, targetLeftIndex, GuidebookPageSide.Left);         // its back = new left page
+                RenderGuidebookSide(guidebookRightPage, targetLeftIndex + 1, GuidebookPageSide.Right);   // revealed underneath
             }
             else
             {
-                guidebookFlipFront.Render(PageAt(currentLeftIndex), GuidebookPageSide.Left);
-                guidebookFlipBack.Render(PageAt(targetLeftIndex + 1), GuidebookPageSide.Right);
-                guidebookLeftPage.Render(PageAt(targetLeftIndex), GuidebookPageSide.Left);
+                RenderGuidebookSide(guidebookFlipFront, currentLeftIndex, GuidebookPageSide.Left);
+                RenderGuidebookSide(guidebookFlipBack, targetLeftIndex + 1, GuidebookPageSide.Right);
+                RenderGuidebookSide(guidebookLeftPage, targetLeftIndex, GuidebookPageSide.Left);
             }
 
             if (!guidebookFlipAnimator.Play(direction, RenderGuidebookPage)) RenderGuidebookPage();
@@ -1003,13 +1000,26 @@ namespace Witch.Presentation.Shop
             int leftIndex = guidebookPageIndex - (guidebookPageIndex % 2);
             int rightIndex = leftIndex + 1;
 
-            guidebookLeftPage.Render(PageAt(leftIndex), GuidebookPageSide.Left);
-            guidebookRightPage.Render(PageAt(rightIndex), GuidebookPageSide.Right);
+            RenderGuidebookSide(guidebookLeftPage, leftIndex, GuidebookPageSide.Left);
+            RenderGuidebookSide(guidebookRightPage, rightIndex, GuidebookPageSide.Right);
 
-            // Left page = odd numbers, right page = even numbers, each out of the total.
-            guidebookLeftPageNumberText.text = PageNumberLabel(leftIndex);
-            guidebookPageNumberText.text = PageNumberLabel(rightIndex);
             SetGuidebookContentsButtonVisible(leftIndex > 0);
+            UpdateGuidebookNavigation();
+        }
+
+        /// <summary>Renders one side of the book together with its page number (left = odd, right = even).</summary>
+        private void RenderGuidebookSide(GuidebookPageView view, int index, GuidebookPageSide side)
+        {
+            view.Render(PageAt(index), side);
+            view.SetPageNumber(PageNumberLabel(index));
+        }
+
+        /// <summary>Hides Previous on the first spread and Next on the last spread.</summary>
+        private void UpdateGuidebookNavigation()
+        {
+            int leftIndex = guidebookPageIndex - (guidebookPageIndex % 2);
+            guidebookPreviousButton.gameObject.SetActive(leftIndex > 0);
+            guidebookNextButton.gameObject.SetActive(leftIndex + 2 < guidebookPages.Count);
         }
 
         private void SetGuidebookContentsButtonVisible(bool visible)
