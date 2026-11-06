@@ -106,41 +106,20 @@ namespace Witch.Infrastructure.Content
         public IReadOnlyList<string> CustomerIds { get; }
     }
 
-    public sealed class GuidebookEntryContent
+    public sealed class HerbCategoryContent
     {
-        public GuidebookEntryContent(
+        public HerbCategoryContent(
             string stableId,
-            string title,
-            string categoryId,
-            string bodyText = "",
-            IReadOnlyList<GuidebookContentsItemContent> contentsItems = null)
+            string displayName,
+            string description)
         {
             StableId = stableId;
-            Title = title;
-            CategoryId = categoryId;
-            BodyText = bodyText ?? string.Empty;
-            ContentsItems = new List<GuidebookContentsItemContent>(
-                contentsItems ?? Array.Empty<GuidebookContentsItemContent>()).AsReadOnly();
-        }
-
-        public string StableId { get; }
-        public string Title { get; }
-        public string CategoryId { get; }
-        public string BodyText { get; }
-        public IReadOnlyList<GuidebookContentsItemContent> ContentsItems { get; }
-    }
-
-    public sealed class GuidebookContentsItemContent
-    {
-        public GuidebookContentsItemContent(string categoryId, string name, string description)
-        {
-            CategoryId = categoryId ?? string.Empty;
-            Name = name ?? string.Empty;
+            DisplayName = displayName ?? string.Empty;
             Description = description ?? string.Empty;
         }
 
-        public string CategoryId { get; }
-        public string Name { get; }
+        public string StableId { get; }
+        public string DisplayName { get; }
         public string Description { get; }
     }
 

@@ -11,39 +11,43 @@ namespace Witch.Infrastructure.Content
         [SerializeField] private OrderDefinition[] orders = Array.Empty<OrderDefinition>();
         [SerializeField] private CustomerDefinition[] customers = Array.Empty<CustomerDefinition>();
         [SerializeField] private DayDefinition[] days = Array.Empty<DayDefinition>();
-        [SerializeField] private GuidebookEntryDefinition[] guidebookEntries = Array.Empty<GuidebookEntryDefinition>();
+        [SerializeField] private HerbCategoryDefinition[] herbCategories = Array.Empty<HerbCategoryDefinition>();
         [SerializeField] private RewindCardDefinition[] rewindCards = Array.Empty<RewindCardDefinition>();
         [SerializeField] private RewindDifficultyDefinition rewindDifficulty;
-        [SerializeField] private RunConfigurationDefinition runConfiguration;
+        [SerializeField, Min(0)] private int startingMoney;
+        [SerializeField, Min(0)] private int correctOrderPayment = 10;
 
         public IReadOnlyList<HerbDefinition> Herbs => herbs;
         public IReadOnlyList<OrderDefinition> Orders => orders;
         public IReadOnlyList<CustomerDefinition> Customers => customers;
         public IReadOnlyList<DayDefinition> Days => days;
-        public IReadOnlyList<GuidebookEntryDefinition> GuidebookEntries => guidebookEntries;
+        public IReadOnlyList<HerbCategoryDefinition> HerbCategories => herbCategories;
         public IReadOnlyList<RewindCardDefinition> RewindCards => rewindCards;
         public RewindDifficultyDefinition RewindDifficulty => rewindDifficulty;
-        public RunConfigurationDefinition RunConfiguration => runConfiguration;
+        public int StartingMoney => startingMoney;
+        public int CorrectOrderPayment => correctOrderPayment;
 
         public void Configure(
             IReadOnlyList<HerbDefinition> herbValues,
             IReadOnlyList<OrderDefinition> orderValues,
             IReadOnlyList<CustomerDefinition> customerValues,
             IReadOnlyList<DayDefinition> dayValues,
-            IReadOnlyList<GuidebookEntryDefinition> guidebookValues,
+            IReadOnlyList<HerbCategoryDefinition> categoryValues,
             IReadOnlyList<RewindCardDefinition> cardValues,
             RewindDifficultyDefinition difficulty,
-            RunConfigurationDefinition run)
+            int initialMoney = 0,
+            int orderPayment = 10)
         {
             SetStableId("catalog.game");
             herbs = Copy(herbValues);
             orders = Copy(orderValues);
             customers = Copy(customerValues);
             days = Copy(dayValues);
-            guidebookEntries = Copy(guidebookValues);
+            herbCategories = Copy(categoryValues);
             rewindCards = Copy(cardValues);
             rewindDifficulty = difficulty;
-            runConfiguration = run;
+            startingMoney = initialMoney;
+            correctOrderPayment = orderPayment;
         }
 
         [ContextMenu("Validate Game Content")]

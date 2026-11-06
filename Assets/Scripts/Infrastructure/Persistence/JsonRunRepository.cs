@@ -14,6 +14,7 @@ namespace Witch.Infrastructure.Persistence
     public sealed class JsonRunRepository : ISaveRepository
     {
         public const string CurrentRunFileName = "current-run.json";
+        public const int CurrentSaveVersion = 1;
 
         private readonly string primaryPath;
         private readonly string previousPath;
