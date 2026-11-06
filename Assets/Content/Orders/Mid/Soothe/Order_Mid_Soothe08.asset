@@ -15,10 +15,10 @@ MonoBehaviour:
   stableId: order.mid.s08
   difficulty: 1
   orderBubbles:
-  - Something soothing, please.
-  - I keep having panic attacks,
-  - and I crushed my hand badly in the loom.
-  - The loom mistress's remedy book prescribes Lavandula for panic,
-  - and Passiflora for my crushed hand.
-  firstHerbId: herb.lavender
-  secondHerbId: herb.passionFlower
+  - A mild chest cough keeps returning throughout the day.
+  - My muscles cramp, and my nerves feel restless.
+  - No pollen or spring-flower allergies affect me.
+  - My throat is not swollen, and I can swallow.
+  - Find small, fragrant flowers and a dark, sweet-tasting nightshade berry.
+  firstHerbId: herb.chamomile
+  secondHerbId: herb.belladonnaBerry

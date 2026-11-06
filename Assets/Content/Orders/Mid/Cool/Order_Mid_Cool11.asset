@@ -15,11 +15,10 @@ MonoBehaviour:
   stableId: order.mid.c11
   difficulty: 1
   orderBubbles:
-  - A long illness gave my nephew fever and swelling.
-  - Now violent fits keep him from holding a spoon.
-  - He drinks freely, with healthy kidneys and heart.
-  - The priory book prescribes Sambucus nigra for fever.
-  - It adds Hyoscyamus niger for the violent fits.
-  - The Bells have paid for enough hymns already.
-  firstHerbId: herb.elderflower
-  secondHerbId: herb.henbane
+  - "Winter sickness blocked my wife\u2019s sinuses and caused fever."
+  - Swelling now makes her fingers painfully stiff.
+  - I need the sharp-smelling, dark green leaf.
+  - And the delicate white flowers suited for light tea.
+  - She drinks plenty, and reflux never troubles her.
+  firstHerbId: herb.peppermint
+  secondHerbId: herb.elderflower

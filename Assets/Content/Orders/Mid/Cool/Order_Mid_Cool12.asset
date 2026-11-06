@@ -15,14 +15,10 @@ MonoBehaviour:
   stableId: order.mid.c12
   difficulty: 1
   orderBubbles:
-  - My husband pulled every muscle fighting a broken oven door,
-  - then scraped his arm on a filthy hinge.
-  - Now the pain is severe
-  - and heat is spreading from the cut.
-  - His lungs are strong, he has no asthma,
-  - and he is sweating rather than cold.
-  - Joan's notes recommend Salix alba for the pain
-  - and Borago officinalis when infection may enter the blood.
-  - Brew both. The oven has already won enough.
-  firstHerbId: herb.whiteWillow
-  secondHerbId: herb.borage
+  - "Mill dust blocked my father\u2019s nose and caused headaches."
+  - Heavy lifting leaves his joints and muscles sore.
+  - Choose the dark green leaf with a sharp smell.
+  - Add the tough bark strip.
+  - His stomach and lungs remain sound.
+  firstHerbId: herb.peppermint
+  secondHerbId: herb.whiteWillow

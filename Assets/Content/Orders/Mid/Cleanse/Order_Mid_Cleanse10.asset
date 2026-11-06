@@ -15,11 +15,10 @@ MonoBehaviour:
   stableId: order.mid.cl10
   difficulty: 1
   orderBubbles:
-  - Wild mushrooms and salted meat made my husband ill.
-  - Poison fills his stomach, while dirty blood leaves him sluggish.
-  - He is a resting miller, not a guard on duty.
-  - He has no acid illness or throat ulcers.
-  - Herbalists prescribe Helleborus niger for swallowed poison.
-  - They add Burdock Root to cleanse his blood.
-  firstHerbId: herb.blackHellebore
-  secondHerbId: herb.burdockRoot
+  - Travel meals left my digestion heavy and body bloated.
+  - I need blockage eased and excess water released.
+  - Bring the feathery, lace-like fronds with ridged seeds.
+  - Add the sharp-edged leaf with a yellow flower.
+  - I drink plenty of water.
+  firstHerbId: herb.fennel
+  secondHerbId: herb.dandelion

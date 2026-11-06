@@ -15,11 +15,10 @@ MonoBehaviour:
   stableId: order.mid.s07
   difficulty: 1
   orderBubbles:
-  - I need something to quiet things down.
-  - "I cough in fits that won\u2019t stop,"
-  - and I have anxiety.
-  - I need to sleep deeply.
-  - The priory healer prescribed Valeriana officianalis for sleep and anxiety,
-  - and Atropa belladonna for the coughing fits.
-  firstHerbId: herb.valerian
+  - Muscle cramps and continuous coughing fits bother me.
+  - My nerves also feel unsettled.
+  - I have no pollen or spring-flower allergies.
+  - My throat is not swollen, and I can swallow.
+  - Find small, fragrant flowers and a dark, sweet-tasting nightshade berry.
+  firstHerbId: herb.chamomile
   secondHerbId: herb.belladonnaBerry

@@ -15,10 +15,10 @@ MonoBehaviour:
   stableId: order.mid.c02
   difficulty: 1
   orderBubbles:
-  - River fog blocked my nose during a difficult boat haul.
-  - Now my shoulders and knees ache badly.
-  - Mint never troubles my stomach, and my lungs are strong.
-  - "An old ferryman\u2019s recipe pairs mint with Salix alba."
-  - He says the bark eases muscle and joint pain.
+  - "River fog blocked my brother\u2019s nose and raised fever."
+  - Hauling ropes left his shoulders and knees aching.
+  - Choose the dark green leaf with a sharp smell.
+  - Pair it with the tough strip of bark.
+  - His stomach and lungs remain sound.
   firstHerbId: herb.peppermint
   secondHerbId: herb.whiteWillow

@@ -15,9 +15,10 @@ MonoBehaviour:
   stableId: order.mid.s05
   difficulty: 1
   orderBubbles:
-  - Something gentle, please.
-  - Something for my racing heart and my intense headache.
-  - The physician prescribed Valeriana officianalis for my racing heart,
-  - and Lavandula for the headache.
-  firstHerbId: herb.valerian
-  secondHerbId: herb.lavender
+  - Muscle cramps and a mild chest cough bother me.
+  - A serious injury has left me deeply distressed.
+  - No pollen or spring-flower allergies affect me.
+  - I do not need to stay awake for duty.
+  - Find small, fragrant flowers and a complex, unusual flower.
+  firstHerbId: herb.chamomile
+  secondHerbId: herb.passionFlower

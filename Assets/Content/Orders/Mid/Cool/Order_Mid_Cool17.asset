@@ -15,10 +15,10 @@ MonoBehaviour:
   stableId: order.mid.c17
   difficulty: 1
   orderBubbles:
-  - "A farm worker\u2019s dirty cut became swollen and feverish."
-  - Redness now spreads up his arm.
-  - He drinks well, with healthy kidneys and no chills.
-  - My herb ledger prescribes Sambucus nigra for swelling.
-  - It adds Borago officinalis to slow the infection.
+  - A festering cut brought swelling and stubborn fever.
+  - Infection heat now races through her blood.
+  - Bring the delicate white flowers brewed as light tea.
+  - A physician calls the rough, blue-starred leaf Borago officinalis.
+  - She drinks freely and remains warm.
   firstHerbId: herb.elderflower
   secondHerbId: herb.borage
