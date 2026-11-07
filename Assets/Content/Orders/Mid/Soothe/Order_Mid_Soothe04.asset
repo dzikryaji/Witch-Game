@@ -22,3 +22,4 @@ MonoBehaviour:
   - Find small, fragrant flowers beside a sweet-smelling purple stem.
   firstHerbId: herb.chamomile
   secondHerbId: herb.lavender
+  customer: {fileID: 11400000, guid: b00255ad8c02b4e98960925f8af4e92b, type: 2}

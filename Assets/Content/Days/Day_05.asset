@@ -18,5 +18,3 @@ MonoBehaviour:
   dailyExpense: 20
   unlockedCategoryIds: []
   orderDifficulties: 0000000001000000i
-  customerIds:
-  - customer.nervous-villager

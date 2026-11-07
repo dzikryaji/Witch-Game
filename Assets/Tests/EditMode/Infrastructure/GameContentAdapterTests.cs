@@ -101,6 +101,8 @@ namespace Witch.Infrastructure.Tests
             Assert.That(result.Content.NewRunSetup.FirstDayExpenseValue, Is.EqualTo(20));
             Assert.That(result.Content.ExpenseRules.CompletionDay, Is.EqualTo(1));
             Assert.That(result.Content.RewindCardIds.Count, Is.EqualTo(3));
+            Assert.That(result.Content.OrdersById.Values.All(order =>
+                order.Customer.StableId == "customer.nervous-villager"), Is.True);
         }
 
         [Test]
@@ -194,7 +196,6 @@ namespace Witch.Infrastructure.Tests
                 "day.1",
                 1,
                 240,
-                new[] { "customer.villager" },
                 20,
                 new[] { "category.unknown" });
 
@@ -204,18 +205,50 @@ namespace Witch.Infrastructure.Tests
         }
 
         [Test]
-        public void Validate_DayWithoutCustomersReturnsError()
+        public void Load_WithoutCustomerDefinitionsUsesNervousVillagerFallback()
         {
             GameContentCatalogDefinition catalog = ContentTestFixture.CreateValidCatalog();
-            catalog.Days[0].Configure(
-                "day.1",
-                1,
-                240,
-                Array.Empty<string>());
+            catalog.Configure(
+                catalog.Herbs.ToArray(),
+                catalog.Orders.ToArray(),
+                Array.Empty<CustomerDefinition>(),
+                catalog.Days.ToArray(),
+                catalog.HerbCategories.ToArray(),
+                catalog.RewindCards.ToArray(),
+                catalog.RewindDifficulty);
 
-            ContentValidationReport report = new GameContentValidator().Validate(catalog);
+            GameContentLoadResult result = new GameContentAdapter().Load(catalog);
 
-            Assert.That(report.Errors.Any(error => error.Contains("at least one customer")), Is.True);
+            Assert.That(result.Succeeded, Is.True, string.Join("\n", result.Errors));
+            Assert.That(result.Content.OrdersById.Values.All(order =>
+                order.Customer.StableId == "customer.nervous-villager"), Is.True);
+        }
+
+        [Test]
+        public void Load_OrderCustomerOverridesFallback()
+        {
+            GameContentCatalogDefinition catalog = ContentTestFixture.CreateValidCatalog();
+            CustomerDefinition customer = DefinitionFactory.Customer("customer.assigned", "Assigned Villager");
+            catalog.Orders[0].Configure(
+                "order.direct",
+                new[] { "Bring ginger and mint." },
+                "herb.ginger",
+                "herb.mint",
+                customerDefinition: customer);
+            catalog.Configure(
+                catalog.Herbs.ToArray(),
+                catalog.Orders.ToArray(),
+                catalog.Customers.Append(customer).ToArray(),
+                catalog.Days.ToArray(),
+                catalog.HerbCategories.ToArray(),
+                catalog.RewindCards.ToArray(),
+                catalog.RewindDifficulty);
+
+            GameContentLoadResult result = new GameContentAdapter().Load(catalog);
+
+            Assert.That(result.Succeeded, Is.True, string.Join("\n", result.Errors));
+            Assert.That(result.Content.OrdersById["order.direct"].Customer.DisplayName,
+                Is.EqualTo("Assigned Villager"));
         }
 
         [Test]

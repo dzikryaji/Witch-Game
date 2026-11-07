@@ -24,6 +24,7 @@ namespace Witch.Presentation.Shop
         [SerializeField] private RectTransform orderBubbleContent;
         [SerializeField] private UnityEngine.UI.ScrollRect orderBubbleScrollRect;
         [SerializeField] private RectTransform customerPortrait;
+        [SerializeField] private UnityEngine.UI.Image customerPortraitImage;
         [SerializeField] private CanvasGroup customerPortraitCanvasGroup;
         [SerializeField] private ShopDayCycleView dayCycleView;
 
@@ -49,6 +50,7 @@ namespace Witch.Presentation.Shop
         private VerticalLayoutGroup orderLayoutGroup;
         private float bubbleSpacing;
         private Vector2 portraitRestPosition;
+        private Sprite placeholderCustomerSprite;
         private bool playerScrolledOrders;
         private bool skipTyping;
 
@@ -77,7 +79,13 @@ namespace Witch.Presentation.Shop
             if (customerPortrait != null)
             {
                 portraitRestPosition = customerPortrait.anchoredPosition;
+                if (customerPortraitImage == null)
+                {
+                    customerPortraitImage = customerPortrait.GetComponent<UnityEngine.UI.Image>();
+                }
             }
+
+            if (customerPortraitImage != null) placeholderCustomerSprite = customerPortraitImage.sprite;
 
             if (orderBubbleContent != null)
             {
@@ -96,6 +104,14 @@ namespace Witch.Presentation.Shop
 
         public void SetCustomer(string customerName, IReadOnlyList<string> orderBubbles)
         {
+            SetCustomer(customerName, orderBubbles, null);
+        }
+
+        public void SetCustomer(
+            string customerName,
+            IReadOnlyList<string> orderBubbles,
+            Sprite customerIllustration)
+        {
             StopEntrance();
             ClearOrderBubbles();
             orderBubbleContent.anchorMin = new Vector2(orderBubbleContent.anchorMin.x, 0f);
@@ -103,6 +119,12 @@ namespace Witch.Presentation.Shop
             orderBubbleContent.pivot = new Vector2(orderBubbleContent.pivot.x, 0f);
             orderLayoutGroup.childAlignment = TextAnchor.LowerRight;
             customerPortrait.gameObject.SetActive(true);
+            if (customerPortraitImage != null)
+            {
+                customerPortraitImage.sprite = customerIllustration != null
+                    ? customerIllustration
+                    : placeholderCustomerSprite;
+            }
             customerText.text = customerName ?? string.Empty;
             playerScrolledOrders = false;
             SnapToNewest();

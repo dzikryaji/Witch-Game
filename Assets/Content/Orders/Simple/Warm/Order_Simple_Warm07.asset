@@ -22,3 +22,4 @@ MonoBehaviour:
   - He paired it with Sinapis alba for chills and mucus.
   firstHerbId: herb.cayennePepper
   secondHerbId: herb.mustardSeed
+  customer: {fileID: 11400000, guid: 3965e9fdac9e6466c91a76e9ffa93d8b, type: 2}

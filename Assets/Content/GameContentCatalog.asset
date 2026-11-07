@@ -192,6 +192,11 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 579123da2de37492683da8a8f682b73e, type: 2}
   customers:
   - {fileID: 11400000, guid: 10000000000000000000000000000006, type: 2}
+  - {fileID: 11400000, guid: b00255ad8c02b4e98960925f8af4e92b, type: 2}
+  - {fileID: 11400000, guid: 12795f040a17d43ce94d717cf5b31324, type: 2}
+  - {fileID: 11400000, guid: 7a06e32b0a26b416c9f59776c3880e92, type: 2}
+  - {fileID: 11400000, guid: 3965e9fdac9e6466c91a76e9ffa93d8b, type: 2}
+  - {fileID: 11400000, guid: 4678338d721f2462d8a1979c0e069692, type: 2}
   days:
   - {fileID: 11400000, guid: 10000000000000000000000000000007, type: 2}
   - {fileID: 11400000, guid: 20000000000000000000000000000040, type: 2}

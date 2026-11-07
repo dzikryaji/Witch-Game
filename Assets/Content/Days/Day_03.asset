@@ -19,5 +19,3 @@ MonoBehaviour:
   unlockedCategoryIds:
   - category.soothe
   orderDifficulties: 00000000i
-  customerIds:
-  - customer.nervous-villager

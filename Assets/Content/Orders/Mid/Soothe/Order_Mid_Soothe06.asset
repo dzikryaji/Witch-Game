@@ -22,3 +22,4 @@ MonoBehaviour:
   - Find small, fragrant flowers and a complex, unusual flower.
   firstHerbId: herb.chamomile
   secondHerbId: herb.passionFlower
+  customer: {fileID: 11400000, guid: 3965e9fdac9e6466c91a76e9ffa93d8b, type: 2}

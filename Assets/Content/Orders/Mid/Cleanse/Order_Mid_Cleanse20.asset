@@ -22,3 +22,4 @@ MonoBehaviour:
   - I have no acid illness or throat ulcers.
   firstHerbId: herb.blackHellebore
   secondHerbId: herb.fennel
+  customer: {fileID: 11400000, guid: 7a06e32b0a26b416c9f59776c3880e92, type: 2}

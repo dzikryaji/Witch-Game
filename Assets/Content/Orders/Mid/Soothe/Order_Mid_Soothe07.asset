@@ -22,3 +22,4 @@ MonoBehaviour:
   - Find small, fragrant flowers and a dark, sweet-tasting nightshade berry.
   firstHerbId: herb.chamomile
   secondHerbId: herb.belladonnaBerry
+  customer: {fileID: 11400000, guid: 10000000000000000000000000000006, type: 2}

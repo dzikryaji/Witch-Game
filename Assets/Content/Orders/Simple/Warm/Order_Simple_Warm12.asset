@@ -22,3 +22,4 @@ MonoBehaviour:
   - She added Zingiber officinale for nausea and appetite.
   firstHerbId: herb.ginger
   secondHerbId: herb.cinnamon
+  customer: {fileID: 11400000, guid: 10000000000000000000000000000006, type: 2}

@@ -21,3 +21,4 @@ MonoBehaviour:
   - My heartbeat and lungs are strong, without asthma.
   firstHerbId: herb.clove
   secondHerbId: herb.cayennePepper
+  customer: {fileID: 11400000, guid: b00255ad8c02b4e98960925f8af4e92b, type: 2}

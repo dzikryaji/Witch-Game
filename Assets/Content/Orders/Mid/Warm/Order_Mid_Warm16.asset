@@ -21,3 +21,4 @@ MonoBehaviour:
   - My heartbeat is steady, without wounds or ulcers.
   firstHerbId: herb.ginger
   secondHerbId: herb.clove
+  customer: {fileID: 11400000, guid: 10000000000000000000000000000006, type: 2}

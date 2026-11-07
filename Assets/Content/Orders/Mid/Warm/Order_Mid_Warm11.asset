@@ -21,3 +21,4 @@ MonoBehaviour:
   - I have no wounds, scrapes, or bleeding ulcers.
   firstHerbId: herb.mustardSeed
   secondHerbId: herb.ginger
+  customer: {fileID: 11400000, guid: 10000000000000000000000000000006, type: 2}

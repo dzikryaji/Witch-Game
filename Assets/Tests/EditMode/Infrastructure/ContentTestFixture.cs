@@ -20,12 +20,11 @@ namespace Witch.Infrastructure.Tests
                 ginger.StableId,
                 mint.StableId);
             CustomerDefinition customer = DefinitionFactory.Customer(
-                "customer.villager",
+                "customer.nervous-villager",
                 "Nervous Villager");
             DayDefinition day = DefinitionFactory.Day(
                 1,
                 240,
-                new[] { customer.StableId },
                 new[] { "category.warm" });
             HerbCategoryDefinition category = DefinitionFactory.Category(
                 "category.warm",
@@ -65,10 +64,15 @@ namespace Witch.Infrastructure.Tests
             return value;
         }
 
-        public static OrderDefinition Order(string id, string text, string first, string second)
+        public static OrderDefinition Order(
+            string id,
+            string text,
+            string first,
+            string second,
+            CustomerDefinition customer = null)
         {
             var value = ScriptableObject.CreateInstance<OrderDefinition>();
-            value.Configure(id, new[] { text }, first, second);
+            value.Configure(id, new[] { text }, first, second, customerDefinition: customer);
             return value;
         }
 
@@ -79,10 +83,10 @@ namespace Witch.Infrastructure.Tests
             return value;
         }
 
-        public static DayDefinition Day(int day, int seconds, string[] customers, string[] categoryUnlocks = null)
+        public static DayDefinition Day(int day, int seconds, string[] categoryUnlocks = null)
         {
             var value = ScriptableObject.CreateInstance<DayDefinition>();
-            value.Configure("day." + day, day, seconds, customers, 20, categoryUnlocks);
+            value.Configure("day." + day, day, seconds, 20, categoryUnlocks);
             return value;
         }
 
