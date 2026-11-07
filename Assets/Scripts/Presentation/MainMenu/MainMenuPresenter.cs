@@ -17,7 +17,7 @@ namespace Witch.Presentation.MainMenu
         [SerializeField] private GameObject settingsPanel;
         [SerializeField] private Slider masterSlider;
         [SerializeField] private Slider musicSlider;
-        [SerializeField] private Slider soundSlider;
+        // [SerializeField] private Slider soundSlider;
         [SerializeField] private Toggle reducedDelayToggle;
         [SerializeField] private Button applySettingsButton;
         [SerializeField] private Text errorText;
@@ -40,7 +40,7 @@ namespace Witch.Presentation.MainMenu
             && settingsPanel != null
             && masterSlider != null
             && musicSlider != null
-            && soundSlider != null
+            // && soundSlider != null
             && reducedDelayToggle != null
             && applySettingsButton != null
             && errorText != null;
@@ -165,27 +165,33 @@ namespace Witch.Presentation.MainMenu
         }
 
         public async Task<bool> SaveSettingsAsync(
-            float masterVolume,
-            float musicVolume,
-            float soundVolume,
-            bool reducedMismatchDelay)
-        {
-            EnsureInitialized();
-            var value = new GameSettingsState(masterVolume, musicVolume, soundVolume, reducedMismatchDelay);
-            SaveStateResult result = await settingsService.SaveAsync(value);
-            if (result.Succeeded)
+        float masterVolume,
+        float musicVolume,
+        bool reducedMismatchDelay)
             {
-                LoadedSettings = value;
-                audioService?.ApplySettings(value);
-                LastErrorMessage = null;
-                RenderError();
-                return true;
-            }
+                EnsureInitialized();
 
-            LastErrorMessage = result.ErrorMessage;
-            RenderError();
-            return false;
-        }
+                var value = new GameSettingsState(
+                    masterVolume,
+                    musicVolume,
+                    LoadedSettings.SoundVolume,
+                    reducedMismatchDelay);
+
+                SaveStateResult result = await settingsService.SaveAsync(value);
+
+                if (result.Succeeded)
+                {
+                    LoadedSettings = value;
+                    audioService?.ApplySettings(value);
+                    LastErrorMessage = null;
+                    RenderError();
+                    return true;
+                }
+
+                LastErrorMessage = result.ErrorMessage;
+                RenderError();
+                return false;
+            }
 
         public void ToggleSettings()
         {
@@ -235,12 +241,13 @@ namespace Witch.Presentation.MainMenu
             bool saved = await SaveSettingsAsync(
                 masterSlider.value,
                 musicSlider.value,
-                soundSlider.value,
                 reducedDelayToggle.isOn);
+
             if (saved)
             {
                 ToggleSettings();
             }
+
             return saved;
         }
 
@@ -278,7 +285,7 @@ namespace Witch.Presentation.MainMenu
             audioService?.ApplySettings(LoadedSettings);
             masterSlider.SetValueWithoutNotify(LoadedSettings.MasterVolume);
             musicSlider.SetValueWithoutNotify(LoadedSettings.MusicVolume);
-            soundSlider.SetValueWithoutNotify(LoadedSettings.SoundVolume);
+            // soundSlider.SetValueWithoutNotify(LoadedSettings.SoundVolume);
             reducedDelayToggle.SetIsOnWithoutNotify(LoadedSettings.ReducedMismatchDelay);
         }
 
