@@ -707,7 +707,7 @@ MonoBehaviour:
   onValueChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_IsOn: 1
+  m_IsOn: 0
 --- !u!114 &567868295
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1241,7 +1241,7 @@ MonoBehaviour:
   onValueChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_IsOn: 0
+  m_IsOn: 1
 --- !u!1 &878323697
 GameObject:
   m_ObjectHideFlags: 0
@@ -4410,7 +4410,6 @@ MonoBehaviour:
   settingsPanel: {fileID: 878323697}
   masterSlider: {fileID: 942601023}
   musicSlider: {fileID: 827382019}
-  soundSlider: {fileID: 0}
   reducedDelayToggle: {fileID: 866230068}
   applySettingsButton: {fileID: 1176608037}
   errorText: {fileID: 1809304956}
