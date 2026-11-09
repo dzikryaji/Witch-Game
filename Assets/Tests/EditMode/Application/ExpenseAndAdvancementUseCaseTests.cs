@@ -238,9 +238,7 @@ namespace Witch.Application.Tests
             clock.UtcNow = clock.UtcNow.Add(session.TimerState.RemainingTime).Add(TimeSpan.FromSeconds(1));
             new UpdateShopTimerUseCase(clock).Execute(session);
             var prepare = new PotionPreparationUseCase(rules);
-            prepare.Grind(session, correct ? "herb.ginger" : "herb.mint");
-            prepare.AddToPot(session);
-            prepare.Grind(session, correct ? "herb.mint" : "herb.sage");
+            prepare.Grind(session, correct ? "herb.ginger" : "herb.mint", correct ? "herb.mint" : "herb.sage");
             prepare.AddToPot(session);
             prepare.Brew(session);
             new ServePotionUseCase(rules).Execute(session);

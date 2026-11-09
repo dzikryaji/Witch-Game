@@ -13,19 +13,24 @@ namespace Witch.Application.Flow
             this.rules = rules ?? throw new ArgumentNullException(nameof(rules));
         }
 
-        public PreparationResult Grind(GameSession session, string herbId)
+        public PreparationResult Grind(GameSession session, string firstHerbId, string secondHerbId)
         {
             if (!CanPrepare(session, out PreparationResult failure))
             {
                 return failure;
             }
 
-            if (string.IsNullOrWhiteSpace(herbId))
+            if (string.IsNullOrWhiteSpace(firstHerbId) || string.IsNullOrWhiteSpace(secondHerbId))
             {
-                return PreparationResult.Failure("Herb ID is required.");
+                return PreparationResult.Failure("Two herbs are required");
             }
 
-            session.SetGroundHerb(herbId);
+            if (string.Equals(firstHerbId, secondHerbId, StringComparison.Ordinal))
+            {
+                return PreparationResult.Failure("Use two different herbs.");
+            }
+
+            session.SetGroundMixture(new HerbPair(firstHerbId, secondHerbId));
             return PreparationResult.Success(PreparationResultKind.Ground);
         }
 
@@ -58,12 +63,12 @@ namespace Witch.Application.Flow
                 return failure;
             }
 
-            if (string.IsNullOrWhiteSpace(session.GroundHerbId))
+            if (session.GroundMixture == null)
             {
                 return PreparationResult.Failure("There is no ground herb to discard.");
             }
 
-            session.ClearGroundHerb();
+            session.ClearGroundMixture();
             return PreparationResult.Success(PreparationResultKind.GroundDiscarded);
         }
 
@@ -112,6 +117,22 @@ namespace Witch.Application.Flow
             }
 
             session.ClearWorkbench();
+            return PreparationResult.Success(PreparationResultKind.Discarded);
+        }
+
+        public PreparationResult DiscardPotion(GameSession session)
+        {
+            if (session == null)
+            {
+                return PreparationResult.Failure("Session is required.");
+            }
+
+            if (session.PreparedPotion == null)
+            {
+                return PreparationResult.Failure("There is no potion to discard.");
+            }
+
+            session.ClearPotion();
             return PreparationResult.Success(PreparationResultKind.Discarded);
         }
 

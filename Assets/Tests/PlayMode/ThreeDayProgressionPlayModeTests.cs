@@ -34,7 +34,6 @@ namespace Witch.Bootstrap.PlayModeTests
                 harness.Clock.Advance(presenter.ActiveSession.TimerState.RemainingTime + TimeSpan.FromSeconds(1));
                 harness.UpdateTimer.Execute(presenter.ActiveSession);
                 PreparePair(presenter, "herb.ginger", "herb.mint");
-                presenter.Brew();
                 Task<ServePotionResult> serve = presenter.ServeAsync();
                 yield return WaitFor(serve);
                 Assert.That(presenter.ActiveSession.CurrentPhase, Is.EqualTo(GamePhase.ClosingEncounter));
@@ -70,7 +69,6 @@ namespace Witch.Bootstrap.PlayModeTests
             harness.Clock.Advance(TimeSpan.FromSeconds(2));
             harness.UpdateTimer.Execute(presenter.ActiveSession);
             PreparePair(presenter, "herb.mint", "herb.sage");
-            presenter.Brew();
             Task<ServePotionResult> serve = presenter.ServeAsync();
             yield return WaitFor(serve);
 
@@ -167,9 +165,8 @@ namespace Witch.Bootstrap.PlayModeTests
 
         private static void PreparePair(ShopShellPresenter presenter, string first, string second)
         {
-            presenter.GrindHerb(first);
-            presenter.AddGroundHerbToPot();
-            presenter.GrindHerb(second);
+            // Both herbs are ground together; adding the mixture to the pot brews automatically.
+            presenter.GrindHerb(first, second);
             presenter.AddGroundHerbToPot();
         }
 
