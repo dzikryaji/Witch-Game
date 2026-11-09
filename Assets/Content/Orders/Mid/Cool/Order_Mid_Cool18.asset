@@ -15,11 +15,12 @@ MonoBehaviour:
   stableId: order.mid.c18
   difficulty: 1
   orderBubbles:
-  - "A lingering illness caused my brother\u2019s fever and swollen knees."
-  - Now every muscle and joint aches terribly.
-  - He drinks freely, with healthy kidneys and strong lungs.
-  - The priory book prescribes Sambucus nigra for fever.
-  - It pairs that with Salix alba for severe pain.
-  - I need both before he charges burial fees.
-  firstHerbId: herb.elderflower
-  secondHerbId: herb.whiteWillow
+  - "My guard\u2019s fall caused severe back and joint pain."
+  - Violent muscle fits now threaten his watch.
+  - His surgeon requested Salix alba.
+  - It is the tough strip of bark.
+  - Add the hard leaf with an unpleasant smell.
+  - His lungs and heartbeat remain strong.
+  firstHerbId: herb.whiteWillow
+  secondHerbId: herb.henbane
+  customer: {fileID: 11400000, guid: b00255ad8c02b4e98960925f8af4e92b, type: 2}

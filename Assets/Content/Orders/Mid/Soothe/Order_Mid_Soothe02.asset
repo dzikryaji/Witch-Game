@@ -15,9 +15,11 @@ MonoBehaviour:
   stableId: order.mid.s02
   difficulty: 1
   orderBubbles:
-  - Something calming, please.
-  - I have a mild chest cough and an intense headache.
-  - The apothecary prescribed Matricaria chamomilla for the cough,
-  - and Lavandula for the headache.
+  - A mild chest cough and muscle cramps bother me.
+  - Anxiety also makes my heart race at night.
+  - No pollen or spring-flower allergies affect me.
+  - I am not easily frightened by intense dreams.
+  - Find small, fragrant flowers and a strong, earthy root.
   firstHerbId: herb.chamomile
-  secondHerbId: herb.lavender
+  secondHerbId: herb.valerian
+  customer: {fileID: 11400000, guid: 10000000000000000000000000000006, type: 2}

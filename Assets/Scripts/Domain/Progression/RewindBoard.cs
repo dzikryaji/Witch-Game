@@ -40,7 +40,7 @@ namespace Witch.Domain.Progression
             if (startingPairCount < 1) throw new ArgumentOutOfRangeException(nameof(startingPairCount));
             if (maximumPairCount < startingPairCount) throw new ArgumentOutOfRangeException(nameof(maximumPairCount));
 
-            int pairCount = Math.Min(startingPairCount + rewindCount, maximumPairCount);
+            int pairCount = RewindRules.GetPairCount(rewindCount, startingPairCount, maximumPairCount);
             var shuffled = new List<int>(pairCount * 2);
             for (int pair = 0; pair < pairCount; pair++)
             {

@@ -714,7 +714,10 @@ namespace Witch.Presentation.Shop
                 if (arrival.Succeeded) audioService?.Play(GameAudioCueIds.CustomerBell);
                 if (arrival.Succeeded)
                 {
-                    hudView.SetCustomer(encounter.CustomerName, encounter.OrderBubbles);
+                    hudView.SetCustomer(
+                        encounter.CustomerName,
+                        encounter.OrderBubbles,
+                        encounter.CustomerIllustration);
                 }
             }
         }
@@ -1162,7 +1165,13 @@ namespace Witch.Presentation.Shop
                 .FirstOrDefault(e => e.Order != null && e.Order.OrderId == orderId);
 
             Debug.Log($"[Resume] order={orderId} found={encounter != null}");
-            if (encounter != null) hudView.SetCustomer(encounter.CustomerName, encounter.OrderBubbles);
+            if (encounter != null)
+            {
+                hudView.SetCustomer(
+                    encounter.CustomerName,
+                    encounter.OrderBubbles,
+                    encounter.CustomerIllustration);
+            }
 
             setTimerPaused?.Execute(ActiveSession, false); // clock continues from the remaining time
             SetStatus("The spell worked. Time is back. Serve the order again.");

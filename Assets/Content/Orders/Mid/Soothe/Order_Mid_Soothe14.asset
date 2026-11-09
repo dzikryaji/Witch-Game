@@ -15,9 +15,11 @@ MonoBehaviour:
   stableId: order.mid.s14
   difficulty: 1
   orderBubbles:
-  - My head feels ready to split apart.
-  - Sudden noises trigger dreadful panic.
-  - A healer prescribed Lavandula for headaches and panic.
-  - They added Chamomile to calm me further.
-  firstHerbId: herb.lavender
-  secondHerbId: herb.chamomile
+  - I struggle sleeping because my heart races at night.
+  - A persistent cough keeps causing uncomfortable fits.
+  - I am not easily frightened by intense dreams.
+  - My throat is not swollen, and I can swallow.
+  - Find a strong, earthy root and dark, sweet-tasting nightshade berry.
+  firstHerbId: herb.valerian
+  secondHerbId: herb.belladonnaBerry
+  customer: {fileID: 11400000, guid: b00255ad8c02b4e98960925f8af4e92b, type: 2}

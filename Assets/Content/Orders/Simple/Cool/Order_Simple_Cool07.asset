@@ -22,3 +22,4 @@ MonoBehaviour:
   - It adds Borago officinalis to slow the infection.
   firstHerbId: herb.elderflower
   secondHerbId: herb.borage
+  customer: {fileID: 11400000, guid: 10000000000000000000000000000006, type: 2}

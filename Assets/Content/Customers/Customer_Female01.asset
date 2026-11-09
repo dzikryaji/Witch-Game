@@ -10,7 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 28526b4d90a474360b14108e69b24c86, type: 3}
-  m_Name: Customer_NervousVillager
+  m_Name: Customer_Female01
   m_EditorClassIdentifier: Witch.Infrastructure::Witch.Infrastructure.Content.CustomerDefinition
-  stableId: customer.nervous-villager
-  displayName: Nervous Villager
+  stableId: customer.female01
+  displayName: Joan Wren
+  illustration: {fileID: 21300000, guid: d475e3544acf44f158301d1e4c02d332, type: 3}

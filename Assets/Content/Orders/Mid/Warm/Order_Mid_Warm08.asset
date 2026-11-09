@@ -15,11 +15,10 @@ MonoBehaviour:
   stableId: order.mid.w08
   difficulty: 1
   orderBubbles:
-  - Three tourney days exhausted Sir Aldric before he fell.
-  - His stitched chest gash still leaves him shivering violently.
-  - He cannot lift his goblet, though his heartbeat stays steady.
-  - His brow is cool, with no fever.
-  - His squire requested Syzygium aromaticum for shivering.
-  - He paired it with Cinnamomum for muscle fatigue.
+  - Mouth numbness accompanies severe muscle exhaustion.
+  - Bring the tiny, dried bud.
+  - Add the spicy, sweet tree bark.
+  - My heartbeat is steady, and I have no fever.
   firstHerbId: herb.clove
   secondHerbId: herb.cinnamon
+  customer: {fileID: 11400000, guid: b00255ad8c02b4e98960925f8af4e92b, type: 2}

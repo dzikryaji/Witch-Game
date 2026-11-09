@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f5f76fe6c3f7d450e98c5e1ef5f66046, type: 3}
+  m_Name: Order_Hard_Mend12
+  m_EditorClassIdentifier: Witch.Infrastructure::Witch.Infrastructure.Content.OrderDefinition
+  stableId: order.hard.m12
+  difficulty: 2
+  orderBubbles:
+  - My palm bleeds heavily, and my ankle keeps buckling.
+  - Bring the thick, flat weed.
+  - Add the bright yellow flower.
+  - My circulation and lungs remain strong.
+  firstHerbId: herb.plantainLeaf
+  secondHerbId: herb.arnicaFlower
+  customer: {fileID: 11400000, guid: 3965e9fdac9e6466c91a76e9ffa93d8b, type: 2}

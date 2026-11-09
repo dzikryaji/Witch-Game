@@ -23,7 +23,6 @@ namespace Witch.Bootstrap
             if (session == null) throw new ArgumentNullException(nameof(session));
 
             DayContent day = content.DaysByNumber[session.RunState.CurrentDayNumber];
-            int customerStart = PositiveModulo(session.AttemptMetadata.ActiveOrderSeed, day.CustomerIds.Count);
             var unlockedHerbs = new HashSet<string>(session.RunState.UnlockedHerbIds, StringComparer.Ordinal);
             List<OrderContent> availableOrders = content.OrdersById.Values
                 .Where(order => order.IsAvailable(unlockedHerbs)
@@ -54,10 +53,11 @@ namespace Witch.Bootstrap
             for (int offset = 0; offset < availableOrders.Count; offset++)
             {
                 OrderContent order = availableOrders[offset];
-                CustomerContent customer = content.CustomersById[day.CustomerIds[(customerStart + offset) % day.CustomerIds.Count]];
+                CustomerContent customer = order.Customer;
                 encounters.Add(new ShopEncounterViewData(
                     customer.StableId,
                     customer.DisplayName,
+                    customer.Illustration,
                     order.Request,
                     order.OrderBubbles));
             }

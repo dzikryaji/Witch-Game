@@ -15,10 +15,10 @@ MonoBehaviour:
   stableId: order.mid.w07
   difficulty: 1
   orderBubbles:
-  - Nightly river rowing exhausted me before cold soaked through.
-  - I barely stay awake, while chills and mucus persist.
-  - My lungs are strong, and my hands remain unbroken.
-  - A sailor prescribed Capsicum annuum for exhaustion.
-  - He paired it with Sinapis alba for chills and mucus.
+  - Exhaustion accompanies blocked airways, chills, and chest mucus.
+  - Bring the bright red pepper.
+  - Add the small, rough yellow seeds.
+  - My lungs are strong, and my skin is unbroken.
   firstHerbId: herb.cayennePepper
   secondHerbId: herb.mustardSeed
+  customer: {fileID: 11400000, guid: 3965e9fdac9e6466c91a76e9ffa93d8b, type: 2}

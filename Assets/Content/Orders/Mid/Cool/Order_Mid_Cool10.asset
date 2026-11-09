@@ -15,10 +15,11 @@ MonoBehaviour:
   stableId: order.mid.c10
   difficulty: 1
   orderBubbles:
-  - A marsh creature bit my passenger.
-  - Venom spread, causing violent muscle fits.
+  - "Marsh venom causes violent tremors throughout my brother\u2019s body."
+  - Feverish heat now races through his blood.
+  - Bring the hard leaf with an unpleasant smell.
+  - Add the dry, rough leaf with blue stars.
   - His pulse is strong, and he remains warm.
-  - The infirmary prescribed Hyoscyamus niger for fits.
-  - They added Borago officinalis to slow the venom.
   firstHerbId: herb.henbane
   secondHerbId: herb.borage
+  customer: {fileID: 11400000, guid: 3965e9fdac9e6466c91a76e9ffa93d8b, type: 2}

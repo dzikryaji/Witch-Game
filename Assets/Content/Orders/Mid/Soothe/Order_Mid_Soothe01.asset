@@ -15,11 +15,11 @@ MonoBehaviour:
   stableId: order.mid.s01
   difficulty: 1
   orderBubbles:
-  - I need something soothing.
-  - I get muscle cramps in my legs,
-  - and I have bad anxiety.
-  - I need to sleep deeply.
-  - My healer's notes prescribe Matricaria chamomilla for the cramps,
-  - and Valeriana officianalis for anxiety and deep sleep.
+  - My muscles cramp, and my nerves feel unsettled.
+  - My heart races, making deep sleep difficult.
+  - I have no pollen or spring-flower allergies.
+  - Frightening dreams do not usually scare me.
+  - Find small, fragrant flowers and a strong, earthy root.
   firstHerbId: herb.chamomile
   secondHerbId: herb.valerian
+  customer: {fileID: 11400000, guid: b00255ad8c02b4e98960925f8af4e92b, type: 2}

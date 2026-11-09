@@ -44,6 +44,25 @@ namespace Witch.Infrastructure.Content
                     definition.AccessibleLabel,
                     definition.GuidebookPage),
                 StringComparer.Ordinal);
+            var customers = catalog.Customers
+                .Where(definition => definition != null)
+                .ToDictionary(
+                    definition => definition.StableId,
+                    definition => new CustomerContent(
+                        definition.StableId,
+                        definition.DisplayName,
+                        definition.Illustration),
+                    StringComparer.Ordinal);
+            CustomerContent fallbackCustomer = customers.TryGetValue(
+                "customer.nervous-villager",
+                out CustomerContent nervousVillager)
+                ? nervousVillager
+                : new CustomerContent(
+                    "customer.nervous-villager",
+                    "Nervous Villager",
+                    customers.TryGetValue("customer.female01", out CustomerContent female01)
+                        ? female01.Illustration
+                        : null);
             var orders = catalog.Orders.ToDictionary(
                 definition => definition.StableId,
                 definition => new OrderContent(
@@ -51,11 +70,10 @@ namespace Witch.Infrastructure.Content
                         definition.StableId,
                         new HerbPair(definition.FirstHerbId, definition.SecondHerbId)),
                     definition.Difficulty,
-                    definition.OrderBubbles),
-                StringComparer.Ordinal);
-            var customers = catalog.Customers.ToDictionary(
-                definition => definition.StableId,
-                definition => new CustomerContent(definition.StableId, definition.DisplayName),
+                    definition.OrderBubbles,
+                    definition.Customer != null
+                        ? customers[definition.Customer.StableId]
+                        : fallbackCustomer),
                 StringComparer.Ordinal);
             var days = catalog.Days.ToDictionary(
                 definition => definition.DayNumber,
@@ -65,8 +83,7 @@ namespace Witch.Infrastructure.Content
                     TimeSpan.FromSeconds(definition.TimerSeconds),
                     definition.DailyExpense,
                     definition.UnlockedCategoryIds,
-                    definition.OrderDifficulties,
-                    definition.CustomerIds));
+                    definition.OrderDifficulties));
             var categories = catalog.HerbCategories.ToDictionary(
                 definition => definition.StableId,
                 definition => new HerbCategoryContent(

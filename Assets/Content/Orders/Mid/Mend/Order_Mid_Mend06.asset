@@ -15,9 +15,10 @@ MonoBehaviour:
   stableId: order.mid.m06
   difficulty: 1
   orderBubbles:
-  - Chopping wood drove a deep splinter into my palm.
-  - Removing it left several bleeding scratches.
-  - A woodcutter prescribed Pix resina for the splinter.
-  - They added Plantain Leaf for the bleeding scratches.
-  firstHerbId: herb.pineResin
-  secondHerbId: herb.plantainLeaf
+  - Crushed fingers left bones aching and one joint unstable.
+  - Bring the bright yellow flower.
+  - Add the wide, hairy leaf with a strong root.
+  - My lungs remain strong, without puncture wounds.
+  firstHerbId: herb.arnicaFlower
+  secondHerbId: herb.comfrey
+  customer: {fileID: 11400000, guid: b00255ad8c02b4e98960925f8af4e92b, type: 2}

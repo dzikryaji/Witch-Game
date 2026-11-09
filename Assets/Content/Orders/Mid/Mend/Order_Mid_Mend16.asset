@@ -15,10 +15,10 @@ MonoBehaviour:
   stableId: order.mid.m16
   difficulty: 1
   orderBubbles:
-  - I fell while working in the fields
-  - and hurt my arm rather badly.
-  - There's a nasty cut, and the bone feels injured too.
-  - A field healer prescribed Symphytum officinale for the injured bone,
-  - and Achillea millefolium for the bleeding cut.
+  - A crate broke my foot and scratched my hand.
+  - Bring the wide, hairy leaf with a strong root.
+  - Add the thick, golden resin.
+  - The scratches are shallow, and I have no fever.
   firstHerbId: herb.comfrey
-  secondHerbId: herb.yarrow
+  secondHerbId: herb.pineResin
+  customer: {fileID: 11400000, guid: 12795f040a17d43ce94d717cf5b31324, type: 2}

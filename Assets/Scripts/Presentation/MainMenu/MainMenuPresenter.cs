@@ -17,10 +17,11 @@ namespace Witch.Presentation.MainMenu
         [SerializeField] private GameObject settingsPanel;
         [SerializeField] private Slider masterSlider;
         [SerializeField] private Slider musicSlider;
-        [SerializeField] private Slider soundSlider;
+        // [SerializeField] private Slider soundSlider;
         [SerializeField] private Toggle reducedDelayToggle;
         [SerializeField] private Button applySettingsButton;
         [SerializeField] private Text errorText;
+        [SerializeField] private GameObject settingsOverlay;
 
         private IStartNewGameUseCase startNewGame;
         private ILoadRunUseCase loadRun;
@@ -40,9 +41,10 @@ namespace Witch.Presentation.MainMenu
             && settingsPanel != null
             && masterSlider != null
             && musicSlider != null
-            && soundSlider != null
+            // && soundSlider != null
             && reducedDelayToggle != null
             && applySettingsButton != null
+            && settingsOverlay != null
             && errorText != null;
 
         public void Initialize(
@@ -87,14 +89,14 @@ namespace Witch.Presentation.MainMenu
             applicationLifecycle = lifecycle ?? throw new ArgumentNullException(nameof(lifecycle));
             audioService = audio;
             RequireAndBindAuthoredView();
-            if (settingsPanel.GetComponentInParent<Canvas>() == null)
-            {
-                RectTransform panelRect = settingsPanel.GetComponent<RectTransform>();
-                panelRect.SetParent(settingsButton.GetComponentInParent<Canvas>().transform, false);
-                panelRect.anchoredPosition = Vector2.zero;
-                panelRect.sizeDelta = Vector2.zero;
-                panelRect.localScale = Vector3.one;
-            }
+            // if (settingsPanel.GetComponentInParent<Canvas>() == null)
+            // {
+            //     RectTransform panelRect = settingsPanel.GetComponent<RectTransform>();
+            //     panelRect.SetParent(settingsButton.GetComponentInParent<Canvas>().transform, false);
+            //     panelRect.anchoredPosition = Vector2.zero;
+            //     panelRect.sizeDelta = Vector2.zero;
+            //     panelRect.localScale = Vector3.one;
+            // }
             IsInitialized = true;
             LastErrorMessage = null;
             RenderError();
@@ -165,37 +167,54 @@ namespace Witch.Presentation.MainMenu
         }
 
         public async Task<bool> SaveSettingsAsync(
-            float masterVolume,
-            float musicVolume,
-            float soundVolume,
-            bool reducedMismatchDelay)
-        {
-            EnsureInitialized();
-            var value = new GameSettingsState(masterVolume, musicVolume, soundVolume, reducedMismatchDelay);
-            SaveStateResult result = await settingsService.SaveAsync(value);
-            if (result.Succeeded)
+        float masterVolume,
+        float musicVolume,
+        bool reducedMismatchDelay)
             {
-                LoadedSettings = value;
-                audioService?.ApplySettings(value);
-                LastErrorMessage = null;
+                EnsureInitialized();
+
+                var value = new GameSettingsState(
+                    masterVolume,
+                    musicVolume,
+                    LoadedSettings.SoundVolume,
+                    reducedMismatchDelay);
+
+                SaveStateResult result = await settingsService.SaveAsync(value);
+
+                if (result.Succeeded)
+                {
+                    LoadedSettings = value;
+                    audioService?.ApplySettings(value);
+                    LastErrorMessage = null;
+                    RenderError();
+                    return true;
+                }
+
+                LastErrorMessage = result.ErrorMessage;
                 RenderError();
-                return true;
+                return false;
             }
 
-            LastErrorMessage = result.ErrorMessage;
-            RenderError();
-            return false;
-        }
+        // public void ToggleSettings()
+        // {
+        //     if (settingsPanel == null)
+        //     {
+        //         return;
+        //     }
+
+        //     settingsPanel.SetActive(!settingsPanel.activeSelf);
+        //     audioService?.Play(settingsPanel.activeSelf ? GameAudioCueIds.UiConfirm : GameAudioCueIds.UiBack);
+        // }
 
         public void ToggleSettings()
         {
-            if (settingsPanel == null)
-            {
-                return;
-            }
+            bool isOpening = !settingsPanel.activeSelf;
 
-            settingsPanel.SetActive(!settingsPanel.activeSelf);
-            audioService?.Play(settingsPanel.activeSelf ? GameAudioCueIds.UiConfirm : GameAudioCueIds.UiBack);
+            settingsOverlay.SetActive(isOpening);
+            settingsPanel.SetActive(isOpening);
+
+            audioService?.Play(
+                isOpening ? GameAudioCueIds.UiConfirm : GameAudioCueIds.UiBack);
         }
 
         public ServiceResult Quit()
@@ -235,12 +254,13 @@ namespace Witch.Presentation.MainMenu
             bool saved = await SaveSettingsAsync(
                 masterSlider.value,
                 musicSlider.value,
-                soundSlider.value,
                 reducedDelayToggle.isOn);
+
             if (saved)
             {
                 ToggleSettings();
             }
+
             return saved;
         }
 
@@ -278,7 +298,7 @@ namespace Witch.Presentation.MainMenu
             audioService?.ApplySettings(LoadedSettings);
             masterSlider.SetValueWithoutNotify(LoadedSettings.MasterVolume);
             musicSlider.SetValueWithoutNotify(LoadedSettings.MusicVolume);
-            soundSlider.SetValueWithoutNotify(LoadedSettings.SoundVolume);
+            // soundSlider.SetValueWithoutNotify(LoadedSettings.SoundVolume);
             reducedDelayToggle.SetIsOnWithoutNotify(LoadedSettings.ReducedMismatchDelay);
         }
 

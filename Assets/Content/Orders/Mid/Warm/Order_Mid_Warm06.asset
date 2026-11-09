@@ -15,10 +15,10 @@ MonoBehaviour:
   stableId: order.mid.w06
   difficulty: 1
   orderBubbles:
-  - Mine work exhausted my son before freezing air chilled him.
-  - He barely stands, shivers, and coughs thick mucus.
-  - His wheezing is unchanged, without fever or wounds.
-  - The mine healer prescribed Cinnamomum for fatigue.
-  - He paired it with Sinapis alba for chills and mucus.
-  firstHerbId: herb.cinnamon
-  secondHerbId: herb.mustardSeed
+  - Chills and chest mucus accompany deep muscle exhaustion.
+  - Bring the small, rough yellow seeds.
+  - Add the spicy, sweet tree bark.
+  - My skin is unbroken, and I have no fever.
+  firstHerbId: herb.mustardSeed
+  secondHerbId: herb.cinnamon
+  customer: {fileID: 11400000, guid: 12795f040a17d43ce94d717cf5b31324, type: 2}

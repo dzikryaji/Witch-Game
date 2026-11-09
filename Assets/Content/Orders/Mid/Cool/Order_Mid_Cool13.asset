@@ -15,9 +15,11 @@ MonoBehaviour:
   stableId: order.mid.c13
   difficulty: 1
   orderBubbles:
-  - My head pounds, my nose is blocked, and fever persists.
-  - Folks call the sharp, dark leaf mint.
-  - A healer calls the white flowers Sambucus nigra.
-  - Please brew those two for me.
+  - "Fever pounds behind my sister\u2019s eyes."
+  - Sudden muscle fits now shake her arms.
+  - Bring the sharp-smelling dark green leaf.
+  - Add the hard, unpleasant-smelling leaf.
+  - Her stomach and heartbeat remain sound.
   firstHerbId: herb.peppermint
-  secondHerbId: herb.elderflower
+  secondHerbId: herb.henbane
+  customer: {fileID: 11400000, guid: b00255ad8c02b4e98960925f8af4e92b, type: 2}

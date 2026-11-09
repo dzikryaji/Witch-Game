@@ -46,16 +46,19 @@ namespace Witch.Infrastructure.Content
         public OrderContent(
             OrderRequest request,
             OrderDifficulty difficulty,
-            IReadOnlyList<string> orderBubbles)
+            IReadOnlyList<string> orderBubbles,
+            CustomerContent customer)
         {
             Request = request;
             Difficulty = difficulty;
             OrderBubbles = new List<string>(orderBubbles).AsReadOnly();
+            Customer = customer ?? throw new ArgumentNullException(nameof(customer));
         }
 
         public OrderRequest Request { get; }
         public OrderDifficulty Difficulty { get; }
         public IReadOnlyList<string> OrderBubbles { get; }
+        public CustomerContent Customer { get; }
 
         public bool IsAvailable(ISet<string> unlockedHerbIds)
         {
@@ -67,14 +70,16 @@ namespace Witch.Infrastructure.Content
 
     public sealed class CustomerContent
     {
-        public CustomerContent(string stableId, string displayName)
+        public CustomerContent(string stableId, string displayName, Sprite illustration)
         {
             StableId = stableId;
             DisplayName = displayName;
+            Illustration = illustration;
         }
 
         public string StableId { get; }
         public string DisplayName { get; }
+        public Sprite Illustration { get; }
     }
 
     public sealed class DayContent
@@ -85,8 +90,7 @@ namespace Witch.Infrastructure.Content
             TimeSpan timerDuration,
             int dailyExpense,
             IReadOnlyList<string> unlockedCategoryIds,
-            IReadOnlyList<OrderDifficulty> orderDifficulties,
-            IReadOnlyList<string> customerIds)
+            IReadOnlyList<OrderDifficulty> orderDifficulties)
         {
             StableId = stableId;
             DayNumber = dayNumber;
@@ -94,7 +98,6 @@ namespace Witch.Infrastructure.Content
             DailyExpense = dailyExpense;
             UnlockedCategoryIds = new List<string>(unlockedCategoryIds).AsReadOnly();
             OrderDifficulties = new List<OrderDifficulty>(orderDifficulties).AsReadOnly();
-            CustomerIds = new List<string>(customerIds).AsReadOnly();
         }
 
         public string StableId { get; }
@@ -103,7 +106,6 @@ namespace Witch.Infrastructure.Content
         public int DailyExpense { get; }
         public IReadOnlyList<string> UnlockedCategoryIds { get; }
         public IReadOnlyList<OrderDifficulty> OrderDifficulties { get; }
-        public IReadOnlyList<string> CustomerIds { get; }
     }
 
     public sealed class HerbCategoryContent

@@ -15,10 +15,11 @@ MonoBehaviour:
   stableId: order.mid.cl03
   difficulty: 1
   orderBubbles:
-  - I overate at the harvest feast.
-  - My stomach has remained painfully bloated.
-  - I can rest afterward, and I am not pregnant.
-  - A healer prescribed Foeniculum vulgare for heavy digestion.
-  - They added Burdock Root to cleanse my blood.
-  firstHerbId: herb.fennel
+  - A spoiled meal left harmful toxins in my stomach.
+  - I fear mild toxins now dirty my blood.
+  - Bring the tough, drying leaf.
+  - Add the tough, earthy root.
+  - I have no constipation and can rest.
+  firstHerbId: herb.sennaLeaf
   secondHerbId: herb.burdockRoot
+  customer: {fileID: 11400000, guid: 12795f040a17d43ce94d717cf5b31324, type: 2}

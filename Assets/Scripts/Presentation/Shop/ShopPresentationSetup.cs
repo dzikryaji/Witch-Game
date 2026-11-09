@@ -13,20 +13,30 @@ namespace Witch.Presentation.Shop
         public ShopEncounterViewData(
             string customerId,
             string customerName,
+            Sprite customerIllustration,
             OrderRequest order,
             IReadOnlyList<string> orderBubbles)
         {
             CustomerId = customerId;
             CustomerName = customerName;
+            CustomerIllustration = customerIllustration;
             Order = order ?? throw new ArgumentNullException(nameof(order));
             OrderBubbles = orderBubbles ?? throw new ArgumentNullException(nameof(orderBubbles));
         }
+
+        public ShopEncounterViewData(
+            string customerId,
+            string customerName,
+            OrderRequest order,
+            IReadOnlyList<string> orderBubbles)
+            : this(customerId, customerName, null, order, orderBubbles) { }
 
         public ShopEncounterViewData(string customerId, string customerName, OrderRequest order, string orderBubble)
             : this(customerId, customerName, order, new[] { orderBubble ?? string.Empty }) { }
 
         public string CustomerId { get; }
         public string CustomerName { get; }
+        public Sprite CustomerIllustration { get; }
         public OrderRequest Order { get; }
         public IReadOnlyList<string> OrderBubbles { get; }
     }

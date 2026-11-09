@@ -15,11 +15,10 @@ MonoBehaviour:
   stableId: order.mid.w01
   difficulty: 1
   orderBubbles:
-  - Good evening. My master wrote beside an open window.
-  - By morning, nausea left him unable to eat.
-  - Now he shivers and coughs thick chest mucus.
-  - He has no wounds, scrapes, or bleeding ulcers.
-  - His note prescribes Zingiber officinale for nausea.
-  - It pairs Mustard Seed with it for chills and mucus.
+  - My stomach is sore, with nausea, chills, and mucus.
+  - Bring the twisted, tough root with strong flavor.
+  - Add the small, rough yellow seeds.
+  - I have no wounds, scrapes, or bleeding ulcers.
   firstHerbId: herb.ginger
   secondHerbId: herb.mustardSeed
+  customer: {fileID: 11400000, guid: 12795f040a17d43ce94d717cf5b31324, type: 2}

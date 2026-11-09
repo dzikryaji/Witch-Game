@@ -23,3 +23,4 @@ MonoBehaviour:
   - They add Burdock Root to cleanse his blood.
   firstHerbId: herb.blackHellebore
   secondHerbId: herb.burdockRoot
+  customer: {fileID: 11400000, guid: 12795f040a17d43ce94d717cf5b31324, type: 2}

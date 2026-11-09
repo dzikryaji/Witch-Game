@@ -14183,8 +14183,12 @@ MonoBehaviour:
   orderBubbleContent: {fileID: 1002638793}
   orderBubbleScrollRect: {fileID: 1542584968}
   customerPortrait: {fileID: 2067060309}
+  customerPortraitImage: {fileID: 0}
   customerPortraitCanvasGroup: {fileID: 2067060313}
   dayCycleView: {fileID: 1127073799}
+  charactersPerSecond: 40
+  bubblePause: 0.8
+  growDuration: 0.5
 --- !u!1 &1655776001
 GameObject:
   m_ObjectHideFlags: 0
@@ -19158,7 +19162,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -402520153856746452, guid: fb819306ee68f4294be187a501262be5, type: 3}
+  m_Sprite: {fileID: 21300000, guid: d475e3544acf44f158301d1e4c02d332, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1

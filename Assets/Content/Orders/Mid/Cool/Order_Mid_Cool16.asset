@@ -15,13 +15,12 @@ MonoBehaviour:
   stableId: order.mid.c16
   difficulty: 1
   orderBubbles:
-  - My younger brother has a high fever, swollen hands,
-  - and tremors violent enough to spoil every line he writes.
-  - He drinks plenty, has sound kidneys,
-  - and his heart is young and strong.
-  - A physician's margin note prescribes Sambucus nigra for the fever
-  - and Hyoscyamus niger for the fits.
-  - Please prepare those two.
-  - The parish can survive one day without his handwriting.
+  - Fever and swelling keep my younger brother bedridden.
+  - Violent fits shake him whenever he wakes.
+  - The priory book recommends Sambucus nigra.
+  - Its delicate white flowers make a light tea.
+  - Pair it with the hard, unpleasant-smelling leaf.
+  - He drinks freely, with healthy kidneys and strong heartbeat.
   firstHerbId: herb.elderflower
   secondHerbId: herb.henbane
+  customer: {fileID: 11400000, guid: 4678338d721f2462d8a1979c0e069692, type: 2}

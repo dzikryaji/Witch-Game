@@ -7,14 +7,21 @@ namespace Witch.Domain.Progression
         public const int StartingPairCount = 3;
         public const int MaximumPairCount = 8;
 
+        private static readonly int[] PairCountSteps = { 3, 4, 6, 8 };
+
         public static int GetPairCount(int rewindCount)
         {
-            if (rewindCount < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(rewindCount));
-            }
+            return GetPairCount(rewindCount, StartingPairCount, MaximumPairCount);
+        }
 
-            return Math.Min(StartingPairCount + rewindCount, MaximumPairCount);
+        public static int GetPairCount(int rewindCount, int startingPairCount, int maximumPairCount)
+        {
+            if (rewindCount < 0) throw new ArgumentOutOfRangeException(nameof(rewindCount));
+            if (startingPairCount < 1) throw new ArgumentOutOfRangeException(nameof(startingPairCount));
+            if (maximumPairCount < startingPairCount) throw new ArgumentOutOfRangeException(nameof(maximumPairCount));
+
+            int step = Math.Min(rewindCount, PairCountSteps.Length - 1);
+            return Math.Max(startingPairCount, Math.Min(PairCountSteps[step], maximumPairCount));
         }
 
         public static RewindOutcome Complete(

@@ -14,9 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Witch.Infrastructure::Witch.Infrastructure.Content.DayDefinition
   stableId: day.4
   dayNumber: 4
-  timerSeconds: 240
+  timerSeconds: 300
   dailyExpense: 20
   unlockedCategoryIds: []
   orderDifficulties: 0000000001000000i
-  customerIds:
-  - customer.nervous-villager

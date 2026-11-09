@@ -15,10 +15,10 @@ MonoBehaviour:
   stableId: order.mid.w20
   difficulty: 1
   orderBubbles:
-  - Felling oaks exhausted my husband before a forest cold struck.
-  - His arms ache, and blocked airways wake him gasping.
-  - He has no fever, asthma, wounds, or lung trouble.
-  - A passing monk prescribed Cinnamomum for muscle fatigue.
-  - He added Capsicum annuum for energy and blocked airways.
+  - Deep muscle fatigue accompanies chills and chest mucus.
+  - Bring the spicy, sweet tree bark.
+  - Add the small, rough yellow seeds.
+  - My skin is unbroken, and I have no fever.
   firstHerbId: herb.cinnamon
-  secondHerbId: herb.cayennePepper
+  secondHerbId: herb.mustardSeed
+  customer: {fileID: 11400000, guid: 10000000000000000000000000000006, type: 2}
