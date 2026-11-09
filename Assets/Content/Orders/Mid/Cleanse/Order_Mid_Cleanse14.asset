@@ -22,3 +22,4 @@ MonoBehaviour:
   - I drink freely and have no constipation.
   firstHerbId: herb.dandelion
   secondHerbId: herb.sennaLeaf
+  customer: {fileID: 11400000, guid: 10000000000000000000000000000006, type: 2}

@@ -22,3 +22,4 @@ MonoBehaviour:
   - Find a sweet-smelling purple stem and dark, sweet-tasting nightshade berry.
   firstHerbId: herb.lavender
   secondHerbId: herb.belladonnaBerry
+  customer: {fileID: 11400000, guid: b00255ad8c02b4e98960925f8af4e92b, type: 2}

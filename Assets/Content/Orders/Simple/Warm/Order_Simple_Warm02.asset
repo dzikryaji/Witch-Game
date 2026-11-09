@@ -22,3 +22,4 @@ MonoBehaviour:
   - His recipe pairs it with Ginger for seasickness.
   firstHerbId: herb.clove
   secondHerbId: herb.ginger
+  customer: {fileID: 11400000, guid: 3965e9fdac9e6466c91a76e9ffa93d8b, type: 2}

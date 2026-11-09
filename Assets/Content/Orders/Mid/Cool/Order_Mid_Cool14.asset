@@ -22,3 +22,4 @@ MonoBehaviour:
   - He stays warm and has no reflux.
   firstHerbId: herb.peppermint
   secondHerbId: herb.borage
+  customer: {fileID: 11400000, guid: 7a06e32b0a26b416c9f59776c3880e92, type: 2}

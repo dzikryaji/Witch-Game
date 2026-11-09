@@ -22,3 +22,4 @@ MonoBehaviour:
   - Find small, fragrant flowers and a strong, earthy root.
   firstHerbId: herb.chamomile
   secondHerbId: herb.valerian
+  customer: {fileID: 11400000, guid: 10000000000000000000000000000006, type: 2}

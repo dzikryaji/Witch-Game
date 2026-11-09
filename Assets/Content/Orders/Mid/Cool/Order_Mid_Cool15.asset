@@ -22,3 +22,4 @@ MonoBehaviour:
   - He drinks freely and breathes strongly.
   firstHerbId: herb.elderflower
   secondHerbId: herb.whiteWillow
+  customer: {fileID: 11400000, guid: 10000000000000000000000000000006, type: 2}

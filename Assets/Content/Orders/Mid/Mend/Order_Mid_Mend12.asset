@@ -21,3 +21,4 @@ MonoBehaviour:
   - My circulation and lungs remain strong.
   firstHerbId: herb.plantainLeaf
   secondHerbId: herb.arnicaFlower
+  customer: {fileID: 11400000, guid: 3965e9fdac9e6466c91a76e9ffa93d8b, type: 2}

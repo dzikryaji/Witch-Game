@@ -22,3 +22,4 @@ MonoBehaviour:
   - His note pairs it with Ginger for nausea.
   firstHerbId: herb.ginger
   secondHerbId: herb.cayennePepper
+  customer: {fileID: 11400000, guid: b00255ad8c02b4e98960925f8af4e92b, type: 2}

@@ -21,3 +21,4 @@ MonoBehaviour:
   - They added ginger for my appetite.
   firstHerbId: herb.cayennePepper
   secondHerbId: herb.ginger
+  customer: {fileID: 11400000, guid: b00255ad8c02b4e98960925f8af4e92b, type: 2}

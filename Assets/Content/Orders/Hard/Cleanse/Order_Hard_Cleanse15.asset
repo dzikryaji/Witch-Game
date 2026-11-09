@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f5f76fe6c3f7d450e98c5e1ef5f66046, type: 3}
+  m_Name: Order_Hard_Cleanse15
+  m_EditorClassIdentifier: Witch.Infrastructure::Witch.Infrastructure.Content.OrderDefinition
+  stableId: order.hard.cl15
+  difficulty: 2
+  orderBubbles:
+  - Something swallowed poisoned my heavy, blocked stomach.
+  - I need toxins expelled and digestion eased.
+  - Bring the dark flower with deep-growing roots.
+  - Add the feathery fronds with ridged seeds.
+  - I have no acid illness or throat ulcers.
+  firstHerbId: herb.blackHellebore
+  secondHerbId: herb.fennel
+  customer: {fileID: 11400000, guid: 4678338d721f2462d8a1979c0e069692, type: 2}

@@ -2,7 +2,7 @@
 
 ## Current status
 
-This file describes the implemented three-day prototype as of October 28, 2026. The fourteen-day documents remain the release target; features explicitly listed as deferred below are not claimed as implemented.
+This file describes the implemented eight-day prototype as of November 7, 2026. Fourteen days remain the release target; features explicitly listed as deferred below are not claimed as implemented.
 
 Unity project facts:
 
@@ -25,7 +25,7 @@ Bootstrap creates and connects concrete services.
 
 | Assembly | Implemented responsibility | Project references |
 |---|---|---|
-| `Witch.Domain` | Recipes, exact pairs, payments, suspicion, timer/expense/rewind rules, immutable run state | none |
+| `Witch.Domain` | Two-herb brewing, exact pairs, payments, suspicion, timer/expense/rewind rules, immutable run state | none |
 | `Witch.Application` | Legal phases and use cases for start/load, arrival, preparation, serving, timer, rewind, expense, retry, and advancement | Domain |
 | `Witch.Infrastructure` | ScriptableObject content adapter/validation, JSON persistence, atomic file replacement, clock, random, scene loading, audio, lifecycle | Application, Domain |
 | `Witch.Presentation` | Main menu/settings, Shop/guidebook/tutorial/pause, card board, result screens, input, audio requests | Application, Domain, Unity UI/Input |
@@ -43,7 +43,7 @@ Domain and Application assembly definitions use `noEngineReferences: true`. Sour
 4. loads Main Menu;
 5. injects Main Menu, Shop, or Rewind presenters whenever a production scene loads.
 
-Scenes and prefabs own visual hierarchy, layout, colors, fonts, and component references. Presentation scripts bind authored controls, dispatch interactions, and render state; they do not create GameObjects, add visual components, or calculate layout at runtime. Twenty-five reusable herb slots and sixteen reusable rewind-card slots are authored in advance and activated/configured from content. Recipes, orders, timers, payments, expenses, unlocks, guidebook pages, rewind symbols, and rewind difficulty come from content definitions or Domain configuration, not scene objects.
+Scenes and prefabs own visual hierarchy, layout, colors, fonts, and component references. Presentation scripts bind authored controls, dispatch interactions, and render state; they do not create GameObjects, add visual components, or calculate layout at runtime. Twenty-five reusable herb slots and sixteen reusable rewind-card slots are authored in advance and activated/configured from content. Orders, timers, payments, expenses, unlocks, guidebook pages, rewind symbols, and rewind difficulty come from content definitions or Domain configuration, not scene objects.
 
 The current implementation creates no GameObjects or components at runtime. Bootstrap, fixed-aspect controller, Cameras, audio channels, interface hierarchy, herb slots, and maximum rewind-card slots are all authored. Scripts only configure content, state, activity, and behavior. Each loaded Canvas uses its scene Camera so the whole interface stays inside a centered `16:9` landscape viewport; wider displays show black pillarboxes.
 
@@ -61,7 +61,7 @@ Assets/
 └── Tests/{EditMode,PlayMode,Fixtures}
 ```
 
-The catalog contains 25 herbs, three exact recipes, 15 orders, three days, two guidebook entries, two unlock sets, eight rewind symbols, prototype economy, and run configuration. The current three-day progression unlocks a subset of those herbs. Day 3 applies Soothe unlocks before building its first Shop view.
+The catalog contains 25 herbs, 150 orders, eight days, five herb categories, eight rewind symbols, prototype economy, and run configuration. Warming and Cooling unlock on Day 1, Soothing on Day 3, and Cleansing on Day 7. Mending content is authored but remains locked during the current run. Days 1–3 use Simple orders, Days 4–5 use Simple and Mid, and Days 6–8 use Mid.
 
 No active script, content asset, or production scene references newspaper gameplay, Hunter customers/deduction, magical-herb variants, hexes, or finite herb stock.
 
@@ -78,17 +78,17 @@ No active script, content asset, or production scene references newspaper gamepl
 
 ### Shop
 
-Day 1 shows three short opening beats before customer arrival. Prototype 1 temporarily admits customers automatically. Prototype 2 will add a player-operated bell/button; first successful admission starts the timer once. The presenter dispatches grind, pot, brew, discard, and serve commands. Domain returns correct, wrong-valid, or invalid-brew outcomes. Correct pays `10`; wrong-valid pays `0` and adds suspicion; invalid pairs auto-discard without suspicion. Each seeded order bag uses every available template once before reshuffling; repeated templates receive unique runtime order IDs so the queue can continue until closing time.
+Day 1 shows five short tutorial beats before customer arrival. Current Presentation admits customers automatically; first successful admission starts the timer once. The presenter dispatches grind, pot, brew, discard, and serve commands. Two different herbs always create a prepared potion. Serving the requested exact pair pays `10`; every other completed pair pays `0` and adds suspicion. Duplicate or incomplete pot contents cannot brew. Each seeded order bag uses every available template once before reshuffling; repeated templates receive unique runtime order IDs so the queue can continue until closing time.
 
 Timer runs during customer/order, guidebook, and preparation. Pause freezes it. At zero, no new encounter starts; an active encounter remains completable. If the authored queue is already empty, zero transitions directly to closing.
 
 ### Rewind
 
-Suspicion `3` is persisted as pending before scene navigation. Rewind reconstructs a deterministic content-configured symbol board from saved metadata. There is no timer or failure. Mismatches flip back after the selected accessibility delay. Completion atomically restores day-start money/timer/workbench, resets suspicion, increments rewind count, changes order seed, and reloads Shop.
+Suspicion `3` is persisted as pending before scene navigation. Rewind reconstructs a deterministic content-configured symbol board from saved metadata. There is no timer or failure. Mismatches flip back after the selected accessibility delay. Completion resets suspicion, increments rewind count, changes order seed, and clears the workbench. When runtime encounter state remains available, Shop resumes the triggering customer with pre-service money and remaining time; otherwise it restores the day-start snapshot and full timer.
 
 ### Expense and progression
 
-Closing resolves the configured expense. Success deducts the full amount; failure deducts nothing and is the only game-over route. Retry restores the same day and seed. Days 1–2 create the next snapshot with timer progression and unlocks. Paying Day 3 expense persists completion before entering prototype victory and playing its medieval-fanfare placeholder cue.
+Closing resolves the configured expense. Success deducts the full amount; failure deducts nothing and is the only game-over route. Retry restores the same day and seed. Days 1–7 create the next snapshot and apply authored unlocks. Paying Day 8 expense persists completion before entering prototype victory and playing its medieval-fanfare placeholder cue.
 
 ## Audio and accessibility
 
@@ -98,15 +98,15 @@ All uGUI buttons are Selectables for keyboard navigation. Herb pointer clicks do
 
 ## Verification
 
-Edit Mode covers Domain rules, Application guards/transactions, content validation/mapping, persistence, recovery, settings separation, and platform adapters. Play Mode covers scene order, authored view references, Cameras, automatic arrival, guidebook timer behavior, preparation/service outcomes, seeded order-bag refill, tutorial/pause, rewind/reload/reset, expense retry, and three-day victory.
+Edit Mode covers Domain rules, Application guards/transactions, 150-order content validation/mapping, persistence, recovery, settings separation, and platform adapters. Play Mode covers scene order, authored view references, Cameras, automatic arrival, guidebook timer behavior, preparation/service outcomes, seeded order-bag refill, tutorial/pause, rewind/reload/reset, expense retry, and eight-day victory.
 
 `Witch.Editor.GameBuild.BuildMacArm64` validates the four enabled scenes and creates a clean Apple Silicon macOS development player at `/private/tmp/WitchGamePrototype.app`.
 
 ## Deliberately deferred release features
 
-- Days 4–14 and final balance/content.
+- Days 9–14, Mending progression, Hard orders, and final balance/content.
 - Load Selection, save branches, hints, cosmetics, purchases, and Game Center.
 - Final art, animation, authored BGM/SFX, localization, signing, notarization, and TestFlight/App Store work.
 - Persisted narrative/tutorial flags and optional repeated-mismatch assistance.
 
-These are release-roadmap items, not holes in the three-day prototype contract.
+These are release-roadmap items, not claims about the current eight-day prototype.

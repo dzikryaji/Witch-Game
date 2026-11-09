@@ -21,3 +21,4 @@ MonoBehaviour:
   - and Lavandula for the headache.
   firstHerbId: herb.chamomile
   secondHerbId: herb.lavender
+  customer: {fileID: 11400000, guid: 10000000000000000000000000000006, type: 2}

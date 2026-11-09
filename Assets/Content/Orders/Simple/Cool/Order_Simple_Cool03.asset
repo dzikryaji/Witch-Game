@@ -22,3 +22,4 @@ MonoBehaviour:
   - She added Hyoscyamus niger for severe tremors.
   firstHerbId: herb.peppermint
   secondHerbId: herb.henbane
+  customer: {fileID: 11400000, guid: 10000000000000000000000000000006, type: 2}
