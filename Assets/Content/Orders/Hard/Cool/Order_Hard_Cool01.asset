@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f5f76fe6c3f7d450e98c5e1ef5f66046, type: 3}
+  m_Name: Order_Hard_Cool01
+  m_EditorClassIdentifier: Witch.Infrastructure::Witch.Infrastructure.Content.OrderDefinition
+  stableId: order.hard.c01
+  difficulty: 2
+  orderBubbles:
+  - "My daughter\u2019s fever persists, and her head aches fiercely."
+  - Her nose is blocked, while both hands swell.
+  - Bring the dark green leaf with a sharp smell.
+  - Also bring the delicate white flowers used in tea.
+  - She drinks freely, and reflux never troubles her.
+  firstHerbId: herb.peppermint
+  secondHerbId: herb.elderflower
+  customer: {fileID: 11400000, guid: 10000000000000000000000000000006, type: 2}

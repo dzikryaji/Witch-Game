@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Witch.Infrastructure::Witch.Infrastructure.Content.DayDefinition
   stableId: day.2
   dayNumber: 2
-  timerSeconds: 240
+  timerSeconds: 300
   dailyExpense: 20
   unlockedCategoryIds: []
   orderDifficulties: 00000000i
