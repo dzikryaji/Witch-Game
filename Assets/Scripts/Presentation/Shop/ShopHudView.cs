@@ -153,8 +153,8 @@ namespace Witch.Presentation.Shop
             dayCycleView?.Render(remaining, session.DayStartSnapshot.TimerDuration);
             dayText.text = "Day " + session.RunState.CurrentDayNumber + "/14";
             timerText.text = "Time  " + ((int)remaining.TotalMinutes).ToString("00") + ":" + remaining.Seconds.ToString("00");
-            moneyText.text = "Coins: $" + session.RunState.Money;
-            suspicionText.text = "Suspicion  " + session.RunState.Suspicion + "/3";
+            moneyText.text = ": $" + session.RunState.Money;
+            suspicionText.text = session.RunState.Suspicion + "/3";
             Vector2 fillMax = suspicionFill.rectTransform.anchorMax;
             fillMax.x = Mathf.Clamp01(session.RunState.Suspicion / 3f);
             suspicionFill.rectTransform.anchorMax = fillMax;

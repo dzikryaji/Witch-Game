@@ -17,9 +17,7 @@ namespace Witch.Application.Tests
             GameSession session = CreateEncounterSession();
             var preparation = new PotionPreparationUseCase(CreateRules());
 
-            preparation.Grind(session, "herb.ginger");
-            preparation.AddToPot(session);
-            preparation.Grind(session, "herb.mint");
+            preparation.Grind(session, "herb.ginger", "herb.mint");
             preparation.AddToPot(session);
             PreparationResult result = preparation.Brew(session);
 
@@ -34,9 +32,7 @@ namespace Witch.Application.Tests
             GameSession session = CreateEncounterSession();
             var preparation = new PotionPreparationUseCase(CreateRules());
 
-            preparation.Grind(session, "herb.ginger");
-            preparation.AddToPot(session);
-            preparation.Grind(session, "herb.sage");
+            preparation.Grind(session, "herb.ginger", "herb.sage");
             preparation.AddToPot(session);
             PreparationResult result = preparation.Brew(session);
 
@@ -52,9 +48,7 @@ namespace Witch.Application.Tests
             GameSession session = CreateEncounterSession();
             var rules = CreateRules();
             var preparation = new PotionPreparationUseCase(rules);
-            preparation.Grind(session, "herb.ginger");
-            preparation.AddToPot(session);
-            preparation.Grind(session, "herb.mint");
+            preparation.Grind(session, "herb.ginger", "herb.mint");
             preparation.AddToPot(session);
             preparation.Brew(session);
             var serve = new ServePotionUseCase(rules);
@@ -75,9 +69,7 @@ namespace Witch.Application.Tests
             GameSession session = CreateEncounterSession();
             var rules = CreateRules();
             var preparation = new PotionPreparationUseCase(rules);
-            preparation.Grind(session, "herb.mint");
-            preparation.AddToPot(session);
-            preparation.Grind(session, "herb.sage");
+            preparation.Grind(session, "herb.mint", "herb.sage");
             preparation.AddToPot(session);
             preparation.Brew(session);
             var repository = new FakeSaveRepository();
@@ -95,9 +87,7 @@ namespace Witch.Application.Tests
             GameSession session = CreateEncounterSession();
             var rules = CreateRules();
             var preparation = new PotionPreparationUseCase(rules);
-            preparation.Grind(session, "herb.mint");
-            preparation.AddToPot(session);
-            preparation.Grind(session, "herb.sage");
+            preparation.Grind(session, "herb.mint", "herb.sage");
             preparation.AddToPot(session);
             preparation.Brew(session);
             var repository = new FakeSaveRepository

@@ -157,9 +157,7 @@ namespace Witch.Application.Tests
                         new OrderRequest(
                             "order." + index,
                             new HerbPair("herb.ginger", "herb.mint"))));
-                prepare.Grind(session, "herb.mint");
-                prepare.AddToPot(session);
-                prepare.Grind(session, "herb.sage");
+                prepare.Grind(session, "herb.mint", "herb.sage");
                 prepare.AddToPot(session);
                 prepare.Brew(session);
                 serve.Execute(session);

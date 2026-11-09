@@ -46,6 +46,8 @@ namespace Witch.Presentation.Shop
         [SerializeField] private Text groundHerbText;
         [SerializeField] private GameObject preparedPotionObject;
         [SerializeField] private Text preparedPotionText;
+        [SerializeField] private Image preparedPotionHerbIcon1;
+        [SerializeField] private Image preparedPotionHerbIcon2;
         [SerializeField] private GameObject hunterWarningPanel;
         [SerializeField] private GameObject progressionPanel;
         [SerializeField] private Text progressionText;
@@ -62,6 +64,9 @@ namespace Witch.Presentation.Shop
         [Header("Input Actions")]
         [SerializeField] private InputActionAsset inputActions;
         [SerializeField] private MinigameIntroPopupView minigameIntroPopup;
+        [SerializeField] private PotionRevealAnimator potionRevealAnimator;
+        [SerializeField] private Image[] grinderFirstHerbImages;
+        [SerializeField] private Image[] grinderSecondHerbImages;
 
         private IGameSessionStore sessionStore;
         private OpenShopUseCase openShop;
@@ -87,7 +92,9 @@ namespace Witch.Presentation.Shop
         private InputAction pauseAction;
         private InputAction guidebookAction;
         private readonly List<HerbDragItem> herbSlots = new List<HerbDragItem>();
-        private string loadedGrinderHerbId;
+        private string grinderFirstHerbId;
+        private string grinderSecondHerbId;
+        private bool GrinderIsFull => grinderFirstHerbId != null && grinderSecondHerbId != null;
         private IReadOnlyList<GuidebookPageViewData> guidebookPages = Array.Empty<GuidebookPageViewData>();
         private int guidebookPageIndex;
         private int guidebookSpreadCount => (guidebookPages.Count + 1) / 2;
@@ -295,13 +302,11 @@ namespace Witch.Presentation.Shop
             if (IsInitialized && !TutorialVisible && !MinigameIntroVisible) ToggleGuidebook();
         }
 
-        public PreparationResult GrindHerb(string herbId)
+        public PreparationResult GrindHerb(string firstHerbId, string secondHerbId)
         {
-            PreparationResult result = preparation.Grind(ActiveSession, herbId);
+            PreparationResult result = preparation.Grind(ActiveSession, firstHerbId, secondHerbId);
             SetStatus(result.Succeeded
-                ? setup.DayNumber == 1
-                    ? "Ground " + DisplayName(herbId) + ". Add it to the pot, then prepare the second herb."
-                    : "Ground " + DisplayName(herbId) + "."
+                ? "Ground " + DisplayName(firstHerbId) + " and " + DisplayName(secondHerbId) + ". Drag the bowl into the pot."
                 : result.ErrorMessage);
             if (result.Succeeded) audioService?.Play(GameAudioCueIds.Grind);
             Render();
@@ -317,50 +322,83 @@ namespace Witch.Presentation.Shop
             }
 
             if (string.IsNullOrWhiteSpace(herbId)) return false;
-            loadedGrinderHerbId = herbId;
-            SetStatus(DisplayName(herbId) + " loaded. Press Grind, or Eject to change it.");
+
+            if (GrinderIsFull)
+            {
+                SetStatus("The grinder is full. Press Grind, or Reset to start over.");
+                return false;
+            }
+
+            if (herbId == grinderFirstHerbId)
+            {
+                SetStatus(DisplayName(herbId) + " is already in the grinder.");
+                return false;
+            }
+
+            if (grinderFirstHerbId == null) grinderFirstHerbId = herbId;
+            else grinderSecondHerbId = herbId;
+
+            SetStatus(GrinderIsFull
+                ? "Both herbs loaded. Press Grind."
+                : DisplayName(herbId) + " loaded. Add a second herb.");
             Render();
             return true;
         }
 
         public PreparationResult GrindLoadedHerb()
         {
-            if (string.IsNullOrWhiteSpace(loadedGrinderHerbId))
+            if (!GrinderIsFull)
             {
-                PreparationResult failure = PreparationResult.Failure("Drop a herb into the grinder first.");
+                PreparationResult failure = PreparationResult.Failure("Put two herbs into the grinder first.");
                 SetStatus(failure.ErrorMessage);
                 return failure;
             }
 
-            PreparationResult result = GrindHerb(loadedGrinderHerbId);
+            PreparationResult result = GrindHerb(grinderFirstHerbId, grinderSecondHerbId);
             if (result.Succeeded)
             {
-                loadedGrinderHerbId = null;
+                ClearGrinder();
                 Render();
             }
             return result;
         }
 
-        public void EjectLoadedHerb()
+        public void EjectLoadedHerb()   
         {
-            if (string.IsNullOrWhiteSpace(loadedGrinderHerbId))
+            if (grinderFirstHerbId == null && grinderSecondHerbId == null)
             {
                 SetStatus("Grinder is already empty.");
                 return;
             }
-            loadedGrinderHerbId = null;
-            SetStatus("Herb returned to shelf.");
+            ClearGrinder();
+            SetStatus("Grinder reset.");
             Render();
+        }
+
+        private void ClearGrinder()
+        {
+            grinderFirstHerbId = null;
+            grinderSecondHerbId = null;
         }
 
         public PreparationResult AddGroundHerbToPot()
         {
             PreparationResult result = preparation.AddToPot(ActiveSession);
+            
+            if (result.Succeeded && ActiveSession.PotionDraft.IsReadyToBrew)
+            {
+                audioService?.Play(GameAudioCueIds.Pot);
+                return Brew();
+            } 
+
             SetStatus(result.Succeeded
-                ? setup.DayNumber == 1 ? "Ground herb added to pot. Brew when both exact herbs are inside." : "Ground herb added to pot."
+                ? setup.DayNumber == 1 
+                ? "Ground herb added to pot. Brew when both exact herbs are inside." 
+                : "Ground herb added to pot."
                 : result.ErrorMessage);
             if (result.Succeeded) audioService?.Play(GameAudioCueIds.Pot);
             Render();
+            
             return result;
         }
 
@@ -373,7 +411,7 @@ namespace Witch.Presentation.Shop
             return result;
         }
 
-        public PreparationResult Brew()
+        public PreparationResult Brew() 
         {
             PreparationResult result = preparation.Brew(ActiveSession);
             string message = !result.Succeeded
@@ -385,14 +423,28 @@ namespace Witch.Presentation.Shop
                 audioService?.Play(GameAudioCueIds.BrewSuccess);
             }
             Render();
+
+            if (result.Succeeded && potionRevealAnimator != null)
+            {
+                potionRevealAnimator.Play();
+            }
+
             return result;
         }
 
         public PreparationResult Discard()
         {
-            loadedGrinderHerbId = null;
             PreparationResult result = preparation.Discard(ActiveSession);
             SetStatus(result.Succeeded ? "Workbench cleared." : result.ErrorMessage);
+            if (result.Succeeded) audioService?.Play(GameAudioCueIds.Discard);
+            Render();
+            return result;
+        }
+
+        public PreparationResult DiscardPotion()
+        {
+            PreparationResult result = preparation.DiscardPotion(ActiveSession);
+            SetStatus(result.Succeeded ? "Potion discarded." : result.ErrorMessage);
             if (result.Succeeded) audioService?.Play(GameAudioCueIds.Discard);
             Render();
             return result;
@@ -874,12 +926,21 @@ namespace Witch.Presentation.Shop
             }
 
             hudView.Render(session, DisplayName);
-            grinderInputText.text = string.IsNullOrWhiteSpace(loadedGrinderHerbId)
-                ? "Drop herb here"
-                : DisplayName(loadedGrinderHerbId);
-            bool hasGroundHerb = !string.IsNullOrWhiteSpace(session.GroundHerbId);
+            grinderInputText.text = GrinderIsFull 
+                ? "Ready to grind"
+                : grinderFirstHerbId == null 
+                ? "Drop two herbs here" 
+                : "Drop one more herb";
+            grindButton.interactable = GrinderIsFull;
+            ShowHerbImages(grinderFirstHerbImages, grinderFirstHerbId);
+            ShowHerbImages(grinderSecondHerbImages, grinderSecondHerbId);
+            bool hasGroundHerb = session.GroundMixture != null;
             groundHerbObject.SetActive(hasGroundHerb);
-            if (hasGroundHerb) groundHerbText.text = "Ground\n" + DisplayName(session.GroundHerbId);
+            if (hasGroundHerb)
+            {
+                groundHerbText.text = "Ground\n" + DisplayName(session.GroundMixture.FirstHerbId)
+                    + " + " + DisplayName(session.GroundMixture.SecondHerbId);             
+            }
             bool hasPotion = session.PreparedPotion != null;
             if (!hasPotion && preparedPotionObject.activeSelf)
             {
@@ -891,6 +952,21 @@ namespace Witch.Presentation.Shop
                 HerbPair pair = session.PreparedPotion.HerbPair;
                 preparedPotionText.text = "Brewed Potion\n"
                     + DisplayName(pair.FirstHerbId) + " + " + DisplayName(pair.SecondHerbId);
+
+                if(preparedPotionHerbIcon1 != null)
+                {
+                    Sprite icon1 = DisplayImage(pair.FirstHerbId);
+                    preparedPotionHerbIcon1.sprite = icon1; 
+                    preparedPotionHerbIcon1.color = icon1 == null ? Color.clear : Color.white; 
+                }
+
+                if(preparedPotionHerbIcon2 != null)
+                {
+                    Sprite icon2 = DisplayImage(pair.SecondHerbId);
+                    preparedPotionHerbIcon2.sprite = icon2; 
+                    preparedPotionHerbIcon2.color = icon2 == null ? Color.clear : Color.white; 
+                }
+
             }
             RenderProgression(session);
         }
@@ -977,6 +1053,31 @@ namespace Witch.Presentation.Shop
             }
 
             return herbId;
+        }
+
+        private Sprite DisplayImage(string herbId)
+        {
+            foreach (ShopHerbViewData herb in setup.Herbs)
+            {
+                if (string.Equals(herb.StableId, herbId, StringComparison.Ordinal))
+                {
+                    return herb.HerbIllustration;
+                }
+            }
+
+            return null;
+        }
+
+        private void ShowHerbImages(Image[] images, string herbId)
+        {
+            if (images == null) return;
+            Sprite sprite = herbId == null ? null : DisplayImage(herbId);
+            foreach (Image image in images)
+            {
+                if (image == null) continue;
+                image.sprite = sprite;
+                image.enabled = sprite != null;
+            }
         }
 
         private void SetStatus(string message)
