@@ -210,6 +210,11 @@ namespace Witch.Presentation.MainMenu
         {
             bool isOpening = !settingsPanel.activeSelf;
 
+            if (!isOpening)
+            {
+                RevertPreview();
+            }
+
             settingsOverlay.SetActive(isOpening);
             settingsPanel.SetActive(isOpening);
 
@@ -240,6 +245,8 @@ namespace Witch.Presentation.MainMenu
             settingsButton.onClick.AddListener(ToggleSettings);
             quitButton.onClick.AddListener(OnQuitClicked);
             applySettingsButton.onClick.AddListener(OnApplySettingsClicked);
+            masterSlider.onValueChanged.AddListener(_ => PreviewVolumes());
+            musicSlider.onValueChanged.AddListener(_ => PreviewVolumes());
             viewBound = true;
         }
 
@@ -300,6 +307,27 @@ namespace Witch.Presentation.MainMenu
             musicSlider.SetValueWithoutNotify(LoadedSettings.MusicVolume);
             // soundSlider.SetValueWithoutNotify(LoadedSettings.SoundVolume);
             reducedDelayToggle.SetIsOnWithoutNotify(LoadedSettings.ReducedMismatchDelay);
+        }
+
+        private void PreviewVolumes()
+        {
+            if (!IsInitialized || audioService == null || LoadedSettings == null) return;
+
+            audioService.ApplySettings(new GameSettingsState(
+                masterSlider.value,
+                musicSlider.value,
+                LoadedSettings.SoundVolume,
+                reducedDelayToggle.isOn));
+        }
+
+        private void RevertPreview()
+        {
+            if (LoadedSettings == null) return;
+
+            masterSlider.SetValueWithoutNotify(LoadedSettings.MasterVolume);
+            musicSlider.SetValueWithoutNotify(LoadedSettings.MusicVolume);
+            reducedDelayToggle.SetIsOnWithoutNotify(LoadedSettings.ReducedMismatchDelay);
+            audioService?.ApplySettings(LoadedSettings);
         }
 
         private void SetBusy(bool busy)
