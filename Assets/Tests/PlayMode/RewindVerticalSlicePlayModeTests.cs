@@ -140,9 +140,7 @@ namespace Witch.Bootstrap.PlayModeTests
                         "customer." + index,
                         new OrderRequest("order." + index, new HerbPair("herb.ginger", "herb.mint"))));
                 Assert.That(arrival.Succeeded, Is.True, arrival.ErrorMessage);
-                prepare.Grind(start.Session, "herb.mint");
-                prepare.AddToPot(start.Session);
-                prepare.Grind(start.Session, "herb.sage");
+                prepare.Grind(start.Session, "herb.mint", "herb.sage");
                 prepare.AddToPot(start.Session);
                 prepare.Brew(start.Session);
                 ServePotionResult result = serve.ExecuteAsync(start.Session).Result;

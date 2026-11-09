@@ -272,9 +272,7 @@ namespace Witch.Infrastructure.Tests
                     "customer." + index,
                     new OrderRequest("order." + index, new HerbPair("herb.ginger", "herb.mint"))));
             var preparation = new PotionPreparationUseCase(rules);
-            preparation.Grind(session, "herb.mint");
-            preparation.AddToPot(session);
-            preparation.Grind(session, "herb.sage");
+            preparation.Grind(session, "herb.mint", "herb.sage");
             preparation.AddToPot(session);
             preparation.Brew(session);
             ServePotionResult result = await new ServePotionUseCase(rules, repository).ExecuteAsync(session);

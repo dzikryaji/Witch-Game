@@ -21,6 +21,7 @@ namespace Witch.Presentation.MainMenu
         [SerializeField] private Toggle reducedDelayToggle;
         [SerializeField] private Button applySettingsButton;
         [SerializeField] private Text errorText;
+        [SerializeField] private GameObject settingsOverlay;
 
         private IStartNewGameUseCase startNewGame;
         private ILoadRunUseCase loadRun;
@@ -43,6 +44,7 @@ namespace Witch.Presentation.MainMenu
             // && soundSlider != null
             && reducedDelayToggle != null
             && applySettingsButton != null
+            && settingsOverlay != null
             && errorText != null;
 
         public void Initialize(
@@ -87,14 +89,14 @@ namespace Witch.Presentation.MainMenu
             applicationLifecycle = lifecycle ?? throw new ArgumentNullException(nameof(lifecycle));
             audioService = audio;
             RequireAndBindAuthoredView();
-            if (settingsPanel.GetComponentInParent<Canvas>() == null)
-            {
-                RectTransform panelRect = settingsPanel.GetComponent<RectTransform>();
-                panelRect.SetParent(settingsButton.GetComponentInParent<Canvas>().transform, false);
-                panelRect.anchoredPosition = Vector2.zero;
-                panelRect.sizeDelta = Vector2.zero;
-                panelRect.localScale = Vector3.one;
-            }
+            // if (settingsPanel.GetComponentInParent<Canvas>() == null)
+            // {
+            //     RectTransform panelRect = settingsPanel.GetComponent<RectTransform>();
+            //     panelRect.SetParent(settingsButton.GetComponentInParent<Canvas>().transform, false);
+            //     panelRect.anchoredPosition = Vector2.zero;
+            //     panelRect.sizeDelta = Vector2.zero;
+            //     panelRect.localScale = Vector3.one;
+            // }
             IsInitialized = true;
             LastErrorMessage = null;
             RenderError();
@@ -193,15 +195,26 @@ namespace Witch.Presentation.MainMenu
                 return false;
             }
 
+        // public void ToggleSettings()
+        // {
+        //     if (settingsPanel == null)
+        //     {
+        //         return;
+        //     }
+
+        //     settingsPanel.SetActive(!settingsPanel.activeSelf);
+        //     audioService?.Play(settingsPanel.activeSelf ? GameAudioCueIds.UiConfirm : GameAudioCueIds.UiBack);
+        // }
+
         public void ToggleSettings()
         {
-            if (settingsPanel == null)
-            {
-                return;
-            }
+            bool isOpening = !settingsPanel.activeSelf;
 
-            settingsPanel.SetActive(!settingsPanel.activeSelf);
-            audioService?.Play(settingsPanel.activeSelf ? GameAudioCueIds.UiConfirm : GameAudioCueIds.UiBack);
+            settingsOverlay.SetActive(isOpening);
+            settingsPanel.SetActive(isOpening);
+
+            audioService?.Play(
+                isOpening ? GameAudioCueIds.UiConfirm : GameAudioCueIds.UiBack);
         }
 
         public ServiceResult Quit()

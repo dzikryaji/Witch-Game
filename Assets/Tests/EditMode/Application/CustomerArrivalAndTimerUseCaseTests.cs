@@ -92,9 +92,7 @@ namespace Witch.Application.Tests
             AdmitFirstCustomer(session, clock);
             var rules = new PotionServiceRules(10);
             var preparation = new PotionPreparationUseCase(rules);
-            preparation.Grind(session, "herb.ginger");
-            preparation.AddToPot(session);
-            preparation.Grind(session, "herb.mint");
+            preparation.Grind(session, "herb.ginger", "herb.mint");
             preparation.AddToPot(session);
             preparation.Brew(session);
             new ServePotionUseCase(rules).Execute(session);

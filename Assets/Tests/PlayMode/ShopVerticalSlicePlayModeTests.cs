@@ -284,6 +284,7 @@ namespace Witch.Bootstrap.PlayModeTests
             Assert.That(presenter.ActiveSession.TimerState.RemainingTime, Is.EqualTo(TimeSpan.FromSeconds(55)));
 
             HerbDragItem ginger = FindHerb("herb.ginger");
+            HerbDragItem mint = FindHerb("herb.mint");
             GrinderDropZone grinder = Object.FindAnyObjectByType<GrinderDropZone>();
             ginger.GetComponent<Button>().onClick.Invoke();
             Assert.That(presenter.GrindLoadedHerb().Succeeded, Is.False, "Clicking a herb must not load the grinder.");
@@ -291,17 +292,23 @@ namespace Witch.Bootstrap.PlayModeTests
                 ginger.gameObject,
                 new BaseEventData(EventSystem.current),
                 ExecuteEvents.submitHandler);
+            ExecuteEvents.Execute<ISubmitHandler>(
+                mint.gameObject,
+                new BaseEventData(EventSystem.current),
+                ExecuteEvents.submitHandler);
             Assert.That(presenter.GrindLoadedHerb().Succeeded, Is.True, "Keyboard submit must load the grinder.");
             presenter.DiscardGroundHerb();
-            var pointer = new PointerEventData(EventSystem.current) { pointerDrag = ginger.gameObject };
-            grinder.OnDrop(pointer);
-            Assert.That(presenter.ActiveSession.GroundHerbId, Is.Null);
+            Assert.That(presenter.ActiveSession.GroundMixture, Is.Null);
+
+            grinder.OnDrop(new PointerEventData(EventSystem.current) { pointerDrag = ginger.gameObject });
+            Assert.That(presenter.LoadHerbIntoGrinder("herb.ginger"), Is.False, "The same herb cannot be loaded twice.");
+            Assert.That(presenter.GrindLoadedHerb().Succeeded, Is.False, "One herb is not enough to grind.");
+            grinder.OnDrop(new PointerEventData(EventSystem.current) { pointerDrag = mint.gameObject });
+            Assert.That(presenter.ActiveSession.GroundMixture, Is.Null, "Loading the grinder must not grind yet.");
             Assert.That(presenter.GrindLoadedHerb().Succeeded, Is.True);
-            Assert.That(presenter.ActiveSession.GroundHerbId, Is.EqualTo("herb.ginger"));
-            Assert.That(presenter.AddGroundHerbToPot().Succeeded, Is.True);
-            Assert.That(presenter.GrindHerb("herb.mint").Succeeded, Is.True);
-            Assert.That(presenter.AddGroundHerbToPot().Succeeded, Is.True);
-            Assert.That(presenter.Brew().Kind, Is.EqualTo(PreparationResultKind.Prepared));
+            Assert.That(presenter.ActiveSession.GroundMixture, Is.EqualTo(new HerbPair("herb.ginger", "herb.mint")));
+            Assert.That(presenter.AddGroundHerbToPot().Kind, Is.EqualTo(PreparationResultKind.Prepared),
+                "Adding the ground mixture to the pot brews automatically.");
 
             Task<ServePotionResult> serve = presenter.ServeAsync();
             yield return WaitFor(serve);
@@ -322,7 +329,7 @@ namespace Witch.Bootstrap.PlayModeTests
             ShopShellPresenter presenter = InitializePresenter(harness);
 
             PreparePair(presenter, "herb.ginger", "herb.sage");
-            Assert.That(presenter.Brew().Kind, Is.EqualTo(PreparationResultKind.Prepared));
+            Assert.That(presenter.ActiveSession.PreparedPotion, Is.Not.Null);
             Task<ServePotionResult> serve = presenter.ServeAsync();
             yield return WaitFor(serve);
 
@@ -339,12 +346,11 @@ namespace Witch.Bootstrap.PlayModeTests
             ShopShellPresenter presenter = InitializePresenter(harness);
 
             PreparePair(presenter, "herb.mint", "herb.lavender");
-            Assert.That(presenter.Brew().Kind, Is.EqualTo(PreparationResultKind.Prepared));
             Assert.That(presenter.ActiveSession.PreparedPotion, Is.Not.Null);
 
-            presenter.GrindHerb("herb.ginger");
+            presenter.GrindHerb("herb.ginger", "herb.sage");
             Assert.That(presenter.Discard().Kind, Is.EqualTo(PreparationResultKind.Discarded));
-            Assert.That(presenter.ActiveSession.GroundHerbId, Is.Null);
+            Assert.That(presenter.ActiveSession.GroundMixture, Is.Null);
 
             harness.Clock.Advance(TimeSpan.FromSeconds(70));
             harness.UpdateTimer.Execute(presenter.ActiveSession);
@@ -352,7 +358,6 @@ namespace Witch.Bootstrap.PlayModeTests
             Assert.That(presenter.ActiveSession.CurrentPhase, Is.EqualTo(GamePhase.CustomerEncounter));
 
             PreparePair(presenter, "herb.ginger", "herb.mint");
-            presenter.Brew();
             Task<ServePotionResult> serve = presenter.ServeAsync();
             yield return WaitFor(serve);
             Assert.That(serve.Result.Succeeded, Is.True);
@@ -395,7 +400,6 @@ namespace Witch.Bootstrap.PlayModeTests
 
             Assert.That(presenter.ActiveSession.AttemptState.ActiveOrder.OrderId, Is.EqualTo("order.first"));
             PreparePair(presenter, "herb.ginger", "herb.mint");
-            presenter.Brew();
             Task<ServePotionResult> first = presenter.ServeAsync();
             yield return WaitFor(first);
 
@@ -404,7 +408,6 @@ namespace Witch.Bootstrap.PlayModeTests
                 Is.EqualTo(new[] { "order.first", "order.second" }));
 
             PreparePair(presenter, "herb.ginger", "herb.sage");
-            presenter.Brew();
             Task<ServePotionResult> second = presenter.ServeAsync();
             yield return WaitFor(second);
 
@@ -835,10 +838,9 @@ namespace Witch.Bootstrap.PlayModeTests
 
         private static void PreparePair(ShopShellPresenter presenter, string first, string second)
         {
-            Assert.That(presenter.GrindHerb(first).Succeeded, Is.True);
-            Assert.That(presenter.AddGroundHerbToPot().Succeeded, Is.True);
-            Assert.That(presenter.GrindHerb(second).Succeeded, Is.True);
-            Assert.That(presenter.AddGroundHerbToPot().Succeeded, Is.True);
+            // Both herbs are ground together; adding the mixture to the pot brews automatically.
+            Assert.That(presenter.GrindHerb(first, second).Succeeded, Is.True);
+            Assert.That(presenter.AddGroundHerbToPot().Kind, Is.EqualTo(PreparationResultKind.Prepared));
         }
 
         private static HerbDragItem FindHerb(string herbId)

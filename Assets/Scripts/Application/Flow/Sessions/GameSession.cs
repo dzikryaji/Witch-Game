@@ -81,7 +81,7 @@ namespace Witch.Application.Flow
 
         public bool TimerStopped { get; private set; }
 
-        public string GroundHerbId { get; private set; }
+        public HerbPair GroundMixture { get; private set; }
 
         public PotionDraft PotionDraft { get; private set; }
 
@@ -203,29 +203,36 @@ namespace Witch.Application.Flow
             TimerPaused = false;
         }
 
-        internal void SetGroundHerb(string herbId)
+        internal void SetGroundMixture(HerbPair mixture)
         {
-            GroundHerbId = herbId;
+            GroundMixture = mixture ?? throw new ArgumentNullException(nameof(mixture));
         }
 
-        internal void ClearGroundHerb()
+
+        internal void ClearGroundMixture()
         {
-            GroundHerbId = null;
+            GroundMixture = null;
         }
 
         internal void AddGroundHerbToPot()
         {
-            if (string.IsNullOrWhiteSpace(GroundHerbId))
+            if (GroundMixture == null)
             {
                 throw new InvalidOperationException("Grind a herb before adding it to the pot.");
             }
 
-            var ingredients = new System.Collections.Generic.List<PotIngredient>(PotionDraft.Ingredients)
+            if (PotionDraft.Ingredients.Count > 0)
             {
-                new PotIngredient(GroundHerbId)
-            };
-            PotionDraft = new PotionDraft(ingredients);
-            GroundHerbId = null;
+                throw new InvalidOperationException("The cauldron already has ingredients.");
+            }
+
+            PotionDraft = new PotionDraft(new[]
+            {
+                new PotIngredient(GroundMixture.FirstHerbId),
+                new PotIngredient(GroundMixture.SecondHerbId)
+            });
+
+            GroundMixture = null;
             PreparedPotion = null;
         }
 
@@ -249,9 +256,15 @@ namespace Witch.Application.Flow
 
         internal void ClearWorkbench()
         {
-            GroundHerbId = null;
+            GroundMixture = null;
             PotionDraft = new PotionDraft();
             PreparedPotion = null;
+        }
+
+        internal void ClearPotion()
+        {
+            PotionDraft = new PotionDraft();   
+            PreparedPotion = null;             
         }
 
         internal void CommitService(ServiceOutcome outcome)

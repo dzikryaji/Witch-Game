@@ -36,7 +36,7 @@ namespace Witch.Presentation.Shop
             }
             else if (eventData.pointerDrag.GetComponent<PreparedPotionDragItem>() != null)
             {
-                presenter.Discard();
+                presenter.DiscardPotion();
             }
         }
 
