@@ -22,3 +22,4 @@ MonoBehaviour:
   - He paired it with Sinapis alba for chills and mucus.
   firstHerbId: herb.cinnamon
   secondHerbId: herb.mustardSeed
+  customer: {fileID: 11400000, guid: 10000000000000000000000000000006, type: 2}

@@ -50,6 +50,7 @@ namespace Witch.Presentation.Shop
             return new ShopEncounterViewData(
                 template.CustomerId,
                 template.CustomerName,
+                template.CustomerIllustration,
                 template.Order,
                 template.OrderBubbles);
         }

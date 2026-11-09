@@ -22,3 +22,4 @@ MonoBehaviour:
   - I can rest safely today.
   firstHerbId: herb.burdockRoot
   secondHerbId: herb.dandelion
+  customer: {fileID: 11400000, guid: 10000000000000000000000000000006, type: 2}

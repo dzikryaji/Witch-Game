@@ -22,3 +22,4 @@ MonoBehaviour:
   - She added Capsicum annuum for energy and blocked airways.
   firstHerbId: herb.clove
   secondHerbId: herb.cayennePepper
+  customer: {fileID: 11400000, guid: 10000000000000000000000000000006, type: 2}

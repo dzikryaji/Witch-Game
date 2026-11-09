@@ -21,3 +21,4 @@ MonoBehaviour:
   - My lungs are strong, and my skin is unbroken.
   firstHerbId: herb.cayennePepper
   secondHerbId: herb.mustardSeed
+  customer: {fileID: 11400000, guid: 7a06e32b0a26b416c9f59776c3880e92, type: 2}

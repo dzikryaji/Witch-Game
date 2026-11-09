@@ -22,3 +22,4 @@ MonoBehaviour:
   - Find a sweet-smelling purple stem and complex, unusual flower.
   firstHerbId: herb.lavender
   secondHerbId: herb.passionFlower
+  customer: {fileID: 11400000, guid: 7a06e32b0a26b416c9f59776c3880e92, type: 2}

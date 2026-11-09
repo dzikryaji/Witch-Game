@@ -17,7 +17,7 @@ namespace Witch.Infrastructure.Content
 
             ValidateStableIds(catalog.Herbs, "Herb", errors);
             ValidateStableIds(catalog.Orders, "Order", errors);
-            ValidateStableIds(catalog.Customers, "Customer", errors);
+            ValidateStableIds(catalog.Customers.Where(value => value != null).ToArray(), "Customer", errors);
             ValidateStableIds(catalog.Days, "Day", errors);
             ValidateStableIds(catalog.HerbCategories, "Herb category", errors);
             ValidateStableIds(catalog.RewindCards, "Rewind card", errors);
@@ -75,6 +75,14 @@ namespace Witch.Infrastructure.Content
                 }
                 ValidateReference(order.FirstHerbId, herbIds, "Order '" + order.StableId + "' first herb", errors);
                 ValidateReference(order.SecondHerbId, herbIds, "Order '" + order.StableId + "' second herb", errors);
+                if (order.Customer != null)
+                {
+                    ValidateReference(
+                        order.Customer.StableId,
+                        customerIds,
+                        "Order '" + order.StableId + "' customer",
+                        errors);
+                }
                 if (string.Equals(order.FirstHerbId, order.SecondHerbId, StringComparison.Ordinal))
                 {
                     errors.Add("Order '" + order.StableId + "' must use two different herbs.");
@@ -103,11 +111,6 @@ namespace Witch.Infrastructure.Content
                 if (day.TimerSeconds < 1)
                 {
                     errors.Add("Day '" + day.StableId + "' timer must be at least 1 second.");
-                }
-
-                if (day.CustomerIds.Count == 0)
-                {
-                    errors.Add("Day '" + day.StableId + "' needs at least one customer.");
                 }
 
                 if (day.DailyExpense < 0)
@@ -141,7 +144,6 @@ namespace Witch.Infrastructure.Content
                 }
 
                 ValidateAvailableOrders(day, ordersById.Values, herbsById, unlockedCategories, errors);
-                ValidateReferences(day.CustomerIds, customerIds, "Day '" + day.StableId + "' customer", errors);
             }
 
             ValidateConfiguration(catalog, daysSeen, errors);
