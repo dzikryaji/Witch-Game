@@ -191,15 +191,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: Witch.Infrastructure::Witch.Infrastructure.Audio.UnityAudioService
   cues:
   - cueId: BGM_MAIN_MENU
-    clip: {fileID: 8300000, guid: f79b9ac10f17a48a7b6fb7fdd3197576, type: 3}
+    clip: {fileID: 8300000, guid: d2969dd9b2f649858c187b8eb5831d37, type: 3}
   - cueId: BGM_SHOP
-    clip: {fileID: 8300000, guid: d61c8cfed057041888523e0e6818f97e, type: 3}
+    clip: {fileID: 8300000, guid: 2170d297885143df9808577c8307b114, type: 3}
   - cueId: BGM_REWIND_MINIGAME
-    clip: {fileID: 8300000, guid: 9c3d8d4223df04090b74338b7dc599e8, type: 3}
+    clip: {fileID: 8300000, guid: c0ae432a05cd4c558f6582c0d36a7722, type: 3}
   - cueId: BGM_GAME_OVER
-    clip: {fileID: 8300000, guid: 4bb0bb780b5e74837a31b6fcf110dcb2, type: 3}
+    clip: {fileID: 8300000, guid: 4bc4d4598b02441c8dc62cdaba429043, type: 3}
   - cueId: BGM_GAME_COMPLETE
-    clip: {fileID: 8300000, guid: dd82987c93bdf46c6b58ec47dc7683b4, type: 3}
+    clip: {fileID: 8300000, guid: 3921a49bef4c4a4ea3ffc78e1cc1de4d, type: 3}
   - cueId: SFX_SHOP_AMBIENCE
     clip: {fileID: 8300000, guid: 34dc061c93f8349008f902f473c6479b, type: 3}
   - cueId: SFX_CUSTOMER_BELL

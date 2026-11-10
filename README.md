@@ -1,21 +1,21 @@
 # Witching Hours
 
-Witching Hours is a mouse-and-keyboard order-deduction game about a witch hiding behind a medieval herbalist shop. This repository currently contains a playable eight-day prototype. The planned full game lasts fourteen days.
+Witching Hours is a mouse-and-keyboard order-deduction game about a witch hiding behind a medieval herbalist shop. This repository currently contains the full fourteen-day progression.
 
 All customers are Villagers. Hunters are an outside narrative threat triggered by repeated wrong orders. Hunter identity deduction, Hunter customers, newspaper gameplay, magical-herb variants, arrests, and hexes are not part of the current game.
 
 ## Implemented game
 
-- Eight authored days, each with a `4:00` timer and `20`-coin expense.
+- Fourteen authored days, each with a `5:00` timer and `20`-coin expense.
 - Fixed `10`-coin payment for every correct order.
 - 25 authored herbs across Warming, Cooling, Soothing, Cleansing, and Mending.
-- 150 uniquely identified orders: 50 Simple and 100 Mid.
-- Warming and Cooling unlock on Day 1, Soothing on Day 3, and Cleansing on Day 7. Mending content is authored but not unlocked in the current eight-day run.
-- Simple orders on Days 1–3, Simple and Mid orders on Days 4–5, and Mid orders on Days 6–8.
+- 250 uniquely identified orders: 50 Simple, 100 Mid, and 100 Hard.
+- Warming and Cooling unlock on Day 1, Soothing on Day 3, Cleansing on Day 7, and Mending on Day 11.
+- Simple orders on Days 1–3; Simple and Mid on Days 4–5; Mid on Days 6–8; Mid and Hard on Days 9–11; Hard on Days 12–14.
 - Automatic bell/customer arrival, unlimited herbs, grind/pot/brew/discard/serve interactions, exact-pair checking, payment, and daily expense.
 - Wrong valid orders pay `0` and add suspicion. Suspicion `3` persists a pending rewind and opens the separate memory-card scene.
 - Guaranteed 3–8-pair rewind board with deterministic reload, mismatch flip-back, suspicion reset, changed order seed, and same-customer resume when runtime state permits.
-- Expense failure as the only game-over path, same-seed retry, and prototype victory after paying Day 8 expense.
+- Expense failure as the only game-over path, same-seed retry, and victory after paying Day 14 expense.
 - Persisted victory restoration and safe Main Menu fallback when Shop/Rewind scene loading fails.
 - Centered `16:9` landscape gameplay/UI viewport with black pillarboxes on wider displays.
 - Dark-comedy Day 1 tutorial, keyboard navigation, pause behavior, readable symbolic cards, reduced mismatch-delay setting, and persistent master/music/SFX settings.
