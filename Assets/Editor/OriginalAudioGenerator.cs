@@ -22,28 +22,22 @@ namespace Witch.Editor
             Pair("BGM_REWIND_MINIGAME", BgmFolder + "/AlkaKrab/Medieval Vol. 2 3 (Loop).ogg"),
             Pair("BGM_GAME_OVER", BgmFolder + "/AlkaKrab/Medieval Vol. 2 5 (Loop).ogg"),
             Pair("BGM_GAME_COMPLETE", BgmFolder + "/AlkaKrab/Medieval Vol. 2 6 (Loop).ogg"),
-            Pair("SFX_SHOP_AMBIENCE", SfxFolder + "/ShopAmbience_Original.wav"),
-            Pair("SFX_CUSTOMER_BELL", SfxFolder + "/CustomerBell_Original.wav"),
-            Pair("SFX_GUIDEBOOK_OPEN", SfxFolder + "/GuidebookOpen_Original.wav"),
-            Pair("SFX_GUIDEBOOK_CLOSE", SfxFolder + "/GuidebookClose_Original.wav"),
-            Pair("SFX_GRINDER_COMPLETE", SfxFolder + "/Grinder_Original.wav"),
-            Pair("SFX_POT_ADD_HERB", SfxFolder + "/PotAdd_Original.wav"),
-            Pair("SFX_BREW_SUCCESS", SfxFolder + "/BrewSuccess_Original.wav"),
-            Pair("SFX_BREW_INVALID", SfxFolder + "/BrewInvalid_Original.wav"),
-            Pair("SFX_DISCARD", SfxFolder + "/Discard_Original.wav"),
+            Pair("SFX_SHOP_AMBIENCE", SfxFolder + "/ShopAmbience.ogg"),
+            Pair("SFX_CUSTOMER_BELL", SfxFolder + "/CustomerBell.mp3"),
+            Pair("SFX_PAGE_FLIP", SfxFolder + "/PageFlip.mp3"),
+            Pair("SFX_GRINDER", SfxFolder + "/Grinder.wav"),
+            Pair("SFX_HERB_PLUCK", SfxFolder + "/HerbPluck.wav"),
+            Pair("SFX_BREW_SUCCESS", SfxFolder + "/BrewSuccess.wav"),
+            Pair("SFX_DISCARD", SfxFolder + "/Discard.wav"),
             Pair("SFX_ORDER_CORRECT", SfxFolder + "/OrderCorrect_Original.wav"),
             Pair("SFX_PAYMENT_COINS", SfxFolder + "/Coins_Original.wav"),
             Pair("SFX_ORDER_WRONG", SfxFolder + "/OrderWrong_Original.wav"),
-            Pair("SFX_HUNTER_WARNING", SfxFolder + "/HunterKnock_Original.wav"),
-            Pair("SFX_TIME_STOP", SfxFolder + "/TimeStop_Original.wav"),
-            Pair("SFX_CARD_FLIP", SfxFolder + "/CardFlip_Original.wav"),
-            Pair("SFX_CARD_MATCH", SfxFolder + "/CardMatch_Original.wav"),
-            Pair("SFX_CARD_MISMATCH", SfxFolder + "/CardMismatch_Original.wav"),
+            Pair("SFX_CARD_MATCH", SfxFolder + "/CardMatch.wav"),
+            Pair("SFX_CARD_MISMATCH", SfxFolder + "/CardMismatch.wav"),
             Pair("SFX_MINIGAME_COMPLETE", SfxFolder + "/MinigameComplete_Original.wav"),
             Pair("SFX_EXPENSE_PAY", SfxFolder + "/ExpensePay_Original.wav"),
             Pair("SFX_EXPENSE_FAIL", SfxFolder + "/ExpenseFail_Original.wav"),
-            Pair("SFX_UI_CONFIRM", SfxFolder + "/UiConfirm_Original.wav"),
-            Pair("SFX_UI_BACK", SfxFolder + "/UiBack_Original.wav")
+            Pair("SFX_UI_CLICK", SfxFolder + "/UiClick.ogg")
         };
 
         [MenuItem("Witch/Audio/Generate Original Audio and Bind Bootstrap")]
@@ -54,7 +48,7 @@ namespace Witch.Editor
 
             foreach (KeyValuePair<string, string> cue in Cues)
             {
-                if (cue.Key.StartsWith("BGM_", StringComparison.Ordinal)) continue;
+                if (!cue.Value.EndsWith("_Original.wav", StringComparison.OrdinalIgnoreCase)) continue;
                 float[] samples = CreateEffect(cue.Key);
                 WriteWave(cue.Value, samples);
             }
@@ -78,48 +72,17 @@ namespace Witch.Editor
                 float value;
                 switch (cueId)
                 {
-                    case "SFX_SHOP_AMBIENCE":
-                        value = noise * 0.018f + Wave(55f, time) * 0.018f
-                            + Wave(0.23f, time) * Wave(220f, time) * 0.012f;
-                        break;
-                    case "SFX_CUSTOMER_BELL":
-                        value = (Wave(1046.5f, time) + 0.55f * Wave(1569.8f, time)) * Mathf.Exp(-time * 3.8f) * 0.32f;
-                        break;
-                    case "SFX_HUNTER_WARNING":
-                        float knockPhase = time % 0.48f;
-                        value = knockPhase < 0.11f ? (noise * 0.42f + Wave(92f, time) * 0.5f) * Mathf.Exp(-knockPhase * 24f) : 0f;
-                        break;
-                    case "SFX_TIME_STOP":
-                        value = (noise * 0.15f + Wave(1200f - 1050f * progress, time) * 0.3f) * (1f - progress);
-                        break;
-                    case "SFX_GRINDER_COMPLETE":
-                        value = (noise * 0.3f + Wave(90f + 20f * Wave(7f, time), time) * 0.25f) * Mathf.Sin(Mathf.PI * progress);
-                        break;
-                    case "SFX_GUIDEBOOK_OPEN":
-                    case "SFX_GUIDEBOOK_CLOSE":
-                    case "SFX_CARD_FLIP":
-                    case "SFX_DISCARD":
-                        value = noise * Mathf.Sin(Mathf.PI * progress) * 0.22f + Wave(260f + 220f * progress, time) * (1f - progress) * 0.08f;
-                        break;
                     case "SFX_PAYMENT_COINS":
                     case "SFX_EXPENSE_PAY":
                         value = CoinCluster(time, duration);
                         break;
-                    case "SFX_POT_ADD_HERB":
-                        value = Wave(180f + 520f * progress * progress, time) * Mathf.Sin(Mathf.PI * progress) * 0.3f;
-                        break;
                     case "SFX_BREW_SUCCESS":
                     case "SFX_ORDER_CORRECT":
-                    case "SFX_CARD_MATCH":
                     case "SFX_MINIGAME_COMPLETE":
-                    case "SFX_UI_CONFIRM":
                         value = Arpeggio(time, duration, new[] { 60, 64, 67, 72 });
                         break;
-                    case "SFX_BREW_INVALID":
                     case "SFX_ORDER_WRONG":
-                    case "SFX_CARD_MISMATCH":
                     case "SFX_EXPENSE_FAIL":
-                    case "SFX_UI_BACK":
                         value = Arpeggio(time, duration, new[] { 55, 51, 48, 43 });
                         break;
                     default:
@@ -128,7 +91,7 @@ namespace Witch.Editor
                 }
                 result[index] = value;
             }
-            FadeEdges(result, cueId == "SFX_SHOP_AMBIENCE" ? 0.08f : 0.005f);
+            FadeEdges(result, 0.005f);
             return result;
         }
 
@@ -161,11 +124,6 @@ namespace Witch.Editor
         {
             switch (cueId)
             {
-                case "SFX_SHOP_AMBIENCE": return 12f;
-                case "SFX_HUNTER_WARNING": return 1.55f;
-                case "SFX_TIME_STOP": return 1.2f;
-                case "SFX_GRINDER_COMPLETE": return 0.9f;
-                case "SFX_CUSTOMER_BELL": return 1.1f;
                 case "SFX_MINIGAME_COMPLETE": return 1.5f;
                 case "SFX_PAYMENT_COINS":
                 case "SFX_EXPENSE_PAY": return 0.75f;
