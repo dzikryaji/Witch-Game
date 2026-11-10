@@ -17,11 +17,11 @@ namespace Witch.Editor
 
         private static readonly KeyValuePair<string, string>[] Cues =
         {
-            Pair("BGM_MAIN_MENU", BgmFolder + "/MainMenu_Original.wav"),
-            Pair("BGM_SHOP", BgmFolder + "/Shop_Original.wav"),
-            Pair("BGM_REWIND_MINIGAME", BgmFolder + "/Rewind_Original.wav"),
-            Pair("BGM_GAME_OVER", BgmFolder + "/GameOver_Original.wav"),
-            Pair("BGM_GAME_COMPLETE", BgmFolder + "/Victory_MedievalTrumpet_Original.wav"),
+            Pair("BGM_MAIN_MENU", BgmFolder + "/AlkaKrab/Medieval Vol. 2 1 (Loop).ogg"),
+            Pair("BGM_SHOP", BgmFolder + "/AlkaKrab/Medieval Vol. 2 2 (Loop).ogg"),
+            Pair("BGM_REWIND_MINIGAME", BgmFolder + "/AlkaKrab/Medieval Vol. 2 3 (Loop).ogg"),
+            Pair("BGM_GAME_OVER", BgmFolder + "/AlkaKrab/Medieval Vol. 2 5 (Loop).ogg"),
+            Pair("BGM_GAME_COMPLETE", BgmFolder + "/AlkaKrab/Medieval Vol. 2 6 (Loop).ogg"),
             Pair("SFX_SHOP_AMBIENCE", SfxFolder + "/ShopAmbience_Original.wav"),
             Pair("SFX_CUSTOMER_BELL", SfxFolder + "/CustomerBell_Original.wav"),
             Pair("SFX_GUIDEBOOK_OPEN", SfxFolder + "/GuidebookOpen_Original.wav"),
@@ -54,9 +54,8 @@ namespace Witch.Editor
 
             foreach (KeyValuePair<string, string> cue in Cues)
             {
-                float[] samples = cue.Key.StartsWith("BGM_", StringComparison.Ordinal)
-                    ? CreateMusic(cue.Key)
-                    : CreateEffect(cue.Key);
+                if (cue.Key.StartsWith("BGM_", StringComparison.Ordinal)) continue;
+                float[] samples = CreateEffect(cue.Key);
                 WriteWave(cue.Value, samples);
             }
 
@@ -64,87 +63,6 @@ namespace Witch.Editor
             ConfigureImporters();
             BindBootstrap();
             Debug.Log("Generated and bound " + Cues.Length + " original audio clips.");
-        }
-
-        private static float[] CreateMusic(string cueId)
-        {
-            if (cueId == "BGM_GAME_COMPLETE")
-            {
-                return CreateFanfare();
-            }
-
-            int seconds = cueId == "BGM_GAME_OVER" ? 6 : 16;
-            var result = new float[SampleRate * seconds];
-            int[] notes;
-            float step;
-            if (cueId == "BGM_MAIN_MENU")
-            {
-                notes = new[] { 50, 57, 62, 65, 62, 57, 48, 55, 60, 64, 60, 55 };
-                step = 0.5f;
-            }
-            else if (cueId == "BGM_SHOP")
-            {
-                notes = new[] { 45, 52, 57, 60, 57, 52, 47, 54, 59, 62, 59, 54 };
-                step = 0.375f;
-            }
-            else if (cueId == "BGM_REWIND_MINIGAME")
-            {
-                notes = new[] { 69, 72, 76, 81, 76, 72, 67, 71, 74, 79, 74, 71 };
-                step = 0.25f;
-            }
-            else
-            {
-                notes = new[] { 50, 48, 45, 43, 41, 38 };
-                step = 0.85f;
-            }
-
-            for (int index = 0; index < result.Length; index++)
-            {
-                float time = index / (float)SampleRate;
-                int noteIndex = Math.Min((int)(time / step), notes.Length - 1);
-                if (cueId != "BGM_GAME_OVER") noteIndex %= notes.Length;
-                float local = time - Mathf.Floor(time / step) * step;
-                float frequency = Midi(notes[noteIndex]);
-                float envelope = Mathf.Exp(-local * (cueId == "BGM_REWIND_MINIGAME" ? 5.5f : 3.2f));
-                float pluck = Wave(frequency, time) + 0.35f * Wave(frequency * 2f, time);
-                float drone = 0.18f * Wave(Midi(notes[0] - 12), time);
-                float pulse = cueId == "BGM_REWIND_MINIGAME"
-                    ? 0.12f * Wave(2f, time) * Wave(880f, time)
-                    : 0f;
-                result[index] = (pluck * envelope * 0.22f) + (drone * 0.18f) + pulse;
-            }
-
-            FadeEdges(result, 0.05f);
-            return result;
-        }
-
-        private static float[] CreateFanfare()
-        {
-            const int seconds = 8;
-            var result = new float[SampleRate * seconds];
-            int[] melody = { 55, 60, 64, 67, 64, 67, 72, 71, 72 };
-            float[] starts = { 0f, 0.55f, 1.1f, 1.65f, 2.35f, 2.8f, 3.25f, 4.3f, 5.15f };
-            float[] lengths = { 0.5f, 0.5f, 0.5f, 0.65f, 0.4f, 0.4f, 0.95f, 0.65f, 2.1f };
-            for (int index = 0; index < result.Length; index++)
-            {
-                float time = index / (float)SampleRate;
-                float value = 0f;
-                for (int note = 0; note < melody.Length; note++)
-                {
-                    float local = time - starts[note];
-                    if (local < 0f || local > lengths[note]) continue;
-                    float attack = Mathf.Clamp01(local / 0.04f);
-                    float release = Mathf.Clamp01((lengths[note] - local) / 0.18f);
-                    float frequency = Midi(melody[note]);
-                    float brass = Wave(frequency, time)
-                        + 0.5f * Wave(frequency * 2f, time)
-                        + 0.22f * Wave(frequency * 3f, time);
-                    value += brass * attack * release * 0.18f;
-                }
-                result[index] = value;
-            }
-            FadeEdges(result, 0.02f);
-            return result;
         }
 
         private static float[] CreateEffect(string cueId)

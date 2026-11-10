@@ -61,7 +61,7 @@ Assets/
 └── Tests/{EditMode,PlayMode,Fixtures}
 ```
 
-The catalog contains 25 herbs, 150 orders, eight days, five herb categories, eight rewind symbols, prototype economy, and run configuration. Warming and Cooling unlock on Day 1, Soothing on Day 3, and Cleansing on Day 7. Mending content is authored but remains locked during the current run. Days 1–3 use Simple orders, Days 4–5 use Simple and Mid, and Days 6–8 use Mid.
+The catalog contains 25 herbs, 250 orders, six customers, fourteen days, five herb categories, eight rewind symbols, prototype economy, and run configuration. Warming and Cooling unlock on Day 1, Soothing on Day 3, Cleansing on Day 7, and Mending on Day 11. Days 1–3 use Simple orders, Days 4–5 use Simple and Mid, Days 6–8 use Mid, Days 9–11 use Mid and Hard, and Days 12–14 use Hard. Every order references one authored customer definition and portrait. Writing Rules for all order docs (Simple, Mid, Hard) now include: "Begin every order with a greeting." Greetings rotate: Good morning. / Good afternoon. (previously only Hard had this rule).
 
 No active script, content asset, or production scene references newspaper gameplay, Hunter customers/deduction, magical-herb variants, hexes, or finite herb stock.
 

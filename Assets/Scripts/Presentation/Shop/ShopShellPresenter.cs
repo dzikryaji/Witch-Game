@@ -147,7 +147,7 @@ namespace Witch.Presentation.Shop
             && tutorialText != null
             && tutorialContinueButton != null
             && tutorialHighlights != null
-            && tutorialHighlights.Length == 5
+            && tutorialHighlights.Length == 7
             && Array.TrueForAll(tutorialHighlights, highlight => highlight != null)
             && inputActions != null;
 
