@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using Witch.Application.Flow;
 using Witch.Application.Ports;
@@ -115,7 +116,7 @@ namespace Witch.Presentation.MainMenu
                 return false;
             }
 
-            SetBusy(true);
+            SetBusy(true, newGameButton);
             LastErrorMessage = null;
             RenderError();
             try
@@ -128,7 +129,7 @@ namespace Witch.Presentation.MainMenu
             }
             finally
             {
-                SetBusy(false);
+                SetBusy(false, newGameButton);
             }
         }
 
@@ -140,7 +141,7 @@ namespace Witch.Presentation.MainMenu
                 return false;
             }
 
-            SetBusy(true);
+            SetBusy(true, continueButton);
             LastErrorMessage = null;
             RenderError();
             try
@@ -152,7 +153,7 @@ namespace Witch.Presentation.MainMenu
             }
             finally
             {
-                SetBusy(false);
+                SetBusy(false, continueButton);
             }
         }
 
@@ -167,16 +168,16 @@ namespace Witch.Presentation.MainMenu
         }
 
         public async Task<bool> SaveSettingsAsync(
-        float masterVolume,
+        float soundVolume,
         float musicVolume,
         bool reducedMismatchDelay)
             {
                 EnsureInitialized();
 
                 var value = new GameSettingsState(
-                    masterVolume,
+                    LoadedSettings.MasterVolume,
                     musicVolume,
-                    LoadedSettings.SoundVolume,
+                    soundVolume,
                     reducedMismatchDelay);
 
                 SaveStateResult result = await settingsService.SaveAsync(value);
@@ -195,17 +196,6 @@ namespace Witch.Presentation.MainMenu
                 return false;
             }
 
-        // public void ToggleSettings()
-        // {
-        //     if (settingsPanel == null)
-        //     {
-        //         return;
-        //     }
-
-        //     settingsPanel.SetActive(!settingsPanel.activeSelf);
-        //     audioService?.Play(settingsPanel.activeSelf ? GameAudioCueIds.UiConfirm : GameAudioCueIds.UiBack);
-        // }
-
         public void ToggleSettings()
         {
             bool isOpening = !settingsPanel.activeSelf;
@@ -213,8 +203,7 @@ namespace Witch.Presentation.MainMenu
             settingsOverlay.SetActive(isOpening);
             settingsPanel.SetActive(isOpening);
 
-            audioService?.Play(
-                isOpening ? GameAudioCueIds.UiConfirm : GameAudioCueIds.UiBack);
+            audioService?.Play(GameAudioCueIds.UiClick);
         }
 
         public ServiceResult Quit()
@@ -240,12 +229,29 @@ namespace Witch.Presentation.MainMenu
             settingsButton.onClick.AddListener(ToggleSettings);
             quitButton.onClick.AddListener(OnQuitClicked);
             applySettingsButton.onClick.AddListener(OnApplySettingsClicked);
+            musicSlider.onValueChanged.AddListener(_ => ApplyLiveVolumes());
+            masterSlider.onValueChanged.AddListener(_ => ApplyLiveVolumes());
+            masterSlider.gameObject.AddComponent<SoundSliderRelease>().OnReleased = PlaySoundPreview;
             viewBound = true;
         }
 
-        private void OnNewGameClicked() => RunUiAction(NewGameAsync);
-        private void OnContinueClicked() => RunUiAction(ContinueAsync);
-        private void OnQuitClicked() => Quit();
+        private void OnNewGameClicked()
+        {
+            audioService?.Play(GameAudioCueIds.UiClick);
+            RunUiAction(NewGameAsync);
+        }
+
+        private void OnContinueClicked()
+        {
+            audioService?.Play(GameAudioCueIds.UiClick);
+            RunUiAction(ContinueAsync);
+        }
+
+        private void OnQuitClicked()
+        {
+            audioService?.Play(GameAudioCueIds.UiClick);
+            Quit();
+        }
 
         private void OnApplySettingsClicked() => RunUiAction(ApplySettingsAsync);
 
@@ -275,7 +281,7 @@ namespace Witch.Presentation.MainMenu
                 LastErrorMessage = exception.Message;
                 RenderError();
                 Debug.LogException(exception, this);
-                SetBusy(false);
+                ResetBusy();
             }
         }
 
@@ -284,6 +290,30 @@ namespace Witch.Presentation.MainMenu
             if (!IsInitialized)
             {
                 throw new InvalidOperationException("Main menu presenter has not been initialized by Bootstrap.");
+            }
+        }
+
+        private void ApplyLiveVolumes()
+        {
+            audioService?.ApplySettings(new GameSettingsState(
+                LoadedSettings != null ? LoadedSettings.MasterVolume : 1f,
+                musicSlider.value,
+                masterSlider.value,
+                reducedDelayToggle.isOn));
+        }
+
+        private void PlaySoundPreview()
+        {
+            audioService?.Play(GameAudioCueIds.UiClick);
+        }
+
+        private sealed class SoundSliderRelease : MonoBehaviour, IPointerUpHandler
+        {
+            public Action OnReleased;
+
+            public void OnPointerUp(PointerEventData eventData)
+            {
+                OnReleased?.Invoke();
             }
         }
 
@@ -296,18 +326,24 @@ namespace Witch.Presentation.MainMenu
 
             LoadedSettings = settingsService.Current;
             audioService?.ApplySettings(LoadedSettings);
-            masterSlider.SetValueWithoutNotify(LoadedSettings.MasterVolume);
+            masterSlider.SetValueWithoutNotify(LoadedSettings.SoundVolume);
             musicSlider.SetValueWithoutNotify(LoadedSettings.MusicVolume);
             // soundSlider.SetValueWithoutNotify(LoadedSettings.SoundVolume);
             reducedDelayToggle.SetIsOnWithoutNotify(LoadedSettings.ReducedMismatchDelay);
         }
 
-        private void SetBusy(bool busy)
+        private void SetBusy(bool busy, Button source)
         {
             IsBusy = busy;
-            if (newGameButton != null) newGameButton.interactable = !busy;
-            if (continueButton != null) continueButton.interactable = !busy;
-            if (applySettingsButton != null) applySettingsButton.interactable = !busy;
+            if (source != null) source.interactable = !busy;
+        }
+
+        private void ResetBusy()
+        {
+            IsBusy = false;
+            if (newGameButton != null) newGameButton.interactable = true;
+            if (continueButton != null) continueButton.interactable = true;
+            if (applySettingsButton != null) applySettingsButton.interactable = true;
         }
 
         private void RenderError()
