@@ -1,4 +1,5 @@
 using System.IO;
+using System.Linq;
 using UnityEditor;
 using UnityEditor.Events;
 using UnityEngine;
@@ -14,14 +15,14 @@ namespace Witch.Editor
     /// </summary>
     public static class GuidebookPrefabBuilder
     {
-        private const string BlankPagePath = "Assets/Art/Guidebook/BlankPage.png";
+        private const string BlankPagePath = "Assets/Art/Guidebook/BlankPageNew.png";
         private const string PanelControllerPath = "Assets/Art/Guidebook/Guidebook Panel.controller";
         private const string Folder = "Assets/Prefabs/Guidebook";
         private const string PagePrefabPath = Folder + "/GuidebookPage.prefab";
         private const string BookPrefabPath = Folder + "/GuidebookBook.prefab";
         private const string PanelPrefabPath = Folder + "/GuidebookPanel.prefab";
 
-        // Same ratio as BlankPage (1416 x 2000); fits a 1920 x 1080 reference canvas.
+        // Same ratio as BlankPageNew (1414 x 2000); fits a 1920 x 1080 reference canvas.
         private static readonly Vector2 PageSize = new Vector2(566f, 800f);
 
         // Safe area inside the floral border, as fractions of the page.
@@ -40,7 +41,7 @@ namespace Witch.Editor
         [MenuItem("Witch/Guidebook/Build Blank Book Prefabs")]
         public static void BuildBook()
         {
-            Sprite blankPage = AssetDatabase.LoadAssetAtPath<Sprite>(BlankPagePath);
+            Sprite blankPage = AssetDatabase.LoadAllAssetsAtPath(BlankPagePath).OfType<Sprite>().FirstOrDefault();
             if (blankPage == null)
             {
                 Fail("Sprite not found: " + BlankPagePath + "\nCheck that its Texture Type is Sprite (2D and UI).");
@@ -137,6 +138,14 @@ namespace Witch.Editor
         {
             GameObject root = NewUi("GuidebookBook", null);
             ((RectTransform)root.transform).sizeDelta = new Vector2(PageSize.x * 2f, PageSize.y);
+
+            // Invisible click area under the whole book, grown by Raycast Padding to also cover the
+            // book cover around the pages. Clicks here never reach the Read Backdrop behind the book,
+            // which would close the guidebook. It must not be culled, or the raycaster skips it.
+            Image clickArea = root.AddComponent<Image>();
+            clickArea.color = Color.clear;
+            clickArea.raycastPadding = new Vector4(-60f, -40f, -60f, -45f); // left, bottom, right, top
+            root.GetComponent<CanvasRenderer>().cullTransparentMesh = false;
 
             PlacePage(pagePrefab, root.transform, "LeftPage", new Vector2(-PageSize.x / 2f, 0f));
             PlacePage(pagePrefab, root.transform, "RightPage", new Vector2(PageSize.x / 2f, 0f));
