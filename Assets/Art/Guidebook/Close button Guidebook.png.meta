@@ -1,0 +1,574 @@
+fileFormatVersion: 2
+guid: a7041eb83102040968e410b1f18379df
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -5574478193482961873
+    second: Close button Guidebook_0
+  - first:
+      213: 133521524806690053
+    second: Close button Guidebook_1
+  - first:
+      213: -1098087009883712359
+    second: Close button Guidebook_2
+  - first:
+      213: 9142844871612206492
+    second: Close button Guidebook_3
+  - first:
+      213: 1719338063689602808
+    second: Close button Guidebook_4
+  - first:
+      213: -5167467321607963936
+    second: Close button Guidebook_5
+  - first:
+      213: 1566866623946718503
+    second: Close button Guidebook_6
+  - first:
+      213: -4450391676816188515
+    second: Close button Guidebook_7
+  - first:
+      213: -6984949791996686820
+    second: Close button Guidebook_8
+  - first:
+      213: -7478914142027163984
+    second: Close button Guidebook_9
+  - first:
+      213: -3496499594343730564
+    second: Close button Guidebook_10
+  - first:
+      213: 9208299014984511378
+    second: Close button Guidebook_11
+  - first:
+      213: -4715152837693155590
+    second: Close button Guidebook_12
+  - first:
+      213: 4507416538304238396
+    second: Close button Guidebook_13
+  - first:
+      213: -8625078740143542241
+    second: Close button Guidebook_14
+  - first:
+      213: 7996671749584034971
+    second: Close button Guidebook_15
+  - first:
+      213: 8297789469105415405
+    second: Close button Guidebook_16
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationMethod: 0
+  spriteTessellationDetail: -1
+  spriteGeometrySubdivision: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Close button Guidebook_0
+      rect:
+        serializedVersion: 2
+        x: 599
+        y: 210
+        width: 1620
+        height: 1634
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f2c694d2e9973a2b0800000000000000
+      internalID: -5574478193482961873
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Close button Guidebook_1
+      rect:
+        serializedVersion: 2
+        x: 1305
+        y: 1818
+        width: 43
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 505a8ff8e1d5ad100800000000000000
+      internalID: 133521524806690053
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Close button Guidebook_2
+      rect:
+        serializedVersion: 2
+        x: 560
+        y: 1484
+        width: 23
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9941963beafc2c0f0800000000000000
+      internalID: -1098087009883712359
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Close button Guidebook_3
+      rect:
+        serializedVersion: 2
+        x: 2196
+        y: 1214
+        width: 10
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c9d82f848f8e1ee70800000000000000
+      internalID: 9142844871612206492
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Close button Guidebook_4
+      rect:
+        serializedVersion: 2
+        x: 463
+        y: 1100
+        width: 35
+        height: 107
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8f6d6070cd05cd710800000000000000
+      internalID: 1719338063689602808
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Close button Guidebook_5
+      rect:
+        serializedVersion: 2
+        x: 548
+        y: 999
+        width: 8
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0ea3e1379d77948b0800000000000000
+      internalID: -5167467321607963936
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Close button Guidebook_6
+      rect:
+        serializedVersion: 2
+        x: 2179
+        y: 878
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 72d72c294e0aeb510800000000000000
+      internalID: 1566866623946718503
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Close button Guidebook_7
+      rect:
+        serializedVersion: 2
+        x: 2323
+        y: 839
+        width: 141
+        height: 77
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d9b140069580d32c0800000000000000
+      internalID: -4450391676816188515
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Close button Guidebook_8
+      rect:
+        serializedVersion: 2
+        x: 452
+        y: 679
+        width: 10
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c1e491a0c29701f90800000000000000
+      internalID: -6984949791996686820
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Close button Guidebook_9
+      rect:
+        serializedVersion: 2
+        x: 2245
+        y: 648
+        width: 98
+        height: 95
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0b653da763f853890800000000000000
+      internalID: -7478914142027163984
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Close button Guidebook_10
+      rect:
+        serializedVersion: 2
+        x: 2284
+        y: 608
+        width: 26
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c7238d9e420f97fc0800000000000000
+      internalID: -3496499594343730564
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Close button Guidebook_11
+      rect:
+        serializedVersion: 2
+        x: 2240
+        y: 588
+        width: 10
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 29f2bbd9a237acf70800000000000000
+      internalID: 9208299014984511378
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Close button Guidebook_12
+      rect:
+        serializedVersion: 2
+        x: 1034
+        y: 197
+        width: 49
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: af6df9fd979609eb0800000000000000
+      internalID: -4715152837693155590
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Close button Guidebook_13
+      rect:
+        serializedVersion: 2
+        x: 1173
+        y: 173
+        width: 119
+        height: 51
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c335854d57f8d8e30800000000000000
+      internalID: 4507416538304238396
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Close button Guidebook_14
+      rect:
+        serializedVersion: 2
+        x: 774
+        y: 184
+        width: 49
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f1078fd55909d4880800000000000000
+      internalID: -8625078740143542241
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Close button Guidebook_15
+      rect:
+        serializedVersion: 2
+        x: 1336
+        y: 171
+        width: 92
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b9c9b5b8692e9fe60800000000000000
+      internalID: 7996671749584034971
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Close button Guidebook_16
+      rect:
+        serializedVersion: 2
+        x: 645
+        y: 49
+        width: 206
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: de4610ffe8ba72370800000000000000
+      internalID: 8297789469105415405
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Close button Guidebook_0: -5574478193482961873
+      Close button Guidebook_1: 133521524806690053
+      Close button Guidebook_10: -3496499594343730564
+      Close button Guidebook_11: 9208299014984511378
+      Close button Guidebook_12: -4715152837693155590
+      Close button Guidebook_13: 4507416538304238396
+      Close button Guidebook_14: -8625078740143542241
+      Close button Guidebook_15: 7996671749584034971
+      Close button Guidebook_16: 8297789469105415405
+      Close button Guidebook_2: -1098087009883712359
+      Close button Guidebook_3: 9142844871612206492
+      Close button Guidebook_4: 1719338063689602808
+      Close button Guidebook_5: -5167467321607963936
+      Close button Guidebook_6: 1566866623946718503
+      Close button Guidebook_7: -4450391676816188515
+      Close button Guidebook_8: -6984949791996686820
+      Close button Guidebook_9: -7478914142027163984
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
