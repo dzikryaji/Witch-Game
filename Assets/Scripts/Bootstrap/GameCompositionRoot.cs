@@ -293,6 +293,7 @@ namespace Witch.Bootstrap
                     {
                         symbols.Add(card.SymbolKey);
                     }
+                    presenter.ConfigureNavigation(sceneLoader);
                     presenter.Initialize(
                         sessionStore,
                         completeRewind,

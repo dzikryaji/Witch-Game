@@ -25,6 +25,8 @@ namespace Witch.Presentation.Rewind
         private bool timerRunning;
         private int boardGeneration;
         public bool IsTimedOut { get; private set; }
+        private ISceneLoader sceneLoader;
+        private bool returningToMenu;
 
         private IGameSessionStore sessionStore;
         private CompleteRewindUseCase completeRewind;
@@ -128,7 +130,7 @@ namespace Witch.Presentation.Rewind
             if (timeUpPopup != null)
             {
                 timeUpPopup.Hide();
-                timeUpPopup.Bind(RetryBoard);
+                timeUpPopup.Bind(ReturnToMainMenu);
             }
             ResetTimer();
             if (boardLayout != null) boardLayout.Apply(Board.Cards.Count);
@@ -333,18 +335,43 @@ namespace Witch.Presentation.Rewind
             timeUpPopup?.Show();
         }
 
-        private void RetryBoard()
+        public void ConfigureNavigation(ISceneLoader loader)
         {
-            boardGeneration++;
-            Array.Clear(revealed, 0, revealed.Length);
-            Array.Clear(matched, 0, matched.Length);
-            firstIndex = -1;
-            IsResolvingMismatch = false;
-            IsComplete = false;
-            ResetTimer();
-            timeUpPopup?.Hide();
-            RenderCards();
+            sceneLoader = loader ?? throw new ArgumentNullException(nameof(loader));
+        }
+
+        private async void ReturnToMainMenu()
+        {
+            if (returningToMenu) return;
+            if (sceneLoader == null)
+            {
+                Debug.LogWarning("RewindShellPresenter has no scene loader. Bootstrap must call ConfigureNavigation.", this);
+                return;
+            }
+
+            returningToMenu = true;
+            timeUpPopup?.SetInteractable(false); 
             audioService?.Play(GameAudioCueIds.UiClick);
+
+            try
+            {
+                SceneLoadResult result = await sceneLoader.LoadAsync(SceneId.MainMenu, lifetime.Token);
+                if (!result.Succeeded)
+                {
+                    returningToMenu = false;
+                    timeUpPopup?.Show("Could not open the menu: " + result.ErrorMessage);
+                }
+            }
+            catch (OperationCanceledException) when (lifetime.IsCancellationRequested)
+            {
+                // scene closed while loading
+            }
+            catch (Exception exception)
+            {
+                returningToMenu = false;
+                timeUpPopup?.SetInteractable(true);
+                Debug.LogException(exception, this);
+            }
         }
     }
 }

@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace Witch.Presentation.Rewind
@@ -8,35 +9,43 @@ namespace Witch.Presentation.Rewind
     {
         [SerializeField] private GameObject root;
         [SerializeField] private Text messageText;
-        [SerializeField] private Button retryButton;
+        [FormerlySerializedAs("retryButton")]
+        [SerializeField] private Button menuButton;
         [SerializeField, TextArea(2, 5)]
         private string defaultMessage =
-            "Time's up!\nThe memory slipped away. Try again.";
+    "The Witch Hunter caught you and burned you at the village market.";
 
         private bool bound;
 
-        public bool IsAuthored => root != null && messageText != null && retryButton != null;
+        public bool IsAuthored => root != null && messageText != null && menuButton != null;
         public bool IsVisible => root != null && root.activeSelf;
 
-        public void Bind(UnityAction onRetry)
+        public void Bind(UnityAction onMenu)
         {
-            if (bound || retryButton == null) return;
-            retryButton.onClick.AddListener(onRetry);
+            if (bound || menuButton == null) return;
+            menuButton.onClick.AddListener(onMenu);
             bound = true;
         }
 
-        public void Show()
+        public void Show(string extraMessage = null)
         {
             if (!IsAuthored) return;
-            messageText.text = defaultMessage;
-            retryButton.interactable = true;
+            messageText.text = string.IsNullOrEmpty(extraMessage)
+                ? defaultMessage
+                : defaultMessage + "\n\n" + extraMessage;
+            menuButton.interactable = true;
             root.SetActive(true);
-            retryButton.Select();
+            menuButton.Select();
         }
 
         public void Hide()
         {
             if (root != null) root.SetActive(false);
+        }
+
+        public void SetInteractable(bool value)
+        {
+            if (menuButton != null) menuButton.interactable = value;
         }
     }
 }
