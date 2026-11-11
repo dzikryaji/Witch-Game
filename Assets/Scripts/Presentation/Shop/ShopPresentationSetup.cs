@@ -41,6 +41,22 @@ namespace Witch.Presentation.Shop
         public IReadOnlyList<string> OrderBubbles { get; }
     }
 
+    public sealed class ShopCustomerViewData
+    {
+        public ShopCustomerViewData(string customerId, string displayName, Sprite illustration)
+        {
+            CustomerId = string.IsNullOrWhiteSpace(customerId)
+                ? throw new ArgumentException("Customer ID is required.", nameof(customerId))
+                : customerId;
+            DisplayName = string.IsNullOrWhiteSpace(displayName) ? customerId : displayName;
+            Illustration = illustration;
+        }
+
+        public string CustomerId { get; }
+        public string DisplayName { get; }
+        public Sprite Illustration { get; }
+    }
+
     public sealed class ShopHerbViewData
     {
         public ShopHerbViewData(string stableId, string displayName, Sprite herbIllustration = null)
@@ -236,7 +252,8 @@ namespace Witch.Presentation.Shop
             IReadOnlyList<string> seenOrderIds = null,
             string introductionOrderId = null,
             bool oneTimeIntroduction = false,
-            IReadOnlyList<string> introductionCategoryOrderIds = null)
+            IReadOnlyList<string> introductionCategoryOrderIds = null,
+            ShopCustomerViewData witchHunter = null)
         {
             Encounters = encounters ?? throw new ArgumentNullException(nameof(encounters));
             if (Encounters.Count == 0) throw new ArgumentException("At least one encounter is required.", nameof(encounters));
@@ -250,6 +267,7 @@ namespace Witch.Presentation.Shop
             IntroductionOrderId = introductionOrderId;
             OneTimeIntroduction = oneTimeIntroduction;
             IntroductionCategoryOrderIds = introductionCategoryOrderIds ?? Array.Empty<string>();
+            WitchHunter = witchHunter;
         }
 
         public IReadOnlyList<ShopEncounterViewData> Encounters { get; }
@@ -267,5 +285,6 @@ namespace Witch.Presentation.Shop
         public string IntroductionOrderId { get; }
         public bool OneTimeIntroduction { get; }
         public IReadOnlyList<string> IntroductionCategoryOrderIds { get; }
+        public ShopCustomerViewData WitchHunter { get; }
     }
 }

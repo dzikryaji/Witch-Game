@@ -10,6 +10,7 @@ namespace Witch.Bootstrap
     /// <summary>Maps runtime content and session state into data consumed by the authored Shop view.</summary>
     internal sealed class ShopPresentationSetupFactory
     {
+        private const string WitchHunterCustomerId = "customer.witchHunter";
         private readonly GameRuntimeContent content;
         private readonly HashSet<string> tutorialShownRunIds = new HashSet<string>(StringComparer.Ordinal);
 
@@ -23,6 +24,12 @@ namespace Witch.Bootstrap
             if (session == null) throw new ArgumentNullException(nameof(session));
 
             DayContent day = content.DaysByNumber[session.RunState.CurrentDayNumber];
+            if (!content.CustomersById.TryGetValue(WitchHunterCustomerId, out CustomerContent witchHunter))
+            {
+                throw new InvalidOperationException(
+                    "Game content must include the Witch Hunter customer definition.");
+            }
+
             var unlockedHerbs = new HashSet<string>(session.RunState.UnlockedHerbIds, StringComparer.Ordinal);
             List<OrderContent> availableOrders = content.OrdersById.Values
                 .Where(order => order.IsAvailable(unlockedHerbs)
@@ -90,7 +97,11 @@ namespace Witch.Bootstrap
                     : content.OrdersById.Values
                         .Where(order => OrderUsesCategory(order, introductionCategoryId))
                         .Select(order => order.Request.OrderId)
-                        .ToArray());
+                        .ToArray(),
+                witchHunter: new ShopCustomerViewData(
+                    witchHunter.StableId,
+                    witchHunter.DisplayName,
+                    witchHunter.Illustration));
         }
 
         private bool OrderUsesCategory(OrderContent order, string categoryId)
