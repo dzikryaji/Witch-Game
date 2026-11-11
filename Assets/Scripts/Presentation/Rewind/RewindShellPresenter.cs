@@ -6,6 +6,7 @@ using UnityEngine;
 using Witch.Application.Flow;
 using Witch.Application.Ports;
 using Witch.Domain.Progression;
+using UnityEngine.UI;
 
 namespace Witch.Presentation.Rewind
 {
@@ -14,6 +15,16 @@ namespace Witch.Presentation.Rewind
         [Header("Authored View")]
         [SerializeField] private RewindCardView[] cardViews;
         [SerializeField] private RewindBoardLayout boardLayout;
+
+        [Header("Timer")]
+        [SerializeField] private Text timerText;
+        [SerializeField] private RewindTimeUpPopupView timeUpPopup;
+        [SerializeField, Min(5f)] private float timeLimitSeconds = 60f;
+
+        private float remainingSeconds;
+        private bool timerRunning;
+        private int boardGeneration;
+        public bool IsTimedOut { get; private set; }
 
         private IGameSessionStore sessionStore;
         private CompleteRewindUseCase completeRewind;
@@ -114,6 +125,12 @@ namespace Witch.Presentation.Rewind
             matched = new bool[Board.Cards.Count];
             EnsureCardViews(Board.Cards.Count);
             BindCards();
+            if (timeUpPopup != null)
+            {
+                timeUpPopup.Hide();
+                timeUpPopup.Bind(RetryBoard);
+            }
+            ResetTimer();
             if (boardLayout != null) boardLayout.Apply(Board.Cards.Count);
             RenderCards();
             audioService?.StopAmbience();
@@ -122,10 +139,12 @@ namespace Witch.Presentation.Rewind
 
         public async Task<bool> FlipCardAsync(int index)
         {
-            if (Board == null || IsResolvingMismatch || index < 0 || index >= Board.Cards.Count || matched[index] || revealed[index])
+            if (Board == null || IsResolvingMismatch || index < 0 || index >= Board.Cards.Count || matched[index] || revealed[index] || IsTimedOut || IsComplete)
             {
                 return false;
             }
+
+            int generation = boardGeneration;
 
             revealed[index] = true;
             audioService?.Play(GameAudioCueIds.PageFlip);
@@ -138,11 +157,10 @@ namespace Witch.Presentation.Rewind
 
             int previous = firstIndex;
             firstIndex = -1;
-            IsResolvingMismatch = true;            // blocks input until this pair is resolved
+            IsResolvingMismatch = true;      
             RenderCards();
-
-            // let the second card finish turning over before judging the pair
             await Task.Delay(FlipDelayMs(index), lifetime.Token);
+            if (generation != boardGeneration) return false;
 
             if (Board.Cards[previous] == Board.Cards[index])
             {
@@ -253,7 +271,7 @@ namespace Witch.Presentation.Rewind
                         : symbols[Board.Cards[index]],
                     visible,
                     isMatched,
-                    !isMatched && !IsResolvingMismatch && !IsComplete);
+                    !isMatched && !IsResolvingMismatch && !IsComplete && !IsTimedOut);
             }
         }
 
@@ -270,6 +288,63 @@ namespace Witch.Presentation.Rewind
                 throw new InvalidOperationException(
                     $"RewindMinigame requires {count} authored card views but only {cardSlots.Count} are assigned.");
             }
+        }
+
+        private void Update()
+        {
+            if (!timerRunning) return;
+
+            remainingSeconds -= Time.unscaledDeltaTime;
+            if (remainingSeconds <= 0f)
+            {
+                remainingSeconds = 0f;
+                RenderTimer();
+                OnTimeUp();
+                return;
+            }
+            RenderTimer();
+        }
+
+        private void RenderTimer()
+        {
+            if (timerText == null) return;
+            int seconds = Mathf.CeilToInt(remainingSeconds);
+            timerText.text = (seconds / 60).ToString("00") + ":" + (seconds % 60).ToString("00");
+            timerText.fontStyle = seconds <= 10 ? FontStyle.Bold : FontStyle.Normal; 
+        }
+
+        private void ResetTimer()
+        {
+            remainingSeconds = timeLimitSeconds;
+            timerRunning = true;
+            IsTimedOut = false;
+            RenderTimer();
+        }
+
+        private void OnTimeUp()
+        {
+            timerRunning = false;
+            IsTimedOut = true;
+            boardGeneration++;          
+            IsResolvingMismatch = false;
+            firstIndex = -1;
+            RenderCards();
+            audioService?.Play(GameAudioCueIds.CardMismatch);
+            timeUpPopup?.Show();
+        }
+
+        private void RetryBoard()
+        {
+            boardGeneration++;
+            Array.Clear(revealed, 0, revealed.Length);
+            Array.Clear(matched, 0, matched.Length);
+            firstIndex = -1;
+            IsResolvingMismatch = false;
+            IsComplete = false;
+            ResetTimer();
+            timeUpPopup?.Hide();
+            RenderCards();
+            audioService?.Play(GameAudioCueIds.UiClick);
         }
     }
 }
