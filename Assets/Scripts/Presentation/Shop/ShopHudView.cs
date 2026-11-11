@@ -46,6 +46,7 @@ namespace Witch.Presentation.Shop
         }
 
         private Coroutine entranceRoutine;
+        private readonly TaskCompletionSource<bool> entranceComplete = new TaskCompletionSource<bool>();
         private readonly List<BubbleSlot> bubbleSlots = new List<BubbleSlot>();
         private VerticalLayoutGroup orderLayoutGroup;
         private float bubbleSpacing;
@@ -72,7 +73,10 @@ namespace Witch.Presentation.Shop
             && customerPortrait != null
             && customerPortraitCanvasGroup != null
             && dayCycleView != null
-            && dayCycleView.IsAuthored;
+            && dayCycleView.IsAuthored
+            && entranceComplete.Task != null;
+
+        public Task EntranceComplete => entranceComplete.Task;
 
         private void Awake()
         {
@@ -335,6 +339,7 @@ namespace Witch.Presentation.Shop
                 yield return new WaitForSecondsRealtime(bubblePause);
             }
 
+            entranceComplete.SetResult(true);
             entranceRoutine = null;
         }
 
