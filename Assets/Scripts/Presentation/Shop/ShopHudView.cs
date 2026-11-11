@@ -128,6 +128,10 @@ namespace Witch.Presentation.Shop
             customerText.text = customerName ?? string.Empty;
             playerScrolledOrders = false;
             SnapToNewest();
+            RectTransform canvasRoot = orderBubbleScrollRect.GetComponentInParent<Canvas>()
+                .rootCanvas.transform as RectTransform;
+            LayoutRebuilder.ForceRebuildLayoutImmediate(canvasRoot);
+            Canvas.ForceUpdateCanvases();
 
             foreach (string bubbleContent in orderBubbles ?? Array.Empty<string>())
             {
@@ -249,21 +253,41 @@ namespace Witch.Presentation.Shop
             // Measure with the FULL text so the bubble never resizes while it is being typed.
             Text label = bubble.GetComponentInChildren<Text>(true);
             label.text = content;
+            Canvas.ForceUpdateCanvases();
             RectTransform textRect = label.rectTransform;
             UnityEngine.UI.LayoutElement prefabLayout = bubble.GetComponent<UnityEngine.UI.LayoutElement>();
             float minHeight = prefabLayout != null ? Mathf.Max(0f, prefabLayout.minHeight) : 0f;
 
             float textWidthRatio = Mathf.Max(0.01f, textRect.anchorMax.x - textRect.anchorMin.x);
+            TextGenerator textGenerator = label.cachedTextGeneratorForLayout;
+            TextGenerationSettings widthSettings = label.GetGenerationSettings(new Vector2(10000f, 0f));
+            widthSettings.horizontalOverflow = HorizontalWrapMode.Overflow;
+            float preferredTextWidth = textGenerator.GetPreferredWidth(content, widthSettings)
+                / label.pixelsPerUnit;
+            int wordCount = content.Split(
+                new[] { ' ', '\t', '\r', '\n' },
+                StringSplitOptions.RemoveEmptyEntries).Length;
+            preferredTextWidth *= Mathf.Max(1, wordCount) * 1.2f;
             float width = Mathf.Min(
-                orderBubbleContent.rect.width,
-                (label.preferredWidth - textRect.sizeDelta.x) / textWidthRatio);
+                orderBubbleScrollRect.viewport.rect.width,
+                (preferredTextWidth - textRect.sizeDelta.x) / textWidthRatio);
             slotLayout.preferredWidth = width;
             slotRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
 
             float textHeightRatio = Mathf.Max(0.01f, textRect.anchorMax.y - textRect.anchorMin.y);
+            textRect.SetSizeWithCurrentAnchors(
+                RectTransform.Axis.Horizontal,
+                width * textWidthRatio + textRect.sizeDelta.x);
+            bubbleRect.sizeDelta = new Vector2(0f, minHeight);
+            slotLayout.preferredHeight = minHeight + bubbleSpacing;
+            Canvas.ForceUpdateCanvases();
+            label.cachedTextGeneratorForLayout.Invalidate();
+            float preferredTextHeight = label.preferredHeight;
+            // UGUI can undercount one wrap while the parent layout is still settling.
+            preferredTextHeight += label.fontSize * 1.5f;
             float height = Mathf.Max(
                 minHeight,
-                (label.preferredHeight - textRect.sizeDelta.y) / textHeightRatio);
+                (preferredTextHeight - textRect.sizeDelta.y) / textHeightRatio);
             bubbleRect.sizeDelta = new Vector2(0f, height);
 
             float fullSlotHeight = height + bubbleSpacing;

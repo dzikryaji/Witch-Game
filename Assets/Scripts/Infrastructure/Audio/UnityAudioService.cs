@@ -72,9 +72,7 @@ namespace Witch.Infrastructure.Audio
             }
 
             lastPlayedAt[cueId] = Time.unscaledTime;
-            AudioSource channel = cueId.StartsWith("SFX_UI_", StringComparison.Ordinal) ? ui
-                : cueId == "SFX_SHOP_AMBIENCE" ? ambience
-                : sfx;
+            AudioSource channel = cueId.StartsWith("SFX_UI_", StringComparison.Ordinal) ? ui : sfx;
             if (!TryGetClip(cueId, out AudioClip clip))
             {
                 return MissingCue(cueId);
@@ -147,9 +145,9 @@ namespace Witch.Infrastructure.Audio
         {
             settings = value ?? GameSettingsState.Default;
             if (music == null) return;
-            music.volume = settings.MasterVolume * settings.MusicVolume * 0.35f;
+            music.volume = settings.MasterVolume * settings.MusicVolume * 0.3f;
             sfx.volume = settings.MasterVolume * settings.SoundVolume * 0.75f;
-            ambience.volume = settings.MasterVolume * settings.SoundVolume * 0.25f;
+            ambience.volume = settings.MasterVolume * settings.SoundVolume * 0.1f;
             ui.volume = settings.MasterVolume * settings.SoundVolume * 0.55f;
         }
 

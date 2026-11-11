@@ -17,6 +17,7 @@ using Witch.Application.Ports;
 using Witch.Domain;
 using Witch.Domain.Orders;
 using Witch.Domain.Potions;
+using Witch.Infrastructure.Content;
 using Witch.Infrastructure.Persistence;
 using Witch.Presentation.Shop;
 using Object = UnityEngine.Object;
@@ -119,6 +120,77 @@ namespace Witch.Bootstrap.PlayModeTests
             Assert.That(longBubble.rect.height, Is.GreaterThan(shortBubbleHeight));
             Assert.That(longText.rectTransform.rect.height, Is.GreaterThanOrEqualTo(longText.preferredHeight - 0.1f));
         }
+
+#if UNITY_EDITOR
+        [UnityTest]
+        public IEnumerator EveryAuthoredOrderBubbleFitsAndViewportHasSize()
+        {
+            yield return LoadShop();
+            ShopHudView view = Object.FindAnyObjectByType<ShopHudView>();
+            ScrollRect scroll = GameObject.Find("OrderBubbleScrollView").GetComponent<ScrollRect>();
+            GameContentCatalogDefinition catalog = UnityEditor.AssetDatabase
+                .LoadAssetAtPath<GameContentCatalogDefinition>("Assets/Content/GameContentCatalog.asset");
+
+            Assert.That(catalog, Is.Not.Null);
+            Assert.That(catalog.Orders.Count, Is.GreaterThan(0));
+            Assert.That(scroll.viewport.rect.width, Is.GreaterThan(0f));
+            Assert.That(scroll.viewport.rect.height, Is.GreaterThan(0f));
+
+            view.SetCustomer("Test Villager", new[] { "prepare" });
+            yield return null;
+            Text singleWordLabel = scroll.content.GetChild(0).GetComponentInChildren<Text>(true);
+            Canvas.ForceUpdateCanvases();
+            Assert.That(
+                singleWordLabel.rectTransform.rect.width,
+                Is.GreaterThanOrEqualTo(singleWordLabel.preferredWidth - 0.1f),
+                "The one-word prepare bubble is clipped horizontally.");
+
+            int checkedBubbles = 0;
+            foreach (OrderDefinition order in catalog.Orders)
+            {
+                string[] bubbles = order.OrderBubbles
+                    .Where(text => !string.IsNullOrWhiteSpace(text))
+                    .ToArray();
+                view.SetCustomer("Test Villager", bubbles);
+                yield return null;
+
+                for (int index = 0; index < bubbles.Length; index++)
+                {
+                    RectTransform bubble = (RectTransform)scroll.content.GetChild(index);
+                    Text label = bubble.GetComponentInChildren<Text>(true);
+                    label.text = bubbles[index];
+                    Canvas.ForceUpdateCanvases();
+                    RectTransform renderedBubble = (RectTransform)bubble.GetChild(0);
+                    float generatedHeight = label.cachedTextGeneratorForLayout.GetPreferredHeight(
+                        bubbles[index],
+                        label.GetGenerationSettings(new Vector2(label.rectTransform.rect.width, 0f)))
+                        / label.pixelsPerUnit;
+                    float widestWordWidth = bubbles[index]
+                        .Split((char[])null, StringSplitOptions.RemoveEmptyEntries)
+                        .Max(word => label.cachedTextGeneratorForLayout.GetPreferredWidth(
+                            word,
+                            label.GetGenerationSettings(Vector2.zero)) / label.pixelsPerUnit);
+
+                    Assert.That(
+                        label.rectTransform.rect.width,
+                        Is.GreaterThanOrEqualTo(widestWordWidth - 0.1f),
+                        $"Text word clipped in {order.StableId}, bubble {index + 1}: {bubbles[index]} " +
+                        $"labelWidth={label.rectTransform.rect.width}, widestWordWidth={widestWordWidth}");
+                    Assert.That(
+                        label.rectTransform.rect.height,
+                        Is.GreaterThanOrEqualTo(label.preferredHeight - 0.1f),
+                        $"Text clipped in {order.StableId}, bubble {index + 1}: {bubbles[index]} " +
+                        $"labelWidth={label.rectTransform.rect.width}, bubbleWidth={bubble.rect.width}, " +
+                        $"slotWidth={bubble.parent.GetComponent<RectTransform>().rect.width}, " +
+                        $"contentWidth={scroll.content.rect.width}, viewportWidth={scroll.viewport.rect.width}, " +
+                        $"bubbleHeight={renderedBubble.rect.height}, generatedHeight={generatedHeight}");
+                    checkedBubbles++;
+                }
+            }
+
+            Assert.That(checkedBubbles, Is.GreaterThan(0));
+        }
+#endif
 
         [UnityTest]
         public IEnumerator OrderBubblesShiftUpBeforeNextBubbleSlidesIn()

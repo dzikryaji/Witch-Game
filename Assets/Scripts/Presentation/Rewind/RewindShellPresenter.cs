@@ -128,7 +128,7 @@ namespace Witch.Presentation.Rewind
             }
 
             revealed[index] = true;
-            audioService?.Play(GameAudioCueIds.CardFlip);
+            audioService?.Play(GameAudioCueIds.PageFlip);
             if (firstIndex < 0)
             {
                 firstIndex = index;

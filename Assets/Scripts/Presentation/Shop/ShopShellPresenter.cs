@@ -338,6 +338,7 @@ namespace Witch.Presentation.Shop
             if (grinderFirstHerbId == null) grinderFirstHerbId = herbId;
             else grinderSecondHerbId = herbId;
 
+            audioService?.Play(GameAudioCueIds.HerbPluck);
             SetStatus(GrinderIsFull
                 ? "Both herbs loaded. Press Grind."
                 : DisplayName(herbId) + " loaded. Add a second herb.");
@@ -387,7 +388,6 @@ namespace Witch.Presentation.Shop
             
             if (result.Succeeded && ActiveSession.PotionDraft.IsReadyToBrew)
             {
-                audioService?.Play(GameAudioCueIds.Pot);
                 return Brew();
             } 
 
@@ -396,7 +396,6 @@ namespace Witch.Presentation.Shop
                 ? "Ground herb added to pot. Brew when both exact herbs are inside." 
                 : "Ground herb added to pot."
                 : result.ErrorMessage);
-            if (result.Succeeded) audioService?.Play(GameAudioCueIds.Pot);
             Render();
             
             return result;
@@ -555,7 +554,7 @@ namespace Witch.Presentation.Shop
             int spread = guidebookPageIndex / 2;
             if (spread <= 0) return; // already on the first spread
             TurnGuidebookTo((spread - 1) * 2, FlipDirection.Backward);
-            audioService?.Play(GameAudioCueIds.GuidebookClose);
+            audioService?.Play(GameAudioCueIds.PageFlip);
         }
 
         public void NextGuidebookPage()
@@ -564,7 +563,7 @@ namespace Witch.Presentation.Shop
             int spread = guidebookPageIndex / 2;
             if (spread + 1 >= guidebookSpreadCount) return; // already on the last spread
             TurnGuidebookTo((spread + 1) * 2, FlipDirection.Forward);
-            audioService?.Play(GameAudioCueIds.GuidebookOpen);
+            audioService?.Play(GameAudioCueIds.PageFlip);
         }
 
         /// <summary>Opens the spread that contains <paramref name="pageIndex"/> (zero-based), e.g. from a Contents link.</summary>
@@ -575,7 +574,7 @@ namespace Witch.Presentation.Shop
             int target = page - (page % 2);
             int current = guidebookPageIndex - (guidebookPageIndex % 2);
             TurnGuidebookTo(target, target >= current ? FlipDirection.Forward : FlipDirection.Backward);
-            audioService?.Play(GameAudioCueIds.GuidebookOpen);
+            audioService?.Play(GameAudioCueIds.PageFlip);
         }
 
         /// <summary>Turns straight back to the Contents page (always the first page of the guidebook).</summary>
@@ -634,7 +633,6 @@ namespace Witch.Presentation.Shop
             {
                 tutorialPanel.SetActive(false);
                 SetTutorialHighlight(-1);
-                audioService?.Play(GameAudioCueIds.UiConfirm);
                 BeginArrival();
                 Render();
                 return;
@@ -648,7 +646,7 @@ namespace Witch.Presentation.Shop
             bool paused = !pausePanel.activeSelf;
             setTimerPaused.Execute(ActiveSession, paused);
             pausePanel.SetActive(paused);
-            audioService?.Play(paused ? GameAudioCueIds.UiConfirm : GameAudioCueIds.UiBack);
+            audioService?.Play(GameAudioCueIds.UiClick);
             SetStatus(paused ? "Paused. Shop time is frozen." : "Back to work. Shop time is moving again.");
         }
 
@@ -666,7 +664,7 @@ namespace Witch.Presentation.Shop
                 pausePanel.SetActive(false);
             }
 
-            audioService?.Play(GameAudioCueIds.UiBack);
+            audioService?.Play(GameAudioCueIds.UiClick);
             SceneLoadResult result = await sceneLoader.LoadAsync(
                 SceneId.MainMenu,
                 lifetimeCancellation?.Token ?? CancellationToken.None);
@@ -741,10 +739,7 @@ namespace Witch.Presentation.Shop
         private Task EnterPendingRewindAsync(CancellationToken cancellationToken)
         {
             SetStatus("KNOCK. KNOCK. Hunters suspect poisoning. Cast the memory spell before they enter; the day will rewind.");
-            audioService?.Play(GameAudioCueIds.HunterWarning);
-            audioService?.Play(GameAudioCueIds.TimeStop);
             audioService?.StopMusic();
-            audioService?.StopAmbience();
 
             if (minigameIntroPopup != null && minigameIntroPopup.IsAuthored)
             {
@@ -793,7 +788,6 @@ namespace Witch.Presentation.Shop
         {
             if (actionInProgress) return;
             minigameIntroPopup.SetInteractable(false); // prevents double clicks
-            audioService?.Play(GameAudioCueIds.UiConfirm);
             RunUiAction(() => StartRewindAsync(lifetimeCancellation?.Token ?? CancellationToken.None));
         }
 
