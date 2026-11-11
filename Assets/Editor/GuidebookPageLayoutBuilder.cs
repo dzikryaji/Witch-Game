@@ -445,21 +445,33 @@ namespace Witch.Editor
             // ---- Herb page: same order and spacing as the old page --------------------------
             GameObject herb = NewUi("HerbLayout", content);
             Stretch((RectTransform)herb.transform);
-            AddVertical(herb, spacing: 6f, TextAnchor.UpperCenter);
+            VerticalLayoutGroup herbLayout = AddVertical(herb, spacing: 6f, TextAnchor.UpperCenter);
+            herbLayout.padding = new RectOffset(0, 0, 72, 0); // start below the ornament panel
             parts.HerbLayout = herb;
 
-            // Name + Latin name, grouped so they stay together. No background behind them.
+            // Name + Latin name sit on the ornament panel printed in BlankPageNew
+            // (page px 129-440 x 56-169). The plate is placed by hand, not by the page layout.
             GameObject plate = NewUi("TitlePlate", herb.transform);
-            AddVertical(plate, spacing: 0f, TextAnchor.UpperCenter);
+            AddVertical(plate, spacing: 0f, TextAnchor.MiddleCenter);
+            plate.AddComponent<LayoutElement>().ignoreLayout = true;
+            var plateRect = (RectTransform)plate.transform;
+            plateRect.anchorMin = new Vector2(0.5f, 1f);
+            plateRect.anchorMax = new Vector2(0.5f, 1f);
+            plateRect.pivot = new Vector2(0.5f, 0.5f);
+            plateRect.anchoredPosition = new Vector2(1f, -16f); // content starts 96 px down; panel centre is at 112
+            plateRect.sizeDelta = new Vector2(270f, 100f);
 
-            parts.Title = NewText("Title", plate.transform, fonts.Title, 44f, FontStyles.Normal,
+            parts.Title = NewText("Title", plate.transform, fonts.Title, 40f, FontStyles.Normal,
                 TextAlignmentOptions.Center, Ink, wrap: false);
             parts.Title.enableAutoSizing = true;
-            parts.Title.fontSizeMin = 28f;
-            parts.Title.fontSizeMax = 44f;
+            parts.Title.fontSizeMin = 20f;
+            parts.Title.fontSizeMax = 40f;
 
-            parts.ScientificName = NewText("ScientificName", plate.transform, fonts.Title, 24f, FontStyles.Normal,
-                TextAlignmentOptions.Center, Ink, wrap: true);
+            parts.ScientificName = NewText("ScientificName", plate.transform, fonts.Title, 22f, FontStyles.Normal,
+                TextAlignmentOptions.Center, Ink, wrap: false);
+            parts.ScientificName.enableAutoSizing = true;
+            parts.ScientificName.fontSizeMin = 14f;
+            parts.ScientificName.fontSizeMax = 22f;
 
             AddSpacer("Spacer", herb.transform, 8f);
 
@@ -484,7 +496,7 @@ namespace Witch.Editor
             tagRect.anchorMin = Vector2.one;
             tagRect.anchorMax = Vector2.one;
             tagRect.pivot = Vector2.one;
-            tagRect.anchoredPosition = new Vector2(0f, -108f); // centred on the herb title line (content starts 96 px down)
+            tagRect.anchoredPosition = new Vector2(0f, -74f); // level with the herb title on the ornament panel
             tagRect.sizeDelta = new Vector2(118f, 49f); // proportions of the tag in the Ginger design
             Image tagImage = tag.AddComponent<Image>();
             tagImage.sprite = AssetDatabase.LoadAssetAtPath<Sprite>(CategoryTagPath);
@@ -535,6 +547,8 @@ namespace Witch.Editor
             AddVertical(row, spacing: 2f, TextAnchor.UpperLeft);
             Image hitArea = row.AddComponent<Image>();
             hitArea.color = Color.clear; // invisible, but makes the whole row clickable
+            // A culled (fully transparent) mesh is skipped by the GraphicRaycaster, so keep it.
+            row.GetComponent<CanvasRenderer>().cullTransparentMesh = false;
             Button button = row.AddComponent<Button>();
             button.transition = Selectable.Transition.None;
 

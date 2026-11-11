@@ -171,7 +171,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Witch.Bootstrap::Witch.Bootstrap.GameCompositionRoot
   contentCatalog: {fileID: 11400000, guid: 10000000000000000000000000000015, type: 2}
   randomSeed: 20261024
-  startupScene: 0
+  startupScene: 1
   developmentStartingMoney: 0
   developmentRewindCount: 0
   developmentOrderSeed: 20261024
@@ -191,59 +191,47 @@ MonoBehaviour:
   m_EditorClassIdentifier: Witch.Infrastructure::Witch.Infrastructure.Audio.UnityAudioService
   cues:
   - cueId: BGM_MAIN_MENU
-    clip: {fileID: 8300000, guid: f79b9ac10f17a48a7b6fb7fdd3197576, type: 3}
+    clip: {fileID: 8300000, guid: d2969dd9b2f649858c187b8eb5831d37, type: 3}
   - cueId: BGM_SHOP
-    clip: {fileID: 8300000, guid: d61c8cfed057041888523e0e6818f97e, type: 3}
+    clip: {fileID: 8300000, guid: 2170d297885143df9808577c8307b114, type: 3}
   - cueId: BGM_REWIND_MINIGAME
-    clip: {fileID: 8300000, guid: 9c3d8d4223df04090b74338b7dc599e8, type: 3}
+    clip: {fileID: 8300000, guid: c0ae432a05cd4c558f6582c0d36a7722, type: 3}
   - cueId: BGM_GAME_OVER
-    clip: {fileID: 8300000, guid: 4bb0bb780b5e74837a31b6fcf110dcb2, type: 3}
+    clip: {fileID: 8300000, guid: 4bc4d4598b02441c8dc62cdaba429043, type: 3}
   - cueId: BGM_GAME_COMPLETE
-    clip: {fileID: 8300000, guid: dd82987c93bdf46c6b58ec47dc7683b4, type: 3}
+    clip: {fileID: 8300000, guid: 3921a49bef4c4a4ea3ffc78e1cc1de4d, type: 3}
   - cueId: SFX_SHOP_AMBIENCE
-    clip: {fileID: 8300000, guid: 34dc061c93f8349008f902f473c6479b, type: 3}
+    clip: {fileID: 8300000, guid: 4274f1f9c58a457ab22a398ae1fdbe99, type: 3}
   - cueId: SFX_CUSTOMER_BELL
-    clip: {fileID: 8300000, guid: 82068cfdec7ce4f5aa3914004533e8b1, type: 3}
-  - cueId: SFX_GUIDEBOOK_OPEN
-    clip: {fileID: 8300000, guid: b137776190d584c8b8eb58dbcedc31ff, type: 3}
-  - cueId: SFX_GUIDEBOOK_CLOSE
-    clip: {fileID: 8300000, guid: b351aa53e09cf413d8d6053a89809c0c, type: 3}
-  - cueId: SFX_GRINDER_COMPLETE
-    clip: {fileID: 8300000, guid: 443be89a4526446f8a9ccd99ee008e2f, type: 3}
-  - cueId: SFX_POT_ADD_HERB
-    clip: {fileID: 8300000, guid: 173268ade6b374729b03b53aa5d493b2, type: 3}
+    clip: {fileID: 8300000, guid: df22504f477a467f8f1ec22494adb77a, type: 3}
+  - cueId: SFX_PAGE_FLIP
+    clip: {fileID: 8300000, guid: ab071e0ad1f14435bfbcb35b161249c4, type: 3}
+  - cueId: SFX_GRINDER
+    clip: {fileID: 8300000, guid: 9f3ec6a30e20494a9ed68c25cc084c57, type: 3}
+  - cueId: SFX_HERB_PLUCK
+    clip: {fileID: 8300000, guid: f6001bf6c5dd4d3db78b8cdab9887aca, type: 3}
   - cueId: SFX_BREW_SUCCESS
-    clip: {fileID: 8300000, guid: f54512b79bd8649bea708e8b809f2807, type: 3}
-  - cueId: SFX_BREW_INVALID
-    clip: {fileID: 8300000, guid: 580bab5348cf140a9aa8212ee6be528f, type: 3}
+    clip: {fileID: 8300000, guid: 617ac18a65bc468f9281596652b89551, type: 3}
   - cueId: SFX_DISCARD
-    clip: {fileID: 8300000, guid: 56d60082d9ad74a78b7365e601ac96f7, type: 3}
+    clip: {fileID: 8300000, guid: df1022ccc4f54cf092d1cd57ae49962d, type: 3}
   - cueId: SFX_ORDER_CORRECT
     clip: {fileID: 8300000, guid: f764ddc5eaaf8431a9e8e49eba98c342, type: 3}
   - cueId: SFX_PAYMENT_COINS
     clip: {fileID: 8300000, guid: b30c3c12aa48d425b86383274e1e95f5, type: 3}
   - cueId: SFX_ORDER_WRONG
     clip: {fileID: 8300000, guid: c6f104c55fb1f429b88dba8e2ce28653, type: 3}
-  - cueId: SFX_HUNTER_WARNING
-    clip: {fileID: 8300000, guid: 31ac859570cba49489c184a6a56679b0, type: 3}
-  - cueId: SFX_TIME_STOP
-    clip: {fileID: 8300000, guid: 514f9797c36da42f98e2b930c3f48d07, type: 3}
-  - cueId: SFX_CARD_FLIP
-    clip: {fileID: 8300000, guid: 983edfea902e94804bb082151a4cd1bc, type: 3}
   - cueId: SFX_CARD_MATCH
-    clip: {fileID: 8300000, guid: 6d42f2a198959482780bfba9f8053694, type: 3}
+    clip: {fileID: 8300000, guid: 46ee8479363847ef8e7435be9a20c6a9, type: 3}
   - cueId: SFX_CARD_MISMATCH
-    clip: {fileID: 8300000, guid: e9826fb737d6048bfb600d8bf749d280, type: 3}
+    clip: {fileID: 8300000, guid: 00e369819be44c7583f47ac0ed401fae, type: 3}
   - cueId: SFX_MINIGAME_COMPLETE
     clip: {fileID: 8300000, guid: b594e88b8f527463ebbfef3db7d5ceae, type: 3}
   - cueId: SFX_EXPENSE_PAY
     clip: {fileID: 8300000, guid: 803b613385f144c6fbf10068221ea5fe, type: 3}
   - cueId: SFX_EXPENSE_FAIL
     clip: {fileID: 8300000, guid: 1ad5ba43d6ba640e6b08f002686698ee, type: 3}
-  - cueId: SFX_UI_CONFIRM
-    clip: {fileID: 8300000, guid: bab4a7d692e8a4d559e9e5e39fc4f150, type: 3}
-  - cueId: SFX_UI_BACK
-    clip: {fileID: 8300000, guid: db2b411ab81a64e37afbcda4f6a951f8, type: 3}
+  - cueId: SFX_UI_CLICK
+    clip: {fileID: 8300000, guid: 4af5dc81939d43d2b9e748dec0b96666, type: 3}
   music: {fileID: 2133554573}
   sfx: {fileID: 1048499787}
   ambience: {fileID: 313298146}
