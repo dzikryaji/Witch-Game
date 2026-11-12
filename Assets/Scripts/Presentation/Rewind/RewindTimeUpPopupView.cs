@@ -7,6 +7,7 @@ namespace Witch.Presentation.Rewind
 {
     public sealed class RewindTimeUpPopupView : MonoBehaviour
     {
+        [SerializeField] private GameObject overlay;
         [SerializeField] private GameObject root;
         [SerializeField] private Text messageText;
         [FormerlySerializedAs("retryButton")]
@@ -30,17 +31,27 @@ namespace Witch.Presentation.Rewind
         public void Show(string extraMessage = null)
         {
             if (!IsAuthored) return;
+
             messageText.text = string.IsNullOrEmpty(extraMessage)
                 ? defaultMessage
                 : defaultMessage + "\n\n" + extraMessage;
+
             menuButton.interactable = true;
+
+            if (overlay != null)
+                overlay.SetActive(true);
+
             root.SetActive(true);
             menuButton.Select();
         }
 
         public void Hide()
         {
-            if (root != null) root.SetActive(false);
+            if (overlay != null)
+                overlay.SetActive(false);
+
+            if (root != null)
+                root.SetActive(false);
         }
 
         public void SetInteractable(bool value)
