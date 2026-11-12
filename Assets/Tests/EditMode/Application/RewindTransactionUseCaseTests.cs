@@ -101,7 +101,7 @@ namespace Witch.Application.Tests
             Assert.That(session.RunState.RewindCount, Is.EqualTo(1));
             Assert.That(session.AttemptMetadata.ActiveOrderSeed, Is.EqualTo(808));
             Assert.That(session.AttemptMetadata.PendingRewind, Is.False);
-            Assert.That(session.CurrentPhase, Is.EqualTo(GamePhase.ShopPreparation));
+            Assert.That(session.CurrentPhase, Is.EqualTo(GamePhase.CustomerEncounter));
             Assert.That(saves.SaveCallCount, Is.EqualTo(2));
             Assert.That(random.CallCount, Is.EqualTo(1));
         }
@@ -124,7 +124,7 @@ namespace Witch.Application.Tests
             Assert.That(failed.Error, Is.EqualTo(RewindTransactionError.SceneLoadFailed));
             Assert.That(retry.Succeeded, Is.True, retry.ErrorMessage);
             Assert.That(retry.AlreadyApplied, Is.True);
-            Assert.That(session.CurrentPhase, Is.EqualTo(GamePhase.ShopPreparation));
+            Assert.That(session.CurrentPhase, Is.EqualTo(GamePhase.CustomerEncounter));
             Assert.That(scenes.LoadCallCount, Is.EqualTo(4));
         }
 

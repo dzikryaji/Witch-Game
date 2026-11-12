@@ -14,19 +14,23 @@ namespace Witch.Application.Flow
         private readonly IRunStateTransactionRepository saveRepository;
         private readonly IRandomSource randomSource;
         private readonly IClock clock;
+        private readonly IGameCenterService gameCenter;
+        private bool cleanLedgerReported;
 
         public ResolveExpenseUseCase(
             ExpenseRules expenseRules,
             DayProgressionSetup setup,
             IRunStateTransactionRepository saveRepository,
             IRandomSource randomSource,
-            IClock clock)
+            IClock clock,
+            IGameCenterService gameCenter = null)
         {
             this.expenseRules = expenseRules ?? throw new ArgumentNullException(nameof(expenseRules));
             this.setup = setup ?? throw new ArgumentNullException(nameof(setup));
             this.saveRepository = saveRepository ?? throw new ArgumentNullException(nameof(saveRepository));
             this.randomSource = randomSource ?? throw new ArgumentNullException(nameof(randomSource));
             this.clock = clock ?? throw new ArgumentNullException(nameof(clock));
+            this.gameCenter = gameCenter;
         }
 
         public async Task<ExpenseResolutionResult> ExecuteAsync(
@@ -42,6 +46,8 @@ namespace Witch.Application.Flow
             {
                 return ExpenseResolutionResult.Failure(ExpenseResolutionError.InvalidPhase, "Expense check is not active.");
             }
+
+            int paidDay = session.RunState.CurrentDayNumber;
 
             ExpenseOutcome outcome = expenseRules.Resolve(
                 session.RunState,
@@ -83,8 +89,18 @@ namespace Witch.Application.Flow
                         completedSave.ErrorMessage);
                 }
 
+                bool servedWrongOnVictoryDay = session.AttemptMetadata.WrongServiceCountToday > 0;
+                int victoryServiceCountToday = session.AttemptMetadata.ServiceCountToday;
+                bool victoryMinigamePlayedToday = session.AttemptMetadata.MinigamePlayedToday;
                 session.BeginExpenseCheck();
                 session.ApplyVictory(completedSnapshot, completedMetadata);
+                _ = GameCenterReporting.ReportQuietlyAsync(gameCenter, GameCenterAchievementIds.SecretKept, 100d);
+                if (paidDay > RunState.FirstDay && !servedWrongOnVictoryDay && victoryServiceCountToday > 0 && !victoryMinigamePlayedToday && !cleanLedgerReported)
+                {
+                    cleanLedgerReported = true;
+                    _ = GameCenterReporting.ReportQuietlyAsync(gameCenter, GameCenterAchievementIds.CleanLedger, 100d);
+                }
+
                 return ExpenseResolutionResult.Success(
                     new ExpenseOutcome(ExpenseOutcomeKind.Victory, completedRun));
             }
@@ -107,7 +123,10 @@ namespace Witch.Application.Flow
                 nextRunState.RewindCount,
                 false,
                 0,
-                nextSeed);
+                nextSeed,
+                0,
+                0,
+                false);
             SaveStateResult save = await saveRepository.SaveRunStateAsync(
                 snapshot,
                 metadata,
@@ -117,8 +136,25 @@ namespace Witch.Application.Flow
                 return ExpenseResolutionResult.Failure(ExpenseResolutionError.SaveFailed, save.ErrorMessage);
             }
 
+            bool servedWrongToday = session.AttemptMetadata.WrongServiceCountToday > 0;
+            int serviceCountToday = session.AttemptMetadata.ServiceCountToday;
+            bool minigamePlayedToday = session.AttemptMetadata.MinigamePlayedToday;
             session.BeginExpenseCheck();
             session.AdvanceDay(snapshot, metadata);
+            if (paidDay == RunState.FirstDay)
+            {
+                _ = GameCenterReporting.ReportQuietlyAsync(gameCenter, GameCenterAchievementIds.FirstShift, 100d);
+            }
+
+            // D1: Clean Ledger can only unlock on Day 2 or later, never together with First Shift.
+            // D2: Clean Ledger needs at least one customer served that day.
+            // D3: Clean Ledger fails if the rewind minigame was played that day.
+            if (paidDay > RunState.FirstDay && !servedWrongToday && serviceCountToday > 0 && !minigamePlayedToday && !cleanLedgerReported)
+            {
+                cleanLedgerReported = true;
+                _ = GameCenterReporting.ReportQuietlyAsync(gameCenter, GameCenterAchievementIds.CleanLedger, 100d);
+            }
+
             return ExpenseResolutionResult.Success(outcome);
         }
     }

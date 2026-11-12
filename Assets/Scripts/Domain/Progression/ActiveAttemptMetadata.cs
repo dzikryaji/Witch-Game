@@ -12,7 +12,10 @@ namespace Witch.Domain.Progression
             int rewindCount,
             bool pendingRewind,
             int minigameBoardSeed,
-            int activeOrderSeed)
+            int activeOrderSeed,
+            int wrongServiceCountToday = 0,
+            int serviceCountToday = 0,
+            bool minigamePlayedToday = false)
         {
             if (string.IsNullOrWhiteSpace(runId))
             {
@@ -34,6 +37,11 @@ namespace Witch.Domain.Progression
                 throw new ArgumentOutOfRangeException(nameof(rewindCount));
             }
 
+            if (wrongServiceCountToday < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(wrongServiceCountToday));
+            }
+
             if (pendingRewind && suspicion != RunState.RewindSuspicionThreshold)
             {
                 throw new ArgumentException("Pending rewind requires suspicion at the threshold.", nameof(suspicion));
@@ -46,6 +54,9 @@ namespace Witch.Domain.Progression
             PendingRewind = pendingRewind;
             MinigameBoardSeed = minigameBoardSeed;
             ActiveOrderSeed = activeOrderSeed;
+            WrongServiceCountToday = wrongServiceCountToday;
+            MinigamePlayedToday = minigamePlayedToday;
+            ServiceCountToday = serviceCountToday;
         }
 
         public string RunId { get; }
@@ -61,5 +72,11 @@ namespace Witch.Domain.Progression
         public int MinigameBoardSeed { get; }
 
         public int ActiveOrderSeed { get; }
+
+        public int WrongServiceCountToday { get; }
+
+        public bool MinigamePlayedToday { get; }
+
+        public int ServiceCountToday { get; }
     }
 }

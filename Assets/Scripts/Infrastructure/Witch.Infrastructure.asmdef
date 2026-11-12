@@ -3,7 +3,9 @@
     "rootNamespace": "Witch.Infrastructure",
     "references": [
         "Witch.Application",
-        "Witch.Domain"
+        "Witch.Domain",
+        "Apple.Core",
+        "Apple.GameKit"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

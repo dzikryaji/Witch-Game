@@ -12,15 +12,20 @@ namespace Witch.Application.Flow
         private readonly IRunStateTransactionRepository saveRepository;
         private readonly ISceneLoader sceneLoader;
         private readonly IRandomSource randomSource;
+        private readonly IGameCenterService gameCenter;
+        private bool memoryMenderReported;
 
         public CompleteRewindUseCase(
             IRunStateTransactionRepository saveRepository,
             ISceneLoader sceneLoader,
-            IRandomSource randomSource)
+            IRandomSource randomSource,
+            IGameCenterService gameCenter = null)
         {
             this.saveRepository = saveRepository ?? throw new ArgumentNullException(nameof(saveRepository));
             this.sceneLoader = sceneLoader ?? throw new ArgumentNullException(nameof(sceneLoader));
             this.randomSource = randomSource ?? throw new ArgumentNullException(nameof(randomSource));
+            this.gameCenter = gameCenter;
+            this.memoryMenderReported = false;
         }
 
         public async Task<RewindTransactionResult> ExecuteAsync(
@@ -77,7 +82,10 @@ namespace Witch.Application.Flow
                 outcome.RestoredRunState.RewindCount,
                 false,
                 0,
-                outcome.NextAttemptSeed);
+                outcome.NextAttemptSeed,
+                session.AttemptMetadata.WrongServiceCountToday,
+                session.AttemptMetadata.ServiceCountToday,
+                true);
             SaveStateResult save = await saveRepository.SaveRunStateAsync(
                 snapshot,
                 metadata,
@@ -85,6 +93,12 @@ namespace Witch.Application.Flow
             if (!save.Succeeded)
             {
                 return RewindTransactionResult.Failure(RewindTransactionError.SaveFailed, save.ErrorMessage);
+            }
+
+            if (gameCenter != null && !memoryMenderReported)
+            {
+                memoryMenderReported = true;
+                _ = GameCenterReporting.ReportQuietlyAsync(gameCenter, GameCenterAchievementIds.MemoryMender, 100d);
             }
 
             if (session.CanResumeInPlace) session.CompleteRewindInPlace(snapshot, metadata);
