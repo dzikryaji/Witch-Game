@@ -362,7 +362,7 @@ namespace Witch.Presentation.Shop
             return result;
         }
 
-        public void EjectLoadedHerb()   
+        public void EjectLoadedHerb()
         {
             if (grinderFirstHerbId == null && grinderSecondHerbId == null)
             {
@@ -383,19 +383,19 @@ namespace Witch.Presentation.Shop
         public PreparationResult AddGroundHerbToPot()
         {
             PreparationResult result = preparation.AddToPot(ActiveSession);
-            
+
             if (result.Succeeded && ActiveSession.PotionDraft.IsReadyToBrew)
             {
                 return Brew();
-            } 
+            }
 
             SetStatus(result.Succeeded
-                ? setup.DayNumber == 1 
-                ? "Ground herb added to pot. Brew when both exact herbs are inside." 
+                ? setup.DayNumber == 1
+                ? "Ground herb added to pot. Brew when both exact herbs are inside."
                 : "Ground herb added to pot."
                 : result.ErrorMessage);
             Render();
-            
+
             return result;
         }
 
@@ -408,7 +408,7 @@ namespace Witch.Presentation.Shop
             return result;
         }
 
-        public PreparationResult Brew() 
+        public PreparationResult Brew()
         {
             PreparationResult result = preparation.Brew(ActiveSession);
             string message = !result.Succeeded
@@ -751,7 +751,8 @@ namespace Witch.Presentation.Shop
                     "This examination ends now. Step away from counter."
                 },
                 witchHunter.Illustration);
-            await hudView.EntranceComplete;  // wait for portrait + all bubbles to finish
+            bool entranceFinished = await hudView.EntranceComplete;
+            if (!entranceFinished) return;
             setTimerPaused?.Execute(ActiveSession, true);
             minigameIntroPopup.Show();
         }
@@ -926,10 +927,10 @@ namespace Witch.Presentation.Shop
             }
 
             hudView.Render(session, DisplayName);
-            grinderInputText.text = GrinderIsFull 
+            grinderInputText.text = GrinderIsFull
                 ? "Ready to grind"
-                : grinderFirstHerbId == null 
-                ? "Drop two herbs here" 
+                : grinderFirstHerbId == null
+                ? "Drop two herbs here"
                 : "Drop one more herb";
             grindButton.interactable = GrinderIsFull;
             ShowHerbImages(grinderFirstHerbImages, grinderFirstHerbId);
@@ -939,7 +940,7 @@ namespace Witch.Presentation.Shop
             if (hasGroundHerb)
             {
                 groundHerbText.text = "Ground\n" + DisplayName(session.GroundMixture.FirstHerbId)
-                    + " + " + DisplayName(session.GroundMixture.SecondHerbId);             
+                    + " + " + DisplayName(session.GroundMixture.SecondHerbId);
             }
             bool hasPotion = session.PreparedPotion != null;
             if (!hasPotion && preparedPotionObject.activeSelf)
@@ -953,18 +954,18 @@ namespace Witch.Presentation.Shop
                 preparedPotionText.text = "Brewed Potion\n"
                     + DisplayName(pair.FirstHerbId) + " + " + DisplayName(pair.SecondHerbId);
 
-                if(preparedPotionHerbIcon1 != null)
+                if (preparedPotionHerbIcon1 != null)
                 {
                     Sprite icon1 = DisplayImage(pair.FirstHerbId);
-                    preparedPotionHerbIcon1.sprite = icon1; 
-                    preparedPotionHerbIcon1.color = icon1 == null ? Color.clear : Color.white; 
+                    preparedPotionHerbIcon1.sprite = icon1;
+                    preparedPotionHerbIcon1.color = icon1 == null ? Color.clear : Color.white;
                 }
 
-                if(preparedPotionHerbIcon2 != null)
+                if (preparedPotionHerbIcon2 != null)
                 {
                     Sprite icon2 = DisplayImage(pair.SecondHerbId);
-                    preparedPotionHerbIcon2.sprite = icon2; 
-                    preparedPotionHerbIcon2.color = icon2 == null ? Color.clear : Color.white; 
+                    preparedPotionHerbIcon2.sprite = icon2;
+                    preparedPotionHerbIcon2.color = icon2 == null ? Color.clear : Color.white;
                 }
 
             }
