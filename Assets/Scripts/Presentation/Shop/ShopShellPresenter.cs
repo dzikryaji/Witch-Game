@@ -483,11 +483,16 @@ namespace Witch.Presentation.Shop
             {
                 SetStatus("Wrong potion. No coins. Suspicion increased. At 3, Hunters investigate the suspicious 'herbalist'.");
                 audioService?.Play(GameAudioCueIds.OrderWrong);
-
-                   if (suspicionFocus != null) suspicionFocus.Play();
+                if (suspicionFocus != null) suspicionFocus.Play();
             }
 
             Render();
+            if (suspicionFocus != null && suspicionFocus.IsPlaying)
+            {
+                await suspicionFocus.Finished;
+                if (cancellationToken.IsCancellationRequested) return result;
+            }
+
             if (result.Succeeded
                 && ActiveSession.CurrentPhase == Witch.Domain.GamePhase.RewindPending
                 && enterRewind != null)
@@ -1012,7 +1017,9 @@ namespace Witch.Presentation.Shop
             if (counterCoins != null) counterCoins.SetWaiting(waitingForCoins);
             if (waitingForCoins) SetStatus("Collect the coins on the counter before closing the shop.");
 
+            bool focusingSuspicion = suspicionFocus != null && suspicionFocus.IsPlaying;
             bool visible = !waitingForCoins
+                && !focusingSuspicion
                 && (session.CurrentPhase == Witch.Domain.GamePhase.ClosingEncounter
                     || session.CurrentPhase == Witch.Domain.GamePhase.GameOver
                     || session.CurrentPhase == Witch.Domain.GamePhase.DaySummary

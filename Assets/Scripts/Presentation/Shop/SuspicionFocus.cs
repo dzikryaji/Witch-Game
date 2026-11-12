@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -24,11 +25,17 @@ namespace Witch.Presentation.Shop
         private Vector2 baseSizeDelta;
         private bool captured;
         private Coroutine routine;
+        private TaskCompletionSource<bool> finished = CompletedSignal();
+
+        public bool IsPlaying => routine != null;
+
+        public Task Finished => finished.Task;
 
         public void Play()
         {
             Capture();
             if (!isActiveAndEnabled) return;
+            if (finished.Task.IsCompleted) finished = new TaskCompletionSource<bool>();
             if (routine != null) StopCoroutine(routine);
             routine = StartCoroutine(Run());
         }
@@ -42,12 +49,14 @@ namespace Witch.Presentation.Shop
                 routine = null;
             }
             ResetVisuals();
+            finished.TrySetResult(false);
         }
 
         private void OnDisable()
         {
             routine = null;
             if (captured) ResetVisuals();
+            finished.TrySetResult(false);
         }
 
         private IEnumerator Run()
@@ -80,6 +89,7 @@ namespace Witch.Presentation.Shop
 
             routine = null;
             ResetVisuals();
+            finished.TrySetResult(true);
         }
 
         private IEnumerator Animate(float from, float to, float duration, Vector2 bigDelta)
@@ -117,6 +127,13 @@ namespace Witch.Presentation.Shop
                 backdrop.color = c;
                 backdrop.gameObject.SetActive(false);
             }
+        }
+
+        private static TaskCompletionSource<bool> CompletedSignal()
+        {
+            var signal = new TaskCompletionSource<bool>();
+            signal.TrySetResult(true);
+            return signal;
         }
 
         private void Capture()
