@@ -592,7 +592,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: 200, y: 152}
+  m_AnchoredPosition: {x: 214.9, y: 152}
   m_SizeDelta: {x: 130, y: 79.8303}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &381156774
@@ -948,7 +948,8 @@ MonoBehaviour:
   boardLayout: {fileID: 1245532827}
   timerText: {fileID: 381156774}
   timeUpPopup: {fileID: 67254096}
-  timeLimitSeconds: 60
+  timeLimitSeconds: 45
+  header: {fileID: 1220888290}
 --- !u!4 &827382019
 Transform:
   m_ObjectHideFlags: 0
@@ -1775,13 +1776,78 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 8494789224686786968, guid: 014c23a4c7cc149cd82ae088959e3ee1, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1220888290}
   m_SourcePrefab: {fileID: 100100000, guid: 014c23a4c7cc149cd82ae088959e3ee1, type: 3}
 --- !u!224 &1220888284 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 1675754155377516442, guid: 014c23a4c7cc149cd82ae088959e3ee1, type: 3}
   m_PrefabInstance: {fileID: 1220888283}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1220888285 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 300892515191646865, guid: 014c23a4c7cc149cd82ae088959e3ee1, type: 3}
+  m_PrefabInstance: {fileID: 1220888283}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Text
+--- !u!114 &1220888286 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5491376164291241791, guid: 014c23a4c7cc149cd82ae088959e3ee1, type: 3}
+  m_PrefabInstance: {fileID: 1220888283}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Text
+--- !u!224 &1220888287 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 225070928545956944, guid: 014c23a4c7cc149cd82ae088959e3ee1, type: 3}
+  m_PrefabInstance: {fileID: 1220888283}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1220888288 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5418594224667811027, guid: 014c23a4c7cc149cd82ae088959e3ee1, type: 3}
+  m_PrefabInstance: {fileID: 1220888283}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Text
+--- !u!1 &1220888289 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8494789224686786968, guid: 014c23a4c7cc149cd82ae088959e3ee1, type: 3}
+  m_PrefabInstance: {fileID: 1220888283}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1220888290
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1220888289}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14051a8df1e524ce9b876662e41b43bb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Witch.Presentation::Witch.Presentation.Rewind.RewindHeaderView
+  moneyText: {fileID: 1220888285}
+  dayText: {fileID: 1220888288}
+  suspicionFill: {fileID: 1220888287}
+  suspicionText: {fileID: 1220888286}
+  moneyFormat: ${0}
+  dayFormat: Day {0}/{1}
+  totalDays: 14
 --- !u!1 &1245532822
 GameObject:
   m_ObjectHideFlags: 0
