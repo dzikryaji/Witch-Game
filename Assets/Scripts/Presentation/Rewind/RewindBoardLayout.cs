@@ -17,12 +17,12 @@ namespace Witch.Presentation.Rewind
         [SerializeField]
         private ColumnRule[] columnRules =
         {
-            new ColumnRule { cardCount = 6, columns = 3 }, 
-            new ColumnRule { cardCount = 8, columns = 4 },  
-            new ColumnRule { cardCount = 12, columns = 6 },  
-            new ColumnRule { cardCount = 16, columns = 8 },  
+            new ColumnRule { cardCount = 6, columns = 3 },
+            new ColumnRule { cardCount = 8, columns = 4 },
+            new ColumnRule { cardCount = 12, columns = 6 },
+            new ColumnRule { cardCount = 16, columns = 8 }
         };
-        [SerializeField] private Vector2 spacing = new Vector2(14f, 14f);
+        [SerializeField] private float verticalSpacing = 14f;
         [SerializeField, Range(0.4f, 1f)] private float cardAspect = 5f / 7f;   // width / height
         [SerializeField, Min(40f)] private float maxCardWidth = 180f;
 
@@ -38,19 +38,42 @@ namespace Witch.Presentation.Rewind
             if (refreshCanvas) Canvas.ForceUpdateCanvases();
 
             Rect rect = ((RectTransform)transform).rect;
-            int columns = Mathf.Clamp(ColumnsFor(cardCount), 1, cardCount);
-            int rows = Mathf.CeilToInt(cardCount / (float)columns);
+            int columns = ColumnsFor(cardCount);
+            int rows = 2;
 
-            float availableWidth = rect.width - grid.padding.left - grid.padding.right - spacing.x * (columns - 1);
-            float availableHeight = rect.height - grid.padding.top - grid.padding.bottom - spacing.y * (rows - 1);
+            float availableWidth = rect.width - grid.padding.left - grid.padding.right;
+            float availableHeight = rect.height - grid.padding.top - grid.padding.bottom;
 
-            float width = Mathf.Min(availableWidth / columns, availableHeight / rows * cardAspect, maxCardWidth);
+            float minimumSpacing = 16f;
+
+            float maxWidthByHorizontal =
+                (availableWidth - minimumSpacing * (columns - 1)) / columns;
+
+            float maxWidthByVertical =
+                ((availableHeight - verticalSpacing * (rows - 1)) / rows) * cardAspect;
+
+            float width = Mathf.Min(
+                maxWidthByHorizontal,
+                maxWidthByVertical,
+                maxCardWidth
+            );
+
             width = Mathf.Max(width, 1f);
+
+            float horizontalSpacing = columns switch
+            {
+                3 => 40f,
+                4 => 32f,
+                6 => 22f,
+                8 => 14f,
+                _ => 20f
+            };
 
             grid.startAxis = GridLayoutGroup.Axis.Horizontal;
             grid.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
             grid.constraintCount = columns;
-            grid.spacing = spacing;
+            grid.childAlignment = TextAnchor.MiddleCenter;
+            grid.spacing = new Vector2(horizontalSpacing, verticalSpacing);
             grid.cellSize = new Vector2(width, width / cardAspect);
         }
 
@@ -58,12 +81,15 @@ namespace Witch.Presentation.Rewind
         {
             foreach (ColumnRule rule in columnRules)
             {
-                if (rule.cardCount == cardCount) return rule.columns;
+                if (rule.cardCount == cardCount)
+                {
+                    return rule.columns;
+                }
             }
-            return Mathf.CeilToInt(cardCount / 2f); // fallback: two rows
+
+            return Mathf.CeilToInt(cardCount / 2f);
         }
 
-        // Re-fit if the window or canvas size changes.
         private void OnRectTransformDimensionsChange()
         {
             if (lastCardCount > 0 && isActiveAndEnabled) Apply(lastCardCount, false);

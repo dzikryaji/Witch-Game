@@ -52,7 +52,10 @@ namespace Witch.Application.Flow
                 retryState.RewindCount,
                 false,
                 0,
-                snapshot.OrderSeed);
+                snapshot.OrderSeed,
+                session.AttemptMetadata.WrongServiceCountToday,
+                session.AttemptMetadata.ServiceCountToday,
+                session.AttemptMetadata.MinigamePlayedToday);
             SaveStateResult save = await saveRepository.SaveRunStateAsync(
                 snapshot,
                 metadata,

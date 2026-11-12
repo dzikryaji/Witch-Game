@@ -27,7 +27,9 @@ namespace Witch.Application.Flow
                     command.UnlockedHerbIds,
                     command.UnlockedGuidebookEntryIds,
                     command.TutorialFlags,
-                    command.NarrativeFlags);
+                    command.NarrativeFlags,
+                    new string[0],
+                    new string[0]);
                 var snapshot = new DayStartSnapshot(
                     runState,
                     command.FirstDayOrderSeed,

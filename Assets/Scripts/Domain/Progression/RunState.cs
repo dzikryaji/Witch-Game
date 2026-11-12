@@ -16,6 +16,7 @@ namespace Witch.Domain.Progression
         private readonly ReadOnlyCollection<string> unlockedHerbIds;
         private readonly ReadOnlyCollection<string> unlockedGuidebookEntryIds;
         private readonly ReadOnlyCollection<string> seenOrderIds;
+        private readonly ReadOnlyCollection<string> servedCategoryIds;
         private readonly ReadOnlyDictionary<string, bool> readOnlyTutorialFlags;
         private readonly ReadOnlyDictionary<string, bool> readOnlyNarrativeFlags;
 
@@ -30,7 +31,8 @@ namespace Witch.Domain.Progression
             IReadOnlyList<string> unlockedGuidebookEntryIds = null,
             IReadOnlyDictionary<string, bool> tutorialFlags = null,
             IReadOnlyDictionary<string, bool> narrativeFlags = null,
-            IReadOnlyList<string> seenOrderIds = null)
+            IReadOnlyList<string> seenOrderIds = null,
+            IReadOnlyList<string> servedCategoryIds = null)
         {
             if (string.IsNullOrWhiteSpace(runId))
             {
@@ -68,6 +70,7 @@ namespace Witch.Domain.Progression
                 unlockedGuidebookEntryIds,
                 nameof(unlockedGuidebookEntryIds));
             this.seenOrderIds = CopyIds(seenOrderIds, nameof(seenOrderIds));
+            this.servedCategoryIds = CopyIds(servedCategoryIds, nameof(servedCategoryIds));
             readOnlyTutorialFlags = new ReadOnlyDictionary<string, bool>(
                 CopyFlags(tutorialFlags, nameof(tutorialFlags)));
             readOnlyNarrativeFlags = new ReadOnlyDictionary<string, bool>(
@@ -91,6 +94,8 @@ namespace Witch.Domain.Progression
         public IReadOnlyList<string> UnlockedGuidebookEntryIds => unlockedGuidebookEntryIds;
 
         public IReadOnlyList<string> SeenOrderIds => seenOrderIds;
+
+        public IReadOnlyList<string> ServedCategoryIds => servedCategoryIds;
 
         public IReadOnlyDictionary<string, bool> TutorialFlags => readOnlyTutorialFlags;
 
@@ -121,7 +126,8 @@ namespace Witch.Domain.Progression
                 UnlockedGuidebookEntryIds,
                 TutorialFlags,
                 NarrativeFlags,
-                SeenOrderIds);
+                SeenOrderIds,
+                ServedCategoryIds);
         }
 
         public RunState MarkOrderSeen(string orderId)
@@ -141,6 +147,31 @@ namespace Witch.Domain.Progression
                 UnlockedGuidebookEntryIds,
                 TutorialFlags,
                 NarrativeFlags,
+                next,
+                ServedCategoryIds);
+        }
+
+        public RunState MarkCategoryServed(string categoryId)
+        {
+            if (string.IsNullOrWhiteSpace(categoryId)) throw new ArgumentException("Category ID must not be empty.", nameof(categoryId));
+            if (ServedCategoryIds.Contains(categoryId))
+            {
+                return this;
+            }
+
+            IReadOnlyList<string> next = ServedCategoryIds.Concat(new[] { categoryId }).ToArray();
+            return new RunState(
+                RunId,
+                CurrentDayNumber,
+                Money,
+                Suspicion,
+                RewindCount,
+                UnlockedCategoryIds,
+                UnlockedHerbIds,
+                UnlockedGuidebookEntryIds,
+                TutorialFlags,
+                NarrativeFlags,
+                SeenOrderIds,
                 next);
         }
 
@@ -157,7 +188,8 @@ namespace Witch.Domain.Progression
                 UnlockedGuidebookEntryIds,
                 TutorialFlags,
                 NarrativeFlags,
-                orderIds);
+                orderIds,
+                ServedCategoryIds);
         }
 
         public RunState MarkCompleted()
@@ -180,7 +212,8 @@ namespace Witch.Domain.Progression
                 UnlockedGuidebookEntryIds,
                 TutorialFlags,
                 flags,
-                SeenOrderIds);
+                SeenOrderIds,
+                ServedCategoryIds);
         }
 
         private static ReadOnlyCollection<string> CopyIds(IReadOnlyList<string> source, string parameterName)

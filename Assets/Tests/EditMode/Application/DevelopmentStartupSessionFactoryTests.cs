@@ -37,7 +37,7 @@ namespace Witch.Application.Tests
             Assert.That(session.AttemptMetadata.PendingRewind, Is.True);
             Assert.That(session.AttemptMetadata.ActiveOrderSeed, Is.EqualTo(101));
             Assert.That(session.AttemptMetadata.MinigameBoardSeed, Is.EqualTo(202));
-            Assert.That(RewindBoard.Create(202, 2).PairCount, Is.EqualTo(5));
+            Assert.That(RewindBoard.Create(202, 2).PairCount, Is.EqualTo(6));
         }
     }
 }

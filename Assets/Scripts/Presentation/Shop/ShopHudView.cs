@@ -46,6 +46,7 @@ namespace Witch.Presentation.Shop
         }
 
         private Coroutine entranceRoutine;
+        private TaskCompletionSource<bool> entranceComplete = new TaskCompletionSource<bool>();
         private readonly List<BubbleSlot> bubbleSlots = new List<BubbleSlot>();
         private VerticalLayoutGroup orderLayoutGroup;
         private float bubbleSpacing;
@@ -73,6 +74,8 @@ namespace Witch.Presentation.Shop
             && customerPortraitCanvasGroup != null
             && dayCycleView != null
             && dayCycleView.IsAuthored;
+
+       public Task<bool> EntranceComplete => entranceComplete.Task;
 
         private void Awake()
         {
@@ -113,6 +116,7 @@ namespace Witch.Presentation.Shop
             Sprite customerIllustration)
         {
             StopEntrance();
+            ResetEntranceSignal();
             ClearOrderBubbles();
             orderBubbleContent.anchorMin = new Vector2(orderBubbleContent.anchorMin.x, 0f);
             orderBubbleContent.anchorMax = new Vector2(orderBubbleContent.anchorMax.x, 0f);
@@ -145,6 +149,7 @@ namespace Witch.Presentation.Shop
         public void ClearCustomer()
         {
             StopEntrance();
+            entranceComplete.TrySetResult(false);
             customerText.text = string.Empty;
             ClearOrderBubbles();
             customerPortrait.gameObject.SetActive(false);
@@ -156,6 +161,7 @@ namespace Witch.Presentation.Shop
         {
             if (customerPortrait == null || customerPortraitCanvasGroup == null) return;
             StopEntrance();
+            entranceComplete.TrySetResult(false);
 
             // If the exit starts mid-sentence, show the whole line while it fades out.
             foreach (BubbleSlot bubble in bubbleSlots)
@@ -336,6 +342,7 @@ namespace Witch.Presentation.Shop
                 yield return new WaitForSecondsRealtime(bubblePause);
             }
 
+            entranceComplete.TrySetResult(true);
             entranceRoutine = null;
         }
 
@@ -454,6 +461,12 @@ namespace Witch.Presentation.Shop
             if (entranceRoutine == null) return;
             StopCoroutine(entranceRoutine);
             entranceRoutine = null;
+        }
+
+        private void ResetEntranceSignal()
+        {
+            entranceComplete.TrySetResult(false); // release anyone awaiting an interrupted entrance
+            entranceComplete = new TaskCompletionSource<bool>();
         }
 
         private void ClearOrderBubbles()

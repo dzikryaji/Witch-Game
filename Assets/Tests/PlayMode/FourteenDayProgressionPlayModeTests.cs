@@ -20,15 +20,15 @@ using Object = UnityEngine.Object;
 
 namespace Witch.Bootstrap.PlayModeTests
 {
-    public sealed class EightDayProgressionPlayModeTests
+    public sealed class FourteenDayProgressionPlayModeTests
     {
         [UnityTest]
-        public IEnumerator ShopPresenterRunsEightPaidDaysToPrototypeVictory()
+        public IEnumerator ShopPresenterRunsFourteenPaidDaysToVictory()
         {
             yield return LoadShop();
             ProgressionHarness harness = CreateHarness();
 
-            for (int day = 1; day <= 8; day++)
+            for (int day = 1; day <= 14; day++)
             {
                 ShopShellPresenter presenter = InitializeDay(harness);
                 harness.Clock.Advance(presenter.ActiveSession.TimerState.RemainingTime + TimeSpan.FromSeconds(1));
@@ -41,7 +41,7 @@ namespace Witch.Bootstrap.PlayModeTests
                 Task<ExpenseResolutionResult> expense = presenter.ResolveExpenseAsync();
                 yield return WaitFor(expense);
                 Assert.That(expense.Result.Succeeded, Is.True, expense.Result.ErrorMessage);
-                if (day < 8)
+                if (day < 14)
                 {
                     Assert.That(expense.Result.Outcome.Kind, Is.EqualTo(ExpenseOutcomeKind.NextDay));
                     Assert.That(presenter.ActiveSession.CurrentPhase, Is.EqualTo(GamePhase.DaySummary));
@@ -54,7 +54,7 @@ namespace Witch.Bootstrap.PlayModeTests
                 {
                     Assert.That(expense.Result.Outcome.Kind, Is.EqualTo(ExpenseOutcomeKind.Victory));
                     Assert.That(presenter.ActiveSession.CurrentPhase, Is.EqualTo(GamePhase.Victory));
-                    Assert.That(GameObject.Find("Progression Text").GetComponent<UnityEngine.UI.Text>().text, Does.Contain("8 DAYS COMPLETE"));
+                    Assert.That(GameObject.Find("Progression Text").GetComponent<UnityEngine.UI.Text>().text, Does.Contain("14 DAYS COMPLETE"));
                 }
             }
         }
@@ -112,13 +112,13 @@ namespace Witch.Bootstrap.PlayModeTests
                 store,
                 scenes,
                 clock,
-                new IncreasingRandom()).ExecuteAsync(new StartNewGameCommand("eight-day-playmode")).Result;
+                new IncreasingRandom()).ExecuteAsync(new StartNewGameCommand("fourteen-day-playmode")).Result;
             Assert.That(start.Succeeded, Is.True, start.ErrorMessage);
 
             var rules = new PotionServiceRules(20);
             var daySetup = new DayProgressionSetup(
-                Enumerable.Range(1, 8).ToDictionary(day => day, day => TimeSpan.FromSeconds(day)),
-                Enumerable.Range(1, 8).ToDictionary(day => day, day => 20),
+                Enumerable.Range(1, 14).ToDictionary(day => day, day => TimeSpan.FromSeconds(day)),
+                Enumerable.Range(1, 14).ToDictionary(day => day, day => 20),
                 1);
             return new ProgressionHarness(
                 repository,
@@ -128,7 +128,7 @@ namespace Witch.Bootstrap.PlayModeTests
                 rules,
                 new FakeAudioService(),
                 new UpdateShopTimerUseCase(clock),
-                new ResolveExpenseUseCase(new ExpenseRules(8), daySetup, repository, new IncreasingRandom(), clock));
+                new ResolveExpenseUseCase(new ExpenseRules(14), daySetup, repository, new IncreasingRandom(), clock));
         }
 
         private static ShopShellPresenter InitializeDay(ProgressionHarness harness)

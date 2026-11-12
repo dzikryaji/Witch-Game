@@ -44,5 +44,18 @@ namespace Witch.Domain.Tests
             Assert.That(firstCycle.SeenOrderIds, Is.EqualTo(new[] { "order.one", "order.two" }));
             Assert.That(nextCycle.SeenOrderIds, Is.EqualTo(new[] { "order.one" }));
         }
+
+        [Test]
+        public void MarkCategoryServed_AccumulatesUniqueCategories()
+        {
+            var run = new RunState("run.test", 1, 0, 0, 0);
+
+            RunState served = run
+                .MarkCategoryServed("category.warm")
+                .MarkCategoryServed("category.cool")
+                .MarkCategoryServed("category.warm");
+
+            Assert.That(served.ServedCategoryIds, Is.EqualTo(new[] { "category.warm", "category.cool" }));
+        }
     }
 }

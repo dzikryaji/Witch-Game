@@ -22,5 +22,23 @@ namespace Witch.Infrastructure.Tests
                 "Assets/Scenes/RewindMinigame.unity"
             }));
         }
+
+        [Test]
+        public void MacOSBuildProfileDoesNotShipDevelopmentSettings()
+        {
+            string yaml = System.IO.File.ReadAllText("Assets/Settings/Build Profiles/macOS.asset");
+            foreach (string flag in new[]
+            {
+                "m_Development",
+                "m_ConnectProfiler",
+                "m_BuildWithDeepProfilingSupport",
+                "m_BuildWithCodeCoverage",
+                "m_AllowDebugging",
+                "m_WaitForManagedDebugger"
+            })
+            {
+                StringAssert.Contains(flag + ": 0", yaml);
+            }
+        }
     }
 }
