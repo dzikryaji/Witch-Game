@@ -433,6 +433,22 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1245532823}
     m_Modifications:
+    - target: {fileID: 2569123207369452298, guid: 462e43667b6944b998a9b7ca23a17d3c, type: 3}
+      propertyPath: m_Color.a
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2569123207369452298, guid: 462e43667b6944b998a9b7ca23a17d3c, type: 3}
+      propertyPath: m_Color.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2569123207369452298, guid: 462e43667b6944b998a9b7ca23a17d3c, type: 3}
+      propertyPath: m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2569123207369452298, guid: 462e43667b6944b998a9b7ca23a17d3c, type: 3}
+      propertyPath: m_Color.r
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7632479581819921708, guid: 462e43667b6944b998a9b7ca23a17d3c, type: 3}
       propertyPath: m_Name
       value: Card 01
@@ -574,10 +590,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1723288857}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -440, y: 152}
-  m_SizeDelta: {x: 117.86, y: 79.8303}
+  m_AnchorMin: {x: 0, y: 0.5}
+  m_AnchorMax: {x: 0, y: 0.5}
+  m_AnchoredPosition: {x: 200, y: 152}
+  m_SizeDelta: {x: 130, y: 79.8303}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &381156774
 MonoBehaviour:
@@ -1351,6 +1367,22 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1245532823}
     m_Modifications:
+    - target: {fileID: 2569123207369452298, guid: 462e43667b6944b998a9b7ca23a17d3c, type: 3}
+      propertyPath: m_Color.a
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2569123207369452298, guid: 462e43667b6944b998a9b7ca23a17d3c, type: 3}
+      propertyPath: m_Color.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2569123207369452298, guid: 462e43667b6944b998a9b7ca23a17d3c, type: 3}
+      propertyPath: m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2569123207369452298, guid: 462e43667b6944b998a9b7ca23a17d3c, type: 3}
+      propertyPath: m_Color.r
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7632479581819921708, guid: 462e43667b6944b998a9b7ca23a17d3c, type: 3}
       propertyPath: m_Name
       value: Card 03
@@ -2030,6 +2062,22 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1245532823}
     m_Modifications:
+    - target: {fileID: 2569123207369452298, guid: 462e43667b6944b998a9b7ca23a17d3c, type: 3}
+      propertyPath: m_Color.a
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2569123207369452298, guid: 462e43667b6944b998a9b7ca23a17d3c, type: 3}
+      propertyPath: m_Color.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2569123207369452298, guid: 462e43667b6944b998a9b7ca23a17d3c, type: 3}
+      propertyPath: m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2569123207369452298, guid: 462e43667b6944b998a9b7ca23a17d3c, type: 3}
+      propertyPath: m_Color.r
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7632479581819921708, guid: 462e43667b6944b998a9b7ca23a17d3c, type: 3}
       propertyPath: m_Name
       value: Card 02
@@ -2256,6 +2304,22 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1245532823}
     m_Modifications:
+    - target: {fileID: 2569123207369452298, guid: 462e43667b6944b998a9b7ca23a17d3c, type: 3}
+      propertyPath: m_Color.a
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2569123207369452298, guid: 462e43667b6944b998a9b7ca23a17d3c, type: 3}
+      propertyPath: m_Color.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2569123207369452298, guid: 462e43667b6944b998a9b7ca23a17d3c, type: 3}
+      propertyPath: m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2569123207369452298, guid: 462e43667b6944b998a9b7ca23a17d3c, type: 3}
+      propertyPath: m_Color.r
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7632479581819921708, guid: 462e43667b6944b998a9b7ca23a17d3c, type: 3}
       propertyPath: m_Name
       value: Card 04
