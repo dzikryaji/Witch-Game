@@ -48,7 +48,7 @@ namespace Witch.Presentation.Shop
         [SerializeField] private Text preparedPotionText;
         [SerializeField] private Image preparedPotionHerbIcon1;
         [SerializeField] private Image preparedPotionHerbIcon2;
-        [SerializeField] private GameObject hunterWarningPanel;
+
         [SerializeField] private GameObject progressionPanel;
         [SerializeField] private Text progressionText;
         [SerializeField] private Button resolveExpenseButton;
@@ -134,7 +134,6 @@ namespace Witch.Presentation.Shop
             && groundHerbText != null
             && preparedPotionObject != null
             && preparedPotionText != null
-            && hunterWarningPanel != null
             && progressionPanel != null
             && progressionText != null
             && resolveExpenseButton != null
@@ -222,7 +221,6 @@ namespace Witch.Presentation.Shop
             RequireAndBindAuthoredView();
             ConfigureHerbButtons();
             ConfigureGuidebook();
-            hunterWarningPanel.SetActive(false);
             progressionPanel.SetActive(false);
             pausePanel.SetActive(false);
             tutorialPanel.SetActive(false);
@@ -736,20 +734,26 @@ namespace Witch.Presentation.Shop
             SetTutorialHighlight(Math.Min(tutorialBeat, tutorialHighlights.Length - 1));
         }
 
-        private Task EnterPendingRewindAsync(CancellationToken cancellationToken)
+        private async Task EnterPendingRewindAsync(CancellationToken cancellationToken)
         {
             SetStatus("KNOCK. KNOCK. Hunters suspect poisoning. Cast the memory spell before they enter; the day will rewind.");
             audioService?.StopMusic();
 
-            if (minigameIntroPopup != null && minigameIntroPopup.IsAuthored)
-            {
-                setTimerPaused?.Execute(ActiveSession, true);
-                minigameIntroPopup.Show();
-                return Task.CompletedTask; // wait for the player to press the button
-            }
-
-            hunterWarningPanel.SetActive(true); // fallback when the popup isn't wired
-            return StartRewindAsync(cancellationToken);
+            ShopCustomerViewData witchHunter = setup.WitchHunter
+                ?? throw new InvalidOperationException("Witch Hunter customer data is missing from Shop setup.");
+            hudView.SetCustomer(
+                witchHunter.DisplayName,
+                new[] {
+                    "Three harmful remedies. Carelessness no longer explains this pattern.",
+                    "Again, your work leaves questions ordinary mistakes cannot answer.",
+                    "Your neighbors forget quickly. Written patterns do not.",
+                    "Something about this shop refuses to remain remembered.",
+                    "This examination ends now. Step away from counter."
+                },
+                witchHunter.Illustration);
+            await hudView.EntranceComplete;  // wait for portrait + all bubbles to finish
+            setTimerPaused?.Execute(ActiveSession, true);
+            minigameIntroPopup.Show();
         }
 
         private async Task StartRewindAsync(CancellationToken cancellationToken)
@@ -779,7 +783,6 @@ namespace Witch.Presentation.Shop
                 return;
             }
 
-            hunterWarningPanel.SetActive(false);
             SetStatus(error + " Try again by serving or reloading the run.");
             audioService?.PlayMusic(GameAudioCueIds.ShopMusic);
         }

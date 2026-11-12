@@ -14460,7 +14460,6 @@ MonoBehaviour:
   preparedPotionText: {fileID: 1901323836}
   preparedPotionHerbIcon1: {fileID: 951206466}
   preparedPotionHerbIcon2: {fileID: 760967837}
-  hunterWarningPanel: {fileID: 800859449}
   progressionPanel: {fileID: 1805433692}
   progressionText: {fileID: 1306166069}
   resolveExpenseButton: {fileID: 1834206703}
