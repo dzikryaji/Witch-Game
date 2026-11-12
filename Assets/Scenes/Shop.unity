@@ -20128,7 +20128,7 @@ PrefabInstance:
     - target: {fileID: 7115055114059330919, guid: 014c23a4c7cc149cd82ae088959e3ee1, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: -6873117111529597650, guid: 8804a444d343644a89066cfe7065674f, type: 3}
+      objectReference: {fileID: 21300000, guid: 8804a444d343644a89066cfe7065674f, type: 3}
     - target: {fileID: 8494789224686786968, guid: 014c23a4c7cc149cd82ae088959e3ee1, type: 3}
       propertyPath: m_Name
       value: Header
