@@ -1,13 +1,13 @@
 fileFormatVersion: 2
-guid: df44657feabea47f7bac11138bc38ab3
+guid: 8804a444d343644a89066cfe7065674f
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -2073137460773038770
-    second: PauseIcon_0
+      213: -6873117111529597650
+    second: pause icon new_0
   - first:
-      213: -55275091272315038
-    second: PauseIcon_1
+      213: -1470105198040465396
+    second: pause icon new_1
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -49,7 +49,7 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
@@ -118,7 +118,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: PauseIcon_0
+      name: pause icon new_0
       rect:
         serializedVersion: 2
         x: 0
@@ -133,14 +133,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: e455110a67cba33e0800000000000000
-      internalID: -2073137460773038770
+      spriteID: e259e930768cd90a0800000000000000
+      internalID: -6873117111529597650
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PauseIcon_1
+      name: pause icon new_1
       rect:
         serializedVersion: 2
         x: 26
@@ -155,8 +155,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 26f49cbe89f9b3ff0800000000000000
-      internalID: -55275091272315038
+      spriteID: c00c7508c13299be0800000000000000
+      internalID: -1470105198040465396
       vertices: []
       indices: 
       edges: []
@@ -165,7 +165,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 5e97eb03825dee720800000000000000
+    spriteID: 
     internalID: 0
     vertices: []
     indices: 
@@ -175,8 +175,8 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      PauseIcon_0: -2073137460773038770
-      PauseIcon_1: -55275091272315038
+      pause icon new_0: -6873117111529597650
+      pause icon new_1: -1470105198040465396
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
