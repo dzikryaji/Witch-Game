@@ -9,7 +9,7 @@ namespace Witch.Infrastructure.Tests
     public sealed class GameContentAdapterTests
     {
         [Test]
-        public void Load_AuthoredEightDayContentIsValid()
+        public void Load_AuthoredFourteenDayContentIsValid()
         {
             GameContentCatalogDefinition catalog = AssetDatabase.LoadAssetAtPath<GameContentCatalogDefinition>(
                 "Assets/Content/GameContentCatalog.asset");
@@ -18,12 +18,13 @@ namespace Witch.Infrastructure.Tests
 
             Assert.That(catalog, Is.Not.Null);
             Assert.That(result.Succeeded, Is.True, string.Join("\n", result.Errors));
-            Assert.That(result.Content.OrdersById.Count, Is.EqualTo(150));
+            Assert.That(result.Content.OrdersById.Count, Is.EqualTo(250));
             Assert.That(result.Content.OrdersById.Values.Select(order => order.Difficulty).Distinct(),
-                Is.EquivalentTo(new[] { OrderDifficulty.Simple, OrderDifficulty.Mid }));
+                Is.EquivalentTo(new[] { OrderDifficulty.Simple, OrderDifficulty.Mid, OrderDifficulty.Hard }));
             Assert.That(result.Content.OrdersById["order.simple.w01"].OrderBubbles, Is.Not.Empty);
-            Assert.That(result.Content.DaysByNumber.Count, Is.EqualTo(8));
-            Assert.That(result.Content.DaysByNumber.Values.All(day => day.TimerDuration == TimeSpan.FromMinutes(4)), Is.True);
+            Assert.That(result.Content.DaysByNumber.Count, Is.EqualTo(14));
+            Assert.That(result.Content.DaysByNumber.Values.All(day => day.TimerDuration == TimeSpan.FromMinutes(5)), Is.True);
+            Assert.That(result.Content.DaysByNumber.Values.All(day => day.DailyExpense == 20), Is.True);
             Assert.That(result.Content.HerbsById.Count, Is.EqualTo(25));
             Assert.That(result.Content.HerbsById.ContainsKey("herb.lavender"), Is.True);
             Assert.That(result.Content.HerbsById["herb.ginger"].ScientificName, Is.EqualTo("Zingiber officinale"));
@@ -39,16 +40,17 @@ namespace Witch.Infrastructure.Tests
             Assert.That(result.Content.HerbCategoriesById["category.soothe"].DisplayName, Is.EqualTo("Soothing"));
             Assert.That(result.Content.NewRunSetup.UnlockedHerbIds.Count, Is.EqualTo(10));
             Assert.That(result.Content.DaysByNumber[3].UnlockedCategoryIds, Does.Contain("category.soothe"));
+            Assert.That(result.Content.DaysByNumber[7].UnlockedCategoryIds, Does.Contain("category.cleanse"));
             var dayThreeState = result.Content.DayProgressionSetup.ApplyUnlocks(
                 new Witch.Domain.Progression.RunState("content-test", 3, 0, 0, 0));
             Assert.That(dayThreeState.UnlockedCategoryIds, Does.Contain("category.soothe"));
             Assert.That(dayThreeState.UnlockedHerbIds, Does.Contain("herb.lavender"));
             int initiallyAvailableOrders = result.Content.OrdersById.Values.Count(order =>
                 order.IsAvailable(result.Content.NewRunSetup.UnlockedHerbIds.ToHashSet(StringComparer.Ordinal)));
-            Assert.That(initiallyAvailableOrders, Is.EqualTo(70));
+            Assert.That(initiallyAvailableOrders, Is.EqualTo(110));
             Assert.That((initiallyAvailableOrders - 1) * result.Content.CorrectOrderPayment,
                 Is.GreaterThanOrEqualTo(result.Content.NewRunSetup.FirstDayExpenseValue));
-            Assert.That(result.Content.RewindCardIds.Count, Is.EqualTo(8));
+            Assert.That(result.Content.RewindCardIds.Count, Is.EqualTo(12));
             Assert.That(result.Content.RewindDifficulty.MaximumPairCount, Is.EqualTo(8));
         }
 
@@ -59,13 +61,13 @@ namespace Witch.Infrastructure.Tests
                 "Assets/Content/GameContentCatalog.asset");
             GameRuntimeContent content = new GameContentAdapter().Load(catalog).Content;
             var dayOneHerbs = content.NewRunSetup.UnlockedHerbIds.ToHashSet(StringComparer.Ordinal);
-            var dayFourHerbs = content.DayProgressionSetup.ApplyUnlocks(
-                    new Witch.Domain.Progression.RunState("content-test", 4, 0, 0, 0))
+            var dayThreeHerbs = content.DayProgressionSetup.ApplyUnlocks(
+                    new Witch.Domain.Progression.RunState("content-test", 3, 0, 0, 0))
                 .UnlockedHerbIds.ToHashSet(StringComparer.Ordinal);
 
             Assert.That(content.OrdersById["order.simple.w01"].IsAvailable(dayOneHerbs), Is.True);
             Assert.That(content.OrdersById["order.simple.s01"].IsAvailable(dayOneHerbs), Is.False);
-            Assert.That(content.OrdersById["order.simple.s01"].IsAvailable(dayFourHerbs), Is.True);
+            Assert.That(content.OrdersById["order.simple.s01"].IsAvailable(dayThreeHerbs), Is.True);
         }
 
         [Test]
@@ -85,6 +87,11 @@ namespace Witch.Infrastructure.Tests
             Assert.That(content.DaysByNumber[6].OrderDifficulties, Is.EqualTo(new[] { OrderDifficulty.Mid }));
             Assert.That(content.DaysByNumber[7].UnlockedCategoryIds, Does.Contain("category.cleanse"));
             Assert.That(content.DaysByNumber[8].OrderDifficulties, Is.EqualTo(new[] { OrderDifficulty.Mid }));
+            Assert.That(content.DaysByNumber[9].OrderDifficulties,
+                Is.EqualTo(new[] { OrderDifficulty.Mid, OrderDifficulty.Hard }));
+            Assert.That(content.DaysByNumber[11].UnlockedCategoryIds, Does.Contain("category.mend"));
+            Assert.That(content.DaysByNumber[12].OrderDifficulties, Is.EqualTo(new[] { OrderDifficulty.Hard }));
+            Assert.That(content.DaysByNumber[14].OrderDifficulties, Is.EqualTo(new[] { OrderDifficulty.Hard }));
         }
 
         [Test]

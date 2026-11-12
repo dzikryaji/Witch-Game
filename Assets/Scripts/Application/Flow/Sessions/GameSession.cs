@@ -287,7 +287,12 @@ namespace Witch.Application.Flow
                 RunState.RewindCount,
                 AttemptMetadata.PendingRewind,
                 AttemptMetadata.MinigameBoardSeed,
-                AttemptMetadata.ActiveOrderSeed);
+                AttemptMetadata.ActiveOrderSeed,
+                outcome.Kind == ServiceOutcomeKind.WrongValid
+                    ? AttemptMetadata.WrongServiceCountToday + 1
+                    : AttemptMetadata.WrongServiceCountToday,
+                AttemptMetadata.ServiceCountToday + 1,
+                AttemptMetadata.MinigamePlayedToday);
             ServiceCommitted = true;
             ClearWorkbench();
             TimerState = new ShopTimerState(TimerState.RemainingTime, false);
@@ -298,6 +303,11 @@ namespace Witch.Application.Flow
                     ? GamePhase.CustomerArrival
                     : GamePhase.ClosingEncounter;
             TryTransition(next);
+        }
+
+        internal void MarkCategoryServed(string categoryId)
+        {
+            RunState = RunState.MarkCategoryServed(categoryId);
         }
 
         internal void EnterRewind(ActiveAttemptMetadata attemptMetadata)

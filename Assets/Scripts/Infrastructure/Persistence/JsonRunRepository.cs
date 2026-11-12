@@ -256,6 +256,7 @@ namespace Witch.Infrastructure.Persistence
         public string[] herbIds;
         public string[] guidebookIds;
         public string[] seenOrderIds;
+        public string[] servedCategoryIds;
         public FlagDto[] tutorialFlags;
         public FlagDto[] narrativeFlags;
     }
@@ -270,6 +271,9 @@ namespace Witch.Infrastructure.Persistence
         public bool pendingRewind;
         public int minigameBoardSeed;
         public int activeOrderSeed;
+        public int wrongServiceCountToday;
+        public int serviceCountToday;
+        public bool minigamePlayedToday;
     }
 
     [Serializable]
@@ -304,7 +308,10 @@ namespace Witch.Infrastructure.Persistence
                     rewindCount = metadata.RewindCount,
                     pendingRewind = metadata.PendingRewind,
                     minigameBoardSeed = metadata.MinigameBoardSeed,
-                    activeOrderSeed = metadata.ActiveOrderSeed
+                    activeOrderSeed = metadata.ActiveOrderSeed,
+                    wrongServiceCountToday = metadata.WrongServiceCountToday,
+                    serviceCountToday = metadata.ServiceCountToday,
+                    minigamePlayedToday = metadata.MinigamePlayedToday
                 }
             };
         }
@@ -334,7 +341,8 @@ namespace Witch.Infrastructure.Persistence
                 state.guidebookIds ?? new string[0],
                 FromFlags(state.tutorialFlags),
                 FromFlags(state.narrativeFlags),
-                state.seenOrderIds ?? new string[0]);
+                state.seenOrderIds ?? new string[0],
+                state.servedCategoryIds ?? new string[0]);
             var snapshot = new DayStartSnapshot(
                 runState,
                 envelope.snapshot.orderSeed,
@@ -353,7 +361,10 @@ namespace Witch.Infrastructure.Persistence
                 envelope.attempt.rewindCount,
                 envelope.attempt.pendingRewind,
                 envelope.attempt.minigameBoardSeed,
-                envelope.attempt.activeOrderSeed);
+                envelope.attempt.activeOrderSeed,
+                envelope.attempt.wrongServiceCountToday,
+                envelope.attempt.serviceCountToday,
+                envelope.attempt.minigamePlayedToday);
             return new GameSaveState(snapshot, metadata);
         }
 
@@ -370,6 +381,7 @@ namespace Witch.Infrastructure.Persistence
                 herbIds = Copy(state.UnlockedHerbIds),
                 guidebookIds = Copy(state.UnlockedGuidebookEntryIds),
                 seenOrderIds = Copy(state.SeenOrderIds),
+                servedCategoryIds = Copy(state.ServedCategoryIds),
                 tutorialFlags = ToFlags(state.TutorialFlags),
                 narrativeFlags = ToFlags(state.NarrativeFlags)
             };

@@ -63,7 +63,10 @@ namespace Witch.Application.Flow
                 session.RunState.RewindCount,
                 true,
                 boardSeed,
-                session.AttemptMetadata.ActiveOrderSeed);
+                session.AttemptMetadata.ActiveOrderSeed,
+                session.AttemptMetadata.WrongServiceCountToday,
+                session.AttemptMetadata.ServiceCountToday,
+                true);
             SaveStateResult save = await saveRepository.SaveActiveAttemptMetadataAsync(
                 metadata,
                 cancellationToken);

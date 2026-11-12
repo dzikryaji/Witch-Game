@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Witch.Application.Flow;
@@ -49,6 +50,7 @@ namespace Witch.Bootstrap
         private RetryDayUseCase retryDay;
         private ContinueToNextDayUseCase continueToNextDay;
         private IGameAudioService audioService;
+        private IGameCenterService gameCenter;
         private SetShopTimerPausedUseCase setShopTimerPaused;
         private ISaveRepository runRepository;
         private GameRuntimeContent runtimeContent;
@@ -94,11 +96,33 @@ namespace Witch.Bootstrap
                 audioService.ApplySettings(settingsService.Current);
                 IsReady = true;
                 Inject(SceneManager.GetActiveScene());
+                _ = InitializeGameCenterAsync();
                 await OpenStartupSceneAsync();
             }
             catch (Exception exception)
             {
                 FailStartup("Bootstrap initialization failed: " + exception.Message);
+            }
+        }
+
+        /// <summary>
+        /// Initializes the local Game Center player without blocking startup.
+        /// Apple recommends initializing at launch; a decline, restriction,
+        /// or offline state keeps every other feature working.
+        /// </summary>
+        private async System.Threading.Tasks.Task InitializeGameCenterAsync()
+        {
+            try
+            {
+                ServiceResult result = await gameCenter.InitializeAsync();
+                if (!result.Succeeded)
+                {
+                    Debug.Log("[GameCenter] Unavailable at startup: " + result.ErrorMessage);
+                }
+            }
+            catch (Exception exception)
+            {
+                Debug.LogWarning("[GameCenter] Startup initialization failed: " + exception.Message);
             }
         }
 
@@ -110,6 +134,7 @@ namespace Witch.Bootstrap
             }
 
             SceneManager.sceneLoaded -= HandleSceneLoaded;
+            (gameCenter as IDisposable)?.Dispose();
             Instance = null;
         }
 
@@ -142,6 +167,18 @@ namespace Witch.Bootstrap
             sceneLoader = new UnitySceneLoader();
             settingsService = new GameSettingsService(new JsonSettingsRepository());
             applicationLifecycle = new UnityApplicationLifecycle();
+
+            // Game Center is optional. The Apple adapter is composed only for
+            // Apple player builds; the Editor and every unsupported platform
+            // use the no-op service so startup never depends on GameKit.
+#if UNITY_EDITOR
+            gameCenter = new Witch.Infrastructure.GameCenter.NoOpGameCenterService();
+#elif UNITY_STANDALONE_OSX
+            gameCenter = new Witch.Infrastructure.GameCenter.AppleGameCenterService();
+#else
+            gameCenter = new Witch.Infrastructure.GameCenter.NoOpGameCenterService();
+#endif
+
             UnityAudioService authoredAudio = gameObject.GetComponent<UnityAudioService>();
             if (authoredAudio == null || !authoredAudio.HasAuthoredChannels)
             {
@@ -155,7 +192,14 @@ namespace Witch.Bootstrap
             openShop = new OpenShopUseCase();
             admitCustomer = new AdmitCustomerUseCase(clock);
             potionPreparation = new PotionPreparationUseCase(potionRules);
-            servePotion = new ServePotionUseCase(potionRules, runRepository);
+            var herbCategoryIds = content.HerbsById
+                .Where(pair => pair.Value != null)
+                .ToDictionary(pair => pair.Key, pair => pair.Value.CategoryId, StringComparer.Ordinal);
+            servePotion = new ServePotionUseCase(
+                potionRules,
+                runRepository,
+                gameCenter,
+                herbCategoryIds);
             updateShopTimer = new UpdateShopTimerUseCase(clock);
             setShopTimerPaused = new SetShopTimerPausedUseCase(clock);
             enterRewind = new EnterRewindUseCase(
@@ -165,13 +209,15 @@ namespace Witch.Bootstrap
             completeRewind = new CompleteRewindUseCase(
                 runRepository,
                 sceneLoader,
-                new DeterministicRandomSource(randomSeed + 2));
+                new DeterministicRandomSource(randomSeed + 2),
+                gameCenter);
             resolveExpense = new ResolveExpenseUseCase(
                 content.ExpenseRules,
                 content.DayProgressionSetup,
                 runRepository,
                 orderRandom,
-                clock);
+                clock,
+                gameCenter);
             retryDay = new RetryDayUseCase(runRepository, sceneLoader);
             continueToNextDay = new ContinueToNextDayUseCase(sceneLoader);
 

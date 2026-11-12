@@ -104,7 +104,8 @@ namespace Witch.Application.Flow
                 state.UnlockedGuidebookEntryIds.Concat(active.SelectMany(value => value.GuidebookEntryIds)).Distinct(StringComparer.Ordinal).ToArray(),
                 state.TutorialFlags,
                 state.NarrativeFlags,
-                state.SeenOrderIds);
+                state.SeenOrderIds,
+                state.ServedCategoryIds);
         }
     }
 }
