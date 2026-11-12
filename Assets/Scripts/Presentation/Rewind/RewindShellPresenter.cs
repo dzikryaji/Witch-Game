@@ -20,6 +20,7 @@ namespace Witch.Presentation.Rewind
         [SerializeField] private Text timerText;
         [SerializeField] private RewindTimeUpPopupView timeUpPopup;
         [SerializeField, Min(5f)] private float timeLimitSeconds = 60f;
+        [SerializeField] private RewindHeaderView header;
 
         private float remainingSeconds;
         private bool timerRunning;
@@ -127,6 +128,7 @@ namespace Witch.Presentation.Rewind
             matched = new bool[Board.Cards.Count];
             EnsureCardViews(Board.Cards.Count);
             BindCards();
+            header?.Render(ActiveSession);
             if (timeUpPopup != null)
             {
                 timeUpPopup.Hide();
@@ -173,6 +175,7 @@ namespace Witch.Presentation.Rewind
                 if (AllMatched())
                 {
                     IsComplete = true;
+                    header?.DrainSuspicion(0.5f);
                     RenderCards();
                     audioService?.Play(GameAudioCueIds.MinigameComplete);
                     audioService?.StopMusic();
