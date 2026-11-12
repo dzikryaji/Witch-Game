@@ -23,6 +23,7 @@ namespace Witch.Presentation.MainMenu
         [SerializeField] private Button applySettingsButton;
         [SerializeField] private Text errorText;
         [SerializeField] private GameObject settingsOverlay;
+        [SerializeField] private StoryIntroView storyIntro;
 
         private IStartNewGameUseCase startNewGame;
         private ILoadRunUseCase loadRun;
@@ -102,6 +103,7 @@ namespace Witch.Presentation.MainMenu
             LastErrorMessage = null;
             RenderError();
             settingsPanel.SetActive(false);
+            if (storyIntro != null) storyIntro.Hide();
             _ = LoadSettingsOrDefaultsAsync();
             audioService?.StopAmbience();
             audioService?.PlayMusic(GameAudioCueIds.MainMenuMusic);
@@ -238,7 +240,16 @@ namespace Witch.Presentation.MainMenu
         private void OnNewGameClicked()
         {
             audioService?.Play(GameAudioCueIds.UiClick);
-            RunUiAction(NewGameAsync);
+            RunUiAction(NewGameWithStoryAsync);
+        }
+
+        private async Task<bool> NewGameWithStoryAsync()
+        {
+            if (IsBusy) return false;
+            if (storyIntro != null && !await storyIntro.PlayAsync()) return false;
+            bool started = await NewGameAsync();
+            if (!started && storyIntro != null) storyIntro.Hide();
+            return started;
         }
 
         private void OnContinueClicked()
