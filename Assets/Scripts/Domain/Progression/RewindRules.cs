@@ -4,10 +4,10 @@ namespace Witch.Domain.Progression
 {
     public static class RewindRules
     {
-        public const int StartingPairCount = 3;
-        public const int MaximumPairCount = 8;
+        public const int StartingPairCount = 8;
+        public const int MaximumPairCount = 12;
 
-        private static readonly int[] PairCountSteps = { 3, 4, 6, 8 };
+        private static readonly int[] PairCountSteps = { 8, 9, 10, 11, 12 };
 
         public static int GetPairCount(int rewindCount)
         {
