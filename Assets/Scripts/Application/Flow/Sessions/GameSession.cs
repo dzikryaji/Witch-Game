@@ -91,9 +91,16 @@ namespace Witch.Application.Flow
 
         internal bool RewindCompletionApplied { get; private set; }
 
-        private RunState resumeRunState;   // run state as it was before the last customer was served
+        public DaySummaryData LastDaySummary { get; private set; }
 
-        internal bool CanResumeInPlace =>
+        private RunState resumeRunState;   // run state as it was before the last customer was served
+        private int resumeCorrectServiceCountToday;
+        private int resumeWrongServiceCountToday;
+        private int resumeServiceCountToday;
+        private int resumeCoinsEarnedToday;
+        private int resumeWrongOrdersForSummary;
+
+        public bool CanResumeInPlace =>
             resumeRunState != null
             && AttemptState.ActiveOrder != null
             && TimerState.RemainingTime > TimeSpan.Zero;
@@ -135,6 +142,11 @@ namespace Witch.Application.Flow
 
             RunState = RunState.MarkOrderSeen(order.OrderId);
             resumeRunState = RunState;
+            resumeCorrectServiceCountToday = AttemptMetadata.CorrectServiceCountToday;
+            resumeWrongServiceCountToday = AttemptMetadata.WrongServiceCountToday;
+            resumeServiceCountToday = AttemptMetadata.ServiceCountToday;
+            resumeCoinsEarnedToday = AttemptMetadata.CoinsEarnedToday;
+            resumeWrongOrdersForSummary = AttemptMetadata.WrongOrdersForSummary;
 
             var usedOrderIds = new System.Collections.Generic.List<string>(AttemptState.UsedOrderIds);
             usedOrderIds.Add(order.OrderId);
@@ -280,6 +292,7 @@ namespace Witch.Application.Flow
             }
 
             RunState = outcome.UpdatedRunState;
+            bool wrongValid = outcome.Kind == ServiceOutcomeKind.WrongValid;
             AttemptMetadata = new ActiveAttemptMetadata(
                 RunState.RunId,
                 RunState.CurrentDayNumber,
@@ -288,11 +301,18 @@ namespace Witch.Application.Flow
                 AttemptMetadata.PendingRewind,
                 AttemptMetadata.MinigameBoardSeed,
                 AttemptMetadata.ActiveOrderSeed,
-                outcome.Kind == ServiceOutcomeKind.WrongValid
+                wrongValid
                     ? AttemptMetadata.WrongServiceCountToday + 1
                     : AttemptMetadata.WrongServiceCountToday,
                 AttemptMetadata.ServiceCountToday + 1,
-                AttemptMetadata.MinigamePlayedToday);
+                AttemptMetadata.MinigamePlayedToday,
+                outcome.Kind == ServiceOutcomeKind.Correct
+                    ? AttemptMetadata.CorrectServiceCountToday + 1
+                    : AttemptMetadata.CorrectServiceCountToday,
+                AttemptMetadata.CoinsEarnedToday + outcome.Payment,
+                wrongValid
+                    ? AttemptMetadata.WrongOrdersForSummary + 1
+                    : AttemptMetadata.WrongOrdersForSummary);
             ServiceCommitted = true;
             ClearWorkbench();
             TimerState = new ShopTimerState(TimerState.RemainingTime, false);
@@ -335,11 +355,27 @@ namespace Witch.Application.Flow
         {
             DayStartSnapshot = dayStartSnapshot ?? throw new ArgumentNullException(nameof(dayStartSnapshot));
             AttemptMetadata = attemptMetadata ?? throw new ArgumentNullException(nameof(attemptMetadata));
+            // Money and per-day new counters roll back to the pre-service snapshot.
+            // WrongServiceCountToday/ServiceCountToday carry forward as provided (Clean Ledger depends on them).
+            AttemptMetadata = new ActiveAttemptMetadata(
+                AttemptMetadata.RunId,
+                AttemptMetadata.DayNumber,
+                AttemptMetadata.Suspicion,
+                AttemptMetadata.RewindCount,
+                AttemptMetadata.PendingRewind,
+                AttemptMetadata.MinigameBoardSeed,
+                AttemptMetadata.ActiveOrderSeed,
+                AttemptMetadata.WrongServiceCountToday,
+                AttemptMetadata.ServiceCountToday,
+                AttemptMetadata.MinigamePlayedToday,
+                resumeCorrectServiceCountToday,
+                resumeCoinsEarnedToday,
+                resumeWrongOrdersForSummary);
             RunState = resumeRunState.WithProgress(
                 attemptMetadata.DayNumber,
                 resumeRunState.Money,
-                attemptMetadata.Suspicion,       // reset by the use case
-                attemptMetadata.RewindCount);    // incremented once by the use case
+                AttemptMetadata.Suspicion,       // reset by the use case
+                AttemptMetadata.RewindCount);    // incremented once by the use case
 
             ClearWorkbench();
             ServiceCommitted = false;            // the same customer can be served again
@@ -375,16 +411,24 @@ namespace Witch.Application.Flow
             TryTransition(GamePhase.Victory);
         }
 
+        internal void SetLastDaySummary(DaySummaryData summary)
+        {
+            LastDaySummary = summary;
+        }
+
         internal void AdvanceDay(
             DayStartSnapshot dayStartSnapshot,
-            ActiveAttemptMetadata attemptMetadata)
+            ActiveAttemptMetadata attemptMetadata,
+            DaySummaryData summary)
         {
             ReplaceAttempt(dayStartSnapshot, attemptMetadata);
+            LastDaySummary = summary;
             TryTransition(GamePhase.DaySummary);
         }
 
         internal void ContinueFromDaySummary()
         {
+            LastDaySummary = null;
             TryTransition(GamePhase.ShopPreparation);
         }
 
@@ -424,6 +468,11 @@ namespace Witch.Application.Flow
             ServiceCommitted = false;
             RewindCompletionApplied = false;
             resumeRunState = null;
+            resumeCorrectServiceCountToday = 0;
+            resumeWrongServiceCountToday = 0;
+            resumeServiceCountToday = 0;
+            resumeCoinsEarnedToday = 0;
+            resumeWrongOrdersForSummary = 0;
             ClearWorkbench();
         }
 

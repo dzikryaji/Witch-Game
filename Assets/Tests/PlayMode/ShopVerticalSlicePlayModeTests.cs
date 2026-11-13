@@ -678,6 +678,63 @@ namespace Witch.Bootstrap.PlayModeTests
             Assert.That(presenter.ActiveSession.TimerState.RemainingTime, Is.EqualTo(startRemaining));
         }
 
+
+        [UnityTest]
+        public IEnumerator GrinderResetWorksAfterSkippingDayOneTutorial()
+        {
+            yield return LoadShop();
+            Harness harness = CreateHarness();
+            ShopShellPresenter presenter = Object.FindAnyObjectByType<ShopShellPresenter>();
+            presenter.ConfigurePolish(
+                new SetShopTimerPausedUseCase(harness.Clock),
+                new FakeAudioService(),
+                GameSettingsState.Default);
+            presenter.Initialize(
+                harness.Store,
+                harness.OpenShop,
+                harness.Admit,
+                harness.Preparation,
+                harness.Serve,
+                harness.UpdateTimer,
+                new ShopPresentationSetup(
+                    new[]
+                    {
+                        new ShopEncounterViewData(
+                            "customer.tutorial",
+                            "Tutorial Villager",
+                            new OrderRequest("order.simple.w01", new HerbPair("herb.ginger", "herb.mustardSeed")),
+                            "Ginger and Mustard Seed.")
+                    },
+                    new[]
+                    {
+                        new ShopHerbViewData("herb.ginger", "Ginger"),
+                        new ShopHerbViewData("herb.mustardSeed", "Mustard Seed")
+                    },
+                    "Ginger and Mustard Seed make the requested remedy.",
+                    1,
+                    true,
+                    0,
+                    false,
+                    null,
+                    null,
+                    false,
+                    null,
+                    "order.simple.w01"));
+
+            Assert.That(presenter.GuidedTutorialActive || presenter.TutorialVisible, Is.True);
+
+            Button skip = GameObject.Find("Tutorial Skip").GetComponent<Button>();
+            skip.onClick.Invoke();
+            yield return null;
+
+            Assert.That(presenter.GuidedTutorialActive, Is.False);
+
+            presenter.LoadHerbIntoGrinder("herb.ginger");
+            presenter.EjectLoadedHerb();
+
+            Assert.That(presenter.LastStatus, Does.Contain("reset").IgnoreCase);
+        }
+
         private static Harness CreateHarness()
         {
             var repository = new InMemoryRunRepository();

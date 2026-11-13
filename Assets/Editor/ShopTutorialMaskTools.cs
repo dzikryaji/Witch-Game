@@ -149,7 +149,7 @@ namespace Witch.Editor
 
         private static TutorialMaskView FindMaskView()
         {
-            var views = Resources.FindObjectsOfTypeAll<TutorialMaskView>();
+            var views = Resources.FindObjectsOfTypeAll<TutorialMaskView>(); // Resources API kept for editor asset scan; not obsolete like Object.FindObjectOfType.
             for (int i = 0; i < views.Length; i++)
             {
                 if (!EditorUtility.IsPersistent(views[i])) return views[i];
