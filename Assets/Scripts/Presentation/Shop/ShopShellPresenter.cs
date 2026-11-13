@@ -8,8 +8,10 @@ using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using Witch.Application.Flow;
 using Witch.Application.Ports;
+using Witch.Domain;
 using Witch.Domain.Potions;
 using Witch.Domain.Progression;
+using Witch.Presentation;
 
 namespace Witch.Presentation.Shop
 {
@@ -98,6 +100,10 @@ namespace Witch.Presentation.Shop
         private ISceneLoader sceneLoader;
         private IGameAudioService audioService;
         private GameSettingsState settings;
+        private DayTransitionController dayTransition;
+        private bool waitingForTransitionRelease;
+        private bool pendingStartAfterReveal;
+        private bool pendingStartIsResume;
         private int tutorialBeat;
         private bool viewBound;
         private CancellationTokenSource lifetimeCancellation;
@@ -196,6 +202,11 @@ namespace Witch.Presentation.Shop
             saveRepository = repository;
         }
 
+        public void ConfigureTransition(DayTransitionController transition)
+        {
+            dayTransition = transition;
+        }
+
         public void Initialize(IGameSessionStore store)
         {
             sessionStore = store ?? throw new ArgumentNullException(nameof(store));
@@ -269,26 +280,66 @@ namespace Witch.Presentation.Shop
             hudView.ClearCustomer();
             audioService?.PlayMusic(GameAudioCueIds.ShopMusic);
             audioService?.PlayAmbience(GameAudioCueIds.ShopAmbience);
-            if (IsResumingEncounter())
+            Exception initException = null;
+            try
             {
-                ResumeEncounter();
-                // If resuming into a tutorial-eligible day1 state with no seen flag, restart guided tutorial cleanly.
-                if (ShouldRunGuidedTutorial() && ActiveSession != null && ActiveSession.CurrentPhase == Witch.Domain.GamePhase.CustomerEncounter)
+                bool deferStart = dayTransition != null && dayTransition.HasPendingShopReveal;
+                pendingStartAfterReveal = false;
+                pendingStartIsResume = false;
+                if (deferStart)
                 {
-                    TryStartGuidedTutorialForCurrentEncounter();
+                    hudView.ResetDayCycleToMorning();
+                    hudView.ClearCustomer();
+                    pendingStartAfterReveal = true;
+                    pendingStartIsResume = IsResumingEncounter();
+                    if (setTimerPaused != null)
+                    {
+                        setTimerPaused.Execute(ActiveSession, true);
+                        waitingForTransitionRelease = true;
+                    }
                 }
+                else if (IsResumingEncounter())
+                {
+                    ResumeEncounter();
+                    if (ShouldRunGuidedTutorial() && ActiveSession != null && ActiveSession.CurrentPhase == Witch.Domain.GamePhase.CustomerEncounter)
+                    {
+                        TryStartGuidedTutorialForCurrentEncounter();
+                    }
+                }
+                else
+                {
+                    BeginArrival();
+                }
+
+                Render();
             }
-            else
+            catch (Exception ex)
             {
-                BeginArrival();
+                initException = ex;
+                Debug.LogException(ex, this);
             }
-            Render();
-            if ((ActiveSession.CurrentPhase == Witch.Domain.GamePhase.RewindPending
-                    || (ActiveSession.CurrentPhase == Witch.Domain.GamePhase.RewindMinigame
-                        && ActiveSession.AttemptMetadata.PendingRewind))
-                && enterRewind != null)
+            finally
             {
-                ResumePendingRewind();
+                // Always attempt reveal so a pending cover cannot trap the player.
+                HandleDayTransitionReveal();
+            }
+
+            if (initException == null)
+            {
+                try
+                {
+                    if ((ActiveSession.CurrentPhase == Witch.Domain.GamePhase.RewindPending
+                            || (ActiveSession.CurrentPhase == Witch.Domain.GamePhase.RewindMinigame
+                                && ActiveSession.AttemptMetadata.PendingRewind))
+                        && enterRewind != null)
+                    {
+                        ResumePendingRewind();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogException(ex, this);
+                }
             }
         }
 
@@ -739,7 +790,44 @@ namespace Witch.Presentation.Shop
         public async Task<ExpenseResolutionResult> ContinueNextDayAsync()
         {
             CancellationToken cancellationToken = lifetimeCancellation?.Token ?? CancellationToken.None;
-            ExpenseResolutionResult result = await continueToNextDay.ExecuteAsync(ActiveSession, cancellationToken);
+            if (dayTransition == null || ActiveSession == null || ActiveSession.CurrentPhase != GamePhase.DaySummary)
+            {
+                ExpenseResolutionResult direct = await continueToNextDay.ExecuteAsync(ActiveSession, cancellationToken);
+                SetStatus(direct.Succeeded ? "Opening next day." : direct.ErrorMessage);
+                return direct;
+            }
+
+            if (dayTransition.IsPlaying)
+            {
+                return ExpenseResolutionResult.Failure(ExpenseResolutionError.InvalidPhase, "Day transition is already running.");
+            }
+
+            int nextDay = ActiveSession.RunState.CurrentDayNumber;
+            var completion = new TaskCompletionSource<ExpenseResolutionResult>();
+            dayTransition.PlayDayToDayTransition(nextDay, async () =>
+            {
+                ExpenseResolutionResult advanced = continueToNextDay.AdvanceFromSummary(ActiveSession);
+                if (!advanced.Succeeded)
+                {
+                    dayTransition.CancelPendingReveal();
+                    completion.TrySetResult(advanced);
+                    return;
+                }
+
+                // Old presenter can be destroyed/cancelled during load; do not cancel the handoff load with it.
+                SceneLoadResult scene = await sceneLoader.LoadAsync(SceneId.Shop, CancellationToken.None);
+                if (!scene.Succeeded)
+                {
+                    dayTransition.CancelPendingReveal();
+                    await sceneLoader.LoadAsync(SceneId.MainMenu, CancellationToken.None);
+                    completion.TrySetResult(ExpenseResolutionResult.Failure(ExpenseResolutionError.SceneLoadFailed, scene.ErrorMessage));
+                    return;
+                }
+
+                completion.TrySetResult(ExpenseResolutionResult.Success());
+            });
+
+            ExpenseResolutionResult result = await completion.Task;
             SetStatus(result.Succeeded ? "Opening next day." : result.ErrorMessage);
             return result;
         }
@@ -1353,6 +1441,7 @@ namespace Witch.Presentation.Shop
             return encounterDeck.Draw(ActiveSession.AttemptState.UsedOrderIds.Count);
         }
 
+
         private void RequireAndBindAuthoredView()
         {
             if (!HasAuthoredView)
@@ -1635,6 +1724,11 @@ namespace Witch.Presentation.Shop
                 return;
             }
 
+            if (dayTransition != null && dayTransition.IsPlaying)
+            {
+                return;
+            }
+
             actionInProgress = true;
             try
             {
@@ -1809,11 +1903,109 @@ namespace Witch.Presentation.Shop
                     encounter.CustomerIllustration);
             }
 
-            if (!guidedTutorialTimerFrozen)
+            if (!guidedTutorialTimerFrozen && !waitingForTransitionRelease)
             {
                 setTimerPaused?.Execute(ActiveSession, false); // clock continues from the remaining time
             }
             SetStatus("The spell worked. Time is back. Serve the order again.");
+        }
+
+        private void HandleDayTransitionReveal()
+        {
+            try
+            {
+                if (dayTransition == null || ActiveSession == null || !dayTransition.HasPendingShopReveal)
+                {
+                    waitingForTransitionRelease = waitingForTransitionRelease && pendingStartAfterReveal;
+                    return;
+                }
+
+                int day = ActiveSession.RunState.CurrentDayNumber;
+                dayTransition.SetDayNumber(day);
+                hudView.ResetDayCycleToMorning();
+                if (setTimerPaused != null)
+                {
+                    setTimerPaused.Execute(ActiveSession, true);
+                    waitingForTransitionRelease = true;
+                }
+                dayTransition.RevealIfPending(ReleaseTimerAfterTransition);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogException(ex, this);
+                if (dayTransition != null)
+                {
+                    dayTransition.ForceReveal(ReleaseTimerAfterTransition, "HandleDayTransitionReveal-exception");
+                }
+            }
+        }
+
+        private void ReleaseTimerAfterTransition()
+        {
+            try
+            {
+                if (ActiveSession == null)
+                {
+                    waitingForTransitionRelease = false;
+                    pendingStartAfterReveal = false;
+                    return;
+                }
+
+                if (pendingStartAfterReveal)
+                {
+                    if (pendingStartIsResume)
+                    {
+                        StartResumedEncounterAfterReveal();
+                    }
+                    else
+                    {
+                        BeginArrival();
+                    }
+                    pendingStartAfterReveal = false;
+                    pendingStartIsResume = false;
+                    Render();
+                }
+
+                waitingForTransitionRelease = false;
+                if (setTimerPaused == null) return;
+
+                // Day 1 guided tutorial keeps timer frozen until serve/skip (existing behavior).
+                if (guidedTutorialActive && guidedTutorialTimerFrozen)
+                {
+                    return;
+                }
+
+                if (ShouldRunGuidedTutorial() && ActiveSession.CurrentPhase == Witch.Domain.GamePhase.CustomerEncounter && IsTutorialOrderActive())
+                {
+                    return;
+                }
+
+                setTimerPaused.Execute(ActiveSession, false);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogException(ex, this);
+            }
+        }
+
+        private void StartResumedEncounterAfterReveal()
+        {
+            ResetAutoResolveExpenseState();
+            string orderId = ActiveSession.AttemptState.ActiveOrder.OrderId;
+            ShopEncounterViewData encounter = setup.Encounters
+                .FirstOrDefault(e => e.Order != null && e.Order.OrderId == orderId);
+
+            Debug.Log($"[Resume] order={orderId} found={encounter != null}");
+            if (encounter != null)
+            {
+                hudView.SetCustomer(
+                    encounter.CustomerName,
+                    encounter.OrderBubbles,
+                    encounter.CustomerIllustration);
+            }
+
+            SetStatus("The spell worked. Time is back. Serve the order again.");
+            // Timer release handled by ReleaseTimerAfterTransition (frozen only for guided tutorial).
         }
 
     }
