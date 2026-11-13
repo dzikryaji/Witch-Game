@@ -76,6 +76,8 @@ namespace Witch.Presentation.Shop
             && dayCycleView.IsAuthored;
 
        public Task<bool> EntranceComplete => entranceComplete.Task;
+       public RectTransform OrderBubbleTarget => orderBubbleScrollRect != null ? (RectTransform)orderBubbleScrollRect.transform : orderBubbleContent;
+       public RectTransform CustomerPortraitTarget => customerPortrait;
 
         private void Awake()
         {

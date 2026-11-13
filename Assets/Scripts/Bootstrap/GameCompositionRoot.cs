@@ -319,6 +319,7 @@ namespace Witch.Bootstrap
                     {
                         presenter.ConfigurePolish(setShopTimerPaused, audioService, settingsService.Current);
                         presenter.ConfigureNavigation(sceneLoader);
+                        presenter.ConfigurePersistence(runRepository);
                         presenter.Initialize(
                             sessionStore,
                             openShop,
