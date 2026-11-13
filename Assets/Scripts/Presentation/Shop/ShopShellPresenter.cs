@@ -9,6 +9,7 @@ using UnityEngine.UI;
 using Witch.Application.Flow;
 using Witch.Application.Ports;
 using Witch.Domain.Potions;
+using Witch.Domain.Progression;
 
 namespace Witch.Presentation.Shop
 {
@@ -66,7 +67,9 @@ namespace Witch.Presentation.Shop
         [SerializeField] private GameObject tutorialPanel;
         [SerializeField] private Text tutorialText;
         [SerializeField] private Button tutorialContinueButton;
-        [SerializeField] private GameObject[] tutorialHighlights;
+        [SerializeField] private Button tutorialSkipButton;
+        [SerializeField] private TutorialMaskView tutorialMaskView;
+        [SerializeField] private GameObject[] tutorialHighlights; // legacy, unused by guided tutorial
         [Header("Input Actions")]
         [SerializeField] private InputActionAsset inputActions;
         [SerializeField] private MinigameIntroPopupView minigameIntroPopup;
@@ -97,6 +100,13 @@ namespace Witch.Presentation.Shop
         private bool actionInProgress;
         private InputAction pauseAction;
         private InputAction guidebookAction;
+        private bool guidedTutorialActive;
+        private bool guidedTutorialSeenMarked;
+        private ShopGuidedTutorialStep guidedTutorialStep;
+        private string guidedTutorialOrderId;
+        private bool guidedTutorialTimerFrozen;
+        private bool guidedTutorialWaitingForServe;
+        private IRunStateTransactionRepository saveRepository;
         private readonly List<HerbDragItem> herbSlots = new List<HerbDragItem>();
         private string grinderFirstHerbId;
         private string grinderSecondHerbId;
@@ -110,7 +120,8 @@ namespace Witch.Presentation.Shop
         public string LastStatus { get; private set; }
         public bool GuidebookVisible => guidebookPanel != null && guidebookPanel.activeSelf;
         public bool PauseVisible => pausePanel != null && pausePanel.activeSelf;
-        public bool TutorialVisible => tutorialPanel != null && tutorialPanel.activeSelf;
+        public bool TutorialVisible => (tutorialPanel != null && tutorialPanel.activeSelf) || guidedTutorialActive;
+        public bool GuidedTutorialActive => guidedTutorialActive;
         public bool MinigameIntroVisible => minigameIntroPopup != null && minigameIntroPopup.IsVisible;
         public bool HasAuthoredView => hudView != null
             && hudView.IsAuthored
@@ -151,9 +162,6 @@ namespace Witch.Presentation.Shop
             && tutorialPanel != null
             && tutorialText != null
             && tutorialContinueButton != null
-            && tutorialHighlights != null
-            && tutorialHighlights.Length == 7
-            && Array.TrueForAll(tutorialHighlights, highlight => highlight != null)
             && inputActions != null;
 
         public void ConfigurePolish(
@@ -170,6 +178,11 @@ namespace Witch.Presentation.Shop
         public void ConfigureNavigation(ISceneLoader loader)
         {
             sceneLoader = loader ?? throw new ArgumentNullException(nameof(loader));
+        }
+
+        public void ConfigurePersistence(IRunStateTransactionRepository repository)
+        {
+            saveRepository = repository;
         }
 
         public void Initialize(IGameSessionStore store)
@@ -223,13 +236,20 @@ namespace Witch.Presentation.Shop
                 setup.IntroductionOrderId,
                 setup.OneTimeIntroduction,
                 setup.IntroductionCategoryOrderIds);
+            guidedTutorialOrderId = setup.GuidedTutorialOrderId;
+            guidedTutorialActive = false;
+            guidedTutorialSeenMarked = false;
+            guidedTutorialWaitingForServe = false;
+            guidedTutorialTimerFrozen = false;
 
             RequireAndBindAuthoredView();
             ConfigureHerbButtons();
             ConfigureGuidebook();
+            ValidateGuidedTutorialMasksIfEnabled();
             progressionPanel.SetActive(false);
             pausePanel.SetActive(false);
             tutorialPanel.SetActive(false);
+            if (tutorialMaskView != null) tutorialMaskView.Hide();
             groundHerbObject.SetActive(false);
             preparedPotionObject.SetActive(false);
             if (counterCoins != null) counterCoins.Clear();
@@ -238,9 +258,19 @@ namespace Witch.Presentation.Shop
             hudView.ClearCustomer();
             audioService?.PlayMusic(GameAudioCueIds.ShopMusic);
             audioService?.PlayAmbience(GameAudioCueIds.ShopAmbience);
-            if (IsResumingEncounter()) ResumeEncounter();
-            else if (setup.ShowOpeningTutorial) ShowTutorialBeat();
-            else BeginArrival();
+            if (IsResumingEncounter())
+            {
+                ResumeEncounter();
+                // If resuming into a tutorial-eligible day1 state with no seen flag, restart guided tutorial cleanly.
+                if (ShouldRunGuidedTutorial() && ActiveSession != null && ActiveSession.CurrentPhase == Witch.Domain.GamePhase.CustomerEncounter)
+                {
+                    TryStartGuidedTutorialForCurrentEncounter();
+                }
+            }
+            else
+            {
+                BeginArrival();
+            }
             Render();
             if ((ActiveSession.CurrentPhase == Witch.Domain.GamePhase.RewindPending
                     || (ActiveSession.CurrentPhase == Witch.Domain.GamePhase.RewindMinigame
@@ -251,16 +281,46 @@ namespace Witch.Presentation.Shop
             }
         }
 
+        private void ValidateGuidedTutorialMasksIfEnabled()
+        {
+            if (setup == null || !setup.GuidedTutorialEnabled) return;
+            if (tutorialMaskView == null)
+            {
+                throw new InvalidOperationException("Guided tutorial is enabled but TutorialMaskView is missing.");
+            }
+            var missing = new System.Collections.Generic.List<string>();
+            foreach (ShopGuidedTutorialStep step in Enum.GetValues(typeof(ShopGuidedTutorialStep)))
+            {
+                if (!tutorialMaskView.TryGetMask(step, out TutorialStepMask mask) || mask == null || !mask.HasHoleRect() || !mask.HasDimPanel())
+                {
+                    missing.Add(step.ToString());
+                }
+            }
+            if (missing.Count > 0)
+            {
+                throw new InvalidOperationException("Guided tutorial masks missing or incomplete: " + string.Join(", ", missing));
+            }
+        }
+
         private void Update()
         {
-            if (!IsInitialized || updateTimer == null || ActiveSession == null || Time.unscaledTime < nextRefresh)
+            if (!IsInitialized || updateTimer == null || ActiveSession == null)
             {
                 return;
             }
 
-            nextRefresh = Time.unscaledTime + 0.1f;
-            updateTimer.Execute(ActiveSession);
-            Render();
+            if (Time.unscaledTime >= nextRefresh)
+            {
+                nextRefresh = Time.unscaledTime + 0.1f;
+                updateTimer.Execute(ActiveSession);
+                Render();
+            }
+
+            if (guidedTutorialActive)
+            {
+                // Poll for async completions (e.g. order bubble entrance).
+                EvaluateGuidedTutorialProgress();
+            }
         }
 
         private void OnEnable()
@@ -301,12 +361,32 @@ namespace Witch.Presentation.Shop
 
         private void HandlePauseAction(InputAction.CallbackContext context)
         {
-            if (setTimerPaused != null && !TutorialVisible && !MinigameIntroVisible) TogglePause();
+            if (setTimerPaused == null || MinigameIntroVisible) return;
+            if (guidedTutorialActive) return; // pause hotkey blocked during guided tutorial
+            if (TutorialVisible) return;
+            TogglePause();
         }
 
         private void HandleGuidebookAction(InputAction.CallbackContext context)
         {
-            if (IsInitialized && !TutorialVisible && !MinigameIntroVisible) ToggleGuidebook();
+            if (!IsInitialized || MinigameIntroVisible) return;
+            if (guidedTutorialActive)
+            {
+                if (guidedTutorialStep == ShopGuidedTutorialStep.OpenGuidebook)
+                {
+                    if (!GuidebookVisible) OpenGuidebook();
+                    EvaluateGuidedTutorialProgress();
+                }
+                else if (guidedTutorialStep == ShopGuidedTutorialStep.CloseGuidebook)
+                {
+                    if (GuidebookVisible) CloseGuidebook();
+                    else EvaluateGuidedTutorialProgress();
+                }
+                // NavigateToMustardSeed: page navigation via UI buttons only, do not close/open here
+                return;
+            }
+            if (TutorialVisible) return;
+            ToggleGuidebook();
         }
 
         public PreparationResult GrindHerb(string firstHerbId, string secondHerbId)
@@ -325,6 +405,12 @@ namespace Witch.Presentation.Shop
             if (ActiveSession == null || ActiveSession.CurrentPhase != Witch.Domain.GamePhase.CustomerEncounter)
             {
                 SetStatus("Wait for a customer before preparing medicine.");
+                return false;
+            }
+
+            if (guidedTutorialActive && !GuidedTutorialAllowsHerb(herbId))
+            {
+                SetStatus("Follow the tutorial step and use the highlighted herbs.");
                 return false;
             }
 
@@ -350,11 +436,18 @@ namespace Witch.Presentation.Shop
                 ? "Both herbs loaded. Press Grind."
                 : DisplayName(herbId) + " loaded. Add a second herb.");
             Render();
+            EvaluateGuidedTutorialProgress();
             return true;
         }
 
         public PreparationResult GrindLoadedHerb()
         {
+            if (guidedTutorialActive && guidedTutorialStep != ShopGuidedTutorialStep.Grind && guidedTutorialStep != ShopGuidedTutorialStep.LoadHerbs)
+            {
+                PreparationResult blocked = PreparationResult.Failure("Follow the current tutorial step.");
+                SetStatus(blocked.ErrorMessage);
+                return blocked;
+            }
             if (!GrinderIsFull)
             {
                 PreparationResult failure = PreparationResult.Failure("Put two herbs into the grinder first.");
@@ -367,12 +460,18 @@ namespace Witch.Presentation.Shop
             {
                 ClearGrinder();
                 Render();
+                EvaluateGuidedTutorialProgress();
             }
             return result;
         }
 
         public void EjectLoadedHerb()
         {
+            if (!GuidedTutorialAllowsUndo())
+            {
+                SetStatus("Undo is disabled during the tutorial.");
+                return;
+            }
             if (grinderFirstHerbId == null && grinderSecondHerbId == null)
             {
                 SetStatus("Grinder is already empty.");
@@ -391,6 +490,12 @@ namespace Witch.Presentation.Shop
 
         public PreparationResult AddGroundHerbToPot()
         {
+            if (guidedTutorialActive && !GuidedTutorialAllowsAddToPot())
+            {
+                PreparationResult blocked = PreparationResult.Failure("Follow the current tutorial step.");
+                SetStatus(blocked.ErrorMessage);
+                return blocked;
+            }
             PreparationResult result = preparation.AddToPot(ActiveSession);
 
             if (result.Succeeded && ActiveSession.PotionDraft.IsReadyToBrew)
@@ -399,17 +504,24 @@ namespace Witch.Presentation.Shop
             }
 
             SetStatus(result.Succeeded
-                ? setup.DayNumber == 1
+                ? setup != null && setup.DayNumber == 1
                 ? "Ground herb added to pot. Brew when both exact herbs are inside."
                 : "Ground herb added to pot."
                 : result.ErrorMessage);
             Render();
+            EvaluateGuidedTutorialProgress();
 
             return result;
         }
 
         public PreparationResult DiscardGroundHerb()
         {
+            if (!GuidedTutorialAllowsUndo())
+            {
+                PreparationResult blocked = PreparationResult.Failure("Undo is disabled during the tutorial.");
+                SetStatus(blocked.ErrorMessage);
+                return blocked;
+            }
             PreparationResult result = preparation.DiscardGroundHerb(ActiveSession);
             SetStatus(result.Succeeded ? "Ground herb discarded." : result.ErrorMessage);
             if (result.Succeeded) audioService?.Play(GameAudioCueIds.Discard);
@@ -434,12 +546,22 @@ namespace Witch.Presentation.Shop
             {
                 potionRevealAnimator.Play();
             }
+            if (result.Succeeded)
+            {
+                EvaluateGuidedTutorialProgress();
+            }
 
             return result;
         }
 
         public PreparationResult Discard()
         {
+            if (!GuidedTutorialAllowsUndo())
+            {
+                PreparationResult blocked = PreparationResult.Failure("Undo is disabled during the tutorial.");
+                SetStatus(blocked.ErrorMessage);
+                return blocked;
+            }
             PreparationResult result = preparation.Discard(ActiveSession);
             SetStatus(result.Succeeded ? "Workbench cleared." : result.ErrorMessage);
             if (result.Succeeded) audioService?.Play(GameAudioCueIds.Discard);
@@ -449,6 +571,12 @@ namespace Witch.Presentation.Shop
 
         public PreparationResult DiscardPotion()
         {
+            if (!GuidedTutorialAllowsUndo())
+            {
+                PreparationResult blocked = PreparationResult.Failure("Undo is disabled during the tutorial.");
+                SetStatus(blocked.ErrorMessage);
+                return blocked;
+            }
             PreparationResult result = preparation.DiscardPotion(ActiveSession);
             SetStatus(result.Succeeded ? "Potion discarded." : result.ErrorMessage);
             if (result.Succeeded) audioService?.Play(GameAudioCueIds.Discard);
@@ -459,6 +587,7 @@ namespace Witch.Presentation.Shop
         public async Task<ServePotionResult> ServeAsync()
         {
             CancellationToken cancellationToken = lifetimeCancellation?.Token ?? CancellationToken.None;
+            bool servingTutorial = guidedTutorialActive && guidedTutorialStep == ShopGuidedTutorialStep.Serve && IsTutorialOrderActive();
             ServePotionResult result = await servePotion.ExecuteAsync(ActiveSession, cancellationToken);
             if (!result.Succeeded)
             {
@@ -487,12 +616,24 @@ namespace Witch.Presentation.Shop
             }
 
             Render();
+
+            if (servingTutorial && result.Succeeded)
+            {
+                EndGuidedTutorial(skipped: false);
+            }
+
             if (suspicionFocus != null && suspicionFocus.IsPlaying)
             {
                 await suspicionFocus.Finished;
                 if (cancellationToken.IsCancellationRequested) return result;
             }
 
+            if (result.Succeeded
+                && ActiveSession.CurrentPhase == Witch.Domain.GamePhase.RewindPending
+                && enterRewind != null)
+            {
+                await EnterPendingRewindAsync(cancellationToken);
+            }
             if (result.Succeeded
                 && ActiveSession.CurrentPhase == Witch.Domain.GamePhase.RewindPending
                 && enterRewind != null)
@@ -564,11 +705,36 @@ namespace Witch.Presentation.Shop
         public void ToggleGuidebook()
         {
             if (guidebookPanel == null) return;
+            if (guidebookPanel.activeSelf)
+            {
+                CloseGuidebook();
+            }
+            else
+            {
+                OpenGuidebook();
+            }
+        }
+
+        public void OpenGuidebook()
+        {
+            if (guidebookPanel == null) return;
             guidebookPanel.SetActive(true);
-            guidebookPanel.GetComponent<Animator>().SetTrigger("Open");
+            guidebookPanel.GetComponent<Animator>()?.SetTrigger("Open");
             // A turn interrupted by hiding the book leaves the two pages out of step; redraw them.
             if (!GuidebookTurning && guidebookPages.Count > 0) RenderGuidebookPage();
             SetStatus("Guidebook stays on the table. Timer continues while you read.");
+            EvaluateGuidedTutorialProgress();
+        }
+
+        public void CloseGuidebook()
+        {
+            if (guidebookPanel == null) return;
+            if (guidedTutorialActive && guidedTutorialStep == ShopGuidedTutorialStep.NavigateToMustardSeed)
+            {
+                return;
+            }
+            guidebookPanel.SetActive(false);
+            EvaluateGuidedTutorialProgress();
         }
 
         public void PreviousGuidebookPage()
@@ -626,6 +792,7 @@ namespace Witch.Presentation.Shop
             if (!canAnimate)
             {
                 RenderGuidebookPage();
+                EvaluateGuidedTutorialProgress();
                 return;
             }
 
@@ -645,28 +812,34 @@ namespace Witch.Presentation.Shop
                 RenderGuidebookSide(guidebookLeftPage, targetLeftIndex, GuidebookPageSide.Left);
             }
 
-            if (!guidebookFlipAnimator.Play(direction, RenderGuidebookPage)) RenderGuidebookPage();
+            if (!guidebookFlipAnimator.Play(direction, () => { RenderGuidebookPage(); EvaluateGuidedTutorialProgress(); })) { RenderGuidebookPage(); EvaluateGuidedTutorialProgress(); }
         }
 
         public void AdvanceTutorial()
         {
-            if (!TutorialVisible) return;
-            tutorialBeat++;
-            if (tutorialBeat >= 5)
+            // Legacy API kept for compatibility; guided tutorial uses OnTutorialContinueClicked.
+            if (guidedTutorialActive)
             {
-                tutorialPanel.SetActive(false);
-                SetTutorialHighlight(-1);
-                BeginArrival();
-                Render();
+                OnTutorialContinueClicked();
                 return;
             }
-            ShowTutorialBeat();
         }
 
         public void TogglePause()
         {
             if (pausePanel == null || setTimerPaused == null || ActiveSession == null) return;
+            if (guidedTutorialActive && guidedTutorialTimerFrozen)
+            {
+                // During guided tutorial the clock must remain frozen; pause UI is blocked by input.
+                return;
+            }
             bool paused = !pausePanel.activeSelf;
+            // Never unfreeze while guided tutorial timer is frozen.
+            if (!paused && guidedTutorialTimerFrozen)
+            {
+                pausePanel.SetActive(false);
+                return;
+            }
             setTimerPaused.Execute(ActiveSession, paused);
             pausePanel.SetActive(paused);
             audioService?.Play(GameAudioCueIds.UiClick);
@@ -683,8 +856,11 @@ namespace Witch.Presentation.Shop
 
             if (pausePanel != null && pausePanel.activeSelf && setTimerPaused != null)
             {
-                setTimerPaused.Execute(ActiveSession, false);
                 pausePanel.SetActive(false);
+                if (!guidedTutorialTimerFrozen)
+                {
+                    setTimerPaused.Execute(ActiveSession, false);
+                }
             }
 
             ClearCounterCoins();
@@ -697,6 +873,289 @@ namespace Witch.Presentation.Shop
                 SetStatus("Could not return to Main Menu: " + result.ErrorMessage);
             }
         }
+
+        private bool ShouldRunGuidedTutorial()
+        {
+            if (guidedTutorialSeenMarked) return false;
+            if (setup == null || ActiveSession == null) return false;
+            if (!setup.GuidedTutorialEnabled || string.IsNullOrWhiteSpace(setup.GuidedTutorialOrderId)) return false;
+            if (ActiveSession.RunState.CurrentDayNumber != 1) return false;
+            if (ActiveSession.RunState.TutorialFlags.TryGetValue(ShopTutorialFlags.Day1GuidedCompleted, out bool completed) && completed) return false;
+            // Only for the tutorial-eligible run; retries are marked seen by RetryDayUseCase.
+            return true;
+        }
+
+        private ShopEncounterViewData FindGuidedTutorialEncounter()
+        {
+            if (setup == null || string.IsNullOrWhiteSpace(guidedTutorialOrderId)) return null;
+            for (int i = 0; i < setup.Encounters.Count; i++)
+            {
+                if (setup.Encounters[i].Order != null
+                    && string.Equals(setup.Encounters[i].Order.OrderId, guidedTutorialOrderId, StringComparison.Ordinal))
+                {
+                    return setup.Encounters[i];
+                }
+            }
+            return null;
+        }
+
+        private bool IsTutorialOrderActive()
+        {
+            return ActiveSession != null
+                && ActiveSession.AttemptState.ActiveOrder != null
+                && !string.IsNullOrWhiteSpace(guidedTutorialOrderId)
+                && string.Equals(ActiveSession.AttemptState.ActiveOrder.OrderId, guidedTutorialOrderId, StringComparison.Ordinal);
+        }
+
+        private void TryStartGuidedTutorialForCurrentEncounter()
+        {
+            if (guidedTutorialActive || guidedTutorialSeenMarked) return;
+            if (!ShouldRunGuidedTutorial() || !IsTutorialOrderActive()) return;
+            guidedTutorialActive = true;
+            guidedTutorialStep = ShopGuidedTutorialStep.ReadOrder;
+            guidedTutorialWaitingForServe = false;
+            FreezeGuidedTutorialTimer(true);
+            if (pausePanel != null && pausePanel.activeSelf)
+            {
+                pausePanel.SetActive(false);
+            }
+            if (tutorialPanel != null) tutorialPanel.SetActive(true);
+            UpdateGuidedTutorialUi();
+        }
+
+        private void FreezeGuidedTutorialTimer(bool freeze)
+        {
+            if (setTimerPaused == null || ActiveSession == null) return;
+            if (freeze)
+            {
+                if (!guidedTutorialTimerFrozen)
+                {
+                    setTimerPaused.Execute(ActiveSession, true);
+                    guidedTutorialTimerFrozen = true;
+                }
+                return;
+            }
+            if (guidedTutorialTimerFrozen)
+            {
+                setTimerPaused.Execute(ActiveSession, false);
+                guidedTutorialTimerFrozen = false;
+            }
+        }
+
+        private void EndGuidedTutorial(bool skipped)
+        {
+            if (!guidedTutorialActive && !guidedTutorialWaitingForServe && tutorialPanel != null && !tutorialPanel.activeSelf) return;
+            bool wasActive = guidedTutorialActive || guidedTutorialWaitingForServe || (tutorialPanel != null && tutorialPanel.activeSelf);
+            guidedTutorialActive = false;
+            guidedTutorialWaitingForServe = false;
+            if (tutorialPanel != null) tutorialPanel.SetActive(false);
+            if (tutorialMaskView != null) tutorialMaskView.Hide();
+            FreezeGuidedTutorialTimer(false);
+            if (wasActive && !guidedTutorialSeenMarked)
+            {
+                MarkGuidedTutorialSeen();
+            }
+            Render();
+        }
+
+        private async void MarkGuidedTutorialSeen()
+        {
+            if (guidedTutorialSeenMarked || ActiveSession == null) return;
+            guidedTutorialSeenMarked = true;
+            RunState updated = ActiveSession.RunState.WithTutorialFlag(ShopTutorialFlags.Day1GuidedCompleted, true);
+            if (saveRepository == null) return;
+            try
+            {
+                // Persist with updated run state; DayStartSnapshot/metadata preserved for this day attempt.
+                var snapshot = new Witch.Domain.Progression.DayStartSnapshot(
+                    updated,
+                    ActiveSession.DayStartSnapshot.OrderSeed,
+                    ActiveSession.DayStartSnapshot.TimerDuration,
+                    ActiveSession.DayStartSnapshot.ExpenseId,
+                    ActiveSession.DayStartSnapshot.ExpenseValue,
+                    ActiveSession.DayStartSnapshot.SaveVersion,
+                    ActiveSession.DayStartSnapshot.CapturedAtUtc);
+                await saveRepository.SaveRunStateAsync(snapshot, ActiveSession.AttemptMetadata);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogWarning("Failed to persist guided tutorial flag: " + ex.Message, this);
+            }
+        }
+
+        private void OnTutorialSkipClicked()
+        {
+            if (!guidedTutorialActive && !(tutorialPanel != null && tutorialPanel.activeSelf)) return;
+            audioService?.Play(GameAudioCueIds.UiClick);
+            EndGuidedTutorial(skipped: true);
+            SetStatus("Tutorial skipped. The same customer is waiting.");
+        }
+
+        private void OnTutorialContinueClicked()
+        {
+            if (!guidedTutorialActive) return;
+            if (guidedTutorialStep != ShopGuidedTutorialStep.ReadOrder) return;
+            audioService?.Play(GameAudioCueIds.UiClick);
+            if (!IsGuidedTutorialStepComplete()) return;
+            AdvanceGuidedTutorialStep();
+        }
+
+        private bool IsGuidedTutorialStepComplete()
+        {
+            switch (guidedTutorialStep)
+            {
+                case ShopGuidedTutorialStep.ReadOrder:
+                    return hudView != null && hudView.EntranceComplete.IsCompleted && hudView.EntranceComplete.Result;
+                case ShopGuidedTutorialStep.OpenGuidebook:
+                    return GuidebookVisible;
+                case ShopGuidedTutorialStep.NavigateToMustardSeed:
+                    return GuidebookVisible && IsMustardSeedSpreadVisible();
+                case ShopGuidedTutorialStep.CloseGuidebook:
+                    return !GuidebookVisible;
+                case ShopGuidedTutorialStep.LoadHerbs:
+                    return string.Equals(grinderFirstHerbId, "herb.ginger", StringComparison.Ordinal)
+                        && string.Equals(grinderSecondHerbId, "herb.mustardSeed", StringComparison.Ordinal)
+                        || (string.Equals(grinderFirstHerbId, "herb.mustardSeed", StringComparison.Ordinal)
+                            && string.Equals(grinderSecondHerbId, "herb.ginger", StringComparison.Ordinal));
+                case ShopGuidedTutorialStep.Grind:
+                    return ActiveSession != null && ActiveSession.GroundMixture != null;
+                case ShopGuidedTutorialStep.AddToCauldron:
+                    return ActiveSession != null && ActiveSession.PreparedPotion != null;
+                case ShopGuidedTutorialStep.Serve:
+                    return false; // serve ends tutorial directly
+                default:
+                    return false;
+            }
+        }
+
+        private bool IsMustardSeedSpreadVisible()
+        {
+            if (guidebookPages == null || guidebookPages.Count == 0) return false;
+            int left = guidebookPageIndex - (guidebookPageIndex % 2);
+            int right = left + 1;
+            return PageContainsHerb(left, "Mustard Seed") || PageContainsHerb(right, "Mustard Seed")
+                || PageContainsScientific(left, "Brassica") || PageContainsScientific(right, "Brassica");
+        }
+
+        private bool PageContainsHerb(int index, string title)
+        {
+            GuidebookPageViewData page = PageAt(index);
+            return page != null && string.Equals(page.Title, title, StringComparison.Ordinal);
+        }
+
+        private bool PageContainsScientific(int index, string token)
+        {
+            GuidebookPageViewData page = PageAt(index);
+            return page != null && !string.IsNullOrEmpty(page.ScientificName)
+                && page.ScientificName.IndexOf(token, StringComparison.OrdinalIgnoreCase) >= 0;
+        }
+
+        private void AdvanceGuidedTutorialStep()
+        {
+            if (guidedTutorialStep == ShopGuidedTutorialStep.Serve) return;
+            guidedTutorialStep = (ShopGuidedTutorialStep)((int)guidedTutorialStep + 1);
+            UpdateGuidedTutorialUi();
+        }
+
+        private void EvaluateGuidedTutorialProgress()
+        {
+            if (!guidedTutorialActive) return;
+            UpdateTutorialInteractionState();
+            bool complete = IsGuidedTutorialStepComplete();
+            if (tutorialContinueButton != null)
+            {
+                bool showContinue = guidedTutorialStep == ShopGuidedTutorialStep.ReadOrder;
+                tutorialContinueButton.gameObject.SetActive(showContinue);
+                tutorialContinueButton.interactable = showContinue && complete;
+            }
+            UpdateGuidedTutorialMask();
+            if (complete && guidedTutorialStep != ShopGuidedTutorialStep.ReadOrder && guidedTutorialStep != ShopGuidedTutorialStep.Serve)
+            {
+                AdvanceGuidedTutorialStep();
+            }
+        }
+
+        private void UpdateGuidedTutorialUi()
+        {
+            if (!guidedTutorialActive || tutorialText == null) return;
+            tutorialText.text = GetGuidedTutorialStepText(guidedTutorialStep);
+            if (tutorialContinueButton != null)
+            {
+                bool showContinue = guidedTutorialStep == ShopGuidedTutorialStep.ReadOrder;
+                tutorialContinueButton.gameObject.SetActive(showContinue);
+                tutorialContinueButton.interactable = showContinue && IsGuidedTutorialStepComplete();
+            }
+            if (tutorialSkipButton != null) tutorialSkipButton.gameObject.SetActive(true);
+            UpdateGuidedTutorialMask();
+        }
+
+        private string GetGuidedTutorialStepText(ShopGuidedTutorialStep step)
+        {
+            switch (step)
+            {
+                case ShopGuidedTutorialStep.ReadOrder:
+                    return "Read the customer's order bubbles. Continue when you are ready.";
+                case ShopGuidedTutorialStep.OpenGuidebook:
+                    return "Open the guidebook to check Ginger and Mustard Seed.";
+                case ShopGuidedTutorialStep.NavigateToMustardSeed:
+                    return "Turn to the spread that shows Mustard Seed.";
+                case ShopGuidedTutorialStep.CloseGuidebook:
+                    return "Click outside the guidebook to close it and return to the counter.";
+                case ShopGuidedTutorialStep.LoadHerbs:
+                    return "Drag Ginger and Mustard Seed into the grinder.";
+                case ShopGuidedTutorialStep.Grind:
+                    return "Press Grind to prepare the herbs.";
+                case ShopGuidedTutorialStep.AddToCauldron:
+                    return "Drag the ground herbs into the cauldron to brew the potion.";
+                case ShopGuidedTutorialStep.Serve:
+                    return "Drag the brewed potion onto the customer counter to serve it.";
+                default:
+                    return string.Empty;
+            }
+        }
+
+        private void UpdateGuidedTutorialMask()
+        {
+            if (tutorialMaskView == null || !guidedTutorialActive) return;
+            tutorialMaskView.ShowStep(guidedTutorialStep);
+        }
+
+        private bool GuidedTutorialAllowsHerb(string herbId)
+        {
+            if (!guidedTutorialActive) return true;
+            if (guidedTutorialStep != ShopGuidedTutorialStep.LoadHerbs) return false;
+            return string.Equals(herbId, "herb.ginger", StringComparison.Ordinal)
+                || string.Equals(herbId, "herb.mustardSeed", StringComparison.Ordinal);
+        }
+
+        private bool GuidedTutorialAllowsGrindAction() => !guidedTutorialActive || guidedTutorialStep == ShopGuidedTutorialStep.Grind || guidedTutorialStep == ShopGuidedTutorialStep.LoadHerbs;
+        private bool GuidedTutorialAllowsAddToPot() => !guidedTutorialActive || guidedTutorialStep == ShopGuidedTutorialStep.AddToCauldron;
+        private bool GuidedTutorialAllowsServe() => !guidedTutorialActive || guidedTutorialStep == ShopGuidedTutorialStep.Serve;
+        private bool GuidedTutorialAllowsUndo() => !guidedTutorialActive; // undo blocked during tutorial
+
+        private void UpdateTutorialInteractionState()
+        {
+            if (!guidedTutorialActive)
+            {
+                return;
+            }
+            // Restrict shelf interaction to the two tutorial herbs during the load step.
+            for (int i = 0; i < herbSlots.Count; i++)
+            {
+                HerbDragItem drag = herbSlots[i];
+                if (drag == null) continue;
+                Button button = drag.GetComponent<Button>();
+                if (button == null) continue;
+                bool activeSlot = !string.IsNullOrWhiteSpace(drag.HerbId);
+                button.interactable = activeSlot && (!guidedTutorialActive || guidedTutorialStep != ShopGuidedTutorialStep.LoadHerbs || GuidedTutorialAllowsHerb(drag.HerbId));
+            }
+            if (grindButton != null) grindButton.interactable = GrinderIsFull && (!guidedTutorialActive || guidedTutorialStep == ShopGuidedTutorialStep.Grind || guidedTutorialStep == ShopGuidedTutorialStep.LoadHerbs);
+            if (ejectGrinderButton != null) ejectGrinderButton.interactable = GuidedTutorialAllowsUndo();
+            if (discardGroundButton != null) discardGroundButton.interactable = GuidedTutorialAllowsUndo();
+            if (emptyPotButton != null) emptyPotButton.interactable = GuidedTutorialAllowsUndo();
+            if (brewButton != null) brewButton.interactable = !guidedTutorialActive; // brewing is automatic on add in this flow
+        }
+
 
         private void BeginArrival()
         {
@@ -718,7 +1177,15 @@ namespace Witch.Presentation.Shop
 
             if (ActiveSession.CurrentPhase == Witch.Domain.GamePhase.CustomerArrival)
             {
-                ShopEncounterViewData encounter = FindNextEncounter();
+                ShopEncounterViewData encounter = null;
+                if (ShouldRunGuidedTutorial())
+                {
+                    encounter = FindGuidedTutorialEncounter() ?? FindNextEncounter();
+                }
+                else
+                {
+                    encounter = FindNextEncounter();
+                }
                 if (encounter == null)
                 {
                     SetStatus("No more authored customers today. The clock continues to closing.");
@@ -729,7 +1196,7 @@ namespace Witch.Presentation.Shop
                     ActiveSession,
                     new AdmitCustomerCommand(encounter.CustomerId, encounter.Order));
                 SetStatus(arrival.Succeeded
-                    ? setup.DayNumber == 1
+                    ? setup != null && setup.DayNumber == 1 && (!guidedTutorialActive || string.Equals(encounter.Order?.OrderId, guidedTutorialOrderId, StringComparison.Ordinal))
                         ? "DING! " + encounter.CustomerName + " enters. Read the order, consult the guidebook, and prepare the exact herb pair."
                         : "DING! " + encounter.CustomerName + " enters the shop."
                     : arrival.ErrorMessage);
@@ -741,23 +1208,20 @@ namespace Witch.Presentation.Shop
                         encounter.OrderBubbles,
                         encounter.CustomerIllustration);
                 }
+                if (arrival.Succeeded && ShouldRunGuidedTutorial() && IsTutorialOrderActive())
+                {
+                    TryStartGuidedTutorialForCurrentEncounter();
+                }
+                else if (arrival.Succeeded && guidedTutorialActive && !IsTutorialOrderActive())
+                {
+                    // If somehow a different customer appears mid-tutorial context, do not start guided mode.
+                }
             }
         }
 
         private void ShowTutorialBeat()
         {
-            if (tutorialPanel == null) return;
-            string[] beats =
-            {
-                "Orders and customer clues appear here after the bell.",
-                "Guidebook stays on the table. Turn pages to compare remedies.",
-                "Drag an unlocked herb from the shelf into the grinder.",
-                "Press Grind. Drag the ground herb into the cauldron. Undo or empty it if needed.",
-                "Brew two herbs, then drag the finished potion onto the customer counter."
-            };
-            tutorialText.text = beats[Math.Min(tutorialBeat, beats.Length - 1)];
-            tutorialPanel.SetActive(true);
-            SetTutorialHighlight(Math.Min(tutorialBeat, tutorialHighlights.Length - 1));
+            // Legacy pre-customer tutorial removed in favor of guided tutorial on first real customer.
         }
 
         private async Task EnterPendingRewindAsync(CancellationToken cancellationToken)
@@ -875,8 +1339,24 @@ namespace Witch.Presentation.Shop
             resolveExpenseButton.onClick.AddListener(OnResolveExpenseClicked);
             retryButton.onClick.AddListener(OnRetryClicked);
             continueButton.onClick.AddListener(OnContinueClicked);
-            tutorialContinueButton.onClick.AddListener(AdvanceTutorial);
+            tutorialContinueButton.onClick.RemoveListener(AdvanceTutorial);
+            tutorialContinueButton.onClick.AddListener(OnTutorialContinueClicked);
+            if (tutorialSkipButton != null) tutorialSkipButton.onClick.AddListener(OnTutorialSkipClicked);
+            BindGuidebookBackdrop();
             viewBound = true;
+        }
+
+        private void BindGuidebookBackdrop()
+        {
+            if (guidebookPanel == null) return;
+            Transform backdrop = guidebookPanel.transform.Find("Read Backdrop");
+            if (backdrop == null && guidebookPanel.transform.parent != null)
+                backdrop = guidebookPanel.transform.parent.Find("Read Backdrop");
+            if (backdrop == null) return;
+            Button button = backdrop.GetComponent<Button>();
+            if (button == null) return;
+            button.onClick.RemoveAllListeners();
+            button.onClick.AddListener(CloseGuidebook);
         }
 
         private void ConfigureHerbButtons()
@@ -948,7 +1428,15 @@ namespace Witch.Presentation.Shop
             }
         }
 
-        public void RequestServe() => RunUiAction(ServeAsync);
+        public void RequestServe()
+        {
+            if (guidedTutorialActive && !GuidedTutorialAllowsServe())
+            {
+                SetStatus("Follow the current tutorial step before serving.");
+                return;
+            }
+            RunUiAction(ServeAsync);
+        }
 
         private void Render()
         {
@@ -1002,6 +1490,10 @@ namespace Witch.Presentation.Shop
 
             }
             RenderProgression(session);
+            if (guidedTutorialActive)
+            {
+                UpdateTutorialInteractionState();
+            }
         }
 
         private void RenderProgression(GameSession session)
@@ -1207,11 +1699,13 @@ namespace Witch.Presentation.Shop
 
         private void SetTutorialHighlight(int activeIndex)
         {
+            // Legacy highlight system replaced by TutorialMaskView in guided tutorial.
+            if (tutorialHighlights == null) return;
             for (int index = 0; index < tutorialHighlights.Length; index++)
             {
                 if (tutorialHighlights[index] != null)
                 {
-                    tutorialHighlights[index].SetActive(index == activeIndex);
+                    tutorialHighlights[index].SetActive(false);
                 }
             }
         }
@@ -1235,7 +1729,10 @@ namespace Witch.Presentation.Shop
                     encounter.CustomerIllustration);
             }
 
-            setTimerPaused?.Execute(ActiveSession, false); // clock continues from the remaining time
+            if (!guidedTutorialTimerFrozen)
+            {
+                setTimerPaused?.Execute(ActiveSession, false); // clock continues from the remaining time
+            }
             SetStatus("The spell worked. Time is back. Serve the order again.");
         }
 

@@ -37,6 +37,10 @@ namespace Witch.Application.Flow
                 session.DayStartSnapshot.RunState.Money,
                 session.RunState.Suspicion,
                 session.RunState.RewindCount);
+            if (retryState.CurrentDayNumber == 1)
+            {
+                retryState = retryState.WithTutorialFlag("shop.tutorial.day1.guided", true);
+            }
             var snapshot = new DayStartSnapshot(
                 retryState,
                 session.DayStartSnapshot.OrderSeed,

@@ -643,50 +643,39 @@ namespace Witch.Bootstrap.PlayModeTests
                         new ShopEncounterViewData(
                             "customer.tutorial",
                             "Tutorial Villager",
-                            new OrderRequest("order.tutorial", new HerbPair("herb.ginger", "herb.mint")),
-                            "Ginger and mint.")
+                            new OrderRequest("order.simple.w01", new HerbPair("herb.ginger", "herb.mustardSeed")),
+                            "Ginger and Mustard Seed.")
                     },
                     new[]
                     {
                         new ShopHerbViewData("herb.ginger", "Ginger"),
-                        new ShopHerbViewData("herb.mint", "Mint")
+                        new ShopHerbViewData("herb.mustardSeed", "Mustard Seed")
                     },
-                    "Ginger and Mint make the requested remedy.",
+                    "Ginger and Mustard Seed make the requested remedy.",
                     1,
-                    true));
+                    true,
+                    0,
+                    false,
+                    null,
+                    null,
+                    false,
+                    null,
+                    "order.simple.w01"));
 
-            Assert.That(presenter.TutorialVisible, Is.True);
-            Assert.That(presenter.ActiveSession.CurrentPhase, Is.EqualTo(GamePhase.ShopPreparation));
-            Assert.That(presenter.ActiveSession.TimerStartedAtUtc, Is.Null);
-            string[] tutorialHighlightNames =
-            {
-                "Customer Tutorial Highlight",
-                "Guidebook Tutorial Highlight",
-                "Shelf Tutorial Highlight",
-                "Grinder Tutorial Highlight",
-                "Customer Counter Tutorial Highlight"
-            };
-            foreach (string highlightName in tutorialHighlightNames)
-            {
-                Assert.That(GameObject.Find(highlightName), Is.Not.Null,
-                    highlightName + " must be visible on its tutorial beat.");
-                presenter.AdvanceTutorial();
-            }
-
-            Assert.That(presenter.TutorialVisible, Is.False);
+            // Guided tutorial runs on the first real customer (Warm 01), once per run, with timer frozen.
             Assert.That(presenter.ActiveSession.CurrentPhase, Is.EqualTo(GamePhase.CustomerEncounter));
+            Assert.That(presenter.ActiveSession.AttemptState.ActiveOrder?.OrderId, Is.EqualTo("order.simple.w01"));
+            Assert.That(presenter.GuidedTutorialActive || presenter.TutorialVisible, Is.True);
             Assert.That(audio.Played, Does.Contain(GameAudioCueIds.CustomerBell));
 
+            // Timer stays frozen while guided tutorial is active (pause cannot unfreeze it).
+            var startRemaining = presenter.ActiveSession.TimerState.RemainingTime;
             harness.Clock.Advance(TimeSpan.FromSeconds(5));
             harness.UpdateTimer.Execute(presenter.ActiveSession);
-            presenter.TogglePause();
+            presenter.TogglePause(); // blocked/unfreeze prevented during tutorial
             harness.Clock.Advance(TimeSpan.FromSeconds(20));
             harness.UpdateTimer.Execute(presenter.ActiveSession);
-            Assert.That(presenter.ActiveSession.TimerState.RemainingTime, Is.EqualTo(TimeSpan.FromSeconds(55)));
-            presenter.TogglePause();
-            harness.Clock.Advance(TimeSpan.FromSeconds(5));
-            harness.UpdateTimer.Execute(presenter.ActiveSession);
-            Assert.That(presenter.ActiveSession.TimerState.RemainingTime, Is.EqualTo(TimeSpan.FromSeconds(50)));
+            Assert.That(presenter.ActiveSession.TimerState.RemainingTime, Is.EqualTo(startRemaining));
         }
 
         private static Harness CreateHarness()
