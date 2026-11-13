@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: RewindDifficulty_Default
   m_EditorClassIdentifier: Witch.Infrastructure::Witch.Infrastructure.Content.RewindDifficultyDefinition
   stableId: rewind.difficulty.default
-  startingPairCount: 3
-  maximumPairCount: 8
+  startingPairCount: 8
+  maximumPairCount: 12
