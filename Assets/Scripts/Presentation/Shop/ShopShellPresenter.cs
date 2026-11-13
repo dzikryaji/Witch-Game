@@ -41,6 +41,12 @@ namespace Witch.Presentation.Shop
         [SerializeField] private GuidebookPageView guidebookFlipBack;
         [Tooltip("Optional. Jumps back to the Contents spread; hidden while the Contents spread is open.")]
         [SerializeField] private Button guidebookContentsButton;
+        [Tooltip("Optional. Coins a happy customer leaves on the counter after a correct order; the player taps them to collect.")]
+        [SerializeField] private CounterCoinsView counterCoins;
+        [Tooltip("Optional. The \"+10\" that floats up next to the header money when coins are collected.")]
+        [SerializeField] private MoneyGainPopUp moneyGainPopUp;
+        [Tooltip("Optional. Highlights the suspicion bar when an order is wrong.")]
+        [SerializeField] private SuspicionFocusView suspicionFocus;
         [SerializeField] private Text grinderInputText;
         [SerializeField] private GameObject groundHerbObject;
         [SerializeField] private Text groundHerbText;
@@ -226,6 +232,9 @@ namespace Witch.Presentation.Shop
             tutorialPanel.SetActive(false);
             groundHerbObject.SetActive(false);
             preparedPotionObject.SetActive(false);
+            if (counterCoins != null) counterCoins.Clear();
+            if (moneyGainPopUp != null) moneyGainPopUp.Hide();
+            if (suspicionFocus != null) suspicionFocus.Hide();
             hudView.ClearCustomer();
             audioService?.PlayMusic(GameAudioCueIds.ShopMusic);
             audioService?.PlayAmbience(GameAudioCueIds.ShopAmbience);
@@ -457,17 +466,33 @@ namespace Witch.Presentation.Shop
             }
             else if (result.Outcome.Kind == ServiceOutcomeKind.Correct)
             {
-                SetStatus("Correct order. Coins received: " + result.Outcome.Payment + ". Save enough for the daily expense.");
                 audioService?.Play(GameAudioCueIds.OrderCorrect);
-                audioService?.Play(GameAudioCueIds.Payment);
+                if (counterCoins != null && result.Outcome.Payment > 0)
+                {
+                    // The payment is already saved; the coins only delay when the header shows it.
+                    counterCoins.Add(result.Outcome.Payment);
+                    SetStatus("Correct order. The customer left " + result.Outcome.Payment + " coins on the counter. Tap them to collect.");
+                }
+                else
+                {
+                    SetStatus("Correct order. Coins received: " + result.Outcome.Payment + ". Save enough for the daily expense.");
+                    audioService?.Play(GameAudioCueIds.Payment);
+                }
             }
             else
             {
                 SetStatus("Wrong potion. No coins. Suspicion increased. At 3, Hunters investigate the suspicious 'herbalist'.");
                 audioService?.Play(GameAudioCueIds.OrderWrong);
+                if (suspicionFocus != null) suspicionFocus.Play();
             }
 
             Render();
+            if (suspicionFocus != null && suspicionFocus.IsPlaying)
+            {
+                await suspicionFocus.Finished;
+                if (cancellationToken.IsCancellationRequested) return result;
+            }
+
             if (result.Succeeded
                 && ActiveSession.CurrentPhase == Witch.Domain.GamePhase.RewindPending
                 && enterRewind != null)
@@ -662,6 +687,7 @@ namespace Witch.Presentation.Shop
                 pausePanel.SetActive(false);
             }
 
+            ClearCounterCoins();
             audioService?.Play(GameAudioCueIds.UiClick);
             SceneLoadResult result = await sceneLoader.LoadAsync(
                 SceneId.MainMenu,
@@ -736,6 +762,7 @@ namespace Witch.Presentation.Shop
 
         private async Task EnterPendingRewindAsync(CancellationToken cancellationToken)
         {
+            ClearCounterCoins();
             SetStatus("KNOCK. KNOCK. Hunters suspect poisoning. Cast the memory spell before they enter; the day will rewind.");
             audioService?.StopMusic();
 
@@ -835,6 +862,11 @@ namespace Witch.Presentation.Shop
             guidebookPreviousButton.onClick.AddListener(PreviousGuidebookPage);
             guidebookNextButton.onClick.AddListener(NextGuidebookPage);
             if (guidebookContentsButton != null) guidebookContentsButton.onClick.AddListener(OpenGuidebookContents);
+            if (counterCoins != null)
+            {
+                counterCoins.Collected -= OnCounterCoinsCollected;
+                counterCoins.Collected += OnCounterCoinsCollected;
+            }
             guidebookLeftPage.BindPageLinks(GoToGuidebookPage);
             guidebookRightPage.BindPageLinks(GoToGuidebookPage);
             pauseButton.onClick.AddListener(TogglePause);
@@ -926,7 +958,7 @@ namespace Witch.Presentation.Shop
                 return;
             }
 
-            hudView.Render(session, DisplayName);
+            hudView.Render(session, DisplayName, PendingCounterCoins);
             grinderInputText.text = GrinderIsFull
                 ? "Ready to grind"
                 : grinderFirstHerbId == null
@@ -979,10 +1011,19 @@ namespace Witch.Presentation.Shop
                 return;
             }
 
-            bool visible = session.CurrentPhase == Witch.Domain.GamePhase.ClosingEncounter
-                || session.CurrentPhase == Witch.Domain.GamePhase.GameOver
-                || session.CurrentPhase == Witch.Domain.GamePhase.DaySummary
-                || session.CurrentPhase == Witch.Domain.GamePhase.Victory;
+            // The last customer's coins must be collected by hand before the shop-closed panel appears.
+            bool waitingForCoins = session.CurrentPhase == Witch.Domain.GamePhase.ClosingEncounter
+                && PendingCounterCoins > 0;
+            if (counterCoins != null) counterCoins.SetWaiting(waitingForCoins);
+            if (waitingForCoins) SetStatus("Collect the coins on the counter before closing the shop.");
+
+            bool focusingSuspicion = suspicionFocus != null && suspicionFocus.IsPlaying;
+            bool visible = !waitingForCoins
+                && !focusingSuspicion
+                && (session.CurrentPhase == Witch.Domain.GamePhase.ClosingEncounter
+                    || session.CurrentPhase == Witch.Domain.GamePhase.GameOver
+                    || session.CurrentPhase == Witch.Domain.GamePhase.DaySummary
+                    || session.CurrentPhase == Witch.Domain.GamePhase.Victory);
             progressionPanel.SetActive(visible);
             if (!visible)
             {
@@ -1084,6 +1125,29 @@ namespace Witch.Presentation.Shop
         private void SetStatus(string message)
         {
             LastStatus = message;
+        }
+
+        /// <summary>Coins on the counter the player has not tapped yet (already counted in the run state).</summary>
+        public int PendingCounterCoins => counterCoins != null ? counterCoins.Amount : 0;
+
+        /// <summary>Collects the counter coins as if the player tapped them.</summary>
+        public void CollectCounterCoins()
+        {
+            if (counterCoins != null) counterCoins.Collect();
+        }
+
+        private void OnCounterCoinsCollected(int amount)
+        {
+            audioService?.Play(GameAudioCueIds.Payment);
+            if (moneyGainPopUp != null) moneyGainPopUp.Show(amount);
+            SetStatus("Coins collected.");
+            Render();
+        }
+
+        // Leaving the shop (Main Menu, Rewind): the money is already saved, so just tidy the counter.
+        private void ClearCounterCoins()
+        {
+            if (counterCoins != null && counterCoins.HasCoins) counterCoins.Clear();
         }
 
         private void ConfigureGuidebook()

@@ -200,7 +200,8 @@ namespace Witch.Presentation.Shop
             ClearOrderBubbles();
         }
 
-        public void Render(GameSession session, Func<string, string> displayName)
+        /// <param name="pendingCoins">Coins still lying on the counter; shown in the header only once collected.</param>
+        public void Render(GameSession session, Func<string, string> displayName, int pendingCoins = 0)
         {
             if (session == null) return;
 
@@ -208,7 +209,7 @@ namespace Witch.Presentation.Shop
             dayCycleView?.Render(remaining, session.DayStartSnapshot.TimerDuration);
             dayText.text = "Day " + session.RunState.CurrentDayNumber + "/14";
             timerText.text = "Time  " + ((int)remaining.TotalMinutes).ToString("00") + ":" + remaining.Seconds.ToString("00");
-            moneyText.text = ": $" + session.RunState.Money;
+            moneyText.text = ": $" + Mathf.Max(0, session.RunState.Money - pendingCoins);
             suspicionText.text = session.RunState.Suspicion + "/3";
             Vector2 fillMax = suspicionFill.rectTransform.anchorMax;
             fillMax.x = Mathf.Clamp01(session.RunState.Suspicion / 3f);
