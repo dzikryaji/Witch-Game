@@ -1087,7 +1087,7 @@ namespace Witch.Presentation.Shop
 
         private void TryStartGuidedTutorialForCurrentEncounter()
         {
-            if (guidedTutorialActive || guidedTutorialSeenMarked) return;
+            if (guidedTutorialSeenMarked) return;
             if (!ShouldRunGuidedTutorial() || !IsTutorialOrderActive()) return;
             if (ActiveSession == null
                 || ActiveSession.AttemptState.UsedOrderIds.Count != 1
@@ -1095,6 +1095,37 @@ namespace Witch.Presentation.Shop
             {
                 return;
             }
+            if (!guidedTutorialActive)
+            {
+                ArmGuidedTutorialVisuals();
+            }
+        }
+
+        private bool CanPrepareGuidedTutorialForReveal()
+        {
+            if (guidedTutorialActive || guidedTutorialSeenMarked) return false;
+            if (setup == null || ActiveSession == null) return false;
+            if (!setup.GuidedTutorialEnabled || string.IsNullOrWhiteSpace(setup.GuidedTutorialOrderId)) return false;
+            if (ActiveSession.RunState.CurrentDayNumber != 1) return false;
+            if (ActiveSession.RunState.TutorialFlags.TryGetValue(ShopTutorialFlags.Day1GuidedCompleted, out bool completed) && completed) return false;
+            if (ActiveSession.AttemptState.UsedOrderIds.Count != 0) return false;
+            if (ActiveSession.CurrentPhase != Witch.Domain.GamePhase.ShopPreparation
+                && ActiveSession.CurrentPhase != Witch.Domain.GamePhase.CustomerArrival)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        private void PrepareGuidedTutorialForReveal()
+        {
+            if (!CanPrepareGuidedTutorialForReveal()) return;
+            ArmGuidedTutorialVisuals();
+        }
+
+        private void ArmGuidedTutorialVisuals()
+        {
+            if (guidedTutorialActive) return;
             guidedTutorialActive = true;
             guidedTutorialStep = ShopGuidedTutorialStep.ReadOrder;
             guidedTutorialWaitingForServe = false;
@@ -2116,6 +2147,10 @@ namespace Witch.Presentation.Shop
                     setTimerPaused.Execute(ActiveSession, true);
                     waitingForTransitionRelease = true;
                 }
+                if (pendingStartAfterReveal && !pendingStartIsResume)
+                {
+                    PrepareGuidedTutorialForReveal();
+                }
                 dayTransition.RevealIfPending(ReleaseTimerAfterTransition);
             }
             catch (Exception ex)
@@ -2153,11 +2188,6 @@ namespace Witch.Presentation.Shop
 
                 // Day 1 guided tutorial keeps timer frozen until serve/skip (existing behavior).
                 if (guidedTutorialActive && guidedTutorialTimerFrozen)
-                {
-                    return;
-                }
-
-                if (ShouldRunGuidedTutorial() && ActiveSession.CurrentPhase == Witch.Domain.GamePhase.CustomerEncounter && IsTutorialOrderActive())
                 {
                     return;
                 }

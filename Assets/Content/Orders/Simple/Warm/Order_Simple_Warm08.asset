@@ -15,12 +15,13 @@ MonoBehaviour:
   stableId: order.simple.w08
   difficulty: 0
   orderBubbles:
-  - Three tourney days exhausted Sir Aldric before he fell.
-  - His stitched chest gash still leaves him shivering violently.
-  - He cannot lift his goblet, though his heartbeat stays steady.
-  - His brow is cool, with no fever.
-  - His squire requested Syzygium aromaticum for shivering.
-  - He paired it with Cinnamomum for muscle fatigue.
+  - "Good morning."
+  - "Three tourney days exhausted Sir Aldric before he fell."
+  - "His stitched chest gash still leaves him shivering violently."
+  - "He cannot lift his goblet, though his heartbeat stays steady."
+  - "His brow is cool, with no fever."
+  - "His squire requested Syzygium aromaticum for shivering."
+  - "He paired it with Cinnamomum for muscle fatigue."
   firstHerbId: herb.clove
   secondHerbId: herb.cinnamon
   customer: {fileID: 11400000, guid: 7a06e32b0a26b416c9f59776c3880e92, type: 2}

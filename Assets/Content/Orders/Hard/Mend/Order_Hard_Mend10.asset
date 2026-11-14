@@ -15,10 +15,10 @@ MonoBehaviour:
   stableId: order.hard.m10
   difficulty: 2
   orderBubbles:
-  - My knee buckles, and a painful bruise spreads nearby.
-  - Bring the bright yellow flower.
-  - Add the feathery leaves with flat white flowers.
-  - My lungs and heartbeat remain strong.
+  - "Afternoon. My knee buckles, and a painful bruise spreads nearby."
+  - "Bring the bright yellow flower."
+  - "Add the feathery leaves with flat white flowers."
+  - "My lungs and heartbeat remain strong."
   firstHerbId: herb.arnicaFlower
   secondHerbId: herb.yarrow
   customer: {fileID: 11400000, guid: 10000000000000000000000000000006, type: 2}

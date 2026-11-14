@@ -15,11 +15,11 @@ MonoBehaviour:
   stableId: order.simple.s09
   difficulty: 0
   orderBubbles:
-  - I just need some peace from this.
-  - I have an intense headache
-  - "and these coughing fits that won\u2019t stop."
-  - My healer's note prescribes Lavandula for the headache,
-  - and Atropa belladonna for the coughing fits.
+  - "Afternoon. I just need some peace from this."
+  - "I have an intense headache"
+  - "and these coughing fits that won’t stop."
+  - "My healer's note prescribes Lavandula for the headache,"
+  - "and Atropa belladonna for the coughing fits."
   firstHerbId: herb.lavender
   secondHerbId: herb.belladonnaBerry
   customer: {fileID: 11400000, guid: 10000000000000000000000000000006, type: 2}

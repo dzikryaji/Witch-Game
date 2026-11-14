@@ -15,10 +15,10 @@ MonoBehaviour:
   stableId: order.mid.w09
   difficulty: 1
   orderBubbles:
-  - Violent shivering and exhaustion leave my airways blocked.
-  - Bring the tiny, dried bud.
-  - Add the bright red pepper.
-  - My heartbeat and lungs are strong, without asthma.
+  - "Good afternoon. Violent shivering and exhaustion leave my airways blocked."
+  - "Bring the tiny, dried bud."
+  - "Add the bright red pepper."
+  - "My heartbeat and lungs are strong, without asthma."
   firstHerbId: herb.clove
   secondHerbId: herb.cayennePepper
   customer: {fileID: 11400000, guid: 7a06e32b0a26b416c9f59776c3880e92, type: 2}

@@ -15,10 +15,10 @@ MonoBehaviour:
   stableId: order.hard.w15
   difficulty: 2
   orderBubbles:
-  - Exhausted muscles leave me sluggish with blocked airways.
-  - Bring the spicy, sweet tree bark.
-  - Add the bright red pepper.
-  - I have no fever, asthma, or chest wounds.
+  - "Excuse me. Exhausted muscles leave me sluggish with blocked airways."
+  - "Bring the spicy, sweet tree bark."
+  - "Add the bright red pepper."
+  - "I have no fever, asthma, or chest wounds."
   firstHerbId: herb.cinnamon
   secondHerbId: herb.cayennePepper
   customer: {fileID: 11400000, guid: 4678338d721f2462d8a1979c0e069692, type: 2}

@@ -15,11 +15,11 @@ MonoBehaviour:
   stableId: order.hard.cl16
   difficulty: 2
   orderBubbles:
-  - Questionable food poisoned my stomach and dirtied my blood.
-  - I need stomach toxins absorbed and blood cleansed.
-  - Bring the tough, drying leaf.
-  - Add the tough, earthy root.
-  - I have no constipation and can rest.
+  - "Afternoon. Questionable food poisoned my stomach and dirtied my blood."
+  - "I need stomach toxins absorbed and blood cleansed."
+  - "Bring the tough, drying leaf."
+  - "Add the tough, earthy root."
+  - "I have no constipation and can rest."
   firstHerbId: herb.sennaLeaf
   secondHerbId: herb.burdockRoot
   customer: {fileID: 11400000, guid: 3965e9fdac9e6466c91a76e9ffa93d8b, type: 2}

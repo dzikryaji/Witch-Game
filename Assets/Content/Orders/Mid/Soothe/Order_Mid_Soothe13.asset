@@ -15,11 +15,11 @@ MonoBehaviour:
   stableId: order.mid.s13
   difficulty: 1
   orderBubbles:
-  - Anxiety makes my heart race and disturbs my sleep.
-  - Continuous coughing fits also trouble me.
-  - Frightening dreams do not usually scare me.
-  - My throat is not swollen, and I can swallow.
-  - Find a strong, earthy root and dark, sweet-tasting nightshade berry.
+  - "Hello. Anxiety makes my heart race and disturbs my sleep."
+  - "Continuous coughing fits also trouble me."
+  - "Frightening dreams do not usually scare me."
+  - "My throat is not swollen, and I can swallow."
+  - "Find a strong, earthy root and dark, sweet-tasting nightshade berry."
   firstHerbId: herb.valerian
   secondHerbId: herb.belladonnaBerry
   customer: {fileID: 11400000, guid: 10000000000000000000000000000006, type: 2}

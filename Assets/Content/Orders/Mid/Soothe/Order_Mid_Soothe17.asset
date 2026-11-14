@@ -15,11 +15,11 @@ MonoBehaviour:
   stableId: order.mid.s17
   difficulty: 1
   orderBubbles:
-  - Intense headaches and panic attacks trouble me frequently.
-  - Continuous coughing fits also irritate my throat.
-  - I am not dizzy, faint, or weak from blood loss.
-  - My throat is not swollen, and I can swallow.
-  - Find a sweet-smelling purple stem and dark, sweet-tasting nightshade berry.
+  - "Morning. Intense headaches and panic attacks trouble me frequently."
+  - "Continuous coughing fits also irritate my throat."
+  - "I am not dizzy, faint, or weak from blood loss."
+  - "My throat is not swollen, and I can swallow."
+  - "Find a sweet-smelling purple stem and dark, sweet-tasting nightshade berry."
   firstHerbId: herb.lavender
   secondHerbId: herb.belladonnaBerry
   customer: {fileID: 11400000, guid: 12795f040a17d43ce94d717cf5b31324, type: 2}

@@ -15,11 +15,11 @@ MonoBehaviour:
   stableId: order.hard.c20
   difficulty: 2
   orderBubbles:
-  - Venom brings fever and violent fits to my sister.
-  - A healer prescribed Hyoscyamus niger.
-  - It is the hard leaf with an unpleasant smell.
-  - Add the dry, rough leaf with blue stars.
-  - Her heart is strong, and she remains warm.
+  - "Morning. Venom brings fever and violent fits to my sister."
+  - "A healer prescribed Hyoscyamus niger."
+  - "It is the hard leaf with an unpleasant smell."
+  - "Add the dry, rough leaf with blue stars."
+  - "Her heart is strong, and she remains warm."
   firstHerbId: herb.henbane
   secondHerbId: herb.borage
   customer: {fileID: 11400000, guid: 3965e9fdac9e6466c91a76e9ffa93d8b, type: 2}

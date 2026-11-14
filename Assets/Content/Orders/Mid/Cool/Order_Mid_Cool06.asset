@@ -15,11 +15,11 @@ MonoBehaviour:
   stableId: order.mid.c06
   difficulty: 1
   orderBubbles:
-  - "My son\u2019s high fever comes with swollen fingers."
-  - Violent tremors keep him from holding his spoon.
-  - Bring the delicate white flowers brewed into light tea.
-  - Add the hard leaf with an unpleasant smell.
-  - His kidneys and young heart remain strong.
+  - "Hi. My son’s high fever comes with swollen fingers."
+  - "Violent tremors keep him from holding his spoon."
+  - "Bring the delicate white flowers brewed into light tea."
+  - "Add the hard leaf with an unpleasant smell."
+  - "His kidneys and young heart remain strong."
   firstHerbId: herb.elderflower
   secondHerbId: herb.henbane
   customer: {fileID: 11400000, guid: 12795f040a17d43ce94d717cf5b31324, type: 2}

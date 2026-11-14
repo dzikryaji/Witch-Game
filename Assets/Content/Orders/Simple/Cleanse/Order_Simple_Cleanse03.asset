@@ -15,11 +15,11 @@ MonoBehaviour:
   stableId: order.simple.cl03
   difficulty: 0
   orderBubbles:
-  - I overate at the harvest feast.
-  - My stomach has remained painfully bloated.
-  - I can rest afterward, and I am not pregnant.
-  - A healer prescribed Foeniculum vulgare for heavy digestion.
-  - They added Burdock Root to cleanse my blood.
+  - "Hi. I overate at the harvest feast."
+  - "My stomach has remained painfully bloated."
+  - "I can rest afterward, and I am not pregnant."
+  - "A healer prescribed Foeniculum vulgare for heavy digestion."
+  - "They added Burdock Root to cleanse my blood."
   firstHerbId: herb.fennel
   secondHerbId: herb.burdockRoot
   customer: {fileID: 11400000, guid: b00255ad8c02b4e98960925f8af4e92b, type: 2}

@@ -15,11 +15,11 @@ MonoBehaviour:
   stableId: order.simple.w09
   difficulty: 0
   orderBubbles:
-  - A winter illness caused fever, exhaustion, and violent shivering.
-  - Her blocked nose leaves her struggling to breathe.
-  - Her heartbeat and lungs are strong, without chest wounds.
-  - My mother prescribed Syzygium aromaticum for shivering.
-  - She added Capsicum annuum for energy and blocked airways.
+  - "Morning. A winter illness caused fever, exhaustion, and violent shivering."
+  - "Her blocked nose leaves her struggling to breathe."
+  - "Her heartbeat and lungs are strong, without chest wounds."
+  - "My mother prescribed Syzygium aromaticum for shivering."
+  - "She added Capsicum annuum for energy and blocked airways."
   firstHerbId: herb.clove
   secondHerbId: herb.cayennePepper
   customer: {fileID: 11400000, guid: 10000000000000000000000000000006, type: 2}

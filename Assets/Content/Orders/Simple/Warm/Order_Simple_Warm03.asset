@@ -15,11 +15,11 @@ MonoBehaviour:
   stableId: order.simple.w03
   difficulty: 0
   orderBubbles:
-  - "Three days kneading dough exhausted my husband\u2019s muscles."
-  - He can barely move and has lost his appetite.
-  - He feels cool, without fever, wounds, or bleeding ulcers.
-  - A spice merchant calls the sweet eastern bark Cinnamomum.
-  - He pairs it with Ginger for fatigue and appetite.
+  - "Hi. Three days kneading dough exhausted my husband’s muscles."
+  - "He can barely move and has lost his appetite."
+  - "He feels cool, without fever, wounds, or bleeding ulcers."
+  - "A spice merchant calls the sweet eastern bark Cinnamomum."
+  - "He pairs it with Ginger for fatigue and appetite."
   firstHerbId: herb.cinnamon
   secondHerbId: herb.ginger
   customer: {fileID: 11400000, guid: 12795f040a17d43ce94d717cf5b31324, type: 2}

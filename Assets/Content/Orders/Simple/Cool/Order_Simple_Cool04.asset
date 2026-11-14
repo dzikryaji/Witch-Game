@@ -15,11 +15,11 @@ MonoBehaviour:
   stableId: order.simple.c04
   difficulty: 0
   orderBubbles:
-  - An insect bit a courier near the south gate.
-  - The bite caused fever, headache, and spreading heat.
-  - She is warm, and mint never cramps her stomach.
-  - A roadside healer prescribed mint for fever.
-  - They added Borago officinalis to slow the venom.
+  - "Hello. An insect bit a courier near the south gate."
+  - "The bite caused fever, headache, and spreading heat."
+  - "She is warm, and mint never cramps her stomach."
+  - "A roadside healer prescribed mint for fever."
+  - "They added Borago officinalis to slow the venom."
   firstHerbId: herb.peppermint
   secondHerbId: herb.borage
   customer: {fileID: 11400000, guid: 7a06e32b0a26b416c9f59776c3880e92, type: 2}

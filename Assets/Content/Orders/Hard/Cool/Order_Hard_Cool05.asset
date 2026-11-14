@@ -15,11 +15,12 @@ MonoBehaviour:
   stableId: order.hard.c05
   difficulty: 2
   orderBubbles:
-  - "My father\u2019s fever persists, with swollen hands and knees."
-  - Every muscle and joint now aches severely.
-  - Bring the delicate white flowers brewed as light tea.
-  - Add the tough strip of bark.
-  - He drinks freely and breathes strongly.
+  - "Good morning."
+  - "My father’s fever persists, with swollen hands and knees."
+  - "Every muscle and joint now aches severely."
+  - "Bring the delicate white flowers brewed as light tea."
+  - "Add the tough strip of bark."
+  - "He drinks freely and breathes strongly."
   firstHerbId: herb.elderflower
   secondHerbId: herb.whiteWillow
   customer: {fileID: 11400000, guid: 4678338d721f2462d8a1979c0e069692, type: 2}

@@ -15,11 +15,11 @@ MonoBehaviour:
   stableId: order.hard.s05
   difficulty: 2
   orderBubbles:
-  - Muscle cramps and a mild chest cough bother me.
-  - A serious injury has left me deeply distressed.
-  - No pollen or spring-flower allergies affect me.
-  - I do not need to stay awake for duty.
-  - Find small, fragrant flowers and a complex, unusual flower.
+  - "Hello. Muscle cramps and a mild chest cough bother me."
+  - "A serious injury has left me deeply distressed."
+  - "No pollen or spring-flower allergies affect me."
+  - "I do not need to stay awake for duty."
+  - "Find small, fragrant flowers and a complex, unusual flower."
   firstHerbId: herb.chamomile
   secondHerbId: herb.passionFlower
   customer: {fileID: 11400000, guid: 4678338d721f2462d8a1979c0e069692, type: 2}

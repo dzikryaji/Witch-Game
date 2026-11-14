@@ -15,10 +15,11 @@ MonoBehaviour:
   stableId: order.hard.m02
   difficulty: 2
   orderBubbles:
-  - A splinter pierced one hand, while another bleeds heavily.
-  - Bring the thick, golden resin.
-  - Add the thick, flat weed.
-  - I have no fever or circulation problems.
+  - "Good afternoon."
+  - "A splinter pierced one hand, while another bleeds heavily."
+  - "Bring the thick, golden resin."
+  - "Add the thick, flat weed."
+  - "I have no fever or circulation problems."
   firstHerbId: herb.pineResin
   secondHerbId: herb.plantainLeaf
   customer: {fileID: 11400000, guid: 4678338d721f2462d8a1979c0e069692, type: 2}

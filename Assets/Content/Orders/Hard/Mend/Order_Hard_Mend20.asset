@@ -15,10 +15,10 @@ MonoBehaviour:
   stableId: order.hard.m20
   difficulty: 2
   orderBubbles:
-  - My wrist buckles, and my palm bleeds heavily.
-  - Bring the bright yellow flower.
-  - Add the thick, flat weed.
-  - My lungs and circulation remain strong.
+  - "Excuse me. My wrist buckles, and my palm bleeds heavily."
+  - "Bring the bright yellow flower."
+  - "Add the thick, flat weed."
+  - "My lungs and circulation remain strong."
   firstHerbId: herb.arnicaFlower
   secondHerbId: herb.plantainLeaf
   customer: {fileID: 11400000, guid: b00255ad8c02b4e98960925f8af4e92b, type: 2}

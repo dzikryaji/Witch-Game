@@ -15,11 +15,11 @@ MonoBehaviour:
   stableId: order.mid.c08
   difficulty: 1
   orderBubbles:
-  - My apprentice fell, injuring his back and legs.
-  - Severe muscle pain now accompanies violent fits.
-  - Bring the tough strip of bark.
-  - Add the hard leaf with an unpleasant smell.
-  - His lungs, pulse, and heart remain strong.
+  - "Good morning. My apprentice fell, injuring his back and legs."
+  - "Severe muscle pain now accompanies violent fits."
+  - "Bring the tough strip of bark."
+  - "Add the hard leaf with an unpleasant smell."
+  - "His lungs, pulse, and heart remain strong."
   firstHerbId: herb.whiteWillow
   secondHerbId: herb.henbane
   customer: {fileID: 11400000, guid: 12795f040a17d43ce94d717cf5b31324, type: 2}

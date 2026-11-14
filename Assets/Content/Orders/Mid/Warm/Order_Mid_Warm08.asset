@@ -15,10 +15,10 @@ MonoBehaviour:
   stableId: order.mid.w08
   difficulty: 1
   orderBubbles:
-  - Mouth numbness accompanies severe muscle exhaustion.
-  - Bring the tiny, dried bud.
-  - Add the spicy, sweet tree bark.
-  - My heartbeat is steady, and I have no fever.
+  - "Morning. Mouth numbness accompanies severe muscle exhaustion."
+  - "Bring the tiny, dried bud."
+  - "Add the spicy, sweet tree bark."
+  - "My heartbeat is steady, and I have no fever."
   firstHerbId: herb.clove
   secondHerbId: herb.cinnamon
   customer: {fileID: 11400000, guid: b00255ad8c02b4e98960925f8af4e92b, type: 2}

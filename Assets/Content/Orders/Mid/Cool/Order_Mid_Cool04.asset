@@ -15,11 +15,11 @@ MonoBehaviour:
   stableId: order.mid.c04
   difficulty: 1
   orderBubbles:
-  - A marsh bite brought fever and pounding headache.
-  - "Heat now spreads quickly through my brother\u2019s blood."
-  - Bring the sharp-smelling, dark green leaf.
-  - Add the rough leaf bearing blue star-like flowers.
-  - He remains warm, and reflux never troubles him.
+  - "Afternoon. A marsh bite brought fever and pounding headache."
+  - "Heat now spreads quickly through my brother’s blood."
+  - "Bring the sharp-smelling, dark green leaf."
+  - "Add the rough leaf bearing blue star-like flowers."
+  - "He remains warm, and reflux never troubles him."
   firstHerbId: herb.peppermint
   secondHerbId: herb.borage
   customer: {fileID: 11400000, guid: 3965e9fdac9e6466c91a76e9ffa93d8b, type: 2}

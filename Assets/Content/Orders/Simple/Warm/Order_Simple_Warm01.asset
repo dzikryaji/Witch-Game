@@ -15,12 +15,13 @@ MonoBehaviour:
   stableId: order.simple.w01
   difficulty: 0
   orderBubbles:
-  - Good evening. My master wrote beside an open window.
-  - By morning, nausea left him unable to eat.
-  - Now he shivers and coughs thick chest mucus.
-  - He has no wounds, scrapes, or bleeding ulcers.
-  - His note prescribes Ginger for nausea.
-  - It pairs Mustard Seed with it for chills and mucus.
+  - "Good morning."
+  - "My master wrote beside an open window."
+  - "By morning, nausea left him unable to eat."
+  - "Now he shivers and coughs thick chest mucus."
+  - "He has no wounds, scrapes, or bleeding ulcers."
+  - "His note prescribes Ginger for nausea."
+  - "It pairs Mustard Seed with it for chills and mucus."
   firstHerbId: herb.ginger
   secondHerbId: herb.mustardSeed
   customer: {fileID: 11400000, guid: b00255ad8c02b4e98960925f8af4e92b, type: 2}

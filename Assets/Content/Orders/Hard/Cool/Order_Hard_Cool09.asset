@@ -15,11 +15,11 @@ MonoBehaviour:
   stableId: order.hard.c09
   difficulty: 2
   orderBubbles:
-  - A thorn fall left her muscles painfully strained.
-  - The cut burns, and infection spreads through her blood.
-  - Bring the tough strip of bark.
-  - Add the dry, rough leaf with blue stars.
-  - She breathes strongly and remains warm.
+  - "Hello. A thorn fall left her muscles painfully strained."
+  - "The cut burns, and infection spreads through her blood."
+  - "Bring the tough strip of bark."
+  - "Add the dry, rough leaf with blue stars."
+  - "She breathes strongly and remains warm."
   firstHerbId: herb.whiteWillow
   secondHerbId: herb.borage
   customer: {fileID: 11400000, guid: 7a06e32b0a26b416c9f59776c3880e92, type: 2}

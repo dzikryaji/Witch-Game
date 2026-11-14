@@ -15,10 +15,10 @@ MonoBehaviour:
   stableId: order.mid.w11
   difficulty: 1
   orderBubbles:
-  - Rain brought chills, chest mucus, and lost appetite.
-  - Bring the small, rough yellow seeds.
-  - Add the twisted, tough root with strong flavor.
-  - I have no wounds, scrapes, or bleeding ulcers.
+  - "Hello. Rain brought chills, chest mucus, and lost appetite."
+  - "Bring the small, rough yellow seeds."
+  - "Add the twisted, tough root with strong flavor."
+  - "I have no wounds, scrapes, or bleeding ulcers."
   firstHerbId: herb.mustardSeed
   secondHerbId: herb.ginger
   customer: {fileID: 11400000, guid: 10000000000000000000000000000006, type: 2}

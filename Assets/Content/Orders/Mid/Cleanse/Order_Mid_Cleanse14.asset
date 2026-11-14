@@ -15,11 +15,11 @@ MonoBehaviour:
   stableId: order.mid.cl14
   difficulty: 1
   orderBubbles:
-  - Spoiled food poisoned my bloated, waterlogged body.
-  - I need excess water released and stomach toxins absorbed.
-  - Bring the yellow flower with sharp-edged leaves.
-  - Add the tough, drying leaf.
-  - I drink freely and have no constipation.
+  - "Hello. Spoiled food poisoned my bloated, waterlogged body."
+  - "I need excess water released and stomach toxins absorbed."
+  - "Bring the yellow flower with sharp-edged leaves."
+  - "Add the tough, drying leaf."
+  - "I drink freely and have no constipation."
   firstHerbId: herb.dandelion
   secondHerbId: herb.sennaLeaf
   customer: {fileID: 11400000, guid: 10000000000000000000000000000006, type: 2}

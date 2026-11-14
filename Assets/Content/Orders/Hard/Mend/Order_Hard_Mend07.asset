@@ -15,10 +15,11 @@ MonoBehaviour:
   stableId: order.hard.m07
   difficulty: 2
   orderBubbles:
-  - My arm bleeds heavily, with a splinter buried nearby.
-  - Bring the thick, flat weed.
-  - Add the thick, golden resin.
-  - I have no fever or circulation problems.
+  - "Good morning."
+  - "My arm bleeds heavily, with a splinter buried nearby."
+  - "Bring the thick, flat weed."
+  - "Add the thick, golden resin."
+  - "I have no fever or circulation problems."
   firstHerbId: herb.plantainLeaf
   secondHerbId: herb.pineResin
   customer: {fileID: 11400000, guid: 3965e9fdac9e6466c91a76e9ffa93d8b, type: 2}

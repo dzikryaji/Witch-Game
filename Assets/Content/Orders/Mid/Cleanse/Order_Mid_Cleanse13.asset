@@ -15,11 +15,11 @@ MonoBehaviour:
   stableId: order.mid.cl13
   difficulty: 1
   orderBubbles:
-  - A grand feast blocked digestion and dirtied my blood.
-  - I need heaviness eased and mild toxins cleansed.
-  - Bring the ridged seeds with feathery fronds.
-  - Add the tough, earthy root.
-  - I can rest safely today.
+  - "Afternoon. A grand feast blocked digestion and dirtied my blood."
+  - "I need heaviness eased and mild toxins cleansed."
+  - "Bring the ridged seeds with feathery fronds."
+  - "Add the tough, earthy root."
+  - "I can rest safely today."
   firstHerbId: herb.fennel
   secondHerbId: herb.burdockRoot
   customer: {fileID: 11400000, guid: b00255ad8c02b4e98960925f8af4e92b, type: 2}

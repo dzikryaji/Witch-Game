@@ -15,11 +15,11 @@ MonoBehaviour:
   stableId: order.mid.cl12
   difficulty: 1
   orderBubbles:
-  - Impure blood leaves me sluggish, swollen, and bloated.
-  - I need mild toxins cleansed and excess water released.
-  - Bring the tough, earthy root.
-  - Add the yellow flower with sharp-edged leaves.
-  - I drink freely and can rest.
+  - "Good afternoon. Impure blood leaves me sluggish, swollen, and bloated."
+  - "I need mild toxins cleansed and excess water released."
+  - "Bring the tough, earthy root."
+  - "Add the yellow flower with sharp-edged leaves."
+  - "I drink freely and can rest."
   firstHerbId: herb.burdockRoot
   secondHerbId: herb.dandelion
   customer: {fileID: 11400000, guid: b00255ad8c02b4e98960925f8af4e92b, type: 2}

@@ -15,10 +15,11 @@ MonoBehaviour:
   stableId: order.hard.m14
   difficulty: 2
   orderBubbles:
-  - A thorn remains buried, and my palm bleeds heavily.
-  - Bring the thick, golden resin.
-  - Add the thick, flat weed.
-  - I have no fever or circulation problems.
+  - "Good morning."
+  - "A thorn remains buried, and my palm bleeds heavily."
+  - "Bring the thick, golden resin."
+  - "Add the thick, flat weed."
+  - "I have no fever or circulation problems."
   firstHerbId: herb.pineResin
   secondHerbId: herb.plantainLeaf
   customer: {fileID: 11400000, guid: 12795f040a17d43ce94d717cf5b31324, type: 2}

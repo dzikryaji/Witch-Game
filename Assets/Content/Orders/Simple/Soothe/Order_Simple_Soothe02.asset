@@ -15,10 +15,10 @@ MonoBehaviour:
   stableId: order.simple.s02
   difficulty: 0
   orderBubbles:
-  - Something calming, please.
-  - I have a mild chest cough and an intense headache.
-  - The apothecary prescribed Matricaria chamomilla for the cough,
-  - and Lavandula for the headache.
+  - "Afternoon. Something calming, please."
+  - "I have a mild chest cough and an intense headache."
+  - "The apothecary prescribed Matricaria chamomilla for the cough,"
+  - "and Lavandula for the headache."
   firstHerbId: herb.chamomile
   secondHerbId: herb.lavender
   customer: {fileID: 11400000, guid: 10000000000000000000000000000006, type: 2}

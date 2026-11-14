@@ -15,14 +15,14 @@ MonoBehaviour:
   stableId: order.simple.c09
   difficulty: 0
   orderBubbles:
-  - A fellow courier was thrown into thorn scrub.
-  - Her muscles ache, and one thorn cut has turned hot.
-  - She breathes strongly, has no asthma,
-  - and is warm beneath two blankets.
-  - A road surgeon recommended Salix alba for the pain
-  - and Borago officinalis to slow the infection.
-  - Prepare both.
-  - The post can wait longer than her blood can.
+  - "Hello. A fellow courier was thrown into thorn scrub."
+  - "Her muscles ache, and one thorn cut has turned hot."
+  - "She breathes strongly, has no asthma,"
+  - "and is warm beneath two blankets."
+  - "A road surgeon recommended Salix alba for the pain"
+  - "and Borago officinalis to slow the infection."
+  - "Prepare both."
+  - "The post can wait longer than her blood can."
   firstHerbId: herb.whiteWillow
   secondHerbId: herb.borage
   customer: {fileID: 11400000, guid: 7a06e32b0a26b416c9f59776c3880e92, type: 2}

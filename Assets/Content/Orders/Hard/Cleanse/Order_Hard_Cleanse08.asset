@@ -15,11 +15,12 @@ MonoBehaviour:
   stableId: order.hard.cl08
   difficulty: 2
   orderBubbles:
-  - Spoiled bread poisoned my stomach and left me bloated.
-  - I need toxins absorbed and excess water released.
-  - Bring the tough, drying leaf.
-  - Add the sharp-edged leaf with a yellow flower.
-  - I drink freely and have no constipation.
+  - "Good afternoon."
+  - "Spoiled bread poisoned my stomach and left me bloated."
+  - "I need toxins absorbed and excess water released."
+  - "Bring the tough, drying leaf."
+  - "Add the sharp-edged leaf with a yellow flower."
+  - "I drink freely and have no constipation."
   firstHerbId: herb.sennaLeaf
   secondHerbId: herb.dandelion
   customer: {fileID: 11400000, guid: 12795f040a17d43ce94d717cf5b31324, type: 2}

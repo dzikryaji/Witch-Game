@@ -15,10 +15,10 @@ MonoBehaviour:
   stableId: order.hard.w07
   difficulty: 2
   orderBubbles:
-  - Exhaustion accompanies blocked airways, chills, and chest mucus.
-  - Bring the bright red pepper.
-  - Add the small, rough yellow seeds.
-  - My lungs are strong, and my skin is unbroken.
+  - "Hi. Exhaustion accompanies blocked airways, chills, and chest mucus."
+  - "Bring the bright red pepper."
+  - "Add the small, rough yellow seeds."
+  - "My lungs are strong, and my skin is unbroken."
   firstHerbId: herb.cayennePepper
   secondHerbId: herb.mustardSeed
   customer: {fileID: 11400000, guid: 3965e9fdac9e6466c91a76e9ffa93d8b, type: 2}

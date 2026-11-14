@@ -15,11 +15,11 @@ MonoBehaviour:
   stableId: order.hard.s09
   difficulty: 2
   orderBubbles:
-  - Anxiety makes my heart race and interrupts sleep.
-  - Intense headaches and panic attacks trouble me too.
-  - Frightening dreams do not usually scare me.
-  - I am not dizzy, faint, or weak from blood loss.
-  - Find a strong, earthy root and sweet-smelling purple stem.
+  - "Morning. Anxiety makes my heart race and interrupts sleep."
+  - "Intense headaches and panic attacks trouble me too."
+  - "Frightening dreams do not usually scare me."
+  - "I am not dizzy, faint, or weak from blood loss."
+  - "Find a strong, earthy root and sweet-smelling purple stem."
   firstHerbId: herb.valerian
   secondHerbId: herb.lavender
   customer: {fileID: 11400000, guid: b00255ad8c02b4e98960925f8af4e92b, type: 2}

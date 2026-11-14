@@ -15,10 +15,11 @@ MonoBehaviour:
   stableId: order.simple.c13
   difficulty: 0
   orderBubbles:
-  - My head pounds, my nose is blocked, and fever persists.
-  - Folks call the sharp, dark leaf mint.
-  - A healer calls the white flowers Sambucus nigra.
-  - Please brew those two for me.
+  - "Excuse me."
+  - "My head pounds, my nose is blocked, and fever persists."
+  - "Folks call the sharp, dark leaf mint."
+  - "A healer calls the white flowers Sambucus nigra."
+  - "Please brew those two for me."
   firstHerbId: herb.peppermint
   secondHerbId: herb.elderflower
   customer: {fileID: 11400000, guid: b00255ad8c02b4e98960925f8af4e92b, type: 2}

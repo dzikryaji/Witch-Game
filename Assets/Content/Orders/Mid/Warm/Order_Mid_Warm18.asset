@@ -15,10 +15,10 @@ MonoBehaviour:
   stableId: order.mid.w18
   difficulty: 1
   orderBubbles:
-  - Violent shivering accompanies muscles exhausted by cold travel.
-  - Bring the tiny, dried bud.
-  - Add the spicy, sweet tree bark.
-  - My heartbeat is steady, and I have no fever.
+  - "Hello. Violent shivering accompanies muscles exhausted by cold travel."
+  - "Bring the tiny, dried bud."
+  - "Add the spicy, sweet tree bark."
+  - "My heartbeat is steady, and I have no fever."
   firstHerbId: herb.clove
   secondHerbId: herb.cinnamon
   customer: {fileID: 11400000, guid: 7a06e32b0a26b416c9f59776c3880e92, type: 2}

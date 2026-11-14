@@ -15,15 +15,16 @@ MonoBehaviour:
   stableId: order.simple.c12
   difficulty: 0
   orderBubbles:
-  - My husband pulled every muscle fighting a broken oven door,
-  - then scraped his arm on a filthy hinge.
-  - Now the pain is severe
-  - and heat is spreading from the cut.
-  - His lungs are strong, he has no asthma,
-  - and he is sweating rather than cold.
-  - Joan's notes recommend Salix alba for the pain
-  - and Borago officinalis when infection may enter the blood.
-  - Brew both. The oven has already won enough.
+  - "Excuse me."
+  - "My husband pulled every muscle fighting a broken oven door,"
+  - "then scraped his arm on a filthy hinge."
+  - "Now the pain is severe"
+  - "and heat is spreading from the cut."
+  - "His lungs are strong, he has no asthma,"
+  - "and he is sweating rather than cold."
+  - "Joan's notes recommend Salix alba for the pain"
+  - "and Borago officinalis when infection may enter the blood."
+  - "Brew both. The oven has already won enough."
   firstHerbId: herb.whiteWillow
   secondHerbId: herb.borage
   customer: {fileID: 11400000, guid: 12795f040a17d43ce94d717cf5b31324, type: 2}

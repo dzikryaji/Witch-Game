@@ -15,12 +15,13 @@ MonoBehaviour:
   stableId: order.simple.c05
   difficulty: 0
   orderBubbles:
-  - "A lingering illness caused my brother\u2019s fever and swollen knees."
-  - Now every muscle and joint aches terribly.
-  - He drinks freely, with healthy kidneys and strong lungs.
-  - The priory book prescribes Sambucus nigra for fever.
-  - It pairs that with Salix alba for severe pain.
-  - I need both before he charges burial fees.
+  - "Good afternoon."
+  - "A lingering illness caused my brother’s fever and swollen knees."
+  - "Now every muscle and joint aches terribly."
+  - "He drinks freely, with healthy kidneys and strong lungs."
+  - "The priory book prescribes Sambucus nigra for fever."
+  - "It pairs that with Salix alba for severe pain."
+  - "I need both before he charges burial fees."
   firstHerbId: herb.elderflower
   secondHerbId: herb.whiteWillow
   customer: {fileID: 11400000, guid: 4678338d721f2462d8a1979c0e069692, type: 2}

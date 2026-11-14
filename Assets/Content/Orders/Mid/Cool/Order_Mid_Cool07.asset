@@ -15,11 +15,11 @@ MonoBehaviour:
   stableId: order.mid.c07
   difficulty: 1
   orderBubbles:
-  - A dirty cut caused swelling and persistent fever.
-  - Red heat now spreads upward through her blood.
-  - Bring the delicate white flowers used for light tea.
-  - Add the dry, rough leaf with blue stars.
-  - She drinks freely and remains warm.
+  - "Excuse me. A dirty cut caused swelling and persistent fever."
+  - "Red heat now spreads upward through her blood."
+  - "Bring the delicate white flowers used for light tea."
+  - "Add the dry, rough leaf with blue stars."
+  - "She drinks freely and remains warm."
   firstHerbId: herb.elderflower
   secondHerbId: herb.borage
   customer: {fileID: 11400000, guid: 10000000000000000000000000000006, type: 2}

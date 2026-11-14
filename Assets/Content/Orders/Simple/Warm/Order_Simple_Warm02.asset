@@ -15,11 +15,12 @@ MonoBehaviour:
   stableId: order.simple.w02
   difficulty: 0
   orderBubbles:
-  - Sea travel caused nausea, while cold wind numbed my mouth.
-  - I cannot keep food down or feel my teeth.
-  - My heart is steady, without wounds or bleeding ulcers.
-  - "The ship\u2019s cook prescribed Syzygium aromaticum for numbness."
-  - His recipe pairs it with Ginger for seasickness.
+  - "Excuse me."
+  - "Sea travel caused nausea, while cold wind numbed my mouth."
+  - "I cannot keep food down or feel my teeth."
+  - "My heart is steady, without wounds or bleeding ulcers."
+  - "The ship’s cook prescribed Syzygium aromaticum for numbness."
+  - "His recipe pairs it with Ginger for seasickness."
   firstHerbId: herb.clove
   secondHerbId: herb.ginger
   customer: {fileID: 11400000, guid: 3965e9fdac9e6466c91a76e9ffa93d8b, type: 2}
