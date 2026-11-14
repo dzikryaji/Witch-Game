@@ -11,9 +11,10 @@ namespace Witch.Presentation.Shop
         [SerializeField] private Text narrativeText;
         [SerializeField] private Button startButton;
         [SerializeField, TextArea(3, 8)]
-        private string defaultNarrativeTitle = "A Spell Takes Hold";
+        private string defaultNarrativeTitle = "The Witch Hunter is Here";
         private string defaultNarrative =
-            "Gather your magic. \nLet their visit slip from memory.";
+            "Your mistakes have caught up with you.\n Cast a spell to erase his memories before he uncovers the truth.";
+            // "Gather your magic. \nLet their visit slip from memory.";
             // "KNOCK. KNOCK.\nThe Hunters suspect poison. Cast the memory spell before they come in.";
 
         private bool bound;
