@@ -22,6 +22,7 @@ namespace Witch.Infrastructure.Content
             ValidateStableIds(catalog.HerbCategories, "Herb category", errors);
             ValidateStableIds(catalog.RewindCards, "Rewind card", errors);
             ValidateRequiredDefinition(catalog.RewindDifficulty, "Rewind difficulty", errors);
+            ValidateWitchHunterDialogue(catalog.WitchHunterDialogue, errors);
 
             if (catalog.StartingMoney < 0 || catalog.CorrectOrderPayment < 0)
             {
@@ -148,6 +149,54 @@ namespace Witch.Infrastructure.Content
 
             ValidateConfiguration(catalog, daysSeen, errors);
             return new ContentValidationReport(errors);
+        }
+
+        private static void ValidateWitchHunterDialogue(
+            WitchHunterDialogueDefinition dialogue,
+            ICollection<string> errors)
+        {
+            ValidateRequiredDefinition(dialogue, "Witch hunter dialogue", errors);
+            if (dialogue == null)
+            {
+                return;
+            }
+
+            if (dialogue.StageCount < 1)
+            {
+                errors.Add("Witch hunter dialogue needs at least one stage.");
+                return;
+            }
+
+            for (int stageIndex = 0; stageIndex < dialogue.StageCount; stageIndex++)
+            {
+                string label = "Witch hunter dialogue stage " + (stageIndex + 1);
+                IReadOnlyList<string> accusations;
+                string successLine;
+                try
+                {
+                    accusations = dialogue.GetAccusations(stageIndex);
+                    successLine = dialogue.GetSuccessLine(stageIndex);
+                }
+                catch (InvalidOperationException)
+                {
+                    errors.Add(label + " is missing.");
+                    continue;
+                }
+
+                if (accusations == null || accusations.Count == 0)
+                {
+                    errors.Add(label + " needs at least one accusation.");
+                }
+                else if (accusations.Any(string.IsNullOrWhiteSpace))
+                {
+                    errors.Add(label + " has a blank accusation.");
+                }
+
+                if (string.IsNullOrWhiteSpace(successLine))
+                {
+                    errors.Add(label + " needs a success line.");
+                }
+            }
         }
 
         private static void ValidateHerbGuidebookContent(

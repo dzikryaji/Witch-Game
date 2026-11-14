@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd971a789047b4178a648ed59238c7b7, type: 3}
+  m_Name: WitchHunterDialogue
+  m_EditorClassIdentifier: Witch.Infrastructure::Witch.Infrastructure.Content.WitchHunterDialogueDefinition
+  stableId: dialogue.witchHunter
+  stages:
+  - accusations:
+    - I am a Witch Hunter, sent to investigate this village.
+    - I've received reports of harmful remedies from this shop.
+    - Tell me, how did these remedies come to be?
+    - Surely, there's a reasonable explanation, herbalist?
+    successLine: Ah, never mind. I must have been mistaken.
+  - accusations:
+    - I am a Witch Hunter, and I have returned.
+    - Another troubling report has reached my ears.
+    - Are your practices truly free from forbidden arts?
+    - Or is there something you're keeping from me?
+    successLine: Strange... what was I questioning you about?
+  - accusations:
+    - Witch Hunter, at your service. We meet again.
+    - More harmful remedies! This cannot be mere carelessness.
+    - Have you been meddling with forbidden arts?
+    - Answer me truthfully, herbalist!
+    successLine: Wait... why was I so suspicious of you?
+  - accusations:
+    - The Witch Hunter returns... again.
+    - How many times have I visited this wretched shop?
+    - These harmful remedies continue to plague this village!
+    - Confess! What exactly are you hiding?
+    successLine: Good heavens... why am I standing here again?
+  - accusations:
+    - I am a Witch Hunter, and I demand answers!
+    - I suspect dark forces are at work in this shop.
+    - Are you truly an honest herbalist, or something else?
+    - By the Crown, confess your true identity!
+    successLine: What was I doing here? I have matters elsewhere!

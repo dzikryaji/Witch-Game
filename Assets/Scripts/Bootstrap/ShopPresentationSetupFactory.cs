@@ -128,7 +128,22 @@ namespace Witch.Bootstrap
                     witchHunter.StableId,
                     witchHunter.DisplayName,
                     witchHunter.Illustration),
-                guidedTutorialOrderId: guidedTutorialEligible ? guidedTutorialOrderId : null);
+                guidedTutorialOrderId: guidedTutorialEligible ? guidedTutorialOrderId : null,
+                witchHunterDialogue: CreateWitchHunterDialogue());
+        }
+
+        private WitchHunterDialogueViewData CreateWitchHunterDialogue()
+        {
+            int stageCount = content.WitchHunterDialogue.StageCount;
+            var accusations = new List<IReadOnlyList<string>>(stageCount);
+            var successLines = new List<string>(stageCount);
+            for (int stageIndex = 0; stageIndex < stageCount; stageIndex++)
+            {
+                accusations.Add(content.WitchHunterDialogue.GetAccusations(stageIndex));
+                successLines.Add(content.WitchHunterDialogue.GetSuccessLine(stageIndex));
+            }
+
+            return new WitchHunterDialogueViewData(accusations, successLines);
         }
 
         private bool OrderUsesCategory(OrderContent order, string categoryId)

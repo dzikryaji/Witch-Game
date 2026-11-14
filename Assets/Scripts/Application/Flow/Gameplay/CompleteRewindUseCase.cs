@@ -63,6 +63,7 @@ namespace Witch.Application.Flow
                 nextSeed = nextSeed == int.MaxValue - 1 ? 1 : nextSeed + 1;
             }
 
+            int completedRewindsBeforeThisOne = session.RunState.RewindCount;
             RewindOutcome outcome = RewindRules.Complete(
                 session.DayStartSnapshot,
                 session.RunState,
@@ -109,6 +110,7 @@ namespace Witch.Application.Flow
 
             if (session.CanResumeInPlace) session.CompleteRewindInPlace(snapshot, metadata);
             else session.CompleteRewind(snapshot, metadata);
+            session.MarkHunterFarewell(completedRewindsBeforeThisOne);
             SceneLoadResult scene = await sceneLoader.LoadAsync(SceneId.Shop, cancellationToken);
             if (scene.Succeeded)
             {

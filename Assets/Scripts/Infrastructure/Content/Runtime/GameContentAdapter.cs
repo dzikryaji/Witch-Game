@@ -97,6 +97,15 @@ namespace Witch.Infrastructure.Content
                 catalog.RewindDifficulty.StableId,
                 catalog.RewindDifficulty.StartingPairCount,
                 catalog.RewindDifficulty.MaximumPairCount);
+            var dialogueStages = new List<WitchHunterStageContent>(catalog.WitchHunterDialogue.StageCount);
+            for (int stageIndex = 0; stageIndex < catalog.WitchHunterDialogue.StageCount; stageIndex++)
+            {
+                dialogueStages.Add(new WitchHunterStageContent(
+                    catalog.WitchHunterDialogue.GetAccusations(stageIndex),
+                    catalog.WitchHunterDialogue.GetSuccessLine(stageIndex)));
+            }
+
+            var witchHunterDialogue = new WitchHunterDialogueContent(dialogueStages);
 
             int firstDayNumber = days.Keys.Min();
             int completionDay = days.Keys.Max();
@@ -145,7 +154,8 @@ namespace Witch.Infrastructure.Content
                 newRun,
                 dayProgression,
                 new ExpenseRules(completionDay),
-                catalog.CorrectOrderPayment));
+                catalog.CorrectOrderPayment,
+                witchHunterDialogue));
         }
     }
 }

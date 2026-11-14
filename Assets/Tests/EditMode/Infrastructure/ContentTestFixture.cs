@@ -31,6 +31,17 @@ namespace Witch.Infrastructure.Tests
                 "Warming",
                 "Herbs that bring heat back to the body.");
             RewindDifficultyDefinition difficulty = DefinitionFactory.Difficulty("rewind.difficulty.default", 3, 3);
+            WitchHunterDialogueDefinition dialogue = DefinitionFactory.Dialogue(
+                new[]
+                {
+                    new[] { "I am a Witch Hunter, sent to investigate this village." },
+                    new[] { "I am a Witch Hunter, and I have returned." }
+                },
+                new[]
+                {
+                    "Ah, never mind. I must have been mistaken.",
+                    "Strange... what was I questioning you about?"
+                });
             var catalog = ScriptableObject.CreateInstance<GameContentCatalogDefinition>();
             catalog.Configure(
                 new[] { ginger, mint },
@@ -44,7 +55,8 @@ namespace Witch.Infrastructure.Tests
                     DefinitionFactory.Card("rewind.card.star", "star"),
                     DefinitionFactory.Card("rewind.card.eye", "eye")
                 },
-                difficulty);
+                difficulty,
+                witchHunterDialogueDefinition: dialogue);
             return catalog;
         }
     }
@@ -111,6 +123,22 @@ namespace Witch.Infrastructure.Tests
         {
             var value = ScriptableObject.CreateInstance<RewindDifficultyDefinition>();
             value.Configure(id, start, maximum);
+            return value;
+        }
+
+        public static WitchHunterDialogueDefinition Dialogue(string[][] accusations, string[] successLines)
+        {
+            var stages = new WitchHunterDialogueDefinition.Stage[successLines.Length];
+            for (int index = 0; index < successLines.Length; index++)
+            {
+                stages[index] = new WitchHunterDialogueDefinition.Stage();
+                stages[index].Configure(
+                    index < accusations.Length ? accusations[index] : null,
+                    successLines[index]);
+            }
+
+            var value = ScriptableObject.CreateInstance<WitchHunterDialogueDefinition>();
+            value.Configure(stages);
             return value;
         }
 

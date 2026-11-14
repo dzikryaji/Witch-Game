@@ -106,8 +106,32 @@ namespace Witch.Application.Flow
             && TimerState.RemainingTime > TimeSpan.Zero;
 
         private DateTimeOffset? lastTimerSampleUtc;
+        private int? pendingHunterFarewellRewindCount;
 
         public GamePhase CurrentPhase { get; private set; }
+
+        internal void MarkHunterFarewell(int completedRewindsBeforeThisOne)
+        {
+            if (completedRewindsBeforeThisOne < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(completedRewindsBeforeThisOne));
+            }
+
+            pendingHunterFarewellRewindCount = completedRewindsBeforeThisOne;
+        }
+
+        public bool TryConsumeHunterFarewell(out int completedRewindsBeforeThisOne)
+        {
+            if (!pendingHunterFarewellRewindCount.HasValue)
+            {
+                completedRewindsBeforeThisOne = 0;
+                return false;
+            }
+
+            completedRewindsBeforeThisOne = pendingHunterFarewellRewindCount.Value;
+            pendingHunterFarewellRewindCount = null;
+            return true;
+        }
 
         internal PhaseTransitionResult TryTransition(GamePhase nextPhase)
         {
@@ -334,6 +358,7 @@ namespace Witch.Application.Flow
         {
             AttemptMetadata = attemptMetadata ?? throw new ArgumentNullException(nameof(attemptMetadata));
             RewindCompletionApplied = false;
+            pendingHunterFarewellRewindCount = null;
             TimerStopped = true;
             TimerPaused = false;
             TimerState = new ShopTimerState(TimerState.RemainingTime, false);
@@ -411,6 +436,7 @@ namespace Witch.Application.Flow
             DayStartSnapshot = dayStartSnapshot ?? throw new ArgumentNullException(nameof(dayStartSnapshot));
             AttemptMetadata = attemptMetadata ?? throw new ArgumentNullException(nameof(attemptMetadata));
             RunState = dayStartSnapshot.RunState;
+            pendingHunterFarewellRewindCount = null;
             TryTransition(GamePhase.Victory);
         }
 
@@ -425,12 +451,14 @@ namespace Witch.Application.Flow
             DaySummaryData summary)
         {
             ReplaceAttempt(dayStartSnapshot, attemptMetadata);
+            pendingHunterFarewellRewindCount = null;
             LastDaySummary = summary;
             TryTransition(GamePhase.DaySummary);
         }
 
         internal void ContinueFromDaySummary()
         {
+            pendingHunterFarewellRewindCount = null;
             LastDaySummary = null;
             TryTransition(GamePhase.ShopPreparation);
         }
@@ -458,6 +486,7 @@ namespace Witch.Application.Flow
             ActiveAttemptMetadata attemptMetadata)
         {
             ReplaceAttempt(dayStartSnapshot, attemptMetadata);
+            pendingHunterFarewellRewindCount = null;
             TryTransition(GamePhase.ShopPreparation);
         }
 
