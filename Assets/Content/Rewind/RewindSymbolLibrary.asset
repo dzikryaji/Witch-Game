@@ -24,7 +24,7 @@ MonoBehaviour:
   - symbolKey: elderflower
     sprite: {fileID: 21300000, guid: 1f019f9a9bd704ebba38dcead8280f37, type: 3}
   - symbolKey: mustard seed
-    sprite: {fileID: 21300000, guid: 61c9016b21a3d44fabc58e0f154d658e, type: 3}
+    sprite: {fileID: 21300000, guid: 45873bfb146be4a2b88d2398d4c79d51, type: 3}
   - symbolKey: ginger
     sprite: {fileID: 21300000, guid: 8e99e7a21ed5f4ab6b18b66291d4bfaa, type: 3}
   - symbolKey: peppermint
@@ -34,6 +34,32 @@ MonoBehaviour:
   - symbolKey: valerian
     sprite: {fileID: 21300000, guid: 031883b51c5ba457dab1ef1195ac874b, type: 3}
   - symbolKey: white willow
-    sprite: {fileID: 21300000, guid: f78daeebfecb4409cad483e37495a004, type: 3}
+    sprite: {fileID: 21300000, guid: d5ff986d21570498ebab790890d95c24, type: 3}
   - symbolKey: cayenne pepper
-    sprite: {fileID: 21300000, guid: 029cfc59c70b34854b45fb77fe583dbc, type: 3}
+    sprite: {fileID: 21300000, guid: 4c15413e161cf4f7f9bed882491537e5, type: 3}
+  - symbolKey: passion flower
+    sprite: {fileID: 21300000, guid: 5ff7b0dcb997d48fd8a1b2f789a85e71, type: 3}
+  - symbolKey: belladonna berry
+    sprite: {fileID: 21300000, guid: ac72302f565aa47e4baa287e25652a39, type: 3}
+  - symbolKey: dandelion
+    sprite: {fileID: 21300000, guid: ef58713d56d3949c1b4d17a4fcaacd78, type: 3}
+  - symbolKey: 'lavender '
+    sprite: {fileID: 21300000, guid: 183222e9234f64bba8f767210ce09714, type: 3}
+  - symbolKey: arnica flower
+    sprite: {fileID: 21300000, guid: 282014d2dafb945fda4de1bd98e0dd93, type: 3}
+  - symbolKey: black hellebore
+    sprite: {fileID: 21300000, guid: c9cf7ea3cdaf5460f92484c869fc07cc, type: 3}
+  - symbolKey: burdock root
+    sprite: {fileID: 21300000, guid: ac0e6813fd7f74694a2975f8d6ce5e4a, type: 3}
+  - symbolKey: comfrey
+    sprite: {fileID: 21300000, guid: 712af834898fd47cdb160bd72378077c, type: 3}
+  - symbolKey: fennel
+    sprite: {fileID: 21300000, guid: 15a8d43d645e44cc0a5433a50df51bd7, type: 3}
+  - symbolKey: pine resin
+    sprite: {fileID: 21300000, guid: 7c42e7549e227400da29d48aaff35b95, type: 3}
+  - symbolKey: plantain leaf
+    sprite: {fileID: 21300000, guid: 143524257f1c24a5d93f06328f79e3d8, type: 3}
+  - symbolKey: senna leaf
+    sprite: {fileID: 21300000, guid: d0582e8116e034c58997419d55a973a2, type: 3}
+  - symbolKey: yarrow
+    sprite: {fileID: 21300000, guid: 5a644e0269e7948398284e4b796ff207, type: 3}

@@ -17,10 +17,11 @@ namespace Witch.Presentation.Rewind
         [SerializeField]
         private ColumnRule[] columnRules =
         {
-            new ColumnRule { cardCount = 6, columns = 3 },
-            new ColumnRule { cardCount = 8, columns = 4 },
-            new ColumnRule { cardCount = 12, columns = 6 },
-            new ColumnRule { cardCount = 16, columns = 8 }
+            new ColumnRule { cardCount = 16, columns = 6 },
+            new ColumnRule { cardCount = 18, columns = 6 },
+            new ColumnRule { cardCount = 20, columns = 7 },
+            new ColumnRule { cardCount = 22, columns = 8 },
+            new ColumnRule { cardCount = 24, columns = 8 },
         };
         [SerializeField] private float verticalSpacing = 14f;
         [SerializeField, Range(0.4f, 1f)] private float cardAspect = 5f / 7f;   // width / height
@@ -39,7 +40,7 @@ namespace Witch.Presentation.Rewind
 
             Rect rect = ((RectTransform)transform).rect;
             int columns = ColumnsFor(cardCount);
-            int rows = 2;
+            int rows = 3;
 
             float availableWidth = rect.width - grid.padding.left - grid.padding.right;
             float availableHeight = rect.height - grid.padding.top - grid.padding.bottom;
@@ -62,11 +63,10 @@ namespace Witch.Presentation.Rewind
 
             float horizontalSpacing = columns switch
             {
-                3 => 40f,
-                4 => 32f,
                 6 => 22f,
+                7 => 18f,
                 8 => 14f,
-                _ => 20f
+                _ => 14f
             };
 
             grid.startAxis = GridLayoutGroup.Axis.Horizontal;
