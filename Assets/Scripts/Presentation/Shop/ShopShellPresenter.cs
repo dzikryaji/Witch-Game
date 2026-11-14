@@ -669,9 +669,14 @@ namespace Witch.Presentation.Shop
             if (!result.Succeeded)
             {
                 SetStatus(result.ErrorMessage);
+                Render();
+                return result;
             }
-            else if (result.Outcome.Kind == ServiceOutcomeKind.Correct)
+
+            if (result.Outcome.Kind == ServiceOutcomeKind.Correct)
             {
+                await ShowServeFeedbackBubbleAsync(ShopServeFeedback.GetCorrectLine(), cancellationToken);
+                if (cancellationToken.IsCancellationRequested) return result;
                 audioService?.Play(GameAudioCueIds.OrderCorrect);
                 if (counterCoins != null && result.Outcome.Payment > 0)
                 {
@@ -687,6 +692,8 @@ namespace Witch.Presentation.Shop
             }
             else
             {
+                await ShowServeFeedbackBubbleAsync(ShopServeFeedback.GetIncorrectLine(), cancellationToken);
+                if (cancellationToken.IsCancellationRequested) return result;
                 SetStatus("Wrong potion. No coins. Suspicion increased. At 3, Hunters investigate the suspicious 'herbalist'.");
                 audioService?.Play(GameAudioCueIds.OrderWrong);
                 if (suspicionFocus != null) suspicionFocus.Play();
@@ -694,7 +701,7 @@ namespace Witch.Presentation.Shop
 
             Render();
 
-            if (servingTutorial && result.Succeeded)
+            if (servingTutorial)
             {
                 EndGuidedTutorial(skipped: false);
             }
@@ -705,15 +712,13 @@ namespace Witch.Presentation.Shop
                 if (cancellationToken.IsCancellationRequested) return result;
             }
 
-            if (result.Succeeded
-                && ActiveSession.CurrentPhase == Witch.Domain.GamePhase.RewindPending
+            if (ActiveSession.CurrentPhase == Witch.Domain.GamePhase.RewindPending
                 && enterRewind != null)
             {
                 await EnterPendingRewindAsync(cancellationToken);
             }
-            else if (result.Succeeded
-                && (ActiveSession.CurrentPhase == Witch.Domain.GamePhase.CustomerArrival
-                    || ActiveSession.CurrentPhase == Witch.Domain.GamePhase.ClosingEncounter))
+            else if (ActiveSession.CurrentPhase == Witch.Domain.GamePhase.CustomerArrival
+                || ActiveSession.CurrentPhase == Witch.Domain.GamePhase.ClosingEncounter)
             {
                 await hudView.PlayCustomerExitAsync(cancellationToken);
                 if (ActiveSession.CurrentPhase == Witch.Domain.GamePhase.CustomerArrival) BeginArrival();
@@ -721,6 +726,35 @@ namespace Witch.Presentation.Shop
             }
 
             return result;
+        }
+
+        private async Task ShowServeFeedbackBubbleAsync(string text, CancellationToken cancellationToken)
+        {
+            if (hudView == null || string.IsNullOrWhiteSpace(text))
+            {
+                return;
+            }
+
+            try
+            {
+                hudView.CompleteOrderBubbleEntrancesImmediately();
+                float elapsed = 0f;
+                while (elapsed < 0.2f)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    elapsed += Time.unscaledDeltaTime;
+                    await Task.Yield();
+                }
+                await hudView.RevealAdditionalBubbleAsync(text, cancellationToken);
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
+            }
+            catch (Exception exception)
+            {
+                Debug.LogException(exception, this);
+            }
         }
 
         public void ConfigureProgression(

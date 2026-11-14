@@ -183,6 +183,48 @@ namespace Witch.Presentation.Shop
             }
         }
 
+        /// <summary>
+        /// Completes any running customer/order-bubble entrance animation immediately so all original
+        /// bubbles are fully visible. Does not replay animations or clear existing bubbles.
+        /// </summary>
+        public void CompleteOrderBubbleEntrancesImmediately()
+        {
+            bool hadEntrance = entranceRoutine != null;
+            StopEntrance();
+            skipTyping = true;
+
+            if (customerPortrait != null)
+            {
+                customerPortrait.gameObject.SetActive(true);
+                customerPortrait.anchoredPosition = portraitRestPosition;
+            }
+            if (customerPortraitCanvasGroup != null)
+            {
+                customerPortraitCanvasGroup.alpha = 1f;
+            }
+
+            for (int i = 0; i < bubbleSlots.Count; i++)
+            {
+                BubbleSlot bubble = bubbleSlots[i];
+                if (bubble == null) continue;
+                ShowSlotImmediate(bubble);
+            }
+
+            if (orderBubbleContent != null)
+            {
+                LayoutRebuilder.ForceRebuildLayoutImmediate(orderBubbleContent);
+            }
+            if (!playerScrolledOrders)
+            {
+                SnapToNewest();
+            }
+
+            if (hadEntrance || !entranceComplete.Task.IsCompleted)
+            {
+                entranceComplete.TrySetResult(true);
+            }
+        }
+
         private void PrepareCustomerPresentation(string customerName, Sprite customerIllustration)
         {
             ClearOrderBubbles();
