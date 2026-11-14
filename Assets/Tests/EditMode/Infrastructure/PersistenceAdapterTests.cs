@@ -70,6 +70,27 @@ namespace Witch.Infrastructure.Tests
         }
 
         [Test]
+        public async Task JsonRepository_OldSaveWithoutNewDayCountersLoadsAsZero()
+        {
+            GameSaveState save = CreateSave("run.old-counters", suspicion: 0, seed: 224);
+            var repository = new JsonRunRepository(temporaryDirectory, 1);
+            await repository.SaveRunStateAsync(save.DayStartSnapshot, save.AttemptMetadata);
+            string path = Path.Combine(temporaryDirectory, JsonRunRepository.CurrentRunFileName);
+            string json = File.ReadAllText(path);
+            json = json.Replace("\"correctServiceCountToday\": 0,", string.Empty);
+            json = json.Replace("\"coinsEarnedToday\": 0,", string.Empty);
+            json = json.Replace("\"wrongOrdersForSummary\": 0", string.Empty);
+            File.WriteAllText(path, json);
+
+            LoadStateResult load = await repository.LoadLatestAsync();
+
+            Assert.That(load.Succeeded, Is.True, load.ErrorMessage);
+            Assert.That(load.SavedGame.AttemptMetadata.CorrectServiceCountToday, Is.EqualTo(0));
+            Assert.That(load.SavedGame.AttemptMetadata.CoinsEarnedToday, Is.EqualTo(0));
+            Assert.That(load.SavedGame.AttemptMetadata.WrongOrdersForSummary, Is.EqualTo(0));
+        }
+
+        [Test]
         public async Task JsonRepository_MigratesLegacyAloeHerbIdToBorage()
         {
             var repository = new JsonRunRepository(temporaryDirectory, 1);

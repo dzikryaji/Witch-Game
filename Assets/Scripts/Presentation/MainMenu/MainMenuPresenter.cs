@@ -5,6 +5,8 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using Witch.Application.Flow;
 using Witch.Application.Ports;
+using Witch.Domain.Progression;
+using Witch.Presentation;
 
 namespace Witch.Presentation.MainMenu
 {
@@ -30,6 +32,9 @@ namespace Witch.Presentation.MainMenu
         private IGameSettingsService settingsService;
         private IApplicationLifecycle applicationLifecycle;
         private IGameAudioService audioService;
+        private DayTransitionController dayTransition;
+        private IDayStartSnapshotRepository snapshotRepository;
+        private IActiveAttemptMetadataRepository attemptRepository;
         private bool viewBound;
 
         public bool IsInitialized { get; private set; }
@@ -85,11 +90,35 @@ namespace Witch.Presentation.MainMenu
             IApplicationLifecycle lifecycle,
             IGameAudioService audio)
         {
+            Initialize(
+                startNewGameUseCase,
+                loadRunUseCase,
+                settings,
+                lifecycle,
+                audio,
+                null,
+                null,
+                null);
+        }
+
+        public void Initialize(
+            IStartNewGameUseCase startNewGameUseCase,
+            ILoadRunUseCase loadRunUseCase,
+            IGameSettingsService settings,
+            IApplicationLifecycle lifecycle,
+            IGameAudioService audio,
+            DayTransitionController transition,
+            IDayStartSnapshotRepository snapshotRepo,
+            IActiveAttemptMetadataRepository attemptRepo)
+        {
             startNewGame = startNewGameUseCase ?? throw new ArgumentNullException(nameof(startNewGameUseCase));
             loadRun = loadRunUseCase ?? throw new ArgumentNullException(nameof(loadRunUseCase));
             settingsService = settings ?? throw new ArgumentNullException(nameof(settings));
             applicationLifecycle = lifecycle ?? throw new ArgumentNullException(nameof(lifecycle));
             audioService = audio;
+            dayTransition = transition;
+            snapshotRepository = snapshotRepo;
+            attemptRepository = attemptRepo;
             RequireAndBindAuthoredView();
             // if (settingsPanel.GetComponentInParent<Canvas>() == null)
             // {
@@ -247,15 +276,59 @@ namespace Witch.Presentation.MainMenu
         {
             if (IsBusy) return false;
             if (storyIntro != null && !await storyIntro.PlayAsync()) return false;
+            if (dayTransition != null) dayTransition.CoverInstant(1, revealShopOnInit: true);
             bool started = await NewGameAsync();
-            if (!started && storyIntro != null) storyIntro.Hide();
+            if (!started)
+            {
+                if (dayTransition != null) dayTransition.CancelPendingReveal();
+                if (storyIntro != null) storyIntro.Hide();
+            }
             return started;
         }
 
         private void OnContinueClicked()
         {
             audioService?.Play(GameAudioCueIds.UiClick);
-            RunUiAction(ContinueAsync);
+            RunUiAction(ContinueWithTransitionAsync);
+        }
+
+        private async Task<bool> ContinueWithTransitionAsync()
+        {
+            bool coverShop = false;
+            int day = 1;
+            if (snapshotRepository != null && attemptRepository != null)
+            {
+                try
+                {
+                    var snapshotResult = await snapshotRepository.LoadLatestDayStartSnapshotAsync();
+                    var attemptResult = await attemptRepository.LoadLatestActiveAttemptMetadataAsync();
+                    if (snapshotResult != null && snapshotResult.Succeeded && attemptResult != null && attemptResult.Succeeded)
+                    {
+                        bool pendingRewind = attemptResult.Metadata.PendingRewind;
+                        bool thresholdReached = attemptResult.Metadata.Suspicion >= RunState.RewindSuspicionThreshold;
+                        bool runCompleted = snapshotResult.Snapshot.RunState.RunCompleted;
+                        coverShop = !(pendingRewind && !runCompleted);
+                        day = snapshotResult.Snapshot.RunState.CurrentDayNumber;
+                        if (day < 1) day = 1;
+                    }
+                }
+                catch
+                {
+                    // Fall back to default continue behavior without pre-cover.
+                }
+            }
+
+            if (coverShop && dayTransition != null)
+            {
+                dayTransition.CoverInstant(day, revealShopOnInit: true);
+            }
+
+            bool loaded = await ContinueAsync();
+            if (!loaded && coverShop && dayTransition != null)
+            {
+                dayTransition.CancelPendingReveal();
+            }
+            return loaded;
         }
 
         private void OnQuitClicked()
