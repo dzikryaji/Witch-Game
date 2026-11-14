@@ -7,15 +7,18 @@ namespace Witch.Presentation.Shop
     public sealed class MinigameIntroPopupView : MonoBehaviour
     {
         [SerializeField] private GameObject root;
+        [SerializeField] private Text narrativeTitle;
         [SerializeField] private Text narrativeText;
         [SerializeField] private Button startButton;
         [SerializeField, TextArea(3, 8)]
+        private string defaultNarrativeTitle = "A Spell Takes Hold";
         private string defaultNarrative =
-            "KNOCK. KNOCK.\nThe Hunters suspect poison. Cast the memory spell before they come in.";
+            "Gather your magic. \nLet their visit slip from memory.";
+            // "KNOCK. KNOCK.\nThe Hunters suspect poison. Cast the memory spell before they come in.";
 
         private bool bound;
 
-        public bool IsAuthored => root != null && narrativeText != null && startButton != null;
+        public bool IsAuthored => root != null && narrativeTitle != null && narrativeText != null && startButton != null;
         public bool IsVisible => root != null && root.activeSelf;
 
         public void Bind(UnityAction onStart)
@@ -27,9 +30,12 @@ namespace Witch.Presentation.Shop
 
         public void Show(string errorMessage = null)
         {
+            narrativeTitle.text = defaultNarrativeTitle;
+
             narrativeText.text = string.IsNullOrEmpty(errorMessage)
                 ? defaultNarrative
                 : defaultNarrative + "\n\n" + errorMessage;
+
             startButton.interactable = true;
             root.SetActive(true);
             startButton.Select();
