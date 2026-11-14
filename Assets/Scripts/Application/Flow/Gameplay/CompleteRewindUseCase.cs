@@ -75,9 +75,6 @@ namespace Witch.Application.Flow
                 session.DayStartSnapshot.ExpenseValue,
                 session.DayStartSnapshot.SaveVersion,
                 session.DayStartSnapshot.CapturedAtUtc);
-            // Full rewind restores money to day start: new day counters reset to 0.
-            // In-place rewind restores money to pre-service snapshot: session restores resume counters.
-            // WrongServiceCountToday/ServiceCountToday carry forward unchanged (Clean Ledger depends on them).
             var metadata = new ActiveAttemptMetadata(
                 outcome.RestoredRunState.RunId,
                 outcome.RestoredRunState.CurrentDayNumber,
@@ -88,10 +85,7 @@ namespace Witch.Application.Flow
                 outcome.NextAttemptSeed,
                 session.AttemptMetadata.WrongServiceCountToday,
                 session.AttemptMetadata.ServiceCountToday,
-                true,
-                0,
-                0,
-                0);
+                true);
             SaveStateResult save = await saveRepository.SaveRunStateAsync(
                 snapshot,
                 metadata,

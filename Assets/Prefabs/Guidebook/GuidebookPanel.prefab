@@ -459,7 +459,6 @@ GameObject:
   - component: {fileID: 7891487939328175024}
   - component: {fileID: 3718009706243458599}
   - component: {fileID: 5243143444691821421}
-  - component: {fileID: 6184550521213356983}
   m_Layer: 5
   m_Name: Read Backdrop
   m_TagString: Untagged
@@ -580,18 +579,6 @@ MonoBehaviour:
           m_StringArgument: Close
           m_BoolArgument: 0
         m_CallState: 2
---- !u!114 &6184550521213356983
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3988423871999852278}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 72482d17cd9eb45e2b10b6c0ef896e01, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Witch.Presentation::Witch.Presentation.Shop.GuidebookBackdropCloseButton
 --- !u!1 &5830883787776830122
 GameObject:
   m_ObjectHideFlags: 0

@@ -102,7 +102,6 @@ namespace Witch.Editor
                 backdropButton.onClick,
                 new UnityAction<string>(animator.SetTrigger),
                 "Close");
-            backdrop.AddComponent<Witch.Presentation.Shop.GuidebookBackdropCloseButton>();
 
             // The book sits on top of the backdrop, so clicks on the pages do not close it.
             var book = (GameObject)PrefabUtility.InstantiatePrefab(bookPrefab, group.transform);

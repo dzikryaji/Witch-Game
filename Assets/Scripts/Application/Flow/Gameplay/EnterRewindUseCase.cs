@@ -66,10 +66,7 @@ namespace Witch.Application.Flow
                 session.AttemptMetadata.ActiveOrderSeed,
                 session.AttemptMetadata.WrongServiceCountToday,
                 session.AttemptMetadata.ServiceCountToday,
-                true,
-                session.AttemptMetadata.CorrectServiceCountToday,
-                session.AttemptMetadata.CoinsEarnedToday,
-                session.AttemptMetadata.WrongOrdersForSummary);
+                true);
             SaveStateResult save = await saveRepository.SaveActiveAttemptMetadataAsync(
                 metadata,
                 cancellationToken);

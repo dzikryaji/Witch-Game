@@ -76,11 +76,6 @@ namespace Witch.Presentation.Shop
             && dayCycleView.IsAuthored;
 
        public Task<bool> EntranceComplete => entranceComplete.Task;
-       public RectTransform OrderBubbleTarget => orderBubbleScrollRect != null ? (RectTransform)orderBubbleScrollRect.transform : orderBubbleContent;
-       public RectTransform CustomerPortraitTarget => customerPortrait;
-
-        public void ResetDayCycleToMorning() => dayCycleView?.ResetToMorning();
-        public void ShowDayCycleEndOfDay() => dayCycleView?.ShowEndOfDay();
 
         private void Awake()
         {
@@ -211,12 +206,7 @@ namespace Witch.Presentation.Shop
             if (session == null) return;
 
             TimeSpan remaining = session.TimerState.RemainingTime;
-            bool freezeEndOfDay = session.CurrentPhase == Witch.Domain.GamePhase.ClosingEncounter
-                || session.CurrentPhase == Witch.Domain.GamePhase.DaySummary
-                || session.CurrentPhase == Witch.Domain.GamePhase.GameOver
-                || session.CurrentPhase == Witch.Domain.GamePhase.Victory
-                || session.CurrentPhase == Witch.Domain.GamePhase.ExpenseCheck;
-            dayCycleView?.Render(remaining, session.DayStartSnapshot.TimerDuration, freezeEndOfDay);
+            dayCycleView?.Render(remaining, session.DayStartSnapshot.TimerDuration);
             dayText.text = "Day " + session.RunState.CurrentDayNumber + "/14";
             timerText.text = "Time  " + ((int)remaining.TotalMinutes).ToString("00") + ":" + remaining.Seconds.ToString("00");
             moneyText.text = ": $" + Mathf.Max(0, session.RunState.Money - pendingCoins);

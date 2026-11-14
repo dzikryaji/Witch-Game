@@ -19,7 +19,7 @@ MonoBehaviour:
   - By morning, nausea left him unable to eat.
   - Now he shivers and coughs thick chest mucus.
   - He has no wounds, scrapes, or bleeding ulcers.
-  - His note prescribes Ginger for nausea.
+  - His note prescribes Zingiber officinale for nausea.
   - It pairs Mustard Seed with it for chills and mucus.
   firstHerbId: herb.ginger
   secondHerbId: herb.mustardSeed

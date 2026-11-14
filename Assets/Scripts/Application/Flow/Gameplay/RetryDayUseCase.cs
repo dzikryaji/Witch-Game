@@ -37,10 +37,6 @@ namespace Witch.Application.Flow
                 session.DayStartSnapshot.RunState.Money,
                 session.RunState.Suspicion,
                 session.RunState.RewindCount);
-            if (retryState.CurrentDayNumber == 1)
-            {
-                retryState = retryState.WithTutorialFlag("shop.tutorial.day1.guided", true);
-            }
             var snapshot = new DayStartSnapshot(
                 retryState,
                 session.DayStartSnapshot.OrderSeed,
@@ -59,10 +55,7 @@ namespace Witch.Application.Flow
                 snapshot.OrderSeed,
                 session.AttemptMetadata.WrongServiceCountToday,
                 session.AttemptMetadata.ServiceCountToday,
-                session.AttemptMetadata.MinigamePlayedToday,
-                0,
-                0,
-                0);
+                session.AttemptMetadata.MinigamePlayedToday);
             SaveStateResult save = await saveRepository.SaveRunStateAsync(
                 snapshot,
                 metadata,

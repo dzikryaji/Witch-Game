@@ -78,40 +78,14 @@ namespace Witch.Bootstrap
 
             List<GuidebookPageViewData> guidebook = CreateGuidebookPages(session);
 
-            const string guidedTutorialOrderId = "order.simple.w01";
-            bool guidedTutorialEligible = session.RunState.CurrentDayNumber == 1
-                && !(session.RunState.TutorialFlags.TryGetValue(ShopTutorialFlags.Day1GuidedCompleted, out bool completed) && completed);
-            // In-memory guard to avoid re-triggering within same session lifetime edge cases.
-            if (guidedTutorialEligible)
-            {
-                tutorialShownRunIds.Add(session.RunState.RunId);
-            }
-
-            if (guidedTutorialEligible && encounters.All(e => e.Order.OrderId != guidedTutorialOrderId))
-            {
-                // Ensure the fixed tutorial order is available when eligible.
-                if (content.OrdersById.TryGetValue(guidedTutorialOrderId, out OrderContent tutorialOrder))
-                {
-                    CustomerContent tutorialCustomer = tutorialOrder.Customer;
-                    encounters.Insert(0, new ShopEncounterViewData(
-                        tutorialCustomer.StableId,
-                        tutorialCustomer.DisplayName,
-                        tutorialCustomer.Illustration,
-                        tutorialOrder.Request,
-                        tutorialOrder.OrderBubbles));
-                }
-                else
-                {
-                    guidedTutorialEligible = false;
-                }
-            }
-
+            bool showTutorial = session.RunState.CurrentDayNumber == 1
+                && tutorialShownRunIds.Add(session.RunState.RunId);
             return new ShopPresentationSetup(
                 encounters,
                 herbs,
                 guidebook,
                 session.RunState.CurrentDayNumber,
-                guidedTutorialEligible,
+                showTutorial,
                 session.AttemptMetadata.ActiveOrderSeed,
                 randomizeEncounters: true,
                 seenOrderIds: session.RunState.SeenOrderIds,
@@ -127,8 +101,7 @@ namespace Witch.Bootstrap
                 witchHunter: new ShopCustomerViewData(
                     witchHunter.StableId,
                     witchHunter.DisplayName,
-                    witchHunter.Illustration),
-                guidedTutorialOrderId: guidedTutorialEligible ? guidedTutorialOrderId : null);
+                    witchHunter.Illustration));
         }
 
         private bool OrderUsesCategory(OrderContent order, string categoryId)

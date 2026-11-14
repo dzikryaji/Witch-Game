@@ -23,25 +23,6 @@ namespace Witch.Bootstrap.PlayModeTests
     public sealed class FourteenDayProgressionPlayModeTests
     {
         [UnityTest]
-        public IEnumerator ClosingDayAutoResolvesToDaySummaryWithoutManualStep()
-        {
-            yield return LoadShop();
-            ProgressionHarness harness = CreateHarness();
-            ShopShellPresenter presenter = InitializeDay(harness);
-            harness.Clock.Advance(presenter.ActiveSession.TimerState.RemainingTime + TimeSpan.FromSeconds(1));
-            harness.UpdateTimer.Execute(presenter.ActiveSession);
-            PreparePair(presenter, "herb.ginger", "herb.mint");
-            Task<ServePotionResult> serve = presenter.ServeAsync();
-            yield return WaitFor(serve);
-            Assert.That(presenter.ActiveSession.CurrentPhase, Is.EqualTo(GamePhase.ClosingEncounter));
-
-            yield return WaitForAutoResolvedExpense(presenter);
-
-            Assert.That(presenter.ActiveSession.CurrentPhase, Is.EqualTo(GamePhase.DaySummary));
-            Assert.That(presenter.ActiveSession.LastDaySummary, Is.Not.Null);
-        }
-
-        [UnityTest]
         public IEnumerator ShopPresenterRunsFourteenPaidDaysToVictory()
         {
             yield return LoadShop();
@@ -57,9 +38,12 @@ namespace Witch.Bootstrap.PlayModeTests
                 yield return WaitFor(serve);
                 Assert.That(presenter.ActiveSession.CurrentPhase, Is.EqualTo(GamePhase.ClosingEncounter));
 
-                yield return WaitForAutoResolvedExpense(presenter);
+                Task<ExpenseResolutionResult> expense = presenter.ResolveExpenseAsync();
+                yield return WaitFor(expense);
+                Assert.That(expense.Result.Succeeded, Is.True, expense.Result.ErrorMessage);
                 if (day < 14)
                 {
+                    Assert.That(expense.Result.Outcome.Kind, Is.EqualTo(ExpenseOutcomeKind.NextDay));
                     Assert.That(presenter.ActiveSession.CurrentPhase, Is.EqualTo(GamePhase.DaySummary));
                     Assert.That(presenter.ActiveSession.RunState.Money, Is.Zero);
                     Assert.That(presenter.ActiveSession.TimerState.RemainingTime, Is.EqualTo(TimeSpan.FromSeconds(day + 1)));
@@ -68,32 +52,42 @@ namespace Witch.Bootstrap.PlayModeTests
                 }
                 else
                 {
+                    Assert.That(expense.Result.Outcome.Kind, Is.EqualTo(ExpenseOutcomeKind.Victory));
                     Assert.That(presenter.ActiveSession.CurrentPhase, Is.EqualTo(GamePhase.Victory));
-                    Assert.That(GameObject.Find("Day Title Text").GetComponent<UnityEngine.UI.Text>().text, Does.Contain("14 DAYS COMPLETE"));
+                    Assert.That(GameObject.Find("Progression Text").GetComponent<UnityEngine.UI.Text>().text, Does.Contain("14 DAYS COMPLETE"));
                 }
             }
         }
 
         [UnityTest]
-        public IEnumerator FailedExpenseReachesGameOverWithNoRetryButton()
+        public IEnumerator FailedExpenseDeductsNothingAndRetryKeepsDayAndSeed()
         {
             yield return LoadShop();
             ProgressionHarness harness = CreateHarness();
             ShopShellPresenter presenter = InitializeDay(harness);
+            int startingSeed = presenter.ActiveSession.DayStartSnapshot.OrderSeed;
             harness.Clock.Advance(TimeSpan.FromSeconds(2));
             harness.UpdateTimer.Execute(presenter.ActiveSession);
             PreparePair(presenter, "herb.mint", "herb.sage");
             Task<ServePotionResult> serve = presenter.ServeAsync();
             yield return WaitFor(serve);
 
-            yield return WaitForAutoResolvedExpense(presenter);
-            Assert.That(presenter.ActiveSession.CurrentPhase, Is.EqualTo(GamePhase.GameOver));
+            Task<ExpenseResolutionResult> expense = presenter.ResolveExpenseAsync();
+            yield return WaitFor(expense);
+            Assert.That(expense.Result.Outcome.Kind, Is.EqualTo(ExpenseOutcomeKind.GameOver));
             Assert.That(presenter.ActiveSession.RunState.Money, Is.Zero);
+            Assert.That(presenter.ActiveSession.CurrentPhase, Is.EqualTo(GamePhase.GameOver));
             Assert.That(harness.Audio.Played, Does.Contain(GameAudioCueIds.ExpenseFail));
             Assert.That(harness.Audio.Played, Does.Contain(GameAudioCueIds.GameOverMusic));
             Assert.That(harness.Audio.Played, Does.Not.Contain(GameAudioCueIds.ExpensePay));
-            // Retry Day button removed: GameOver currently has no progression-panel exit.
-            Assert.That(GameObject.Find("Retry Day"), Is.Null);
+
+            Task<ExpenseResolutionResult> retry = presenter.RetryDayAsync();
+            yield return WaitFor(retry);
+            Assert.That(retry.Result.Succeeded, Is.True, retry.Result.ErrorMessage);
+            Assert.That(presenter.ActiveSession.CurrentPhase, Is.EqualTo(GamePhase.ShopPreparation));
+            Assert.That(presenter.ActiveSession.RunState.CurrentDayNumber, Is.EqualTo(1));
+            Assert.That(presenter.ActiveSession.DayStartSnapshot.OrderSeed, Is.EqualTo(startingSeed));
+            Assert.That(presenter.ActiveSession.RunState.Suspicion, Is.EqualTo(1));
         }
 
         private static ProgressionHarness CreateHarness()
@@ -174,29 +168,6 @@ namespace Witch.Bootstrap.PlayModeTests
             // Both herbs are ground together; adding the mixture to the pot brews automatically.
             presenter.GrindHerb(first, second);
             presenter.AddGroundHerbToPot();
-        }
-
-        private static IEnumerator WaitForPhase(ShopShellPresenter presenter, GamePhase phase)
-        {
-            float timeout = Time.realtimeSinceStartup + 5f;
-            while (presenter.ActiveSession.CurrentPhase != phase && Time.realtimeSinceStartup < timeout)
-            {
-                yield return null;
-            }
-            Assert.That(presenter.ActiveSession.CurrentPhase, Is.EqualTo(phase),
-                "Timed out waiting for phase " + phase + ".");
-        }
-
-        private static IEnumerator WaitForAutoResolvedExpense(ShopShellPresenter presenter)
-        {
-            float timeout = Time.realtimeSinceStartup + 5f;
-            while (presenter.ActiveSession.CurrentPhase == GamePhase.ClosingEncounter
-                && Time.realtimeSinceStartup < timeout)
-            {
-                yield return null;
-            }
-            Assert.That(presenter.ActiveSession.CurrentPhase, Is.Not.EqualTo(GamePhase.ClosingEncounter),
-                "Timed out waiting for automatic expense resolution.");
         }
 
         private static IEnumerator LoadShop()

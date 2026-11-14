@@ -108,28 +108,6 @@ namespace Witch.Domain.Tests
             Assert.That(outcome.NextAttemptSeed, Is.EqualTo(999));
         }
 
-        [Test]
-        public void RewindCompletion_KeepsTutorialFlagsFromFailedAttempt()
-        {
-            RunState dayStartRun = CreateRun(day: 1, money: 0);
-            var snapshot = new DayStartSnapshot(
-                dayStartRun,
-                100,
-                TimeSpan.FromMinutes(4),
-                "expense.day.1",
-                20,
-                1,
-                DateTimeOffset.UtcNow);
-            RunState failedAttempt = dayStartRun.WithProgress(1, 15, 3, 0)
-                .WithTutorialFlag("shop.tutorial.day1.guided", true);
-
-            Assert.That(snapshot.RunState.TutorialFlags.ContainsKey("shop.tutorial.day1.guided"), Is.False);
-
-            RewindOutcome outcome = RewindRules.Complete(snapshot, failedAttempt, nextAttemptSeed: 999);
-
-            Assert.That(outcome.RestoredRunState.TutorialFlags.TryGetValue("shop.tutorial.day1.guided", out bool completed) && completed, Is.True);
-        }
-
         private static RunState CreateRun(int day, int money)
         {
             return new RunState(

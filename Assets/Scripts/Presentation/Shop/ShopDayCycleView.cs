@@ -16,7 +16,6 @@ namespace Witch.Presentation.Shop
         private Vector2 sunStartPosition;
         private Vector2 cloudsStartPosition;
         private bool positionsCached;
-        private bool freezeAtEndOfDay;
 
         public bool IsAuthored => sky != null
             && sun != null
@@ -28,49 +27,12 @@ namespace Witch.Presentation.Shop
 
         private void Awake() => CachePositions();
 
-        public void SetFreezeAtEndOfDay(bool freeze)
-        {
-            freezeAtEndOfDay = freeze;
-        }
-
         public void Render(TimeSpan remaining, TimeSpan duration)
         {
-            Render(remaining, duration, freezeAtEndOfDay);
-        }
-
-        public void Render(TimeSpan remaining, TimeSpan duration, bool forceEndOfDay)
-        {
             if (!IsAuthored) return;
             if (!positionsCached) CachePositions();
 
-            float progress = forceEndOfDay ? 1f : CalculateProgress(remaining, duration);
-            ApplyProgress(progress);
-        }
-
-        public void ResetToMorning()
-        {
-            freezeAtEndOfDay = false;
-            if (!IsAuthored) return;
-            if (!positionsCached) CachePositions();
-            ApplyProgress(0f);
-        }
-
-        public void ShowEndOfDay()
-        {
-            freezeAtEndOfDay = true;
-            if (!IsAuthored) return;
-            if (!positionsCached) CachePositions();
-            ApplyProgress(1f);
-        }
-
-        public static float CalculateProgress(TimeSpan remaining, TimeSpan duration)
-        {
-            if (duration <= TimeSpan.Zero) return 0f;
-            return Mathf.Clamp01(1f - (float)(remaining.TotalSeconds / duration.TotalSeconds));
-        }
-
-        private void ApplyProgress(float progress)
-        {
+            float progress = CalculateProgress(remaining, duration);
             float sunset = Mathf.SmoothStep(0f, 1f, progress);
 
             sky.color = Color.Lerp(Color.white, new Color(1f, 0.62f, 0.43f), sunset);
@@ -83,6 +45,12 @@ namespace Witch.Presentation.Shop
 
             sun.rectTransform.anchoredPosition = sunStartPosition + new Vector2(-70f, -300f) * progress;
             clouds.rectTransform.anchoredPosition = cloudsStartPosition + Vector2.right * (20f * progress);
+        }
+
+        public static float CalculateProgress(TimeSpan remaining, TimeSpan duration)
+        {
+            if (duration <= TimeSpan.Zero) return 0f;
+            return Mathf.Clamp01(1f - (float)(remaining.TotalSeconds / duration.TotalSeconds));
         }
 
         private void CachePositions()

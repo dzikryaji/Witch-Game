@@ -15,10 +15,7 @@ namespace Witch.Domain.Progression
             int activeOrderSeed,
             int wrongServiceCountToday = 0,
             int serviceCountToday = 0,
-            bool minigamePlayedToday = false,
-            int correctServiceCountToday = 0,
-            int coinsEarnedToday = 0,
-            int wrongOrdersForSummary = 0)
+            bool minigamePlayedToday = false)
         {
             if (string.IsNullOrWhiteSpace(runId))
             {
@@ -45,26 +42,6 @@ namespace Witch.Domain.Progression
                 throw new ArgumentOutOfRangeException(nameof(wrongServiceCountToday));
             }
 
-            if (serviceCountToday < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(serviceCountToday));
-            }
-
-            if (correctServiceCountToday < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(correctServiceCountToday));
-            }
-
-            if (coinsEarnedToday < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(coinsEarnedToday));
-            }
-
-            if (wrongOrdersForSummary < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(wrongOrdersForSummary));
-            }
-
             if (pendingRewind && suspicion != RunState.RewindSuspicionThreshold)
             {
                 throw new ArgumentException("Pending rewind requires suspicion at the threshold.", nameof(suspicion));
@@ -80,9 +57,6 @@ namespace Witch.Domain.Progression
             WrongServiceCountToday = wrongServiceCountToday;
             MinigamePlayedToday = minigamePlayedToday;
             ServiceCountToday = serviceCountToday;
-            CorrectServiceCountToday = correctServiceCountToday;
-            CoinsEarnedToday = coinsEarnedToday;
-            WrongOrdersForSummary = wrongOrdersForSummary;
         }
 
         public string RunId { get; }
@@ -104,11 +78,5 @@ namespace Witch.Domain.Progression
         public bool MinigamePlayedToday { get; }
 
         public int ServiceCountToday { get; }
-
-        public int CorrectServiceCountToday { get; }
-
-        public int CoinsEarnedToday { get; }
-
-        public int WrongOrdersForSummary { get; }
     }
 }

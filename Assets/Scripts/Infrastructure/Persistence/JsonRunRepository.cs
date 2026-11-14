@@ -274,9 +274,6 @@ namespace Witch.Infrastructure.Persistence
         public int wrongServiceCountToday;
         public int serviceCountToday;
         public bool minigamePlayedToday;
-        public int correctServiceCountToday;
-        public int coinsEarnedToday;
-        public int wrongOrdersForSummary;
     }
 
     [Serializable]
@@ -314,10 +311,7 @@ namespace Witch.Infrastructure.Persistence
                     activeOrderSeed = metadata.ActiveOrderSeed,
                     wrongServiceCountToday = metadata.WrongServiceCountToday,
                     serviceCountToday = metadata.ServiceCountToday,
-                    minigamePlayedToday = metadata.MinigamePlayedToday,
-                    correctServiceCountToday = metadata.CorrectServiceCountToday,
-                    coinsEarnedToday = metadata.CoinsEarnedToday,
-                    wrongOrdersForSummary = metadata.WrongOrdersForSummary
+                    minigamePlayedToday = metadata.MinigamePlayedToday
                 }
             };
         }
@@ -360,7 +354,6 @@ namespace Witch.Infrastructure.Persistence
                     envelope.snapshot.capturedAtUtc,
                     CultureInfo.InvariantCulture,
                     DateTimeStyles.RoundtripKind));
-            // Old saves without the new fields load with 0 (JsonUtility default).
             var metadata = new ActiveAttemptMetadata(
                 envelope.attempt.runId,
                 envelope.attempt.day,
@@ -371,10 +364,7 @@ namespace Witch.Infrastructure.Persistence
                 envelope.attempt.activeOrderSeed,
                 envelope.attempt.wrongServiceCountToday,
                 envelope.attempt.serviceCountToday,
-                envelope.attempt.minigamePlayedToday,
-                envelope.attempt.correctServiceCountToday,
-                envelope.attempt.coinsEarnedToday,
-                envelope.attempt.wrongOrdersForSummary);
+                envelope.attempt.minigamePlayedToday);
             return new GameSaveState(snapshot, metadata);
         }
 

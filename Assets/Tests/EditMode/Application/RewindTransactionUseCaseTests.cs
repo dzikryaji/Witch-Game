@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using Witch.Application.Flow;
@@ -8,7 +7,6 @@ using Witch.Application.Ports;
 using Witch.Domain;
 using Witch.Domain.Orders;
 using Witch.Domain.Potions;
-using Witch.Domain.Progression;
 
 namespace Witch.Application.Tests
 {
@@ -130,80 +128,6 @@ namespace Witch.Application.Tests
             Assert.That(scenes.LoadCallCount, Is.EqualTo(4));
         }
 
-        [Test]
-        public void CompleteRewindInPlace_KeepsTutorialFlagEvenWhenResumeRunStateLacksIt()
-        {
-            GameSession session = CreateInPlaceRewindSessionWithFlagOnLiveStateButNotResume();
-            var restoredSnapshot = new DayStartSnapshot(
-                session.DayStartSnapshot.RunState.WithProgress(1, session.DayStartSnapshot.RunState.Money, 0, 1),
-                808,
-                session.DayStartSnapshot.TimerDuration,
-                session.DayStartSnapshot.ExpenseId,
-                session.DayStartSnapshot.ExpenseValue,
-                session.DayStartSnapshot.SaveVersion,
-                session.DayStartSnapshot.CapturedAtUtc);
-            var metadata = new ActiveAttemptMetadata(
-                session.RunState.RunId,
-                1,
-                0,
-                1,
-                false,
-                0,
-                808,
-                session.AttemptMetadata.WrongServiceCountToday,
-                session.AttemptMetadata.ServiceCountToday,
-                true,
-                0,
-                0,
-                0);
-
-            session.CompleteRewindInPlace(restoredSnapshot, metadata);
-
-            Assert.That(session.RunState.TutorialFlags.TryGetValue("shop.tutorial.day1.guided", out bool completed) && completed, Is.True);
-            Assert.That(session.CurrentPhase, Is.EqualTo(GamePhase.CustomerEncounter));
-        }
-
-        [Test]
-        public void ApplyTutorialFlag_SetsFlagOnRunStateResumeAndDayStartSnapshotOnly()
-        {
-            GameSession session = CreateInPlaceCapableSession();
-            RunState dayStartBefore = session.DayStartSnapshot.RunState;
-            int money = dayStartBefore.Money;
-            int suspicion = dayStartBefore.Suspicion;
-            IReadOnlyList<string> seenOrders = dayStartBefore.SeenOrderIds;
-
-            session.ApplyTutorialFlag("shop.tutorial.day1.guided", true);
-
-            Assert.That(session.RunState.TutorialFlags.TryGetValue("shop.tutorial.day1.guided", out bool live) && live, Is.True);
-            Assert.That(session.DayStartSnapshot.RunState.TutorialFlags.TryGetValue("shop.tutorial.day1.guided", out bool snap) && snap, Is.True);
-            Assert.That(session.DayStartSnapshot.RunState.Money, Is.EqualTo(money));
-            Assert.That(session.DayStartSnapshot.RunState.Suspicion, Is.EqualTo(suspicion));
-            Assert.That(session.DayStartSnapshot.RunState.SeenOrderIds, Is.EqualTo(seenOrders));
-
-            var resumeField = typeof(GameSession).GetField("resumeRunState", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
-            var resume = (RunState)resumeField.GetValue(session);
-            Assert.That(resume, Is.Not.Null);
-            Assert.That(resume.TutorialFlags.TryGetValue("shop.tutorial.day1.guided", out bool resumeFlag) && resumeFlag, Is.True);
-        }
-
-        [Test]
-        public async Task Complete_FullRewindPath_KeepsTutorialFlag()
-        {
-            GameSession session = CreatePendingRewindSession(9);
-            session.ApplyTutorialFlag("shop.tutorial.day1.guided", true);
-            var saves = new FakeSaveRepository();
-            var scenes = new FakeSceneLoader();
-            await new EnterRewindUseCase(saves, scenes, new FakeRandomSource { NextValue = 707 })
-                .ExecuteAsync(session);
-            var complete = new CompleteRewindUseCase(saves, scenes, new FakeRandomSource { NextValue = 808 });
-
-            RewindTransactionResult result = await complete.ExecuteAsync(session);
-
-            Assert.That(result.Succeeded, Is.True, result.ErrorMessage);
-            Assert.That(session.RunState.TutorialFlags.TryGetValue("shop.tutorial.day1.guided", out bool completed) && completed, Is.True);
-            Assert.That(saves.SavedSnapshot.RunState.TutorialFlags.TryGetValue("shop.tutorial.day1.guided", out bool saved) && saved, Is.True);
-        }
-
         private static GameSession CreatePendingRewindSession(int startingMoney)
         {
             var rules = CreateRules();
@@ -246,52 +170,6 @@ namespace Witch.Application.Tests
         private static PotionServiceRules CreateRules()
         {
             return new PotionServiceRules(10);
-        }
-
-        private static GameSession CreateInPlaceCapableSession()
-        {
-            var session = new StartNewRunUseCase().Execute(new StartNewRunCommand(
-                "run.inplace",
-                0,
-                new[] { "category.warm" },
-                new[] { "herb.ginger", "herb.mint" },
-                new[] { "guidebook.warm" },
-                101,
-                TimeSpan.FromMinutes(4),
-                "expense.day.1",
-                20,
-                1,
-                DateTimeOffset.UtcNow)).Session;
-            new OpenShopUseCase().Execute(session);
-            new AdmitCustomerUseCase(new FakeClock()).Execute(
-                session,
-                new AdmitCustomerCommand(
-                    "customer.1",
-                    new OrderRequest("order.1", new HerbPair("herb.ginger", "herb.mint"))));
-            Assert.That(session.CanResumeInPlace, Is.True);
-            return session;
-        }
-
-        private static GameSession CreateInPlaceRewindSessionWithFlagOnLiveStateButNotResume()
-        {
-            GameSession session = CreateInPlaceCapableSession();
-            var flags = BindingFlags.Instance | BindingFlags.NonPublic;
-            var resumeField = typeof(GameSession).GetField("resumeRunState", flags);
-            RunState resumeWithoutFlag = (RunState)resumeField.GetValue(session);
-            typeof(GameSession).GetProperty("RunState").SetValue(session, session.RunState.WithTutorialFlag("shop.tutorial.day1.guided", true));
-            typeof(GameSession).GetProperty("DayStartSnapshot").SetValue(session, new DayStartSnapshot(
-                session.DayStartSnapshot.RunState.WithTutorialFlag("shop.tutorial.day1.guided", true),
-                session.DayStartSnapshot.OrderSeed,
-                session.DayStartSnapshot.TimerDuration,
-                session.DayStartSnapshot.ExpenseId,
-                session.DayStartSnapshot.ExpenseValue,
-                session.DayStartSnapshot.SaveVersion,
-                session.DayStartSnapshot.CapturedAtUtc));
-            resumeField.SetValue(session, resumeWithoutFlag);
-            Assert.That(session.CanResumeInPlace, Is.True);
-            Assert.That(session.RunState.TutorialFlags.TryGetValue("shop.tutorial.day1.guided", out bool live) && live, Is.True);
-            Assert.That(resumeWithoutFlag.TutorialFlags.TryGetValue("shop.tutorial.day1.guided", out bool resume) && resume, Is.False);
-            return session;
         }
     }
 }

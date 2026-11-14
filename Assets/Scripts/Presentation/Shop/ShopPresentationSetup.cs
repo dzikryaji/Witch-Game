@@ -216,14 +216,13 @@ namespace Witch.Presentation.Shop
             IReadOnlyList<ShopHerbViewData> herbs,
             string guidebookText = "",
             int dayNumber = 1,
-            bool guidedTutorialEnabled = false,
+            bool showOpeningTutorial = false,
             int encounterSeed = 0,
             bool randomizeEncounters = false,
             IReadOnlyList<string> seenOrderIds = null,
             string introductionOrderId = null,
             bool oneTimeIntroduction = false,
-            IReadOnlyList<string> introductionCategoryOrderIds = null,
-            string guidedTutorialOrderId = null)
+            IReadOnlyList<string> introductionCategoryOrderIds = null)
             : this(
                 encounters,
                 herbs,
@@ -232,15 +231,13 @@ namespace Witch.Presentation.Shop
                     .Select((text, index) => new GuidebookPageViewData(index + 1, text))
                     .ToArray(),
                 dayNumber,
-                guidedTutorialEnabled,
+                showOpeningTutorial,
                 encounterSeed,
                 randomizeEncounters,
                 seenOrderIds,
                 introductionOrderId,
                 oneTimeIntroduction,
-                introductionCategoryOrderIds,
-                null,
-                guidedTutorialOrderId)
+                introductionCategoryOrderIds)
         {
         }
 
@@ -249,23 +246,21 @@ namespace Witch.Presentation.Shop
             IReadOnlyList<ShopHerbViewData> herbs,
             IReadOnlyList<GuidebookPageViewData> guidebookPages,
             int dayNumber = 1,
-            bool guidedTutorialEnabled = false,
+            bool showOpeningTutorial = false,
             int encounterSeed = 0,
             bool randomizeEncounters = false,
             IReadOnlyList<string> seenOrderIds = null,
             string introductionOrderId = null,
             bool oneTimeIntroduction = false,
             IReadOnlyList<string> introductionCategoryOrderIds = null,
-            ShopCustomerViewData witchHunter = null,
-            string guidedTutorialOrderId = null)
+            ShopCustomerViewData witchHunter = null)
         {
             Encounters = encounters ?? throw new ArgumentNullException(nameof(encounters));
             if (Encounters.Count == 0) throw new ArgumentException("At least one encounter is required.", nameof(encounters));
             Herbs = herbs ?? throw new ArgumentNullException(nameof(herbs));
             GuidebookPages = guidebookPages ?? throw new ArgumentNullException(nameof(guidebookPages));
             DayNumber = dayNumber;
-            GuidedTutorialEnabled = guidedTutorialEnabled;
-            GuidedTutorialOrderId = guidedTutorialOrderId;
+            ShowOpeningTutorial = showOpeningTutorial;
             EncounterSeed = encounterSeed;
             RandomizeEncounters = randomizeEncounters;
             SeenOrderIds = seenOrderIds ?? Array.Empty<string>();
@@ -283,9 +278,7 @@ namespace Witch.Presentation.Shop
         public IReadOnlyList<ShopHerbViewData> Herbs { get; }
         public IReadOnlyList<GuidebookPageViewData> GuidebookPages { get; }
         public int DayNumber { get; }
-        public bool GuidedTutorialEnabled { get; }
-        public string GuidedTutorialOrderId { get; }
-        public bool ShowOpeningTutorial => GuidedTutorialEnabled;
+        public bool ShowOpeningTutorial { get; }
         public int EncounterSeed { get; }
         public bool RandomizeEncounters { get; }
         public IReadOnlyList<string> SeenOrderIds { get; }

@@ -92,11 +92,10 @@ namespace Witch.Application.Flow
                 session.AttemptState.ActiveOrder,
                 session.PreparedPotion);
 
-            // Always persist daily counters after any committed service.
-            // Clean Ledger depends on WrongServiceCountToday/ServiceCountToday/MinigamePlayedToday.
+            // Always persist ServiceCountToday after any service,
+            // so Clean Ledger tracks served customers regardless of outcome kind
             if (attemptRepository != null)
             {
-                bool wrongValid = outcome.Kind == ServiceOutcomeKind.WrongValid;
                 var metadata = new ActiveAttemptMetadata(
                     outcome.UpdatedRunState.RunId,
                     outcome.UpdatedRunState.CurrentDayNumber,
@@ -105,12 +104,9 @@ namespace Witch.Application.Flow
                     false,
                     0,
                     session.AttemptMetadata.ActiveOrderSeed,
-                    session.AttemptMetadata.WrongServiceCountToday + (wrongValid ? 1 : 0),
+                    session.AttemptMetadata.WrongServiceCountToday + (outcome.Kind == ServiceOutcomeKind.WrongValid ? 1 : 0),
                     session.AttemptMetadata.ServiceCountToday + 1,
-                    session.AttemptMetadata.MinigamePlayedToday,
-                    session.AttemptMetadata.CorrectServiceCountToday + (outcome.Kind == ServiceOutcomeKind.Correct ? 1 : 0),
-                    session.AttemptMetadata.CoinsEarnedToday + outcome.Payment,
-                    session.AttemptMetadata.WrongOrdersForSummary + (wrongValid ? 1 : 0));
+                    session.AttemptMetadata.MinigamePlayedToday);
                 SaveStateResult save = await attemptRepository.SaveActiveAttemptMetadataAsync(
                     metadata,
                     cancellationToken);
