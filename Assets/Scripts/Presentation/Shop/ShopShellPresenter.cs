@@ -120,6 +120,7 @@ namespace Witch.Presentation.Shop
         private bool guidedTutorialTimerFrozen;
         private bool guidedTutorialWaitingForServe;
         private IRunStateTransactionRepository saveRepository;
+        private MarkTutorialFlagUseCase markTutorialFlagUseCase;
         private readonly List<HerbDragItem> herbSlots = new List<HerbDragItem>();
         private string grinderFirstHerbId;
         private string grinderSecondHerbId;
@@ -202,6 +203,11 @@ namespace Witch.Presentation.Shop
             saveRepository = repository;
         }
 
+        public void ConfigureTutorialFlag(MarkTutorialFlagUseCase useCase)
+        {
+            markTutorialFlagUseCase = useCase;
+        }
+
         public void ConfigureTransition(DayTransitionController transition)
         {
             dayTransition = transition;
@@ -260,7 +266,9 @@ namespace Witch.Presentation.Shop
                 setup.IntroductionCategoryOrderIds);
             guidedTutorialOrderId = setup.GuidedTutorialOrderId;
             guidedTutorialActive = false;
-            guidedTutorialSeenMarked = false;
+            guidedTutorialSeenMarked = ActiveSession != null
+                && ActiveSession.RunState.TutorialFlags.TryGetValue(ShopTutorialFlags.Day1GuidedCompleted, out bool completed)
+                && completed;
             guidedTutorialWaitingForServe = false;
             guidedTutorialTimerFrozen = false;
 
@@ -1041,6 +1049,12 @@ namespace Witch.Presentation.Shop
         {
             if (guidedTutorialActive || guidedTutorialSeenMarked) return;
             if (!ShouldRunGuidedTutorial() || !IsTutorialOrderActive()) return;
+            if (ActiveSession == null
+                || ActiveSession.AttemptState.UsedOrderIds.Count != 1
+                || !string.Equals(ActiveSession.AttemptState.UsedOrderIds[0], guidedTutorialOrderId, StringComparison.Ordinal))
+            {
+                return;
+            }
             guidedTutorialActive = true;
             guidedTutorialStep = ShopGuidedTutorialStep.ReadOrder;
             guidedTutorialWaitingForServe = false;
@@ -1090,22 +1104,50 @@ namespace Witch.Presentation.Shop
 
         private async void MarkGuidedTutorialSeen()
         {
-            if (guidedTutorialSeenMarked || ActiveSession == null) return;
+            if (ActiveSession == null || guidedTutorialSeenMarked) return;
+            if (ActiveSession.RunState.TutorialFlags.TryGetValue(ShopTutorialFlags.Day1GuidedCompleted, out bool completed) && completed)
+            {
+                guidedTutorialSeenMarked = true;
+                return;
+            }
+
             guidedTutorialSeenMarked = true;
-            RunState updated = ActiveSession.RunState.WithTutorialFlag(ShopTutorialFlags.Day1GuidedCompleted, true);
-            if (saveRepository == null) return;
+
+            if (markTutorialFlagUseCase != null)
+            {
+                try
+                {
+                    SaveStateResult result = await markTutorialFlagUseCase.ExecuteAsync(
+                        ActiveSession,
+                        ShopTutorialFlags.Day1GuidedCompleted,
+                        lifetimeCancellation?.Token ?? CancellationToken.None);
+                    if (!result.Succeeded)
+                    {
+                        Debug.LogWarning("Failed to persist guided tutorial flag: " + result.ErrorMessage, this);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogWarning("Failed to persist guided tutorial flag: " + ex.Message, this);
+                }
+                return;
+            }
+
+            // Fallback: apply to session and persist day-start snapshot (keeps money/seen orders at day start).
             try
             {
-                // Persist with updated run state; DayStartSnapshot/metadata preserved for this day attempt.
-                var snapshot = new Witch.Domain.Progression.DayStartSnapshot(
-                    updated,
-                    ActiveSession.DayStartSnapshot.OrderSeed,
-                    ActiveSession.DayStartSnapshot.TimerDuration,
-                    ActiveSession.DayStartSnapshot.ExpenseId,
-                    ActiveSession.DayStartSnapshot.ExpenseValue,
-                    ActiveSession.DayStartSnapshot.SaveVersion,
-                    ActiveSession.DayStartSnapshot.CapturedAtUtc);
-                await saveRepository.SaveRunStateAsync(snapshot, ActiveSession.AttemptMetadata);
+                ActiveSession.ApplyTutorialFlag(ShopTutorialFlags.Day1GuidedCompleted, true);
+                if (saveRepository != null)
+                {
+                    SaveStateResult save = await saveRepository.SaveRunStateAsync(
+                        ActiveSession.DayStartSnapshot,
+                        ActiveSession.AttemptMetadata,
+                        lifetimeCancellation?.Token ?? CancellationToken.None);
+                    if (!save.Succeeded)
+                    {
+                        Debug.LogWarning("Failed to persist guided tutorial flag: " + save.ErrorMessage, this);
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -1324,7 +1366,7 @@ namespace Witch.Presentation.Shop
             if (ActiveSession.CurrentPhase == Witch.Domain.GamePhase.CustomerArrival)
             {
                 ShopEncounterViewData encounter = null;
-                if (ShouldRunGuidedTutorial())
+                if (ShouldRunGuidedTutorial() && ActiveSession.AttemptState.UsedOrderIds.Count == 0)
                 {
                     encounter = FindGuidedTutorialEncounter() ?? FindNextEncounter();
                 }

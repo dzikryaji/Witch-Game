@@ -353,6 +353,7 @@ namespace Witch.Application.Flow
             DayStartSnapshot dayStartSnapshot,
             ActiveAttemptMetadata attemptMetadata)
         {
+            RunState failedAttemptRunState = RunState;
             DayStartSnapshot = dayStartSnapshot ?? throw new ArgumentNullException(nameof(dayStartSnapshot));
             AttemptMetadata = attemptMetadata ?? throw new ArgumentNullException(nameof(attemptMetadata));
             // Money and per-day new counters roll back to the pre-service snapshot.
@@ -371,11 +372,13 @@ namespace Witch.Application.Flow
                 resumeCorrectServiceCountToday,
                 resumeCoinsEarnedToday,
                 resumeWrongOrdersForSummary);
-            RunState = resumeRunState.WithProgress(
+            RunState baseResumeRunState = resumeRunState ?? failedAttemptRunState;
+            RunState = baseResumeRunState.WithProgress(
                 attemptMetadata.DayNumber,
-                resumeRunState.Money,
+                baseResumeRunState.Money,
                 AttemptMetadata.Suspicion,       // reset by the use case
-                AttemptMetadata.RewindCount);    // incremented once by the use case
+                AttemptMetadata.RewindCount)     // incremented once by the use case
+                .WithTutorialFlagsFrom(failedAttemptRunState);
 
             ClearWorkbench();
             ServiceCommitted = false;            // the same customer can be served again
@@ -430,6 +433,24 @@ namespace Witch.Application.Flow
         {
             LastDaySummary = null;
             TryTransition(GamePhase.ShopPreparation);
+        }
+
+        public void ApplyTutorialFlag(string flagId, bool value)
+        {
+            RunState = RunState.WithTutorialFlag(flagId, value);
+            if (resumeRunState != null)
+            {
+                resumeRunState = resumeRunState.WithTutorialFlag(flagId, value);
+            }
+
+            DayStartSnapshot = new DayStartSnapshot(
+                DayStartSnapshot.RunState.WithTutorialFlag(flagId, value),
+                DayStartSnapshot.OrderSeed,
+                DayStartSnapshot.TimerDuration,
+                DayStartSnapshot.ExpenseId,
+                DayStartSnapshot.ExpenseValue,
+                DayStartSnapshot.SaveVersion,
+                DayStartSnapshot.CapturedAtUtc);
         }
 
         internal void RetryDay(

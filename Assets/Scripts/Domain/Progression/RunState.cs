@@ -226,6 +226,58 @@ namespace Witch.Domain.Progression
                 ServedCategoryIds);
         }
 
+        public RunState WithTutorialFlagsFrom(RunState source)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+
+            Dictionary<string, bool> merged = null;
+            foreach (KeyValuePair<string, bool> flag in source.TutorialFlags)
+            {
+                if (!flag.Value)
+                {
+                    continue;
+                }
+
+                if (TutorialFlags.TryGetValue(flag.Key, out bool existing) && existing)
+                {
+                    continue;
+                }
+
+                if (merged == null)
+                {
+                    merged = new Dictionary<string, bool>(StringComparer.Ordinal);
+                    foreach (KeyValuePair<string, bool> own in TutorialFlags)
+                    {
+                        merged.Add(own.Key, own.Value);
+                    }
+                }
+
+                merged[flag.Key] = true;
+            }
+
+            if (merged == null)
+            {
+                return this;
+            }
+
+            return new RunState(
+                RunId,
+                CurrentDayNumber,
+                Money,
+                Suspicion,
+                RewindCount,
+                UnlockedCategoryIds,
+                UnlockedHerbIds,
+                UnlockedGuidebookEntryIds,
+                merged,
+                NarrativeFlags,
+                SeenOrderIds,
+                ServedCategoryIds);
+        }
+
         public RunState MarkCompleted()
         {
             var flags = new Dictionary<string, bool>(StringComparer.Ordinal);

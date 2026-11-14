@@ -50,6 +50,7 @@ namespace Witch.Bootstrap
         private ResolveExpenseUseCase resolveExpense;
         private RetryDayUseCase retryDay;
         private ContinueToNextDayUseCase continueToNextDay;
+        private MarkTutorialFlagUseCase markTutorialFlag;
         private IGameAudioService audioService;
         private IGameCenterService gameCenter;
         private SetShopTimerPausedUseCase setShopTimerPaused;
@@ -223,6 +224,7 @@ namespace Witch.Bootstrap
                 gameCenter);
             retryDay = new RetryDayUseCase(runRepository, sceneLoader);
             continueToNextDay = new ContinueToNextDayUseCase(sceneLoader);
+            markTutorialFlag = new MarkTutorialFlagUseCase(runRepository);
 
             var startNewRun = new StartNewRunUseCase();
             startNewGame = new StartNewGameUseCase(
@@ -356,6 +358,7 @@ namespace Witch.Bootstrap
                         presenter.ConfigurePolish(setShopTimerPaused, audioService, settingsService.Current);
                         presenter.ConfigureNavigation(sceneLoader);
                         presenter.ConfigurePersistence(runRepository);
+                        presenter.ConfigureTutorialFlag(markTutorialFlag);
                         presenter.ConfigureTransition(DayTransition);
                         presenter.Initialize(
                             sessionStore,
