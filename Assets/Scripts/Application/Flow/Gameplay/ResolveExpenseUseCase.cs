@@ -61,6 +61,16 @@ namespace Witch.Application.Flow
 
             if (outcome.Kind == ExpenseOutcomeKind.Victory)
             {
+                // Capture summary before victory save/apply (trivial to show on Day 14).
+                int dayTaxPaid = session.DayStartSnapshot.ExpenseValue;
+                var daySummary = new DaySummaryData(
+                    session.AttemptMetadata.CorrectServiceCountToday,
+                    session.AttemptMetadata.WrongOrdersForSummary,
+                    session.AttemptMetadata.CoinsEarnedToday,
+                    dayTaxPaid,
+                    outcome.UpdatedRunState.Money,
+                    paidDay);
+
                 RunState completedRun = outcome.UpdatedRunState.MarkCompleted();
                 var completedSnapshot = new DayStartSnapshot(
                     completedRun,
@@ -94,6 +104,7 @@ namespace Witch.Application.Flow
                 bool victoryMinigamePlayedToday = session.AttemptMetadata.MinigamePlayedToday;
                 session.BeginExpenseCheck();
                 session.ApplyVictory(completedSnapshot, completedMetadata);
+                session.SetLastDaySummary(daySummary);
                 _ = GameCenterReporting.ReportQuietlyAsync(gameCenter, GameCenterAchievementIds.SecretKept, 100d);
                 if (paidDay > RunState.FirstDay && !servedWrongOnVictoryDay && victoryServiceCountToday > 0 && !victoryMinigamePlayedToday && !cleanLedgerReported)
                 {
@@ -136,11 +147,21 @@ namespace Witch.Application.Flow
                 return ExpenseResolutionResult.Failure(ExpenseResolutionError.SaveFailed, save.ErrorMessage);
             }
 
+            // Capture today's summary before counters are reset by the next-day metadata.
             bool servedWrongToday = session.AttemptMetadata.WrongServiceCountToday > 0;
             int serviceCountToday = session.AttemptMetadata.ServiceCountToday;
             bool minigamePlayedToday = session.AttemptMetadata.MinigamePlayedToday;
+            int taxPaid = session.DayStartSnapshot.ExpenseValue;
+            var summary = new DaySummaryData(
+                session.AttemptMetadata.CorrectServiceCountToday,
+                session.AttemptMetadata.WrongOrdersForSummary,
+                session.AttemptMetadata.CoinsEarnedToday,
+                taxPaid,
+                outcome.UpdatedRunState.Money,
+                paidDay);
+
             session.BeginExpenseCheck();
-            session.AdvanceDay(snapshot, metadata);
+            session.AdvanceDay(snapshot, metadata, summary);
             if (paidDay == RunState.FirstDay)
             {
                 _ = GameCenterReporting.ReportQuietlyAsync(gameCenter, GameCenterAchievementIds.FirstShift, 100d);

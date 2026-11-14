@@ -8,8 +8,10 @@ using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using Witch.Application.Flow;
 using Witch.Application.Ports;
+using Witch.Domain;
 using Witch.Domain.Potions;
 using Witch.Domain.Progression;
+using Witch.Presentation;
 
 namespace Witch.Presentation.Shop
 {
@@ -58,8 +60,12 @@ namespace Witch.Presentation.Shop
 
         [SerializeField] private GameObject progressionPanel;
         [SerializeField] private Text progressionText;
-        [SerializeField] private Button resolveExpenseButton;
-        [SerializeField] private Button retryButton;
+        [SerializeField] private Text dayTitleText;
+        [SerializeField] private Text correctOrdersText;
+        [SerializeField] private Text wrongOrdersText;
+        [SerializeField] private Text coinsEarnedText;
+        [SerializeField] private Text taxPaidText;
+        [SerializeField] private Text coinsRemainingText;
         [SerializeField] private Button continueButton;
         [SerializeField] private GameObject pausePanel;
         [SerializeField] private Button resumeButton;
@@ -94,10 +100,17 @@ namespace Witch.Presentation.Shop
         private ISceneLoader sceneLoader;
         private IGameAudioService audioService;
         private GameSettingsState settings;
+        private DayTransitionController dayTransition;
+        private bool waitingForTransitionRelease;
+        private bool pendingStartAfterReveal;
+        private bool pendingStartIsResume;
         private int tutorialBeat;
         private bool viewBound;
         private CancellationTokenSource lifetimeCancellation;
         private bool actionInProgress;
+        private bool autoResolveExpenseInFlight;
+        private bool autoResolveExpenseAttempted;
+        private string autoResolveExpenseError;
         private InputAction pauseAction;
         private InputAction guidebookAction;
         private bool guidedTutorialActive;
@@ -107,6 +120,7 @@ namespace Witch.Presentation.Shop
         private bool guidedTutorialTimerFrozen;
         private bool guidedTutorialWaitingForServe;
         private IRunStateTransactionRepository saveRepository;
+        private MarkTutorialFlagUseCase markTutorialFlagUseCase;
         private readonly List<HerbDragItem> herbSlots = new List<HerbDragItem>();
         private string grinderFirstHerbId;
         private string grinderSecondHerbId;
@@ -153,8 +167,12 @@ namespace Witch.Presentation.Shop
             && preparedPotionText != null
             && progressionPanel != null
             && progressionText != null
-            && resolveExpenseButton != null
-            && retryButton != null
+            && dayTitleText != null
+            && correctOrdersText != null
+            && wrongOrdersText != null
+            && coinsEarnedText != null
+            && taxPaidText != null
+            && coinsRemainingText != null
             && continueButton != null
             && pausePanel != null
             && resumeButton != null
@@ -183,6 +201,16 @@ namespace Witch.Presentation.Shop
         public void ConfigurePersistence(IRunStateTransactionRepository repository)
         {
             saveRepository = repository;
+        }
+
+        public void ConfigureTutorialFlag(MarkTutorialFlagUseCase useCase)
+        {
+            markTutorialFlagUseCase = useCase;
+        }
+
+        public void ConfigureTransition(DayTransitionController transition)
+        {
+            dayTransition = transition;
         }
 
         public void Initialize(IGameSessionStore store)
@@ -238,7 +266,9 @@ namespace Witch.Presentation.Shop
                 setup.IntroductionCategoryOrderIds);
             guidedTutorialOrderId = setup.GuidedTutorialOrderId;
             guidedTutorialActive = false;
-            guidedTutorialSeenMarked = false;
+            guidedTutorialSeenMarked = ActiveSession != null
+                && ActiveSession.RunState.TutorialFlags.TryGetValue(ShopTutorialFlags.Day1GuidedCompleted, out bool completed)
+                && completed;
             guidedTutorialWaitingForServe = false;
             guidedTutorialTimerFrozen = false;
 
@@ -258,26 +288,66 @@ namespace Witch.Presentation.Shop
             hudView.ClearCustomer();
             audioService?.PlayMusic(GameAudioCueIds.ShopMusic);
             audioService?.PlayAmbience(GameAudioCueIds.ShopAmbience);
-            if (IsResumingEncounter())
+            Exception initException = null;
+            try
             {
-                ResumeEncounter();
-                // If resuming into a tutorial-eligible day1 state with no seen flag, restart guided tutorial cleanly.
-                if (ShouldRunGuidedTutorial() && ActiveSession != null && ActiveSession.CurrentPhase == Witch.Domain.GamePhase.CustomerEncounter)
+                bool deferStart = dayTransition != null && dayTransition.HasPendingShopReveal;
+                pendingStartAfterReveal = false;
+                pendingStartIsResume = false;
+                if (deferStart)
                 {
-                    TryStartGuidedTutorialForCurrentEncounter();
+                    hudView.ResetDayCycleToMorning();
+                    hudView.ClearCustomer();
+                    pendingStartAfterReveal = true;
+                    pendingStartIsResume = IsResumingEncounter();
+                    if (setTimerPaused != null)
+                    {
+                        setTimerPaused.Execute(ActiveSession, true);
+                        waitingForTransitionRelease = true;
+                    }
                 }
+                else if (IsResumingEncounter())
+                {
+                    ResumeEncounter();
+                    if (ShouldRunGuidedTutorial() && ActiveSession != null && ActiveSession.CurrentPhase == Witch.Domain.GamePhase.CustomerEncounter)
+                    {
+                        TryStartGuidedTutorialForCurrentEncounter();
+                    }
+                }
+                else
+                {
+                    BeginArrival();
+                }
+
+                Render();
             }
-            else
+            catch (Exception ex)
             {
-                BeginArrival();
+                initException = ex;
+                Debug.LogException(ex, this);
             }
-            Render();
-            if ((ActiveSession.CurrentPhase == Witch.Domain.GamePhase.RewindPending
-                    || (ActiveSession.CurrentPhase == Witch.Domain.GamePhase.RewindMinigame
-                        && ActiveSession.AttemptMetadata.PendingRewind))
-                && enterRewind != null)
+            finally
             {
-                ResumePendingRewind();
+                // Always attempt reveal so a pending cover cannot trap the player.
+                HandleDayTransitionReveal();
+            }
+
+            if (initException == null)
+            {
+                try
+                {
+                    if ((ActiveSession.CurrentPhase == Witch.Domain.GamePhase.RewindPending
+                            || (ActiveSession.CurrentPhase == Witch.Domain.GamePhase.RewindMinigame
+                                && ActiveSession.AttemptMetadata.PendingRewind))
+                        && enterRewind != null)
+                    {
+                        ResumePendingRewind();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogException(ex, this);
+                }
             }
         }
 
@@ -321,6 +391,8 @@ namespace Witch.Presentation.Shop
                 // Poll for async completions (e.g. order bubble entrance).
                 EvaluateGuidedTutorialProgress();
             }
+
+            TryAutoResolveExpense();
         }
 
         private void OnEnable()
@@ -634,12 +706,6 @@ namespace Witch.Presentation.Shop
             {
                 await EnterPendingRewindAsync(cancellationToken);
             }
-            if (result.Succeeded
-                && ActiveSession.CurrentPhase == Witch.Domain.GamePhase.RewindPending
-                && enterRewind != null)
-            {
-                await EnterPendingRewindAsync(cancellationToken);
-            }
             else if (result.Succeeded
                 && (ActiveSession.CurrentPhase == Witch.Domain.GamePhase.CustomerArrival
                     || ActiveSession.CurrentPhase == Witch.Domain.GamePhase.ClosingEncounter))
@@ -663,41 +729,113 @@ namespace Witch.Presentation.Shop
             Render();
         }
 
-        public async Task<ExpenseResolutionResult> ResolveExpenseAsync()
+        private void TryAutoResolveExpense()
         {
-            CancellationToken cancellationToken = lifetimeCancellation?.Token ?? CancellationToken.None;
-            ExpenseResolutionResult result = await resolveExpense.ExecuteAsync(ActiveSession, cancellationToken);
-            SetStatus(result.Succeeded ? "Daily expense resolved." : result.ErrorMessage);
-            if (result.Succeeded && ActiveSession.CurrentPhase == Witch.Domain.GamePhase.GameOver)
+            if (resolveExpense == null || ActiveSession == null || autoResolveExpenseInFlight || autoResolveExpenseAttempted)
             {
-                audioService?.Play(GameAudioCueIds.ExpenseFail);
-                audioService?.PlayMusic(GameAudioCueIds.GameOverMusic);
+                return;
             }
-            else if (result.Succeeded && ActiveSession.CurrentPhase == Witch.Domain.GamePhase.Victory)
+
+            if (ActiveSession.CurrentPhase != Witch.Domain.GamePhase.ClosingEncounter || PendingCounterCoins > 0)
             {
-                audioService?.Play(GameAudioCueIds.ExpensePay);
-                audioService?.PlayMusic(GameAudioCueIds.VictoryMusic);
+                return;
             }
-            else if (result.Succeeded)
-            {
-                audioService?.Play(GameAudioCueIds.ExpensePay);
-            }
-            Render();
-            return result;
+
+            autoResolveExpenseAttempted = true;
+            autoResolveExpenseInFlight = true;
+            RunUiAction(ResolveExpenseAutomaticallyAsync);
         }
 
-        public async Task<ExpenseResolutionResult> RetryDayAsync()
+        private async Task ResolveExpenseAutomaticallyAsync()
         {
-            CancellationToken cancellationToken = lifetimeCancellation?.Token ?? CancellationToken.None;
-            ExpenseResolutionResult result = await retryDay.ExecuteAsync(ActiveSession, cancellationToken);
-            SetStatus(result.Succeeded ? "Same day restored." : result.ErrorMessage);
-            return result;
+            try
+            {
+                CancellationToken cancellationToken = lifetimeCancellation?.Token ?? CancellationToken.None;
+                ExpenseResolutionResult result = await resolveExpense.ExecuteAsync(ActiveSession, cancellationToken);
+                if (!result.Succeeded)
+                {
+                    autoResolveExpenseError = string.IsNullOrWhiteSpace(result.ErrorMessage)
+                        ? "Daily expense could not be resolved."
+                        : result.ErrorMessage;
+                    SetStatus("Auto-resolve failed: " + autoResolveExpenseError);
+                    Debug.LogError("Shop auto-resolve failed: " + autoResolveExpenseError, this);
+                    Render();
+                    return;
+                }
+
+                autoResolveExpenseError = null;
+                SetStatus("Daily expense resolved.");
+                if (ActiveSession.CurrentPhase == Witch.Domain.GamePhase.GameOver)
+                {
+                    audioService?.Play(GameAudioCueIds.ExpenseFail);
+                    audioService?.PlayMusic(GameAudioCueIds.GameOverMusic);
+                }
+                else if (ActiveSession.CurrentPhase == Witch.Domain.GamePhase.Victory)
+                {
+                    audioService?.Play(GameAudioCueIds.ExpensePay);
+                    audioService?.PlayMusic(GameAudioCueIds.VictoryMusic);
+                }
+                else
+                {
+                    audioService?.Play(GameAudioCueIds.ExpensePay);
+                }
+
+                Render();
+            }
+            finally
+            {
+                autoResolveExpenseInFlight = false;
+            }
+        }
+
+        private void ResetAutoResolveExpenseState()
+        {
+            autoResolveExpenseInFlight = false;
+            autoResolveExpenseAttempted = false;
+            autoResolveExpenseError = null;
         }
 
         public async Task<ExpenseResolutionResult> ContinueNextDayAsync()
         {
             CancellationToken cancellationToken = lifetimeCancellation?.Token ?? CancellationToken.None;
-            ExpenseResolutionResult result = await continueToNextDay.ExecuteAsync(ActiveSession, cancellationToken);
+            if (dayTransition == null || ActiveSession == null || ActiveSession.CurrentPhase != GamePhase.DaySummary)
+            {
+                ExpenseResolutionResult direct = await continueToNextDay.ExecuteAsync(ActiveSession, cancellationToken);
+                SetStatus(direct.Succeeded ? "Opening next day." : direct.ErrorMessage);
+                return direct;
+            }
+
+            if (dayTransition.IsPlaying)
+            {
+                return ExpenseResolutionResult.Failure(ExpenseResolutionError.InvalidPhase, "Day transition is already running.");
+            }
+
+            int nextDay = ActiveSession.RunState.CurrentDayNumber;
+            var completion = new TaskCompletionSource<ExpenseResolutionResult>();
+            dayTransition.PlayDayToDayTransition(nextDay, async () =>
+            {
+                ExpenseResolutionResult advanced = continueToNextDay.AdvanceFromSummary(ActiveSession);
+                if (!advanced.Succeeded)
+                {
+                    dayTransition.CancelPendingReveal();
+                    completion.TrySetResult(advanced);
+                    return;
+                }
+
+                // Old presenter can be destroyed/cancelled during load; do not cancel the handoff load with it.
+                SceneLoadResult scene = await sceneLoader.LoadAsync(SceneId.Shop, CancellationToken.None);
+                if (!scene.Succeeded)
+                {
+                    dayTransition.CancelPendingReveal();
+                    await sceneLoader.LoadAsync(SceneId.MainMenu, CancellationToken.None);
+                    completion.TrySetResult(ExpenseResolutionResult.Failure(ExpenseResolutionError.SceneLoadFailed, scene.ErrorMessage));
+                    return;
+                }
+
+                completion.TrySetResult(ExpenseResolutionResult.Success());
+            });
+
+            ExpenseResolutionResult result = await completion.Task;
             SetStatus(result.Succeeded ? "Opening next day." : result.ErrorMessage);
             return result;
         }
@@ -911,6 +1049,12 @@ namespace Witch.Presentation.Shop
         {
             if (guidedTutorialActive || guidedTutorialSeenMarked) return;
             if (!ShouldRunGuidedTutorial() || !IsTutorialOrderActive()) return;
+            if (ActiveSession == null
+                || ActiveSession.AttemptState.UsedOrderIds.Count != 1
+                || !string.Equals(ActiveSession.AttemptState.UsedOrderIds[0], guidedTutorialOrderId, StringComparison.Ordinal))
+            {
+                return;
+            }
             guidedTutorialActive = true;
             guidedTutorialStep = ShopGuidedTutorialStep.ReadOrder;
             guidedTutorialWaitingForServe = false;
@@ -960,22 +1104,50 @@ namespace Witch.Presentation.Shop
 
         private async void MarkGuidedTutorialSeen()
         {
-            if (guidedTutorialSeenMarked || ActiveSession == null) return;
+            if (ActiveSession == null || guidedTutorialSeenMarked) return;
+            if (ActiveSession.RunState.TutorialFlags.TryGetValue(ShopTutorialFlags.Day1GuidedCompleted, out bool completed) && completed)
+            {
+                guidedTutorialSeenMarked = true;
+                return;
+            }
+
             guidedTutorialSeenMarked = true;
-            RunState updated = ActiveSession.RunState.WithTutorialFlag(ShopTutorialFlags.Day1GuidedCompleted, true);
-            if (saveRepository == null) return;
+
+            if (markTutorialFlagUseCase != null)
+            {
+                try
+                {
+                    SaveStateResult result = await markTutorialFlagUseCase.ExecuteAsync(
+                        ActiveSession,
+                        ShopTutorialFlags.Day1GuidedCompleted,
+                        lifetimeCancellation?.Token ?? CancellationToken.None);
+                    if (!result.Succeeded)
+                    {
+                        Debug.LogWarning("Failed to persist guided tutorial flag: " + result.ErrorMessage, this);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogWarning("Failed to persist guided tutorial flag: " + ex.Message, this);
+                }
+                return;
+            }
+
+            // Fallback: apply to session and persist day-start snapshot (keeps money/seen orders at day start).
             try
             {
-                // Persist with updated run state; DayStartSnapshot/metadata preserved for this day attempt.
-                var snapshot = new Witch.Domain.Progression.DayStartSnapshot(
-                    updated,
-                    ActiveSession.DayStartSnapshot.OrderSeed,
-                    ActiveSession.DayStartSnapshot.TimerDuration,
-                    ActiveSession.DayStartSnapshot.ExpenseId,
-                    ActiveSession.DayStartSnapshot.ExpenseValue,
-                    ActiveSession.DayStartSnapshot.SaveVersion,
-                    ActiveSession.DayStartSnapshot.CapturedAtUtc);
-                await saveRepository.SaveRunStateAsync(snapshot, ActiveSession.AttemptMetadata);
+                ActiveSession.ApplyTutorialFlag(ShopTutorialFlags.Day1GuidedCompleted, true);
+                if (saveRepository != null)
+                {
+                    SaveStateResult save = await saveRepository.SaveRunStateAsync(
+                        ActiveSession.DayStartSnapshot,
+                        ActiveSession.AttemptMetadata,
+                        lifetimeCancellation?.Token ?? CancellationToken.None);
+                    if (!save.Succeeded)
+                    {
+                        Debug.LogWarning("Failed to persist guided tutorial flag: " + save.ErrorMessage, this);
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -1135,25 +1307,39 @@ namespace Witch.Presentation.Shop
 
         private void UpdateTutorialInteractionState()
         {
-            if (!guidedTutorialActive)
+            if (guidedTutorialActive)
             {
+                // Restrict shelf interaction to the two tutorial herbs during the load step.
+                for (int i = 0; i < herbSlots.Count; i++)
+                {
+                    HerbDragItem drag = herbSlots[i];
+                    if (drag == null) continue;
+                    Button button = drag.GetComponent<Button>();
+                    if (button == null) continue;
+                    bool activeSlot = !string.IsNullOrWhiteSpace(drag.HerbId);
+                    button.interactable = activeSlot && (guidedTutorialStep != ShopGuidedTutorialStep.LoadHerbs || GuidedTutorialAllowsHerb(drag.HerbId));
+                }
+                if (grindButton != null) grindButton.interactable = GrinderIsFull && (guidedTutorialStep == ShopGuidedTutorialStep.Grind || guidedTutorialStep == ShopGuidedTutorialStep.LoadHerbs);
+                if (ejectGrinderButton != null) ejectGrinderButton.interactable = false;
+                if (discardGroundButton != null) discardGroundButton.interactable = false;
+                if (emptyPotButton != null) emptyPotButton.interactable = false;
+                if (brewButton != null) brewButton.interactable = false; // brewing is automatic on add in this flow
                 return;
             }
-            // Restrict shelf interaction to the two tutorial herbs during the load step.
+
             for (int i = 0; i < herbSlots.Count; i++)
             {
                 HerbDragItem drag = herbSlots[i];
                 if (drag == null) continue;
                 Button button = drag.GetComponent<Button>();
                 if (button == null) continue;
-                bool activeSlot = !string.IsNullOrWhiteSpace(drag.HerbId);
-                button.interactable = activeSlot && (!guidedTutorialActive || guidedTutorialStep != ShopGuidedTutorialStep.LoadHerbs || GuidedTutorialAllowsHerb(drag.HerbId));
+                button.interactable = !string.IsNullOrWhiteSpace(drag.HerbId);
             }
-            if (grindButton != null) grindButton.interactable = GrinderIsFull && (!guidedTutorialActive || guidedTutorialStep == ShopGuidedTutorialStep.Grind || guidedTutorialStep == ShopGuidedTutorialStep.LoadHerbs);
-            if (ejectGrinderButton != null) ejectGrinderButton.interactable = GuidedTutorialAllowsUndo();
-            if (discardGroundButton != null) discardGroundButton.interactable = GuidedTutorialAllowsUndo();
-            if (emptyPotButton != null) emptyPotButton.interactable = GuidedTutorialAllowsUndo();
-            if (brewButton != null) brewButton.interactable = !guidedTutorialActive; // brewing is automatic on add in this flow
+            if (grindButton != null) grindButton.interactable = GrinderIsFull;
+            if (ejectGrinderButton != null) ejectGrinderButton.interactable = true;
+            if (discardGroundButton != null) discardGroundButton.interactable = true;
+            if (emptyPotButton != null) emptyPotButton.interactable = true;
+            if (brewButton != null) brewButton.interactable = true;
         }
 
 
@@ -1164,6 +1350,8 @@ namespace Witch.Presentation.Shop
                 SetStatus("No active run.");
                 return;
             }
+
+            ResetAutoResolveExpenseState();
 
             if (ActiveSession.CurrentPhase == Witch.Domain.GamePhase.ShopPreparation)
             {
@@ -1178,7 +1366,7 @@ namespace Witch.Presentation.Shop
             if (ActiveSession.CurrentPhase == Witch.Domain.GamePhase.CustomerArrival)
             {
                 ShopEncounterViewData encounter = null;
-                if (ShouldRunGuidedTutorial())
+                if (ShouldRunGuidedTutorial() && ActiveSession.AttemptState.UsedOrderIds.Count == 0)
                 {
                     encounter = FindGuidedTutorialEncounter() ?? FindNextEncounter();
                 }
@@ -1295,6 +1483,7 @@ namespace Witch.Presentation.Shop
             return encounterDeck.Draw(ActiveSession.AttemptState.UsedOrderIds.Count);
         }
 
+
         private void RequireAndBindAuthoredView()
         {
             if (!HasAuthoredView)
@@ -1336,8 +1525,6 @@ namespace Witch.Presentation.Shop
             pauseButton.onClick.AddListener(TogglePause);
             resumeButton.onClick.AddListener(TogglePause);
             mainMenuButton.onClick.AddListener(OnMainMenuClicked);
-            resolveExpenseButton.onClick.AddListener(OnResolveExpenseClicked);
-            retryButton.onClick.AddListener(OnRetryClicked);
             continueButton.onClick.AddListener(OnContinueClicked);
             tutorialContinueButton.onClick.RemoveListener(AdvanceTutorial);
             tutorialContinueButton.onClick.AddListener(OnTutorialContinueClicked);
@@ -1490,10 +1677,7 @@ namespace Witch.Presentation.Shop
 
             }
             RenderProgression(session);
-            if (guidedTutorialActive)
-            {
-                UpdateTutorialInteractionState();
-            }
+            UpdateTutorialInteractionState();
         }
 
         private void RenderProgression(GameSession session)
@@ -1503,55 +1687,86 @@ namespace Witch.Presentation.Shop
                 return;
             }
 
-            // The last customer's coins must be collected by hand before the shop-closed panel appears.
+            // The last customer's coins must be collected by hand before the day closes.
             bool waitingForCoins = session.CurrentPhase == Witch.Domain.GamePhase.ClosingEncounter
                 && PendingCounterCoins > 0;
             if (counterCoins != null) counterCoins.SetWaiting(waitingForCoins);
-            if (waitingForCoins) SetStatus("Collect the coins on the counter before closing the shop.");
+            if (waitingForCoins)
+            {
+                SetStatus("Collect the coins on the counter before closing the shop.");
+                autoResolveExpenseAttempted = false;
+                autoResolveExpenseError = null;
+            }
 
             bool focusingSuspicion = suspicionFocus != null && suspicionFocus.IsPlaying;
+            bool showSummary = session.CurrentPhase == Witch.Domain.GamePhase.DaySummary
+                || session.CurrentPhase == Witch.Domain.GamePhase.Victory;
+            bool showGameOver = session.CurrentPhase == Witch.Domain.GamePhase.GameOver;
+            bool showClosingError = session.CurrentPhase == Witch.Domain.GamePhase.ClosingEncounter
+                && !waitingForCoins
+                && !string.IsNullOrWhiteSpace(autoResolveExpenseError);
             bool visible = !waitingForCoins
                 && !focusingSuspicion
-                && (session.CurrentPhase == Witch.Domain.GamePhase.ClosingEncounter
-                    || session.CurrentPhase == Witch.Domain.GamePhase.GameOver
-                    || session.CurrentPhase == Witch.Domain.GamePhase.DaySummary
-                    || session.CurrentPhase == Witch.Domain.GamePhase.Victory);
+                && (showSummary || showGameOver || showClosingError);
             progressionPanel.SetActive(visible);
             if (!visible)
             {
                 return;
             }
 
-            resolveExpenseButton.gameObject.SetActive(session.CurrentPhase == Witch.Domain.GamePhase.ClosingEncounter);
-            retryButton.gameObject.SetActive(session.CurrentPhase == Witch.Domain.GamePhase.GameOver);
             continueButton.gameObject.SetActive(session.CurrentPhase == Witch.Domain.GamePhase.DaySummary);
-            if (session.CurrentPhase == Witch.Domain.GamePhase.ClosingEncounter)
+
+            SetSummaryRowsVisible(showSummary);
+            progressionText.gameObject.SetActive(showGameOver || showClosingError);
+
+            if (showClosingError)
             {
-                progressionText.text = "SHOP CLOSED\nCoins: " + session.RunState.Money + "\nExpense: " + session.DayStartSnapshot.ExpenseValue;
+                progressionText.text = "SHOP CLOSED\n" + autoResolveExpenseError;
+                return;
             }
-            else if (session.CurrentPhase == Witch.Domain.GamePhase.GameOver)
+
+            if (showGameOver)
             {
-                progressionText.text = "GAME OVER\nNot enough coins. Nothing was deducted.\nYou may retry the same day.";
+                progressionText.text = "GAME OVER\nNot enough coins. Nothing was deducted.";
+                return;
             }
-            else if (session.CurrentPhase == Witch.Domain.GamePhase.DaySummary)
+
+            if (showSummary)
             {
-                progressionText.text = "EXPENSE PAID\nRemaining coins: " + session.RunState.Money + "\nDay " + session.RunState.CurrentDayNumber + " awaits.";
-            }
-            else
-            {
-                progressionText.text = ActiveSession.RunState.CurrentDayNumber
-                    + " DAYS COMPLETE\nYou survived all fourteen days.\nThe herbalist's secret remains safe.";
+                DaySummaryData summary = session.LastDaySummary;
+                int dayNumber = summary == null ? session.RunState.CurrentDayNumber : summary.DayNumber;
+                dayTitleText.text = session.CurrentPhase == Witch.Domain.GamePhase.Victory
+                    ? dayNumber + " DAYS COMPLETE"
+                    : "DAY " + dayNumber + " COMPLETE";
+                correctOrdersText.text = "Correct Orders									.................................." + (summary == null ? 0 : summary.CorrectOrders);
+                wrongOrdersText.text = "Wrong Orders									.................................." + (summary == null ? 0 : summary.WrongOrders);
+                coinsEarnedText.text = "Your Today's Income		    		    ................................$" + (summary == null ? 0 : summary.CoinsEarned);
+                taxPaidText.text = "Tax													................................$" + (summary == null ? 0 : summary.TaxPaid);
+                coinsRemainingText.text = "Current Total Coin												   $" + (summary == null ? 0 : summary.CoinsRemaining);
             }
         }
 
-        private void OnResolveExpenseClicked() => RunUiAction(ResolveExpenseAsync);
-        private void OnRetryClicked() => RunUiAction(RetryDayAsync);
+        private void SetSummaryRowsVisible(bool visible)
+        {
+            if (dayTitleText != null) dayTitleText.gameObject.SetActive(visible);
+            if (correctOrdersText != null) correctOrdersText.gameObject.SetActive(visible);
+            if (wrongOrdersText != null) wrongOrdersText.gameObject.SetActive(visible);
+            if (coinsEarnedText != null) coinsEarnedText.gameObject.SetActive(visible);
+            if (taxPaidText != null) taxPaidText.gameObject.SetActive(visible);
+            if (coinsRemainingText != null) coinsRemainingText.gameObject.SetActive(visible);
+        }
+
         private void OnContinueClicked() => RunUiAction(ContinueNextDayAsync);
         private void OnMainMenuClicked() => RunUiAction(ReturnToMainMenuAsync);
 
         private async void RunUiAction(Func<Task> action)
         {
             if (actionInProgress || action == null)
+            {
+                return;
+            }
+
+            if (dayTransition != null && dayTransition.IsPlaying)
             {
                 return;
             }
@@ -1716,6 +1931,7 @@ namespace Witch.Presentation.Shop
 
         private void ResumeEncounter()
         {
+            ResetAutoResolveExpenseState();
             string orderId = ActiveSession.AttemptState.ActiveOrder.OrderId;
             ShopEncounterViewData encounter = setup.Encounters
                 .FirstOrDefault(e => e.Order != null && e.Order.OrderId == orderId);
@@ -1729,11 +1945,109 @@ namespace Witch.Presentation.Shop
                     encounter.CustomerIllustration);
             }
 
-            if (!guidedTutorialTimerFrozen)
+            if (!guidedTutorialTimerFrozen && !waitingForTransitionRelease)
             {
                 setTimerPaused?.Execute(ActiveSession, false); // clock continues from the remaining time
             }
             SetStatus("The spell worked. Time is back. Serve the order again.");
+        }
+
+        private void HandleDayTransitionReveal()
+        {
+            try
+            {
+                if (dayTransition == null || ActiveSession == null || !dayTransition.HasPendingShopReveal)
+                {
+                    waitingForTransitionRelease = waitingForTransitionRelease && pendingStartAfterReveal;
+                    return;
+                }
+
+                int day = ActiveSession.RunState.CurrentDayNumber;
+                dayTransition.SetDayNumber(day);
+                hudView.ResetDayCycleToMorning();
+                if (setTimerPaused != null)
+                {
+                    setTimerPaused.Execute(ActiveSession, true);
+                    waitingForTransitionRelease = true;
+                }
+                dayTransition.RevealIfPending(ReleaseTimerAfterTransition);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogException(ex, this);
+                if (dayTransition != null)
+                {
+                    dayTransition.ForceReveal(ReleaseTimerAfterTransition, "HandleDayTransitionReveal-exception");
+                }
+            }
+        }
+
+        private void ReleaseTimerAfterTransition()
+        {
+            try
+            {
+                if (ActiveSession == null)
+                {
+                    waitingForTransitionRelease = false;
+                    pendingStartAfterReveal = false;
+                    return;
+                }
+
+                if (pendingStartAfterReveal)
+                {
+                    if (pendingStartIsResume)
+                    {
+                        StartResumedEncounterAfterReveal();
+                    }
+                    else
+                    {
+                        BeginArrival();
+                    }
+                    pendingStartAfterReveal = false;
+                    pendingStartIsResume = false;
+                    Render();
+                }
+
+                waitingForTransitionRelease = false;
+                if (setTimerPaused == null) return;
+
+                // Day 1 guided tutorial keeps timer frozen until serve/skip (existing behavior).
+                if (guidedTutorialActive && guidedTutorialTimerFrozen)
+                {
+                    return;
+                }
+
+                if (ShouldRunGuidedTutorial() && ActiveSession.CurrentPhase == Witch.Domain.GamePhase.CustomerEncounter && IsTutorialOrderActive())
+                {
+                    return;
+                }
+
+                setTimerPaused.Execute(ActiveSession, false);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogException(ex, this);
+            }
+        }
+
+        private void StartResumedEncounterAfterReveal()
+        {
+            ResetAutoResolveExpenseState();
+            string orderId = ActiveSession.AttemptState.ActiveOrder.OrderId;
+            ShopEncounterViewData encounter = setup.Encounters
+                .FirstOrDefault(e => e.Order != null && e.Order.OrderId == orderId);
+
+            Debug.Log($"[Resume] order={orderId} found={encounter != null}");
+            if (encounter != null)
+            {
+                hudView.SetCustomer(
+                    encounter.CustomerName,
+                    encounter.OrderBubbles,
+                    encounter.CustomerIllustration);
+            }
+
+            SetStatus("The spell worked. Time is back. Serve the order again.");
+            // Timer release handled by ReleaseTimerAfterTransition (frozen only for guided tutorial).
         }
 
     }

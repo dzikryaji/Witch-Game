@@ -11,7 +11,7 @@ namespace Witch.Presentation.Shop
             ShopShellPresenter presenter = GetComponentInParent<ShopShellPresenter>();
             if (presenter == null)
             {
-                presenter = FindObjectOfType<ShopShellPresenter>();
+                presenter = Object.FindAnyObjectByType<ShopShellPresenter>(FindObjectsInactive.Include);
             }
             if (presenter != null)
             {

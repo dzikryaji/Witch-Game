@@ -9,6 +9,7 @@ using Witch.Infrastructure.Audio;
 using Witch.Infrastructure.Persistence;
 using Witch.Infrastructure.Platform;
 using Witch.Infrastructure.Scenes;
+using Witch.Presentation;
 using Witch.Presentation.MainMenu;
 using Witch.Presentation.Rewind;
 using Witch.Presentation.Shop;
@@ -49,6 +50,7 @@ namespace Witch.Bootstrap
         private ResolveExpenseUseCase resolveExpense;
         private RetryDayUseCase retryDay;
         private ContinueToNextDayUseCase continueToNextDay;
+        private MarkTutorialFlagUseCase markTutorialFlag;
         private IGameAudioService audioService;
         private IGameCenterService gameCenter;
         private SetShopTimerPausedUseCase setShopTimerPaused;
@@ -60,6 +62,7 @@ namespace Witch.Bootstrap
         public bool IsReady { get; private set; }
         public string StartupError { get; private set; }
         public IGameSessionStore SessionStore => sessionStore;
+        public DayTransitionController DayTransition { get; private set; }
 
         private void Awake()
         {
@@ -73,6 +76,7 @@ namespace Witch.Bootstrap
             QualitySettings.vSyncCount = 0;
             UnityEngine.Application.targetFrameRate = targetFrameRate;
             DontDestroyOnLoad(gameObject);
+            DayTransition = EnsureDayTransition();
             SceneManager.sceneLoaded += HandleSceneLoaded;
             Compose();
         }
@@ -220,6 +224,7 @@ namespace Witch.Bootstrap
                 gameCenter);
             retryDay = new RetryDayUseCase(runRepository, sceneLoader);
             continueToNextDay = new ContinueToNextDayUseCase(sceneLoader);
+            markTutorialFlag = new MarkTutorialFlagUseCase(runRepository);
 
             var startNewRun = new StartNewRunUseCase();
             startNewGame = new StartNewGameUseCase(
@@ -300,13 +305,46 @@ namespace Witch.Bootstrap
             }
         }
 
+        private DayTransitionController EnsureDayTransition()
+        {
+            DayTransitionController existing = DayTransition;
+            if (existing == null)
+            {
+                existing = GetComponentInChildren<DayTransitionController>(true);
+            }
+            if (existing == null)
+            {
+                existing = FindAnyObjectByType<DayTransitionController>(FindObjectsInactive.Include);
+            }
+            if (existing != null && existing.gameObject.scene.name != "DontDestroyOnLoad")
+            {
+                DontDestroyOnLoad(existing.gameObject);
+            }
+            if (existing == null)
+            {
+                existing = DayTransitionController.CreateRuntime(transform);
+            }
+            else
+            {
+            }
+            return existing;
+        }
+
         private void Inject(Scene scene)
         {
             foreach (GameObject root in scene.GetRootGameObjects())
             {
                 foreach (MainMenuPresenter presenter in root.GetComponentsInChildren<MainMenuPresenter>(true))
                 {
-                    presenter.Initialize(startNewGame, loadRun, settingsService, applicationLifecycle, audioService);
+                    presenter.Initialize(
+                        startNewGame,
+                        loadRun,
+                        settingsService,
+                        applicationLifecycle,
+                        audioService,
+                        DayTransition,
+                        runRepository as IDayStartSnapshotRepository,
+                        runRepository as IActiveAttemptMetadataRepository);
                 }
 
                 foreach (ShopShellPresenter presenter in root.GetComponentsInChildren<ShopShellPresenter>(true))
@@ -320,6 +358,8 @@ namespace Witch.Bootstrap
                         presenter.ConfigurePolish(setShopTimerPaused, audioService, settingsService.Current);
                         presenter.ConfigureNavigation(sceneLoader);
                         presenter.ConfigurePersistence(runRepository);
+                        presenter.ConfigureTutorialFlag(markTutorialFlag);
+                        presenter.ConfigureTransition(DayTransition);
                         presenter.Initialize(
                             sessionStore,
                             openShop,
