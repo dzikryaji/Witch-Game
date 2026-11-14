@@ -122,6 +122,111 @@ namespace Witch.Presentation.Shop
         {
             StopEntrance();
             ResetEntranceSignal();
+            PrepareCustomerPresentation(customerName, customerIllustration);
+
+            foreach (string bubbleContent in orderBubbles ?? Array.Empty<string>())
+            {
+                if (string.IsNullOrWhiteSpace(bubbleContent)) continue;
+                bubbleSlots.Add(CreateBubbleSlot(bubbleContent));
+            }
+
+            entranceRoutine = StartCoroutine(AnimateCustomerEntrance());
+        }
+
+        /// <summary>
+        /// Shows the customer already present with fully revealed bubbles. No portrait slide-in and no
+        /// typewriter replay. Used when restoring the Witch Hunter after returning from the minigame.
+        /// </summary>
+        public void ShowCustomerPresentImmediate(
+            string customerName,
+            IReadOnlyList<string> orderBubbles,
+            Sprite customerIllustration)
+        {
+            StopEntrance();
+            ResetEntranceSignal();
+            PrepareCustomerPresentation(customerName, customerIllustration);
+
+            customerPortrait.anchoredPosition = portraitRestPosition;
+            customerPortraitCanvasGroup.alpha = 1f;
+
+            foreach (string bubbleContent in orderBubbles ?? Array.Empty<string>())
+            {
+                if (string.IsNullOrWhiteSpace(bubbleContent)) continue;
+                BubbleSlot slot = CreateBubbleSlot(bubbleContent);
+                ShowSlotImmediate(slot);
+                bubbleSlots.Add(slot);
+            }
+
+            LayoutRebuilder.ForceRebuildLayoutImmediate(orderBubbleContent);
+            SnapToNewest();
+            entranceComplete.TrySetResult(true);
+        }
+
+        public async Task RevealAdditionalBubbleAsync(string bubbleContent, CancellationToken cancellationToken)
+        {
+            if (string.IsNullOrWhiteSpace(bubbleContent)) return;
+
+            BubbleSlot bubble = CreateBubbleSlot(bubbleContent);
+            bubbleSlots.Add(bubble);
+            skipTyping = false;
+
+            await RunCoroutineAsync(GrowSlot(bubble), cancellationToken);
+            await RunCoroutineAsync(AnimateEntry(bubble.Bubble, bubble.Group, Vector2.zero), cancellationToken);
+            await RunCoroutineAsync(TypeText(bubble), cancellationToken);
+
+            float elapsed = 0f;
+            while (elapsed < bubblePause)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                elapsed += Time.unscaledDeltaTime;
+                await Task.Yield();
+            }
+        }
+
+        /// <summary>
+        /// Completes any running customer/order-bubble entrance animation immediately so all original
+        /// bubbles are fully visible. Does not replay animations or clear existing bubbles.
+        /// </summary>
+        public void CompleteOrderBubbleEntrancesImmediately()
+        {
+            bool hadEntrance = entranceRoutine != null;
+            StopEntrance();
+            skipTyping = true;
+
+            if (customerPortrait != null)
+            {
+                customerPortrait.gameObject.SetActive(true);
+                customerPortrait.anchoredPosition = portraitRestPosition;
+            }
+            if (customerPortraitCanvasGroup != null)
+            {
+                customerPortraitCanvasGroup.alpha = 1f;
+            }
+
+            for (int i = 0; i < bubbleSlots.Count; i++)
+            {
+                BubbleSlot bubble = bubbleSlots[i];
+                if (bubble == null) continue;
+                ShowSlotImmediate(bubble);
+            }
+
+            if (orderBubbleContent != null)
+            {
+                LayoutRebuilder.ForceRebuildLayoutImmediate(orderBubbleContent);
+            }
+            if (!playerScrolledOrders)
+            {
+                SnapToNewest();
+            }
+
+            if (hadEntrance || !entranceComplete.Task.IsCompleted)
+            {
+                entranceComplete.TrySetResult(true);
+            }
+        }
+
+        private void PrepareCustomerPresentation(string customerName, Sprite customerIllustration)
+        {
             ClearOrderBubbles();
             orderBubbleContent.anchorMin = new Vector2(orderBubbleContent.anchorMin.x, 0f);
             orderBubbleContent.anchorMax = new Vector2(orderBubbleContent.anchorMax.x, 0f);
@@ -141,14 +246,25 @@ namespace Witch.Presentation.Shop
                 .rootCanvas.transform as RectTransform;
             LayoutRebuilder.ForceRebuildLayoutImmediate(canvasRoot);
             Canvas.ForceUpdateCanvases();
+        }
 
-            foreach (string bubbleContent in orderBubbles ?? Array.Empty<string>())
+        private static void ShowSlotImmediate(BubbleSlot bubble)
+        {
+            bubble.Slot.gameObject.SetActive(true);
+            bubble.SlotLayout.preferredHeight = bubble.FullSlotHeight;
+            bubble.Bubble.anchoredPosition = Vector2.zero;
+            bubble.Group.alpha = 1f;
+            bubble.Label.text = bubble.FullText;
+        }
+
+        private async Task RunCoroutineAsync(IEnumerator routine, CancellationToken cancellationToken)
+        {
+            if (routine == null) return;
+            while (routine.MoveNext())
             {
-                if (string.IsNullOrWhiteSpace(bubbleContent)) continue;
-                bubbleSlots.Add(CreateBubbleSlot(bubbleContent));
+                cancellationToken.ThrowIfCancellationRequested();
+                await Task.Yield();
             }
-
-            entranceRoutine = StartCoroutine(AnimateCustomerEntrance());
         }
 
         public void ClearCustomer()

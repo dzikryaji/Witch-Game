@@ -15,11 +15,12 @@ MonoBehaviour:
   stableId: order.simple.c02
   difficulty: 0
   orderBubbles:
-  - River fog blocked my nose during a difficult boat haul.
-  - Now my shoulders and knees ache badly.
-  - Mint never troubles my stomach, and my lungs are strong.
-  - "An old ferryman\u2019s recipe pairs mint with Salix alba."
-  - He says the bark eases muscle and joint pain.
+  - "Good afternoon."
+  - "River fog blocked my nose during a difficult boat haul."
+  - "Now my shoulders and knees ache badly."
+  - "Mint never troubles my stomach, and my lungs are strong."
+  - "An old ferryman’s recipe pairs mint with Salix alba."
+  - "He says the bark eases muscle and joint pain."
   firstHerbId: herb.peppermint
   secondHerbId: herb.whiteWillow
   customer: {fileID: 11400000, guid: 3965e9fdac9e6466c91a76e9ffa93d8b, type: 2}

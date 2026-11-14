@@ -57,6 +57,57 @@ namespace Witch.Presentation.Shop
         public Sprite Illustration { get; }
     }
 
+    public sealed class WitchHunterDialogueViewData
+    {
+        private readonly IReadOnlyList<IReadOnlyList<string>> accusations;
+        private readonly IReadOnlyList<string> successLines;
+
+        public WitchHunterDialogueViewData(
+            IReadOnlyList<IReadOnlyList<string>> stageAccusations,
+            IReadOnlyList<string> stageSuccessLines)
+        {
+            if (stageAccusations == null) throw new ArgumentNullException(nameof(stageAccusations));
+            if (stageSuccessLines == null) throw new ArgumentNullException(nameof(stageSuccessLines));
+            if (stageAccusations.Count != stageSuccessLines.Count)
+            {
+                throw new ArgumentException(
+                    "Witch hunter dialogue accusations and success lines must have the same stage count.",
+                    nameof(stageSuccessLines));
+            }
+
+            var accusationCopy = new List<IReadOnlyList<string>>(stageAccusations.Count);
+            foreach (IReadOnlyList<string> stage in stageAccusations)
+            {
+                accusationCopy.Add(new List<string>(stage ?? Array.Empty<string>()).AsReadOnly());
+            }
+
+            accusations = accusationCopy.AsReadOnly();
+            successLines = new List<string>(stageSuccessLines).AsReadOnly();
+        }
+
+        public int StageCount => successLines.Count;
+
+        public IReadOnlyList<string> GetAccusations(int stageIndex)
+        {
+            return accusations[ValidateStageIndex(stageIndex)];
+        }
+
+        public string GetSuccessLine(int stageIndex)
+        {
+            return successLines[ValidateStageIndex(stageIndex)];
+        }
+
+        private int ValidateStageIndex(int stageIndex)
+        {
+            if (stageIndex < 0 || stageIndex >= successLines.Count)
+            {
+                throw new ArgumentOutOfRangeException(nameof(stageIndex));
+            }
+
+            return stageIndex;
+        }
+    }
+
     public sealed class ShopHerbViewData
     {
         public ShopHerbViewData(string stableId, string displayName, Sprite herbIllustration = null)
@@ -257,7 +308,8 @@ namespace Witch.Presentation.Shop
             bool oneTimeIntroduction = false,
             IReadOnlyList<string> introductionCategoryOrderIds = null,
             ShopCustomerViewData witchHunter = null,
-            string guidedTutorialOrderId = null)
+            string guidedTutorialOrderId = null,
+            WitchHunterDialogueViewData witchHunterDialogue = null)
         {
             Encounters = encounters ?? throw new ArgumentNullException(nameof(encounters));
             if (Encounters.Count == 0) throw new ArgumentException("At least one encounter is required.", nameof(encounters));
@@ -273,6 +325,7 @@ namespace Witch.Presentation.Shop
             OneTimeIntroduction = oneTimeIntroduction;
             IntroductionCategoryOrderIds = introductionCategoryOrderIds ?? Array.Empty<string>();
             WitchHunter = witchHunter;
+            WitchHunterDialogue = witchHunterDialogue;
         }
 
         public IReadOnlyList<ShopEncounterViewData> Encounters { get; }
@@ -293,5 +346,6 @@ namespace Witch.Presentation.Shop
         public bool OneTimeIntroduction { get; }
         public IReadOnlyList<string> IntroductionCategoryOrderIds { get; }
         public ShopCustomerViewData WitchHunter { get; }
+        public WitchHunterDialogueViewData WitchHunterDialogue { get; }
     }
 }

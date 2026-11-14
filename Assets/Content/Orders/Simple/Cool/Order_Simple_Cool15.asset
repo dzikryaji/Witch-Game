@@ -15,11 +15,11 @@ MonoBehaviour:
   stableId: order.simple.c15
   difficulty: 0
   orderBubbles:
-  - I was bitten by something poisonous
-  - while working in the fields.
-  - My body feels feverish, and my muscles ache terribly.
-  - A field healer prescribed blue-flowered Borago officinalis for the poison,
-  - and White Willow bark for the muscle pain.
+  - "Morning. I was bitten by something poisonous"
+  - "while working in the fields."
+  - "My body feels feverish, and my muscles ache terribly."
+  - "A field healer prescribed blue-flowered Borago officinalis for the poison,"
+  - "and White Willow bark for the muscle pain."
   firstHerbId: herb.borage
   secondHerbId: herb.whiteWillow
   customer: {fileID: 11400000, guid: 7a06e32b0a26b416c9f59776c3880e92, type: 2}

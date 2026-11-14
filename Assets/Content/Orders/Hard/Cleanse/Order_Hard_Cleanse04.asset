@@ -15,11 +15,11 @@ MonoBehaviour:
   stableId: order.hard.cl04
   difficulty: 2
   orderBubbles:
-  - A journey left me bloated from something swallowed.
-  - I need excess water released and toxins expelled.
-  - Bring the sharp-edged leaf with a yellow flower.
-  - Add the dark, toxic flower with deep-growing roots.
-  - I drink freely and have no throat ulcers.
+  - "Hi. A journey left me bloated from something swallowed."
+  - "I need excess water released and toxins expelled."
+  - "Bring the sharp-edged leaf with a yellow flower."
+  - "Add the dark, toxic flower with deep-growing roots."
+  - "I drink freely and have no throat ulcers."
   firstHerbId: herb.dandelion
   secondHerbId: herb.blackHellebore
   customer: {fileID: 11400000, guid: 7a06e32b0a26b416c9f59776c3880e92, type: 2}

@@ -15,11 +15,12 @@ MonoBehaviour:
   stableId: order.mid.s08
   difficulty: 1
   orderBubbles:
-  - A mild chest cough keeps returning throughout the day.
-  - My muscles cramp, and my nerves feel restless.
-  - No pollen or spring-flower allergies affect me.
-  - My throat is not swollen, and I can swallow.
-  - Find small, fragrant flowers and a dark, sweet-tasting nightshade berry.
+  - "Excuse me."
+  - "A mild chest cough keeps returning throughout the day."
+  - "My muscles cramp, and my nerves feel restless."
+  - "No pollen or spring-flower allergies affect me."
+  - "My throat is not swollen, and I can swallow."
+  - "Find small, fragrant flowers and a dark, sweet-tasting nightshade berry."
   firstHerbId: herb.chamomile
   secondHerbId: herb.belladonnaBerry
   customer: {fileID: 11400000, guid: 12795f040a17d43ce94d717cf5b31324, type: 2}

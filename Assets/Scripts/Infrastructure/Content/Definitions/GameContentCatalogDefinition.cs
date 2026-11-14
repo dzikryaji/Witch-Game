@@ -14,6 +14,7 @@ namespace Witch.Infrastructure.Content
         [SerializeField] private HerbCategoryDefinition[] herbCategories = Array.Empty<HerbCategoryDefinition>();
         [SerializeField] private RewindCardDefinition[] rewindCards = Array.Empty<RewindCardDefinition>();
         [SerializeField] private RewindDifficultyDefinition rewindDifficulty;
+        [SerializeField] private WitchHunterDialogueDefinition witchHunterDialogue;
         [SerializeField, Min(0)] private int startingMoney;
         [SerializeField, Min(0)] private int correctOrderPayment = 10;
 
@@ -24,6 +25,7 @@ namespace Witch.Infrastructure.Content
         public IReadOnlyList<HerbCategoryDefinition> HerbCategories => herbCategories;
         public IReadOnlyList<RewindCardDefinition> RewindCards => rewindCards;
         public RewindDifficultyDefinition RewindDifficulty => rewindDifficulty;
+        public WitchHunterDialogueDefinition WitchHunterDialogue => witchHunterDialogue;
         public int StartingMoney => startingMoney;
         public int CorrectOrderPayment => correctOrderPayment;
 
@@ -36,7 +38,8 @@ namespace Witch.Infrastructure.Content
             IReadOnlyList<RewindCardDefinition> cardValues,
             RewindDifficultyDefinition difficulty,
             int initialMoney = 0,
-            int orderPayment = 10)
+            int orderPayment = 10,
+            WitchHunterDialogueDefinition witchHunterDialogueDefinition = null)
         {
             SetStableId("catalog.game");
             herbs = Copy(herbValues);
@@ -48,6 +51,7 @@ namespace Witch.Infrastructure.Content
             rewindDifficulty = difficulty;
             startingMoney = initialMoney;
             correctOrderPayment = orderPayment;
+            witchHunterDialogue = witchHunterDialogueDefinition;
         }
 
         [ContextMenu("Validate Game Content")]

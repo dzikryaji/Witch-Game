@@ -15,12 +15,12 @@ MonoBehaviour:
   stableId: order.simple.w13
   difficulty: 0
   orderBubbles:
-  - Good day.
-  - I've barely eaten in two days
-  - because of this terrible nausea,
-  - and now I'm shivering uncontrollably.
-  - I need that twisted, strong-flavoured root called ginger,
-  - and the dried buds a spice merchant calls Syzygium aromaticum.
+  - "Hi. Good day."
+  - "I've barely eaten in two days"
+  - "because of this terrible nausea,"
+  - "and now I'm shivering uncontrollably."
+  - "I need that twisted, strong-flavoured root called ginger,"
+  - "and the dried buds a spice merchant calls Syzygium aromaticum."
   firstHerbId: herb.ginger
   secondHerbId: herb.clove
   customer: {fileID: 11400000, guid: 12795f040a17d43ce94d717cf5b31324, type: 2}

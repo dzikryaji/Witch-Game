@@ -15,11 +15,11 @@ MonoBehaviour:
   stableId: order.simple.w11
   difficulty: 0
   orderBubbles:
-  - Bad inn food and cold rain ended my journey.
-  - My stomach aches, while chills and mucus clog my chest.
-  - I have no wounds, scrapes, or bleeding ulcers.
-  - An inn healer calls the stomach root Zingiber officinale.
-  - He pairs it with Sinapis alba for chills and mucus.
+  - "Afternoon. Bad inn food and cold rain ended my journey."
+  - "My stomach aches, while chills and mucus clog my chest."
+  - "I have no wounds, scrapes, or bleeding ulcers."
+  - "An inn healer calls the stomach root Zingiber officinale."
+  - "He pairs it with Sinapis alba for chills and mucus."
   firstHerbId: herb.ginger
   secondHerbId: herb.mustardSeed
   customer: {fileID: 11400000, guid: 7a06e32b0a26b416c9f59776c3880e92, type: 2}

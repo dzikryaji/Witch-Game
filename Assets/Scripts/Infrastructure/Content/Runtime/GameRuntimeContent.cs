@@ -20,7 +20,8 @@ namespace Witch.Infrastructure.Content
             NewRunSetup newRunSetup,
             DayProgressionSetup dayProgressionSetup,
             ExpenseRules expenseRules,
-            int correctOrderPayment)
+            int correctOrderPayment,
+            WitchHunterDialogueContent witchHunterDialogue)
         {
             HerbsById = new ReadOnlyDictionary<string, HerbContent>(
                 new Dictionary<string, HerbContent>(herbsById));
@@ -38,6 +39,7 @@ namespace Witch.Infrastructure.Content
             DayProgressionSetup = dayProgressionSetup;
             ExpenseRules = expenseRules;
             CorrectOrderPayment = correctOrderPayment;
+            WitchHunterDialogue = witchHunterDialogue;
         }
 
         public IReadOnlyDictionary<string, HerbContent> HerbsById { get; }
@@ -65,5 +67,6 @@ namespace Witch.Infrastructure.Content
         public DayProgressionSetup DayProgressionSetup { get; }
         public ExpenseRules ExpenseRules { get; }
         public int CorrectOrderPayment { get; }
+        public WitchHunterDialogueContent WitchHunterDialogue { get; }
     }
 }

@@ -15,11 +15,11 @@ MonoBehaviour:
   stableId: order.mid.s12
   difficulty: 1
   orderBubbles:
-  - My heart races at night, and sleep is difficult.
-  - I am deeply distressed after a serious injury.
-  - Intense dreams do not easily frighten me.
-  - I am off duty and can rest.
-  - Find a strong, earthy root and complex, unusual flower.
+  - "Afternoon. My heart races at night, and sleep is difficult."
+  - "I am deeply distressed after a serious injury."
+  - "Intense dreams do not easily frighten me."
+  - "I am off duty and can rest."
+  - "Find a strong, earthy root and complex, unusual flower."
   firstHerbId: herb.valerian
   secondHerbId: herb.passionFlower
   customer: {fileID: 11400000, guid: 3965e9fdac9e6466c91a76e9ffa93d8b, type: 2}

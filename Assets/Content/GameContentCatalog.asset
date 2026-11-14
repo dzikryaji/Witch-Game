@@ -333,5 +333,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: ef60154e48a664a5cb0b890d5b56651b, type: 2}
   - {fileID: 11400000, guid: 14365acd2124b4ab9b76e402425fb370, type: 2}
   rewindDifficulty: {fileID: 11400000, guid: 10000000000000000000000000000013, type: 2}
+  witchHunterDialogue: {fileID: 11400000, guid: 3394ecada708d44d88144b1b45736b8a, type: 2}
   startingMoney: 0
   correctOrderPayment: 10

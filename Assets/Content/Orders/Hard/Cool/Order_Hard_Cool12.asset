@@ -15,11 +15,12 @@ MonoBehaviour:
   stableId: order.hard.c12
   difficulty: 2
   orderBubbles:
-  - "Mill dust blocked my father\u2019s nose and caused headaches."
-  - Heavy lifting leaves his joints and muscles sore.
-  - Choose the dark green leaf with a sharp smell.
-  - Add the tough bark strip.
-  - His stomach and lungs remain sound.
+  - "Good morning."
+  - "Mill dust blocked my father’s nose and caused headaches."
+  - "Heavy lifting leaves his joints and muscles sore."
+  - "Choose the dark green leaf with a sharp smell."
+  - "Add the tough bark strip."
+  - "His stomach and lungs remain sound."
   firstHerbId: herb.peppermint
   secondHerbId: herb.whiteWillow
   customer: {fileID: 11400000, guid: 12795f040a17d43ce94d717cf5b31324, type: 2}

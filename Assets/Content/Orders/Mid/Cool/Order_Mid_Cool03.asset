@@ -15,10 +15,11 @@ MonoBehaviour:
   stableId: order.mid.c03
   difficulty: 1
   orderBubbles:
-  - My sister has fever, headache, and violent arm tremors.
-  - Find the dark green leaf with a sharp smell.
-  - Add the hard leaf with an unpleasant smell.
-  - Her heartbeat is strong, and reflux never troubles her.
+  - "Good afternoon."
+  - "My sister has fever, headache, and violent arm tremors."
+  - "Find the dark green leaf with a sharp smell."
+  - "Add the hard leaf with an unpleasant smell."
+  - "Her heartbeat is strong, and reflux never troubles her."
   firstHerbId: herb.peppermint
   secondHerbId: herb.henbane
   customer: {fileID: 11400000, guid: 10000000000000000000000000000006, type: 2}

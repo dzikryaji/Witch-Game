@@ -15,10 +15,10 @@ MonoBehaviour:
   stableId: order.mid.w03
   difficulty: 1
   orderBubbles:
-  - Exhausted muscles accompany my nausea and sore stomach.
-  - Bring the spicy, sweet tree bark.
-  - Add the twisted, tough root with strong flavor.
-  - I have no fever, wounds, or bleeding ulcers.
+  - "Afternoon. Exhausted muscles accompany my nausea and sore stomach."
+  - "Bring the spicy, sweet tree bark."
+  - "Add the twisted, tough root with strong flavor."
+  - "I have no fever, wounds, or bleeding ulcers."
   firstHerbId: herb.cinnamon
   secondHerbId: herb.ginger
   customer: {fileID: 11400000, guid: 4678338d721f2462d8a1979c0e069692, type: 2}

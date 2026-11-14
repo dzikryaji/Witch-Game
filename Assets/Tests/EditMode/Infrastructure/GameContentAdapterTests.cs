@@ -52,6 +52,12 @@ namespace Witch.Infrastructure.Tests
                 Is.GreaterThanOrEqualTo(result.Content.NewRunSetup.FirstDayExpenseValue));
             Assert.That(result.Content.RewindCardIds.Count, Is.EqualTo(12));
             Assert.That(result.Content.RewindDifficulty.MaximumPairCount, Is.EqualTo(8));
+            Assert.That(result.Content.WitchHunterDialogue.StageCount, Is.EqualTo(5));
+            Assert.That(result.Content.WitchHunterDialogue.GetAccusations(0)[0],
+                Is.EqualTo("I am a Witch Hunter, sent to investigate this village."));
+            Assert.That(result.Content.WitchHunterDialogue.GetAccusations(4).Count, Is.EqualTo(4));
+            Assert.That(result.Content.WitchHunterDialogue.GetSuccessLine(4),
+                Is.EqualTo("What was I doing here? I have matters elsewhere!"));
         }
 
         [Test]
@@ -222,7 +228,8 @@ namespace Witch.Infrastructure.Tests
                 catalog.Days.ToArray(),
                 catalog.HerbCategories.ToArray(),
                 catalog.RewindCards.ToArray(),
-                catalog.RewindDifficulty);
+                catalog.RewindDifficulty,
+                witchHunterDialogueDefinition: catalog.WitchHunterDialogue);
 
             GameContentLoadResult result = new GameContentAdapter().Load(catalog);
 
@@ -249,13 +256,113 @@ namespace Witch.Infrastructure.Tests
                 catalog.Days.ToArray(),
                 catalog.HerbCategories.ToArray(),
                 catalog.RewindCards.ToArray(),
-                catalog.RewindDifficulty);
+                catalog.RewindDifficulty,
+                witchHunterDialogueDefinition: catalog.WitchHunterDialogue);
 
             GameContentLoadResult result = new GameContentAdapter().Load(catalog);
 
             Assert.That(result.Succeeded, Is.True, string.Join("\n", result.Errors));
             Assert.That(result.Content.OrdersById["order.direct"].Customer.DisplayName,
                 Is.EqualTo("Assigned Villager"));
+        }
+
+        [Test]
+        public void Validate_MissingWitchHunterDialogueReturnsError()
+        {
+            GameContentCatalogDefinition catalog = ContentTestFixture.CreateValidCatalog();
+            AssignDialogue(catalog, null);
+
+            ContentValidationReport report = new GameContentValidator().Validate(catalog);
+
+            Assert.That(report.Errors.Any(error => error.Contains("Witch hunter dialogue definition is required")), Is.True);
+        }
+
+        [Test]
+        public void Validate_WitchHunterDialogueWithoutStagesReturnsError()
+        {
+            GameContentCatalogDefinition catalog = ContentTestFixture.CreateValidCatalog();
+            AssignDialogue(catalog, DefinitionFactory.Dialogue(
+                Array.Empty<string[]>(),
+                Array.Empty<string>()));
+
+            ContentValidationReport report = new GameContentValidator().Validate(catalog);
+
+            Assert.That(report.Errors.Any(error => error.Contains("needs at least one stage")), Is.True);
+        }
+
+        [Test]
+        public void Validate_WitchHunterStageWithoutAccusationsReturnsError()
+        {
+            GameContentCatalogDefinition catalog = ContentTestFixture.CreateValidCatalog();
+            AssignDialogue(catalog, DefinitionFactory.Dialogue(
+                new[] { Array.Empty<string>() },
+                new[] { "Ah, never mind." }));
+
+            ContentValidationReport report = new GameContentValidator().Validate(catalog);
+
+            Assert.That(report.Errors.Any(error => error.Contains("stage 1 needs at least one accusation")), Is.True);
+        }
+
+        [Test]
+        public void Validate_WitchHunterBlankAccusationReturnsError()
+        {
+            GameContentCatalogDefinition catalog = ContentTestFixture.CreateValidCatalog();
+            AssignDialogue(catalog, DefinitionFactory.Dialogue(
+                new[]
+                {
+                    new[] { "A question." },
+                    new[] { "Another question.", "   " }
+                },
+                new[] { "First success.", "Second success." }));
+
+            ContentValidationReport report = new GameContentValidator().Validate(catalog);
+
+            Assert.That(report.Errors.Any(error => error.Contains("stage 2 has a blank accusation")), Is.True);
+        }
+
+        [Test]
+        public void Validate_WitchHunterBlankSuccessLineReturnsError()
+        {
+            GameContentCatalogDefinition catalog = ContentTestFixture.CreateValidCatalog();
+            AssignDialogue(catalog, DefinitionFactory.Dialogue(
+                new[] { new[] { "A question." } },
+                new[] { " " }));
+
+            ContentValidationReport report = new GameContentValidator().Validate(catalog);
+
+            Assert.That(report.Errors.Any(error => error.Contains("stage 1 needs a success line")), Is.True);
+        }
+
+        [Test]
+        public void Load_MapsWitchHunterDialogueStages()
+        {
+            GameContentCatalogDefinition catalog = ContentTestFixture.CreateValidCatalog();
+
+            GameContentLoadResult result = new GameContentAdapter().Load(catalog);
+
+            Assert.That(result.Succeeded, Is.True, string.Join("\n", result.Errors));
+            Assert.That(result.Content.WitchHunterDialogue.StageCount, Is.EqualTo(2));
+            Assert.That(result.Content.WitchHunterDialogue.GetAccusations(0),
+                Is.EqualTo(new[] { "I am a Witch Hunter, sent to investigate this village." }));
+            Assert.That(result.Content.WitchHunterDialogue.GetSuccessLine(1),
+                Is.EqualTo("Strange... what was I questioning you about?"));
+            Assert.Throws<ArgumentOutOfRangeException>(
+                () => result.Content.WitchHunterDialogue.GetAccusations(2));
+        }
+
+        private static void AssignDialogue(
+            GameContentCatalogDefinition catalog,
+            WitchHunterDialogueDefinition dialogue)
+        {
+            catalog.Configure(
+                catalog.Herbs.ToArray(),
+                catalog.Orders.ToArray(),
+                catalog.Customers.ToArray(),
+                catalog.Days.ToArray(),
+                catalog.HerbCategories.ToArray(),
+                catalog.RewindCards.ToArray(),
+                catalog.RewindDifficulty,
+                witchHunterDialogueDefinition: dialogue);
         }
 
         [Test]

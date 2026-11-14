@@ -15,11 +15,11 @@ MonoBehaviour:
   stableId: order.simple.s03
   difficulty: 0
   orderBubbles:
-  - I need something soothing.
-  - "I fell off my cart and I\u2019m seriously hurt,"
-  - and my back muscles keep cramping.
-  - The cart healer prescribed Matricaria chamomilla for the cramps,
-  - and Passiflora for the injury.
+  - "Hello. I need something soothing."
+  - "I fell off my cart and I’m seriously hurt,"
+  - "and my back muscles keep cramping."
+  - "The cart healer prescribed Matricaria chamomilla for the cramps,"
+  - "and Passiflora for the injury."
   firstHerbId: herb.chamomile
   secondHerbId: herb.passionFlower
   customer: {fileID: 11400000, guid: 7a06e32b0a26b416c9f59776c3880e92, type: 2}

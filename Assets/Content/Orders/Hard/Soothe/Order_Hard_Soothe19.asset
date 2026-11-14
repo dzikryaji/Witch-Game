@@ -15,11 +15,11 @@ MonoBehaviour:
   stableId: order.hard.s19
   difficulty: 2
   orderBubbles:
-  - A serious injury has left me deeply distressed.
-  - Continuous coughing fits keep bothering my throat.
-  - I can rest and do not need alertness.
-  - My throat is not swollen, and I can swallow.
-  - Find a complex, unusual flower and dark, sweet-tasting nightshade berry.
+  - "Hello. A serious injury has left me deeply distressed."
+  - "Continuous coughing fits keep bothering my throat."
+  - "I can rest and do not need alertness."
+  - "My throat is not swollen, and I can swallow."
+  - "Find a complex, unusual flower and dark, sweet-tasting nightshade berry."
   firstHerbId: herb.passionFlower
   secondHerbId: herb.belladonnaBerry
   customer: {fileID: 11400000, guid: 3965e9fdac9e6466c91a76e9ffa93d8b, type: 2}

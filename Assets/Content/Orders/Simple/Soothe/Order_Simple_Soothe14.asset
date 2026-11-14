@@ -15,10 +15,10 @@ MonoBehaviour:
   stableId: order.simple.s14
   difficulty: 0
   orderBubbles:
-  - My head feels ready to split apart.
-  - Sudden noises trigger dreadful panic.
-  - A healer prescribed Lavandula for headaches and panic.
-  - They added Chamomile to calm me further.
+  - "Morning. My head feels ready to split apart."
+  - "Sudden noises trigger dreadful panic."
+  - "A healer prescribed Lavandula for headaches and panic."
+  - "They added Chamomile to calm me further."
   firstHerbId: herb.lavender
   secondHerbId: herb.chamomile
   customer: {fileID: 11400000, guid: b00255ad8c02b4e98960925f8af4e92b, type: 2}

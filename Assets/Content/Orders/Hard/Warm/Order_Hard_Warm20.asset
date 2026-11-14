@@ -15,10 +15,10 @@ MonoBehaviour:
   stableId: order.hard.w20
   difficulty: 2
   orderBubbles:
-  - Deep muscle fatigue accompanies chills and chest mucus.
-  - Bring the spicy, sweet tree bark.
-  - Add the small, rough yellow seeds.
-  - My skin is unbroken, and I have no fever.
+  - "Hello. Deep muscle fatigue accompanies chills and chest mucus."
+  - "Bring the spicy, sweet tree bark."
+  - "Add the small, rough yellow seeds."
+  - "My skin is unbroken, and I have no fever."
   firstHerbId: herb.cinnamon
   secondHerbId: herb.mustardSeed
   customer: {fileID: 11400000, guid: 10000000000000000000000000000006, type: 2}

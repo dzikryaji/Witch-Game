@@ -15,11 +15,11 @@ MonoBehaviour:
   stableId: order.mid.s03
   difficulty: 1
   orderBubbles:
-  - Muscle cramps and intense headaches bother me.
-  - Panic attacks also make it hard to relax.
-  - No pollen or spring-flower allergies affect me.
-  - I am not dizzy, faint, or weak from blood loss.
-  - Find small, fragrant flowers and a sweet-smelling purple stem.
+  - "Morning. Muscle cramps and intense headaches bother me."
+  - "Panic attacks also make it hard to relax."
+  - "No pollen or spring-flower allergies affect me."
+  - "I am not dizzy, faint, or weak from blood loss."
+  - "Find small, fragrant flowers and a sweet-smelling purple stem."
   firstHerbId: herb.chamomile
   secondHerbId: herb.lavender
   customer: {fileID: 11400000, guid: 7a06e32b0a26b416c9f59776c3880e92, type: 2}

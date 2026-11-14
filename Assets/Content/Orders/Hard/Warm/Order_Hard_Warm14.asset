@@ -15,10 +15,10 @@ MonoBehaviour:
   stableId: order.hard.w14
   difficulty: 2
   orderBubbles:
-  - Numb teeth accompany severe chills and chest mucus.
-  - Bring the tiny, dried bud.
-  - Add the small, rough yellow seeds.
-  - My heartbeat is steady, and my skin is unbroken.
+  - "Hi. Numb teeth accompany severe chills and chest mucus."
+  - "Bring the tiny, dried bud."
+  - "Add the small, rough yellow seeds."
+  - "My heartbeat is steady, and my skin is unbroken."
   firstHerbId: herb.clove
   secondHerbId: herb.mustardSeed
   customer: {fileID: 11400000, guid: 3965e9fdac9e6466c91a76e9ffa93d8b, type: 2}

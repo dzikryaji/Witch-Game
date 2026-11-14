@@ -15,10 +15,10 @@ MonoBehaviour:
   stableId: order.mid.m05
   difficulty: 1
   orderBubbles:
-  - My leg bleeds heavily, and my knee is bruised.
-  - Bring the thick, flat weed.
-  - Add the feathery leaves with flat white flowers.
-  - My circulation and heartbeat remain strong.
+  - "Morning. My leg bleeds heavily, and my knee is bruised."
+  - "Bring the thick, flat weed."
+  - "Add the feathery leaves with flat white flowers."
+  - "My circulation and heartbeat remain strong."
   firstHerbId: herb.plantainLeaf
   secondHerbId: herb.yarrow
   customer: {fileID: 11400000, guid: 12795f040a17d43ce94d717cf5b31324, type: 2}

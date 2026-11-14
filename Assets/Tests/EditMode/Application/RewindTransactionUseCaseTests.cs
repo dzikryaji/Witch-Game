@@ -204,6 +204,135 @@ namespace Witch.Application.Tests
             Assert.That(saves.SavedSnapshot.RunState.TutorialFlags.TryGetValue("shop.tutorial.day1.guided", out bool saved) && saved, Is.True);
         }
 
+        [Test]
+        public async Task Complete_InPlacePath_RecordsPreIncrementRewindCount()
+        {
+            GameSession session = CreatePendingRewindSession(9);
+            var saves = new FakeSaveRepository();
+            var scenes = new FakeSceneLoader();
+            await new EnterRewindUseCase(saves, scenes, new FakeRandomSource { NextValue = 707 })
+                .ExecuteAsync(session);
+
+            RewindTransactionResult result = await new CompleteRewindUseCase(
+                saves,
+                scenes,
+                new FakeRandomSource { NextValue = 808 }).ExecuteAsync(session);
+
+            Assert.That(result.Succeeded, Is.True, result.ErrorMessage);
+            Assert.That(session.CurrentPhase, Is.EqualTo(GamePhase.CustomerEncounter));
+            Assert.That(session.TryConsumeHunterFarewell(out int recordedRewinds) && recordedRewinds == 0, Is.True);
+        }
+
+        [TestCase(0)]
+        [TestCase(2)]
+        [TestCase(4)]
+        [TestCase(5)]
+        public async Task Complete_FullPath_RecordsPreIncrementRewindCount(int completedRewinds)
+        {
+            GameSession session = CreatePendingRewindSession(9);
+            var saves = new FakeSaveRepository();
+            var scenes = new FakeSceneLoader();
+            await new EnterRewindUseCase(saves, scenes, new FakeRandomSource { NextValue = 707 })
+                .ExecuteAsync(session);
+            SetRewindCount(session, completedRewinds);
+            ClearResumeSnapshot(session);
+
+            RewindTransactionResult result = await new CompleteRewindUseCase(
+                saves,
+                scenes,
+                new FakeRandomSource { NextValue = 808 }).ExecuteAsync(session);
+
+            Assert.That(result.Succeeded, Is.True, result.ErrorMessage);
+            Assert.That(session.CurrentPhase, Is.EqualTo(GamePhase.ShopPreparation));
+            Assert.That(session.RunState.RewindCount, Is.EqualTo(completedRewinds + 1));
+            Assert.That(session.TryConsumeHunterFarewell(out int recordedRewinds), Is.True);
+            Assert.That(recordedRewinds, Is.EqualTo(completedRewinds));
+        }
+
+        [Test]
+        public async Task Complete_DuplicateRetry_DoesNotSetOrClearMarker()
+        {
+            GameSession session = CreatePendingRewindSession(9);
+            var saves = new FakeSaveRepository();
+            var scenes = new FakeSceneLoader();
+            await new EnterRewindUseCase(saves, scenes, new FakeRandomSource { NextValue = 707 })
+                .ExecuteAsync(session);
+            var complete = new CompleteRewindUseCase(saves, scenes, new FakeRandomSource { NextValue = 808 });
+            await complete.ExecuteAsync(session);
+
+            Assert.That(session.TryConsumeHunterFarewell(out _), Is.True);
+
+            RewindTransactionResult duplicate = await complete.ExecuteAsync(session);
+
+            Assert.That(duplicate.AlreadyApplied, Is.True);
+            Assert.That(session.TryConsumeHunterFarewell(out _), Is.False);
+        }
+
+        [Test]
+        public void TryConsumeHunterFarewell_ReturnsValueOnceThenClears()
+        {
+            GameSession session = CreateInPlaceCapableSession();
+            session.MarkHunterFarewell(3);
+
+            Assert.That(session.TryConsumeHunterFarewell(out int first), Is.True);
+            Assert.That(first, Is.EqualTo(3));
+            Assert.That(session.TryConsumeHunterFarewell(out _), Is.False);
+        }
+
+        [Test]
+        public void RetryDay_ClearsHunterFarewell()
+        {
+            GameSession session = CreateInPlaceCapableSession();
+            session.MarkHunterFarewell(1);
+
+            session.RetryDay(session.DayStartSnapshot, session.AttemptMetadata);
+
+            Assert.That(session.TryConsumeHunterFarewell(out _), Is.False);
+        }
+
+        [Test]
+        public void AdvanceDay_ClearsHunterFarewell()
+        {
+            GameSession session = CreateInPlaceCapableSession();
+            session.MarkHunterFarewell(1);
+
+            session.AdvanceDay(
+                session.DayStartSnapshot,
+                session.AttemptMetadata,
+                new DaySummaryData(0, 0, 0, 0, 0, 1));
+
+            Assert.That(session.TryConsumeHunterFarewell(out _), Is.False);
+        }
+
+        [Test]
+        public void EnterRewind_ClearsHunterFarewell()
+        {
+            GameSession session = CreateInPlaceCapableSession();
+            session.MarkHunterFarewell(1);
+
+            session.EnterRewind(session.AttemptMetadata);
+
+            Assert.That(session.TryConsumeHunterFarewell(out _), Is.False);
+        }
+
+        private static void SetRewindCount(GameSession session, int rewindCount)
+        {
+            RunState runState = session.RunState.WithProgress(
+                session.RunState.CurrentDayNumber,
+                session.RunState.Money,
+                session.RunState.Suspicion,
+                rewindCount);
+            typeof(GameSession).GetProperty("RunState").SetValue(session, runState);
+        }
+
+        private static void ClearResumeSnapshot(GameSession session)
+        {
+            typeof(GameSession)
+                .GetField("resumeRunState", BindingFlags.Instance | BindingFlags.NonPublic)
+                .SetValue(session, null);
+            Assert.That(session.CanResumeInPlace, Is.False);
+        }
+
         private static GameSession CreatePendingRewindSession(int startingMoney)
         {
             var rules = CreateRules();

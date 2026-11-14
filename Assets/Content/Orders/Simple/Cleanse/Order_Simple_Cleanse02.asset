@@ -15,12 +15,12 @@ MonoBehaviour:
   stableId: order.simple.cl02
   difficulty: 0
   orderBubbles:
-  - My brother overate at the harvest feast.
-  - His stomach is bloated, heavy, and blocked.
-  - His body also retains too much water.
-  - He drinks freely, and no pregnant patient is involved.
-  - My notes prescribe Taraxacum officinale for excess water.
-  - They add Foeniculum vulgare for blocked digestion.
+  - "Hello. My brother overate at the harvest feast."
+  - "His stomach is bloated, heavy, and blocked."
+  - "His body also retains too much water."
+  - "He drinks freely, and no pregnant patient is involved."
+  - "My notes prescribe Taraxacum officinale for excess water."
+  - "They add Foeniculum vulgare for blocked digestion."
   firstHerbId: herb.dandelion
   secondHerbId: herb.fennel
   customer: {fileID: 11400000, guid: 10000000000000000000000000000006, type: 2}

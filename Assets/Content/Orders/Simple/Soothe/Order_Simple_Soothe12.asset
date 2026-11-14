@@ -15,11 +15,11 @@ MonoBehaviour:
   stableId: order.simple.s12
   difficulty: 0
   orderBubbles:
-  - Something soothing, please.
-  - I get muscle cramps in my legs,
-  - and I keep having panic attacks.
-  - The apothecary prescribed Matricaria chamomilla for the cramps,
-  - and Lavandula for the panic attacks.
+  - "Morning. Something soothing, please."
+  - "I get muscle cramps in my legs,"
+  - "and I keep having panic attacks."
+  - "The apothecary prescribed Matricaria chamomilla for the cramps,"
+  - "and Lavandula for the panic attacks."
   firstHerbId: herb.chamomile
   secondHerbId: herb.lavender
   customer: {fileID: 11400000, guid: 7a06e32b0a26b416c9f59776c3880e92, type: 2}

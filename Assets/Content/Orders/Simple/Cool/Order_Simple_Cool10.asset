@@ -15,11 +15,11 @@ MonoBehaviour:
   stableId: order.simple.c10
   difficulty: 0
   orderBubbles:
-  - A marsh creature bit my passenger.
-  - Venom spread, causing violent muscle fits.
-  - His pulse is strong, and he remains warm.
-  - The infirmary prescribed Hyoscyamus niger for fits.
-  - They added Borago officinalis to slow the venom.
+  - "Afternoon. A marsh creature bit my passenger."
+  - "Venom spread, causing violent muscle fits."
+  - "His pulse is strong, and he remains warm."
+  - "The infirmary prescribed Hyoscyamus niger for fits."
+  - "They added Borago officinalis to slow the venom."
   firstHerbId: herb.henbane
   secondHerbId: herb.borage
   customer: {fileID: 11400000, guid: 3965e9fdac9e6466c91a76e9ffa93d8b, type: 2}

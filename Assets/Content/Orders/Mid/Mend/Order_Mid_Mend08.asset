@@ -15,10 +15,11 @@ MonoBehaviour:
   stableId: order.mid.m08
   difficulty: 1
   orderBubbles:
-  - A climbing fall fractured my wrist and bruised my back.
-  - Bring the wide, hairy leaf with a strong root.
-  - Add the feathery leaves with flat white flowers.
-  - My heartbeat remains strong, without puncture wounds.
+  - "Excuse me."
+  - "A climbing fall fractured my wrist and bruised my back."
+  - "Bring the wide, hairy leaf with a strong root."
+  - "Add the feathery leaves with flat white flowers."
+  - "My heartbeat remains strong, without puncture wounds."
   firstHerbId: herb.comfrey
   secondHerbId: herb.yarrow
   customer: {fileID: 11400000, guid: 7a06e32b0a26b416c9f59776c3880e92, type: 2}

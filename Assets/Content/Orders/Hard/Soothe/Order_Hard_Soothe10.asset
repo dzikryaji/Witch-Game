@@ -15,11 +15,11 @@ MonoBehaviour:
   stableId: order.hard.s10
   difficulty: 2
   orderBubbles:
-  - My heart races whenever anxiety keeps me awake.
-  - Panic attacks arrive with painful, intense headaches.
-  - I am not easily frightened by intense dreams.
-  - I have no dizziness, faintness, or blood-loss weakness.
-  - Find a strong, earthy root and sweet-smelling purple stem.
+  - "Good afternoon. My heart races whenever anxiety keeps me awake."
+  - "Panic attacks arrive with painful, intense headaches."
+  - "I am not easily frightened by intense dreams."
+  - "I have no dizziness, faintness, or blood-loss weakness."
+  - "Find a strong, earthy root and sweet-smelling purple stem."
   firstHerbId: herb.valerian
   secondHerbId: herb.lavender
   customer: {fileID: 11400000, guid: 4678338d721f2462d8a1979c0e069692, type: 2}

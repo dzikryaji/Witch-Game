@@ -15,11 +15,11 @@ MonoBehaviour:
   stableId: order.hard.c17
   difficulty: 2
   orderBubbles:
-  - A festering cut brought swelling and stubborn fever.
-  - Infection heat now races through her blood.
-  - Bring the delicate white flowers brewed as light tea.
-  - A physician calls the rough, blue-starred leaf Borago officinalis.
-  - She drinks freely and remains warm.
+  - "Hi. A festering cut brought swelling and stubborn fever."
+  - "Infection heat now races through her blood."
+  - "Bring the delicate white flowers brewed as light tea."
+  - "A physician calls the rough, blue-starred leaf Borago officinalis."
+  - "She drinks freely and remains warm."
   firstHerbId: herb.elderflower
   secondHerbId: herb.borage
   customer: {fileID: 11400000, guid: 10000000000000000000000000000006, type: 2}

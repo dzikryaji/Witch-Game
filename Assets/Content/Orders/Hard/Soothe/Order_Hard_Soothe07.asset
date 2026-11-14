@@ -15,11 +15,11 @@ MonoBehaviour:
   stableId: order.hard.s07
   difficulty: 2
   orderBubbles:
-  - Muscle cramps and continuous coughing fits bother me.
-  - My nerves also feel unsettled.
-  - I have no pollen or spring-flower allergies.
-  - My throat is not swollen, and I can swallow.
-  - Find small, fragrant flowers and a dark, sweet-tasting nightshade berry.
+  - "Excuse me. Muscle cramps and continuous coughing fits bother me."
+  - "My nerves also feel unsettled."
+  - "I have no pollen or spring-flower allergies."
+  - "My throat is not swollen, and I can swallow."
+  - "Find small, fragrant flowers and a dark, sweet-tasting nightshade berry."
   firstHerbId: herb.chamomile
   secondHerbId: herb.belladonnaBerry
   customer: {fileID: 11400000, guid: 10000000000000000000000000000006, type: 2}

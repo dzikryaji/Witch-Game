@@ -15,10 +15,10 @@ MonoBehaviour:
   stableId: order.hard.m12
   difficulty: 2
   orderBubbles:
-  - My palm bleeds heavily, and my ankle keeps buckling.
-  - Bring the thick, flat weed.
-  - Add the bright yellow flower.
-  - My circulation and lungs remain strong.
+  - "Hi. My palm bleeds heavily, and my ankle keeps buckling."
+  - "Bring the thick, flat weed."
+  - "Add the bright yellow flower."
+  - "My circulation and lungs remain strong."
   firstHerbId: herb.plantainLeaf
   secondHerbId: herb.arnicaFlower
   customer: {fileID: 11400000, guid: 3965e9fdac9e6466c91a76e9ffa93d8b, type: 2}

@@ -15,12 +15,12 @@ MonoBehaviour:
   stableId: order.simple.s07
   difficulty: 0
   orderBubbles:
-  - I need something to quiet things down.
-  - "I cough in fits that won\u2019t stop,"
-  - and I have anxiety.
-  - I need to sleep deeply.
-  - The priory healer prescribed Valeriana officianalis for sleep and anxiety,
-  - and Atropa belladonna for the coughing fits.
+  - "Morning. I need something to quiet things down."
+  - "I cough in fits that won’t stop,"
+  - "and I have anxiety."
+  - "I need to sleep deeply."
+  - "The priory healer prescribed Valeriana officianalis for sleep and anxiety,"
+  - "and Atropa belladonna for the coughing fits."
   firstHerbId: herb.valerian
   secondHerbId: herb.belladonnaBerry
   customer: {fileID: 11400000, guid: b00255ad8c02b4e98960925f8af4e92b, type: 2}

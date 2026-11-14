@@ -150,4 +150,49 @@ namespace Witch.Infrastructure.Content
         public int StartingPairCount { get; }
         public int MaximumPairCount { get; }
     }
+
+    public sealed class WitchHunterStageContent
+    {
+        public WitchHunterStageContent(IReadOnlyList<string> accusations, string successLine)
+        {
+            Accusations = new List<string>(accusations ?? Array.Empty<string>()).AsReadOnly();
+            SuccessLine = successLine ?? string.Empty;
+        }
+
+        public IReadOnlyList<string> Accusations { get; }
+        public string SuccessLine { get; }
+    }
+
+    public sealed class WitchHunterDialogueContent
+    {
+        private readonly IReadOnlyList<WitchHunterStageContent> stages;
+
+        public WitchHunterDialogueContent(IReadOnlyList<WitchHunterStageContent> stageValues)
+        {
+            stages = new List<WitchHunterStageContent>(stageValues ?? Array.Empty<WitchHunterStageContent>())
+                .AsReadOnly();
+        }
+
+        public int StageCount => stages.Count;
+
+        public IReadOnlyList<string> GetAccusations(int stageIndex)
+        {
+            return GetStage(stageIndex).Accusations;
+        }
+
+        public string GetSuccessLine(int stageIndex)
+        {
+            return GetStage(stageIndex).SuccessLine;
+        }
+
+        private WitchHunterStageContent GetStage(int stageIndex)
+        {
+            if (stageIndex < 0 || stageIndex >= stages.Count)
+            {
+                throw new ArgumentOutOfRangeException(nameof(stageIndex));
+            }
+
+            return stages[stageIndex];
+        }
+    }
 }

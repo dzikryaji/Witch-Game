@@ -15,11 +15,12 @@ MonoBehaviour:
   stableId: order.mid.cl10
   difficulty: 1
   orderBubbles:
-  - Travel meals left my digestion heavy and body bloated.
-  - I need blockage eased and excess water released.
-  - Bring the feathery, lace-like fronds with ridged seeds.
-  - Add the sharp-edged leaf with a yellow flower.
-  - I drink plenty of water.
+  - "Good morning."
+  - "Travel meals left my digestion heavy and body bloated."
+  - "I need blockage eased and excess water released."
+  - "Bring the feathery, lace-like fronds with ridged seeds."
+  - "Add the sharp-edged leaf with a yellow flower."
+  - "I drink plenty of water."
   firstHerbId: herb.fennel
   secondHerbId: herb.dandelion
   customer: {fileID: 11400000, guid: 7a06e32b0a26b416c9f59776c3880e92, type: 2}

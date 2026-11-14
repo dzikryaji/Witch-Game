@@ -15,11 +15,12 @@ MonoBehaviour:
   stableId: order.hard.s14
   difficulty: 2
   orderBubbles:
-  - I struggle sleeping because my heart races at night.
-  - A persistent cough keeps causing uncomfortable fits.
-  - I am not easily frightened by intense dreams.
-  - My throat is not swollen, and I can swallow.
-  - Find a strong, earthy root and dark, sweet-tasting nightshade berry.
+  - "Excuse me."
+  - "I struggle sleeping because my heart races at night."
+  - "A persistent cough keeps causing uncomfortable fits."
+  - "I am not easily frightened by intense dreams."
+  - "My throat is not swollen, and I can swallow."
+  - "Find a strong, earthy root and dark, sweet-tasting nightshade berry."
   firstHerbId: herb.valerian
   secondHerbId: herb.belladonnaBerry
   customer: {fileID: 11400000, guid: b00255ad8c02b4e98960925f8af4e92b, type: 2}

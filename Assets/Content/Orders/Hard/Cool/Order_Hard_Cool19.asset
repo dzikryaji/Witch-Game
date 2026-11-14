@@ -15,11 +15,12 @@ MonoBehaviour:
   stableId: order.hard.c19
   difficulty: 2
   orderBubbles:
-  - A thorn wound gave my brother fever and pounding headache.
-  - Infection heat now spreads through his blood.
-  - His guide calls Mentha piperita the sharp-smelling dark leaf.
-  - Add the dry, rough leaf with blue stars.
-  - He remains warm, and reflux never troubles him.
+  - "Good morning."
+  - "A thorn wound gave my brother fever and pounding headache."
+  - "Infection heat now spreads through his blood."
+  - "His guide calls Mentha piperita the sharp-smelling dark leaf."
+  - "Add the dry, rough leaf with blue stars."
+  - "He remains warm, and reflux never troubles him."
   firstHerbId: herb.peppermint
   secondHerbId: herb.borage
   customer: {fileID: 11400000, guid: 7a06e32b0a26b416c9f59776c3880e92, type: 2}

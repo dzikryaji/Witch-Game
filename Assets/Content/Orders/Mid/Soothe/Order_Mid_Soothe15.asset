@@ -15,11 +15,11 @@ MonoBehaviour:
   stableId: order.mid.s15
   difficulty: 1
   orderBubbles:
-  - Intense headaches make daily activities difficult.
-  - Panic attacks and a serious injury leave me distressed.
-  - I am not dizzy, faint, or weak from blood loss.
-  - I can rest without needing to stay alert.
-  - Find a sweet-smelling purple stem and complex, unusual flower.
+  - "Excuse me. Intense headaches make daily activities difficult."
+  - "Panic attacks and a serious injury leave me distressed."
+  - "I am not dizzy, faint, or weak from blood loss."
+  - "I can rest without needing to stay alert."
+  - "Find a sweet-smelling purple stem and complex, unusual flower."
   firstHerbId: herb.lavender
   secondHerbId: herb.passionFlower
   customer: {fileID: 11400000, guid: 7a06e32b0a26b416c9f59776c3880e92, type: 2}

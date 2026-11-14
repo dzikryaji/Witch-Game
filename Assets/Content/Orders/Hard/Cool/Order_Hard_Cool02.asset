@@ -15,11 +15,11 @@ MonoBehaviour:
   stableId: order.hard.c02
   difficulty: 2
   orderBubbles:
-  - "River fog blocked my brother\u2019s nose and raised fever."
-  - Hauling ropes left his shoulders and knees aching.
-  - Choose the dark green leaf with a sharp smell.
-  - Pair it with the tough strip of bark.
-  - His stomach and lungs remain sound.
+  - "Hello. River fog blocked my brother’s nose and raised fever."
+  - "Hauling ropes left his shoulders and knees aching."
+  - "Choose the dark green leaf with a sharp smell."
+  - "Pair it with the tough strip of bark."
+  - "His stomach and lungs remain sound."
   firstHerbId: herb.peppermint
   secondHerbId: herb.whiteWillow
   customer: {fileID: 11400000, guid: 3965e9fdac9e6466c91a76e9ffa93d8b, type: 2}

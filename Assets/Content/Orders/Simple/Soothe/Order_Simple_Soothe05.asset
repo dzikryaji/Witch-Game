@@ -15,10 +15,10 @@ MonoBehaviour:
   stableId: order.simple.s05
   difficulty: 0
   orderBubbles:
-  - Something gentle, please.
-  - Something for my racing heart and my intense headache.
-  - The physician prescribed Valeriana officianalis for my racing heart,
-  - and Lavandula for the headache.
+  - "Morning. Something gentle, please."
+  - "Something for my racing heart and my intense headache."
+  - "The physician prescribed Valeriana officianalis for my racing heart,"
+  - "and Lavandula for the headache."
   firstHerbId: herb.valerian
   secondHerbId: herb.lavender
   customer: {fileID: 11400000, guid: b00255ad8c02b4e98960925f8af4e92b, type: 2}

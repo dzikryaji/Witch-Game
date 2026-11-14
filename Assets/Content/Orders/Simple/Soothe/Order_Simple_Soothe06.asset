@@ -15,11 +15,11 @@ MonoBehaviour:
   stableId: order.simple.s06
   difficulty: 0
   orderBubbles:
-  - Something soothing, please.
-  - My leg is badly broken, a serious injury,
-  - "and my heart won\u2019t stop racing."
-  - The bone-setter prescribed Valeriana officianalis for my racing heart,
-  - and Passiflora for the broken leg.
+  - "Morning. Something soothing, please."
+  - "My leg is badly broken, a serious injury,"
+  - "and my heart won’t stop racing."
+  - "The bone-setter prescribed Valeriana officianalis for my racing heart,"
+  - "and Passiflora for the broken leg."
   firstHerbId: herb.valerian
   secondHerbId: herb.passionFlower
   customer: {fileID: 11400000, guid: 4678338d721f2462d8a1979c0e069692, type: 2}

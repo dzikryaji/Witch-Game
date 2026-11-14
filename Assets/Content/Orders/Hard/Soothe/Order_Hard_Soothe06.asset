@@ -15,11 +15,11 @@ MonoBehaviour:
   stableId: order.hard.s06
   difficulty: 2
   orderBubbles:
-  - My nerves feel unsettled, and my muscles keep cramping.
-  - I am distressed after a serious physical injury.
-  - Pollen and spring-flower allergies are not an issue.
-  - I can rest without needing to remain fully alert.
-  - Find small, fragrant flowers and a complex, unusual flower.
+  - "Hi. My nerves feel unsettled, and my muscles keep cramping."
+  - "I am distressed after a serious physical injury."
+  - "Pollen and spring-flower allergies are not an issue."
+  - "I can rest without needing to remain fully alert."
+  - "Find small, fragrant flowers and a complex, unusual flower."
   firstHerbId: herb.chamomile
   secondHerbId: herb.passionFlower
   customer: {fileID: 11400000, guid: 3965e9fdac9e6466c91a76e9ffa93d8b, type: 2}

@@ -15,11 +15,11 @@ MonoBehaviour:
   stableId: order.hard.c13
   difficulty: 2
   orderBubbles:
-  - "Fever pounds behind my sister\u2019s eyes."
-  - Sudden muscle fits now shake her arms.
-  - Bring the sharp-smelling dark green leaf.
-  - Add the hard, unpleasant-smelling leaf.
-  - Her stomach and heartbeat remain sound.
+  - "Morning. Fever pounds behind my sister’s eyes."
+  - "Sudden muscle fits now shake her arms."
+  - "Bring the sharp-smelling dark green leaf."
+  - "Add the hard, unpleasant-smelling leaf."
+  - "Her stomach and heartbeat remain sound."
   firstHerbId: herb.peppermint
   secondHerbId: herb.henbane
   customer: {fileID: 11400000, guid: b00255ad8c02b4e98960925f8af4e92b, type: 2}

@@ -15,10 +15,10 @@ MonoBehaviour:
   stableId: order.simple.w15
   difficulty: 0
   orderBubbles:
-  - Weakness has drained nearly all my energy.
-  - My appetite has vanished too.
-  - A travelling physician prescribed Capsicum annuum for weakness.
-  - They added ginger for my appetite.
+  - "Hi. Weakness has drained nearly all my energy."
+  - "My appetite has vanished too."
+  - "A travelling physician prescribed Capsicum annuum for weakness."
+  - "They added ginger for my appetite."
   firstHerbId: herb.cayennePepper
   secondHerbId: herb.ginger
   customer: {fileID: 11400000, guid: b00255ad8c02b4e98960925f8af4e92b, type: 2}

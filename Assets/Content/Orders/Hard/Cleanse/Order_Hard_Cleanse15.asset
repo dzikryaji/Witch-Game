@@ -15,11 +15,11 @@ MonoBehaviour:
   stableId: order.hard.cl15
   difficulty: 2
   orderBubbles:
-  - Something swallowed poisoned my heavy, blocked stomach.
-  - I need toxins expelled and digestion eased.
-  - Bring the dark flower with deep-growing roots.
-  - Add the feathery fronds with ridged seeds.
-  - I have no acid illness or throat ulcers.
+  - "Good afternoon. Something swallowed poisoned my heavy, blocked stomach."
+  - "I need toxins expelled and digestion eased."
+  - "Bring the dark flower with deep-growing roots."
+  - "Add the feathery fronds with ridged seeds."
+  - "I have no acid illness or throat ulcers."
   firstHerbId: herb.blackHellebore
   secondHerbId: herb.fennel
   customer: {fileID: 11400000, guid: 4678338d721f2462d8a1979c0e069692, type: 2}

@@ -15,9 +15,9 @@ MonoBehaviour:
   stableId: order.simple.s15
   difficulty: 0
   orderBubbles:
-  - Days of coughing have left my nerves unsettled.
-  - My neighbour prescribed Passiflora to calm me.
-  - They added Chamomile for the persistent cough.
+  - "Good afternoon. Days of coughing have left my nerves unsettled."
+  - "My neighbour prescribed Passiflora to calm me."
+  - "They added Chamomile for the persistent cough."
   firstHerbId: herb.passionFlower
   secondHerbId: herb.chamomile
   customer: {fileID: 11400000, guid: 10000000000000000000000000000006, type: 2}

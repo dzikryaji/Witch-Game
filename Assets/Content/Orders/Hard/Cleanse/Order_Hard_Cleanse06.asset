@@ -15,11 +15,12 @@ MonoBehaviour:
   stableId: order.hard.cl06
   difficulty: 2
   orderBubbles:
-  - Mild toxins burden my blood, while my body bloats.
-  - I retain excess water despite drinking freely.
-  - Bring the tough, earthy root.
-  - Add the sharp-edged leaf with a yellow flower.
-  - I can rest safely today.
+  - "Good morning."
+  - "Mild toxins burden my blood, while my body bloats."
+  - "I retain excess water despite drinking freely."
+  - "Bring the tough, earthy root."
+  - "Add the sharp-edged leaf with a yellow flower."
+  - "I can rest safely today."
   firstHerbId: herb.burdockRoot
   secondHerbId: herb.dandelion
   customer: {fileID: 11400000, guid: 10000000000000000000000000000006, type: 2}
