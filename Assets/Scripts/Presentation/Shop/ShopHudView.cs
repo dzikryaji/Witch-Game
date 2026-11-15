@@ -77,7 +77,6 @@ namespace Witch.Presentation.Shop
 
        public Task<bool> EntranceComplete => entranceComplete.Task;
        public RectTransform OrderBubbleTarget => orderBubbleScrollRect != null ? (RectTransform)orderBubbleScrollRect.transform : orderBubbleContent;
-       public RectTransform CustomerPortraitTarget => customerPortrait;
 
         public void ResetDayCycleToMorning() => dayCycleView?.ResetToMorning();
         public void ShowDayCycleEndOfDay() => dayCycleView?.ShowEndOfDay();

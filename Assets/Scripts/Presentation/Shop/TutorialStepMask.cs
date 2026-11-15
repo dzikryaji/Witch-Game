@@ -11,7 +11,6 @@ namespace Witch.Presentation.Shop
 
         public ShopGuidedTutorialStep Step => step;
         public RectTransform[] HoleRects => holeRects;
-        public RectTransform[] ExtraInputRects => extraInputRects;
 
         public bool Contains(Vector2 screenPoint, Camera eventCamera)
         {
