@@ -82,6 +82,14 @@ namespace Witch.Presentation.Shop
         [SerializeField] private PotionRevealAnimator potionRevealAnimator;
         [SerializeField] private Image[] grinderFirstHerbImages;
         [SerializeField] private Image[] grinderSecondHerbImages;
+        [SerializeField] private GameObject pauseOverlay;
+        [SerializeField] private Button restartButton;
+        [SerializeField] private GameObject confirmationPanel;
+        [SerializeField] private Text confirmationTitle;
+        [SerializeField] private Text confirmationMessage;
+        [SerializeField] private Button confirmYesButton;
+        [SerializeField] private Button cancelNoButton;
+
 
         private IGameSessionStore sessionStore;
         private OpenShopUseCase openShop;
@@ -92,6 +100,7 @@ namespace Witch.Presentation.Shop
         private EnterRewindUseCase enterRewind;
         private ResolveExpenseUseCase resolveExpense;
         private RetryDayUseCase retryDay;
+        private RestartDayUseCase restartDay;
         private ContinueToNextDayUseCase continueToNextDay;
         private ShopPresentationSetup setup;
         private ShopEncounterDeck encounterDeck;
@@ -130,6 +139,14 @@ namespace Witch.Presentation.Shop
         private IReadOnlyList<GuidebookPageViewData> guidebookPages = Array.Empty<GuidebookPageViewData>();
         private int guidebookPageIndex;
         private int guidebookSpreadCount => (guidebookPages.Count + 1) / 2;
+        private enum ConfirmationAction
+        {
+            None,
+            Restart,
+            Quit
+        }
+
+        private ConfirmationAction pendingConfirmation;
 
         public bool IsInitialized => sessionStore != null;
         public GameSession ActiveSession => sessionStore?.ActiveSession;
@@ -1044,8 +1061,18 @@ namespace Witch.Presentation.Shop
             }
             setTimerPaused.Execute(ActiveSession, paused);
             pausePanel.SetActive(paused);
+
+            if (pauseOverlay != null)
+            {
+                pauseOverlay.SetActive(paused);
+            }
             audioService?.Play(GameAudioCueIds.UiClick);
             SetStatus(paused ? "Paused. Shop time is frozen." : "Back to work. Shop time is moving again.");
+        }
+
+        public void ConfigureRestart(RestartDayUseCase useCase)
+        {
+            restartDay = useCase ?? throw new ArgumentNullException(nameof(useCase));
         }
 
         public async Task ReturnToMainMenuAsync()
@@ -1063,6 +1090,11 @@ namespace Witch.Presentation.Shop
                 {
                     setTimerPaused.Execute(ActiveSession, false);
                 }
+            }
+
+            if (pauseOverlay != null)
+            {
+                pauseOverlay.SetActive(false);
             }
 
             ClearCounterCoins();
@@ -1635,11 +1667,19 @@ namespace Witch.Presentation.Shop
             pauseButton.onClick.AddListener(TogglePause);
             resumeButton.onClick.AddListener(TogglePause);
             mainMenuButton.onClick.AddListener(OnMainMenuClicked);
+            if (restartButton != null) restartButton.onClick.AddListener(OnRestartClicked);
+            if (confirmYesButton != null) confirmYesButton.onClick.AddListener(OnConfirmationConfirmed);
+            if (cancelNoButton != null) cancelNoButton.onClick.AddListener(CloseConfirmation);
+            continueButton.onClick.AddListener(OnContinueClicked);
             continueButton.onClick.AddListener(OnContinueClicked);
             tutorialContinueButton.onClick.RemoveListener(AdvanceTutorial);
             tutorialContinueButton.onClick.AddListener(OnTutorialContinueClicked);
             if (tutorialSkipButton != null) tutorialSkipButton.onClick.AddListener(OnTutorialSkipClicked);
             BindGuidebookBackdrop();
+            if (confirmationPanel != null)
+            {
+                confirmationPanel.SetActive(false);
+            }
             viewBound = true;
         }
 
@@ -1867,7 +1907,39 @@ namespace Witch.Presentation.Shop
         }
 
         private void OnContinueClicked() => RunUiAction(ContinueNextDayAsync);
-        private void OnMainMenuClicked() => RunUiAction(ReturnToMainMenuAsync);
+        // private void OnMainMenuClicked() => RunUiAction(ReturnToMainMenuAsync);
+
+        // private void OnRestartClicked() => RunUiAction(RestartDayAsync);
+
+        public async Task RestartDayAsync()
+        {
+            if (restartDay == null || ActiveSession == null)
+            {
+                SetStatus("Restart is not available.");
+                return;
+            }
+
+            if (pausePanel != null && pausePanel.activeSelf && setTimerPaused != null)
+            {
+                setTimerPaused.Execute(ActiveSession, false);
+                pausePanel.SetActive(false);
+
+                if (pauseOverlay != null)
+                {
+                    pauseOverlay.SetActive(false);
+                }
+            }
+
+            audioService?.Play(GameAudioCueIds.UiClick);
+            ExpenseResolutionResult result = await restartDay.ExecuteAsync(
+                ActiveSession,
+                lifetimeCancellation?.Token ?? CancellationToken.None);
+
+            if (!result.Succeeded)
+            {
+                SetStatus("Could not restart the day: " + result.ErrorMessage);
+            }
+        }
 
         private async void RunUiAction(Func<Task> action)
         {
@@ -2235,6 +2307,50 @@ namespace Witch.Presentation.Shop
             {
                 Debug.LogException(ex, this);
             }
+        }
+
+        private void OnConfirmationConfirmed()
+        {
+            confirmationPanel.SetActive(false);
+
+            switch (pendingConfirmation)
+            {
+                case ConfirmationAction.Restart:
+                    pendingConfirmation = ConfirmationAction.None;
+                    RunUiAction(RestartDayAsync);
+                    break;
+
+                case ConfirmationAction.Quit:
+                    pendingConfirmation = ConfirmationAction.None;
+                    RunUiAction(ReturnToMainMenuAsync);
+                    break;
+            }
+        }
+
+        private void OnRestartClicked()
+        {
+            pendingConfirmation = ConfirmationAction.Restart;
+
+            confirmationTitle.text = "Restart";
+            confirmationMessage.text = "Restart the day? Any progress you've made today won't be saved.";
+
+            confirmationPanel.SetActive(true);
+        }
+
+        private void OnMainMenuClicked()
+        {
+            pendingConfirmation = ConfirmationAction.Quit;
+
+            confirmationTitle.text = "Quit";
+            confirmationMessage.text = "Return to the main menu? Any progress you've made today won't be saved.";
+
+            confirmationPanel.SetActive(true);
+        }
+
+        private void CloseConfirmation()
+        {
+            pendingConfirmation = ConfirmationAction.None;
+            confirmationPanel.SetActive(false);
         }
 
     }

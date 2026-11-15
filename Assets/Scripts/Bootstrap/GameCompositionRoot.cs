@@ -49,6 +49,7 @@ namespace Witch.Bootstrap
         private CompleteRewindUseCase completeRewind;
         private ResolveExpenseUseCase resolveExpense;
         private RetryDayUseCase retryDay;
+        private RestartDayUseCase restartDay;
         private ContinueToNextDayUseCase continueToNextDay;
         private MarkTutorialFlagUseCase markTutorialFlag;
         private IGameAudioService audioService;
@@ -223,6 +224,7 @@ namespace Witch.Bootstrap
                 clock,
                 gameCenter);
             retryDay = new RetryDayUseCase(runRepository, sceneLoader);
+            restartDay = new RestartDayUseCase(runRepository, sceneLoader);
             continueToNextDay = new ContinueToNextDayUseCase(sceneLoader);
             markTutorialFlag = new MarkTutorialFlagUseCase(runRepository);
 
@@ -360,6 +362,7 @@ namespace Witch.Bootstrap
                         presenter.ConfigurePersistence(runRepository);
                         presenter.ConfigureTutorialFlag(markTutorialFlag);
                         presenter.ConfigureTransition(DayTransition);
+                        presenter.ConfigureRestart(restartDay);
                         presenter.Initialize(
                             sessionStore,
                             openShop,

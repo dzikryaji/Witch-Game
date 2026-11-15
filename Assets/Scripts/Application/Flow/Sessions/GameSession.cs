@@ -490,6 +490,14 @@ namespace Witch.Application.Flow
             TryTransition(GamePhase.ShopPreparation);
         }
 
+        internal void RestartDay(
+            DayStartSnapshot dayStartSnapshot,
+            ActiveAttemptMetadata attemptMetadata)
+        {
+            ReplaceAttempt(dayStartSnapshot, attemptMetadata);
+            CurrentPhase = GamePhase.ShopPreparation;
+        }
+
         private void ReplaceAttempt(
             DayStartSnapshot dayStartSnapshot,
             ActiveAttemptMetadata attemptMetadata)
