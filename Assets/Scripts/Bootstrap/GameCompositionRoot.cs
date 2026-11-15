@@ -14,6 +14,11 @@ using Witch.Presentation.MainMenu;
 using Witch.Presentation.Rewind;
 using Witch.Presentation.Shop;
 using Witch.Presentation.Settings;
+#if UNITY_EDITOR
+using UnityEditor;
+using Witch.Domain;
+using Witch.Domain.Progression;
+#endif
 
 namespace Witch.Bootstrap
 {
@@ -22,15 +27,6 @@ namespace Witch.Bootstrap
     {
         [SerializeField] private GameContentCatalogDefinition contentCatalog;
         [SerializeField] private int randomSeed = 20261024;
-        [Header("Startup")]
-        [SerializeField] private StartupScene startupScene = StartupScene.MainMenu;
-#if UNITY_EDITOR
-        [Header("Editor Manual Testing")]
-        [SerializeField, Min(0)] private int developmentStartingMoney;
-        [SerializeField, Range(0, 5)] private int developmentRewindCount;
-        [SerializeField] private int developmentOrderSeed = 20261024;
-        [SerializeField] private int developmentBoardSeed = 20261025;
-#endif
         [Header("Performance")]
         [SerializeField, Min(30)] private int targetFrameRate = 60;
 
@@ -59,12 +55,18 @@ namespace Witch.Bootstrap
         private ISaveRepository runRepository;
         private GameRuntimeContent runtimeContent;
         private bool compositionSucceeded;
+#if UNITY_EDITOR
+        private bool debugSessionActive;
+#endif
 
         public static GameCompositionRoot Instance { get; private set; }
         public bool IsReady { get; private set; }
         public string StartupError { get; private set; }
         public IGameSessionStore SessionStore => sessionStore;
         public DayTransitionController DayTransition { get; private set; }
+#if UNITY_EDITOR
+        public bool IsDebugSessionActive => debugSessionActive;
+#endif
 
         private void Awake()
         {
@@ -102,7 +104,14 @@ namespace Witch.Bootstrap
                 audioService.ApplySettings(settingsService.Current);
                 IsReady = true;
                 Inject(SceneManager.GetActiveScene());
+#if UNITY_EDITOR
+                if (!debugSessionActive)
+                {
+                    _ = InitializeGameCenterAsync();
+                }
+#else
                 _ = InitializeGameCenterAsync();
+#endif
                 await OpenStartupSceneAsync();
             }
             catch (Exception exception)
@@ -118,6 +127,12 @@ namespace Witch.Bootstrap
         /// </summary>
         private async System.Threading.Tasks.Task InitializeGameCenterAsync()
         {
+#if UNITY_EDITOR
+            if (debugSessionActive)
+            {
+                return;
+            }
+#endif
             try
             {
                 ServiceResult result = await gameCenter.InitializeAsync();
@@ -163,9 +178,10 @@ namespace Witch.Bootstrap
             runtimeContent = content;
             shopPresentationFactory = new ShopPresentationSetupFactory(content);
 #if UNITY_EDITOR
-            runRepository = startupScene == StartupScene.MainMenu
-                ? new JsonRunRepository(content.NewRunSetup.SaveVersion)
-                : new InMemoryRunRepository();
+            debugSessionActive = WitchDebugRuntime.HasActiveStartupOverride;
+            runRepository = debugSessionActive
+                ? new InMemoryRunRepository()
+                : new JsonRunRepository(content.NewRunSetup.SaveVersion);
 #else
             runRepository = new JsonRunRepository(content.NewRunSetup.SaveVersion);
 #endif
@@ -254,45 +270,17 @@ namespace Witch.Bootstrap
             }
 
 #if UNITY_EDITOR
-            if (startupScene == StartupScene.Shop)
+            if (debugSessionActive)
             {
-                StartNewGameResult shopStart = await startNewGame.ExecuteAsync(
-                    new StartNewGameCommand("development-shop-" + Guid.NewGuid().ToString("N")));
-                if (!shopStart.Succeeded)
-                {
-                    FailStartup("Bootstrap could not open development Shop: " + shopStart.ErrorMessage);
-                }
+                await OpenEditorDebugStartupAsync();
                 return;
             }
 
-            if (startupScene == StartupScene.RewindMinigame)
-            {
-                GameSession session = DevelopmentStartupSessionFactory.CreatePendingRewind(
-                    runtimeContent.NewRunSetup,
-                    developmentStartingMoney,
-                    developmentRewindCount,
-                    developmentOrderSeed,
-                    developmentBoardSeed,
-                    DateTimeOffset.UtcNow);
-                SaveStateResult save = await runRepository.SaveRunStateAsync(
-                    session.DayStartSnapshot,
-                    session.AttemptMetadata);
-                if (!save.Succeeded)
-                {
-                    FailStartup("Bootstrap could not prepare development Rewind Minigame: " + save.ErrorMessage);
-                    return;
-                }
-
-                sessionStore.SetActive(session);
-                SceneLoadResult rewindResult = await sceneLoader.LoadAsync(SceneId.RewindMinigame);
-                if (!rewindResult.Succeeded)
-                {
-                    FailStartup("Bootstrap could not open development Rewind Minigame: " + rewindResult.ErrorMessage);
-                }
-                return;
-            }
+            // Normal start from Main Menu without override: ensure debug state is clean.
+            WitchDebugRuntime.ClearActiveJump();
 #endif
 
+            // Player builds (and normal editor starts) always enter Main Menu at Day 1.
             SceneLoadResult result = await sceneLoader.LoadAsync(SceneId.MainMenu);
             if (!result.Succeeded)
             {
@@ -409,6 +397,173 @@ namespace Witch.Bootstrap
             compositionSucceeded = false;
             Debug.LogError(message, this);
         }
+
+        /// <summary>
+        /// Startup safety rule: debug scene/day overrides may only affect Editor runs.
+        /// Player builds must always follow the normal Main Menu/Day 1 path.
+        /// </summary>
+        public static bool ShouldUseEditorDebugStartup(bool isEditorBuild, bool hasActiveOverride)
+        {
+            return isEditorBuild && hasActiveOverride;
+        }
+
+#if UNITY_EDITOR
+        private async System.Threading.Tasks.Task OpenEditorDebugStartupAsync()
+        {
+            WitchDebugRuntime.IsDebugJumpActive = true;
+            string scene = WitchDebugRuntime.StartScene;
+            int day = WitchDebugRuntime.StartDay;
+
+            if (string.Equals(scene, WitchDebugRuntime.StartSceneRewind, System.StringComparison.Ordinal))
+            {
+                // Debug Rewind entry: playable in-memory session matching EnterRewind metadata/state
+                // (PendingRewind, RewindMinigame phase, suspicion at threshold, board/order seeds).
+                // Real Shop->Rewind does not cover with Day Transition; do not leave a cover over Rewind.
+                if (DayTransition != null)
+                {
+                    DayTransition.CancelPendingReveal();
+                    DayTransition.HideImmediate();
+                }
+
+                GameSession session = DevelopmentStartupSessionFactory.CreatePendingRewind(
+                    runtimeContent.NewRunSetup,
+                    runtimeContent.NewRunSetup.StartingMoney,
+                    0,
+                    randomSeed + 10,
+                    randomSeed + 11,
+                    DateTimeOffset.UtcNow);
+                SaveStateResult save = await runRepository.SaveRunStateAsync(session.DayStartSnapshot, session.AttemptMetadata);
+                if (!save.Succeeded)
+                {
+                    FailStartup("Bootstrap could not prepare debug Rewind Minigame: " + save.ErrorMessage);
+                    return;
+                }
+
+                sessionStore.SetActive(session);
+                SceneLoadResult rewindResult = await sceneLoader.LoadAsync(SceneId.RewindMinigame);
+                if (!rewindResult.Succeeded)
+                {
+                    FailStartup("Bootstrap could not open debug Rewind Minigame: " + rewindResult.ErrorMessage);
+                }
+                return;
+            }
+
+            // Shop/start-day debug: start or jump directly into Shop at requested day.
+            if (!TryBuildDebugShopSession(day, out GameSession debugSession, out string error))
+            {
+                FailStartup(error);
+                return;
+            }
+
+            SaveStateResult debugSave = await runRepository.SaveRunStateAsync(debugSession.DayStartSnapshot, debugSession.AttemptMetadata);
+            if (!debugSave.Succeeded)
+            {
+                FailStartup("Bootstrap could not prepare debug day start: " + debugSave.ErrorMessage);
+                return;
+            }
+
+            sessionStore.SetActive(debugSession);
+            if (DayTransition != null)
+            {
+                DayTransition.CoverInstant(day, revealShopOnInit: true);
+            }
+
+            SceneLoadResult shopResult = await sceneLoader.LoadAsync(SceneId.Shop);
+            if (!shopResult.Succeeded)
+            {
+                FailStartup("Bootstrap could not open debug Shop: " + shopResult.ErrorMessage);
+            }
+        }
+
+        private bool TryBuildDebugShopSession(int dayNumber, out GameSession session, out string error)
+        {
+            session = null;
+            error = null;
+            try
+            {
+                int day = WitchDebugRuntime.ClampDay(dayNumber);
+                int orderSeed = UnityEngine.Random.Range(1, int.MaxValue);
+                session = DevelopmentStartupSessionFactory.CreateShopPreparationForDay(
+                    runtimeContent.NewRunSetup,
+                    runtimeContent.DayProgressionSetup,
+                    day,
+                    runtimeContent.NewRunSetup.StartingMoney,
+                    orderSeed,
+                    DateTimeOffset.UtcNow);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                error = "Could not build debug day session: " + ex.Message;
+                return false;
+            }
+        }
+
+        public async void DebugJumpToDay(int dayNumber)
+        {
+            if (!IsReady || runtimeContent == null)
+            {
+                Debug.LogWarning("[WitchDebug] Cannot jump: bootstrap not ready.");
+                return;
+            }
+
+            int day = WitchDebugRuntime.ClampDay(dayNumber);
+            debugSessionActive = true;
+            WitchDebugRuntime.IsDebugJumpActive = true;
+            if (!TryBuildDebugShopSession(day, out GameSession debugSession, out string error))
+            {
+                Debug.LogError("[WitchDebug] " + error);
+                return;
+            }
+
+            SaveStateResult debugSave = await runRepository.SaveRunStateAsync(debugSession.DayStartSnapshot, debugSession.AttemptMetadata);
+            if (!debugSave.Succeeded)
+            {
+                Debug.LogError("[WitchDebug] Could not prepare debug jump: " + debugSave.ErrorMessage);
+                return;
+            }
+
+            sessionStore.SetActive(debugSession);
+            if (DayTransition != null)
+            {
+                DayTransition.CoverInstant(day, revealShopOnInit: true);
+            }
+
+            SceneLoadResult result = await sceneLoader.LoadAsync(SceneId.Shop);
+            if (!result.Succeeded)
+            {
+                Debug.LogError("[WitchDebug] Could not load Shop for debug jump: " + result.ErrorMessage);
+                return;
+            }
+
+            Debug.Log($"[WitchDebug] Jumped to Day {day} (in-memory debug session, no saves/achievements).");
+        }
+
+        public void DebugJumpToDayRelative(int delta)
+        {
+            int current = sessionStore != null && sessionStore.ActiveSession != null
+                ? sessionStore.ActiveSession.RunState.CurrentDayNumber
+                : WitchDebugRuntime.StartDay;
+            DebugJumpToDay(current + delta);
+        }
+
+        private void OnGUI()
+        {
+            if (!debugSessionActive && !WitchDebugRuntime.IsDebugJumpActive)
+            {
+                return;
+            }
+
+            int day = sessionStore != null && sessionStore.ActiveSession != null
+                ? sessionStore.ActiveSession.RunState.CurrentDayNumber
+                : WitchDebugRuntime.StartDay;
+            var rect = new Rect(10, 10, 360, 24);
+            var prev = GUI.color;
+            GUI.color = new Color(1f, 0.85f, 0.1f, 0.95f);
+            GUI.Label(rect, $"DEBUG | Day {day} | in-memory (no saves/achievements)");
+            GUI.color = prev;
+        }
+#endif
 
     }
 }

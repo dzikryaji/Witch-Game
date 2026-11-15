@@ -147,6 +147,23 @@ namespace Witch.Presentation
             running = StartCoroutine(FadeOutRoutine(0, true));
         }
 
+        /// <summary>
+        /// Immediately clears any cover/pending reveal (used for non-Shop debug starts).
+        /// </summary>
+        public void HideImmediate()
+        {
+            StopWatchdog();
+            if (running != null)
+            {
+                StopCoroutine(running);
+                running = null;
+            }
+            revealOwed = false;
+            revealRequested = false;
+            storedRevealComplete = null;
+            HideOverlay();
+        }
+
         private IEnumerator DayToDayRoutine(int nextDayNumber, Func<Task> whileCoveredAsync)
         {
             yield return FadeAlpha(0f, 1f);

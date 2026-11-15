@@ -1,0 +1,23 @@
+{
+    "name": "Witch.Bootstrap.Tests",
+    "rootNamespace": "Witch.Tests.EditMode.Bootstrap",
+    "references": [
+        "Witch.Bootstrap",
+        "Witch.Application",
+        "Witch.Domain"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false,
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ]
+}
