@@ -33,6 +33,9 @@ namespace Witch.Presentation.Shop
 
         private Coroutine routine;
 
+        public Func<bool> IsGameplayPaused { get; set; }
+        private bool Paused => IsGameplayPaused != null && IsGameplayPaused();
+
         public bool IsPlaying => routine != null;
 
         public bool IsAuthored => spread != null && turnClip != null && flipFront != null && flipBack != null;
@@ -86,7 +89,7 @@ namespace Witch.Presentation.Shop
 
                 if (elapsed >= duration) break;
                 yield return null;
-                elapsed += useUnscaledTime ? Time.unscaledDeltaTime : Time.deltaTime;
+                if (!Paused) elapsed += useUnscaledTime ? Time.unscaledDeltaTime : Time.deltaTime;
             }
 
             turnClip.gameObject.SetActive(false);

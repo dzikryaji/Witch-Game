@@ -41,6 +41,9 @@ namespace Witch.Presentation.Shop
         private Coroutine routine;
         private TaskCompletionSource<bool> finished;
 
+        public Func<bool> IsGameplayPaused { get; set; }
+        private bool Paused => IsGameplayPaused != null && IsGameplayPaused();
+
         public bool IsShowing => finished != null;
 
         public bool HasCard(string categoryId) => FindCard(categoryId) != null;
@@ -133,12 +136,12 @@ namespace Witch.Presentation.Shop
             signal?.TrySetResult(shown);
         }
 
-        private static IEnumerator Animate(float duration, Action<float> apply)
+        private IEnumerator Animate(float duration, Action<float> apply)
         {
             float elapsed = 0f;
             while (elapsed < duration)
             {
-                elapsed += Time.unscaledDeltaTime;
+                if (!Paused) elapsed += Time.unscaledDeltaTime;
                 apply(Mathf.Clamp01(elapsed / duration));
                 yield return null;
             }
