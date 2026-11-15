@@ -111,6 +111,7 @@ namespace Witch.Presentation.Shop
         private bool actionInProgress;
         private bool autoResolveExpenseInFlight;
         private bool autoResolveExpenseAttempted;
+        private int? heldHeaderMoney;
         private string autoResolveExpenseError;
         private InputAction pauseAction;
         private InputAction guidebookAction;
@@ -663,6 +664,23 @@ namespace Witch.Presentation.Shop
 
         public async Task<ServePotionResult> ServeAsync()
         {
+            if (counterCoins != null && ActiveSession != null)
+            {
+                heldHeaderMoney = Math.Max(0, ActiveSession.RunState.Money - PendingCounterCoins);
+            }
+
+            try
+            {
+                return await ServeCoreAsync();
+            }
+            finally
+            {
+                heldHeaderMoney = null;
+            }
+        }
+
+        private async Task<ServePotionResult> ServeCoreAsync()
+        {
             CancellationToken cancellationToken = lifetimeCancellation?.Token ?? CancellationToken.None;
             bool servingTutorial = guidedTutorialActive && guidedTutorialStep == ShopGuidedTutorialStep.Serve && IsTutorialOrderActive();
             ServePotionResult result = await servePotion.ExecuteAsync(ActiveSession, cancellationToken);
@@ -682,6 +700,7 @@ namespace Witch.Presentation.Shop
                 {
                     // The payment is already saved; the coins only delay when the header shows it.
                     counterCoins.Add(result.Outcome.Payment);
+                    heldHeaderMoney = null;
                     SetStatus("Correct order. The customer left " + result.Outcome.Payment + " coins on the counter. Tap them to collect.");
                 }
                 else
@@ -1724,7 +1743,7 @@ namespace Witch.Presentation.Shop
                 return;
             }
 
-            hudView.Render(session, DisplayName, PendingCounterCoins);
+            hudView.Render(session, DisplayName, HeaderPendingCoins);
             grinderInputText.text = GrinderIsFull
                 ? "Ready to grind"
                 : grinderFirstHerbId == null
@@ -1927,6 +1946,19 @@ namespace Witch.Presentation.Shop
 
         /// <summary>Coins on the counter the player has not tapped yet (already counted in the run state).</summary>
         public int PendingCounterCoins => counterCoins != null ? counterCoins.Amount : 0;
+
+        private int HeaderPendingCoins
+        {
+            get
+            {
+                if (heldHeaderMoney.HasValue && ActiveSession != null)
+                {
+                    return Math.Max(0, ActiveSession.RunState.Money - heldHeaderMoney.Value);
+                }
+
+                return PendingCounterCoins;
+            }
+        }
 
         /// <summary>Collects the counter coins as if the player tapped them.</summary>
         public void CollectCounterCoins()
