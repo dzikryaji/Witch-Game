@@ -50,6 +50,7 @@ namespace Witch.Presentation.Shop
         [SerializeField] private MoneyGainPopUp moneyGainPopUp;
         [Tooltip("Optional. Highlights the suspicion bar when an order is wrong.")]
         [SerializeField] private SuspicionFocusView suspicionFocus;
+        [SerializeField] private HerbUnlockAnnouncementView herbUnlockAnnouncement;
         [SerializeField] private Text grinderInputText;
         [SerializeField] private GameObject groundHerbObject;
         [SerializeField] private Text groundHerbText;
@@ -112,6 +113,7 @@ namespace Witch.Presentation.Shop
         private bool autoResolveExpenseInFlight;
         private bool autoResolveExpenseAttempted;
         private int? heldHeaderMoney;
+        private readonly HashSet<string> announcedUnlocks = new HashSet<string>(StringComparer.Ordinal);
         private string autoResolveExpenseError;
         private InputAction pauseAction;
         private InputAction guidebookAction;
@@ -140,6 +142,7 @@ namespace Witch.Presentation.Shop
         public bool GuidedTutorialActive => guidedTutorialActive;
         public bool HunterFarewellPlaying => farewellPlaying;
         public bool MinigameIntroVisible => minigameIntroPopup != null && minigameIntroPopup.IsVisible;
+        public bool UnlockAnnouncementVisible => herbUnlockAnnouncement != null && herbUnlockAnnouncement.IsShowing;
         public bool HasAuthoredView => hudView != null
             && hudView.IsAuthored
             && herbButtons != null
@@ -288,6 +291,7 @@ namespace Witch.Presentation.Shop
             if (counterCoins != null) counterCoins.Clear();
             if (moneyGainPopUp != null) moneyGainPopUp.Hide();
             if (suspicionFocus != null) suspicionFocus.Hide();
+            if (herbUnlockAnnouncement != null) herbUnlockAnnouncement.Hide();
             hudView.ClearCustomer();
             audioService?.PlayMusic(GameAudioCueIds.ShopMusic);
             audioService?.PlayAmbience(GameAudioCueIds.ShopAmbience);
@@ -436,6 +440,7 @@ namespace Witch.Presentation.Shop
             if (farewellPlaying) return; // pause hotkey blocked while the Hunter says goodbye
             if (guidedTutorialActive) return; // pause hotkey blocked during guided tutorial
             if (TutorialVisible) return;
+            if (UnlockAnnouncementVisible) return;
             TogglePause();
         }
 
@@ -458,6 +463,7 @@ namespace Witch.Presentation.Shop
                 return;
             }
             if (TutorialVisible) return;
+            if (UnlockAnnouncementVisible) return;
             ToggleGuidebook();
         }
 
@@ -2200,6 +2206,54 @@ namespace Witch.Presentation.Shop
             }
         }
 
+        private bool TryGetUnannouncedUnlock(out string categoryId)
+        {
+            categoryId = null;
+            if (herbUnlockAnnouncement == null || ActiveSession == null) return false;
+
+            foreach (string id in ActiveSession.RunState.UnlockedCategoryIds)
+            {
+                if (announcedUnlocks.Contains(id) || !herbUnlockAnnouncement.HasCard(id)) continue;
+                if (ActiveSession.RunState.TutorialFlags.TryGetValue(HerbUnlockFlags.For(id), out bool shown) && shown) continue;
+                categoryId = id;
+                return true;
+            }
+
+            return false;
+        }
+
+        private async Task AnnounceUnlockThenReleaseAsync(string categoryId)
+        {
+            announcedUnlocks.Add(categoryId);
+            try
+            {
+                bool shown = await herbUnlockAnnouncement.ShowAsync(categoryId);
+                if (!shown || ActiveSession == null) return;
+
+                if (markTutorialFlagUseCase != null)
+                {
+                    SaveStateResult saved = await markTutorialFlagUseCase.ExecuteAsync(
+                        ActiveSession,
+                        HerbUnlockFlags.For(categoryId),
+                        lifetimeCancellation?.Token ?? CancellationToken.None);
+                    if (!saved.Succeeded)
+                    {
+                        Debug.LogWarning("Could not save herb unlock announcement flag: " + saved.ErrorMessage, this);
+                    }
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                return;
+            }
+            catch (Exception exception)
+            {
+                Debug.LogException(exception, this);
+            }
+
+            ReleaseTimerAfterTransition();
+        }
+
         private void ReleaseTimerAfterTransition()
         {
             try
@@ -2208,6 +2262,13 @@ namespace Witch.Presentation.Shop
                 {
                     waitingForTransitionRelease = false;
                     pendingStartAfterReveal = false;
+                    return;
+                }
+
+                if (pendingStartAfterReveal && !pendingStartIsResume
+                    && TryGetUnannouncedUnlock(out string unlockedCategoryId))
+                {
+                    _ = AnnounceUnlockThenReleaseAsync(unlockedCategoryId);
                     return;
                 }
 
