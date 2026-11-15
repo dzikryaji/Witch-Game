@@ -1,5 +1,3 @@
-using System;
-
 namespace Witch.Presentation.Shop
 {
     public static class ShopTutorialFlags

@@ -20,7 +20,6 @@ namespace Witch.Presentation.Shop
         [Header("Authored View")]
         [SerializeField] private ShopHudView hudView;
         [SerializeField] private Button[] herbButtons;
-        [SerializeField] private HerbDragItem herbButtonPrefab;
         [SerializeField] private RectTransform herbButtonContainer;
         [SerializeField] private GrinderDropZone grinderDropZone;
         [SerializeField] private CauldronDropZone cauldronDropZone;
@@ -76,7 +75,6 @@ namespace Witch.Presentation.Shop
         [SerializeField] private Button tutorialContinueButton;
         [SerializeField] private Button tutorialSkipButton;
         [SerializeField] private TutorialMaskView tutorialMaskView;
-        [SerializeField] private GameObject[] tutorialHighlights; // legacy, unused by guided tutorial
         [Header("Input Actions")]
         [SerializeField] private InputActionAsset inputActions;
         [SerializeField] private MinigameIntroPopupView minigameIntroPopup;
@@ -117,7 +115,6 @@ namespace Witch.Presentation.Shop
         private bool pendingStartAfterReveal;
         private bool pendingStartIsResume;
         private bool farewellPlaying;
-        private int tutorialBeat;
         private bool viewBound;
         private CancellationTokenSource lifetimeCancellation;
         private bool actionInProgress;
@@ -156,10 +153,8 @@ namespace Witch.Presentation.Shop
         public GameSession ActiveSession => sessionStore?.ActiveSession;
         public string LastStatus { get; private set; }
         public bool GuidebookVisible => guidebookPanel != null && guidebookPanel.activeSelf;
-        public bool PauseVisible => pausePanel != null && pausePanel.activeSelf;
         public bool TutorialVisible => (tutorialPanel != null && tutorialPanel.activeSelf) || guidedTutorialActive;
         public bool GuidedTutorialActive => guidedTutorialActive;
-        public bool HunterFarewellPlaying => farewellPlaying;
         public bool MinigameIntroVisible => minigameIntroPopup != null && minigameIntroPopup.IsVisible;
         public bool UnlockAnnouncementVisible => herbUnlockAnnouncement != null && herbUnlockAnnouncement.IsShowing;
         public bool HasAuthoredView => hudView != null
@@ -1450,7 +1445,6 @@ namespace Witch.Presentation.Shop
                 || string.Equals(herbId, "herb.mustardSeed", StringComparison.Ordinal);
         }
 
-        private bool GuidedTutorialAllowsGrindAction() => !guidedTutorialActive || guidedTutorialStep == ShopGuidedTutorialStep.Grind || guidedTutorialStep == ShopGuidedTutorialStep.LoadHerbs;
         private bool GuidedTutorialAllowsAddToPot() => !guidedTutorialActive || guidedTutorialStep == ShopGuidedTutorialStep.AddToCauldron;
         private bool GuidedTutorialAllowsServe() => !guidedTutorialActive || guidedTutorialStep == ShopGuidedTutorialStep.Serve;
         private bool GuidedTutorialAllowsUndo() => !guidedTutorialActive; // undo blocked during tutorial
@@ -1555,11 +1549,6 @@ namespace Witch.Presentation.Shop
                     // If somehow a different customer appears mid-tutorial context, do not start guided mode.
                 }
             }
-        }
-
-        private void ShowTutorialBeat()
-        {
-            // Legacy pre-customer tutorial removed in favor of guided tutorial on first real customer.
         }
 
         private async Task EnterPendingRewindAsync(CancellationToken cancellationToken)
@@ -1940,9 +1929,6 @@ namespace Witch.Presentation.Shop
         }
 
         private void OnContinueClicked() => RunUiAction(ContinueNextDayAsync);
-        // private void OnMainMenuClicked() => RunUiAction(ReturnToMainMenuAsync);
-
-        // private void OnRestartClicked() => RunUiAction(RestartDayAsync);
 
         public async Task RestartDayAsync()
         {
@@ -2065,12 +2051,6 @@ namespace Witch.Presentation.Shop
             }
         }
 
-        /// <summary>Collects the counter coins as if the player tapped them.</summary>
-        public void CollectCounterCoins()
-        {
-            if (counterCoins != null) counterCoins.Collect();
-        }
-
         private void OnCounterCoinsCollected(int amount)
         {
             audioService?.Play(GameAudioCueIds.Payment);
@@ -2138,19 +2118,6 @@ namespace Witch.Presentation.Shop
         private GuidebookPageViewData PageAt(int index)
         {
             return index >= 0 && index < guidebookPages.Count ? guidebookPages[index] : null;
-        }
-
-        private void SetTutorialHighlight(int activeIndex)
-        {
-            // Legacy highlight system replaced by TutorialMaskView in guided tutorial.
-            if (tutorialHighlights == null) return;
-            for (int index = 0; index < tutorialHighlights.Length; index++)
-            {
-                if (tutorialHighlights[index] != null)
-                {
-                    tutorialHighlights[index].SetActive(false);
-                }
-            }
         }
 
         private bool IsResumingEncounter() =>

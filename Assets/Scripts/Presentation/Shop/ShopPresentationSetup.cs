@@ -338,7 +338,6 @@ namespace Witch.Presentation.Shop
         public int DayNumber { get; }
         public bool GuidedTutorialEnabled { get; }
         public string GuidedTutorialOrderId { get; }
-        public bool ShowOpeningTutorial => GuidedTutorialEnabled;
         public int EncounterSeed { get; }
         public bool RandomizeEncounters { get; }
         public IReadOnlyList<string> SeenOrderIds { get; }
