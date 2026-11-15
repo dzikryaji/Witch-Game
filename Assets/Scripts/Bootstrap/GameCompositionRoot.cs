@@ -13,6 +13,7 @@ using Witch.Presentation;
 using Witch.Presentation.MainMenu;
 using Witch.Presentation.Rewind;
 using Witch.Presentation.Shop;
+using Witch.Presentation.Settings;
 
 namespace Witch.Bootstrap
 {
@@ -392,6 +393,11 @@ namespace Witch.Bootstrap
                         symbols,
                         runtimeContent.RewindDifficulty.StartingPairCount,
                         runtimeContent.RewindDifficulty.MaximumPairCount);
+                }
+
+                foreach (SettingsPanelPresenter presenter in root.GetComponentsInChildren<SettingsPanelPresenter>(true))
+                {
+                    presenter.Initialize(settingsService, audioService);
                 }
             }
         }
