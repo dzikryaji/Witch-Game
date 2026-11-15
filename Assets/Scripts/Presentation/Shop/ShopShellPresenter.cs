@@ -90,6 +90,8 @@ namespace Witch.Presentation.Shop
         [SerializeField] private Text confirmationMessage;
         [SerializeField] private Button confirmYesButton;
         [SerializeField] private Button cancelNoButton;
+        [SerializeField] private Button pauseSettingsButton;
+        [SerializeField] private Witch.Presentation.Settings.SettingsPanelPresenter settingsPanelPresenter;
 
 
         private IGameSessionStore sessionStore;
@@ -453,6 +455,11 @@ namespace Witch.Presentation.Shop
 
         private void HandlePauseAction(InputAction.CallbackContext context)
         {
+            if (settingsPanelPresenter != null && settingsPanelPresenter.IsOpen)
+            {
+                settingsPanelPresenter.Cancel();
+                return;
+            }
             if (setTimerPaused == null || MinigameIntroVisible) return;
             if (farewellPlaying) return; // pause hotkey blocked while the Hunter says goodbye
             if (guidedTutorialActive) return; // pause hotkey blocked during guided tutorial
@@ -1076,6 +1083,16 @@ namespace Witch.Presentation.Shop
             SetStatus(paused ? "Paused. Shop time is frozen." : "Back to work. Shop time is moving again.");
         }
 
+        private void OnSettingsOpened()
+        {
+            pausePanel.SetActive(false);
+        }
+
+        private void OnSettingsClosed()
+        {
+            pausePanel.SetActive(true);
+        }
+
         public void ConfigureRestart(RestartDayUseCase useCase)
         {
             restartDay = useCase ?? throw new ArgumentNullException(nameof(useCase));
@@ -1650,6 +1667,17 @@ namespace Witch.Presentation.Shop
                 minigameIntroPopup.Bind(OnMinigameIntroClicked);
             }
 
+            if (pauseSettingsButton != null && settingsPanelPresenter != null)
+                pauseSettingsButton.onClick.AddListener(settingsPanelPresenter.Open);
+
+            if (settingsPanelPresenter != null)
+            {
+                settingsPanelPresenter.Opened -= OnSettingsOpened;
+                settingsPanelPresenter.Opened += OnSettingsOpened;
+                settingsPanelPresenter.Closed -= OnSettingsClosed;
+                settingsPanelPresenter.Closed += OnSettingsClosed;
+            }
+
             grinderDropZone.Initialize(this);
             cauldronDropZone.Initialize(this);
             discardDropZone.Initialize(this);
@@ -1676,7 +1704,6 @@ namespace Witch.Presentation.Shop
             if (restartButton != null) restartButton.onClick.AddListener(OnRestartClicked);
             if (confirmYesButton != null) confirmYesButton.onClick.AddListener(OnConfirmationConfirmed);
             if (cancelNoButton != null) cancelNoButton.onClick.AddListener(CloseConfirmation);
-            continueButton.onClick.AddListener(OnContinueClicked);
             continueButton.onClick.AddListener(OnContinueClicked);
             tutorialContinueButton.onClick.RemoveListener(AdvanceTutorial);
             tutorialContinueButton.onClick.AddListener(OnTutorialContinueClicked);
