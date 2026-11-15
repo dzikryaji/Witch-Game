@@ -780,6 +780,11 @@ namespace Witch.Presentation.Shop
                 return;
             }
 
+            if (actionInProgress || (dayTransition != null && dayTransition.IsPlaying))
+            {
+                return;
+            }
+
             autoResolveExpenseAttempted = true;
             autoResolveExpenseInFlight = true;
             RunUiAction(ResolveExpenseAutomaticallyAsync);
