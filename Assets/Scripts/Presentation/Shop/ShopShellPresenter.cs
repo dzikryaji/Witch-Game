@@ -157,6 +157,9 @@ namespace Witch.Presentation.Shop
         public bool GuidedTutorialActive => guidedTutorialActive;
         public bool MinigameIntroVisible => minigameIntroPopup != null && minigameIntroPopup.IsVisible;
         public bool UnlockAnnouncementVisible => herbUnlockAnnouncement != null && herbUnlockAnnouncement.IsShowing;
+        private bool userPaused;
+        // User-initiated Shop pause freezes gameplay/presentation; system timer freezes (guided tutorial, rewind staging, transitions) do not.
+        private bool IsGameplayPaused => userPaused;
         public bool HasAuthoredView => hudView != null
             && hudView.IsAuthored
             && herbButtons != null
@@ -398,10 +401,15 @@ namespace Witch.Presentation.Shop
                 return;
             }
 
+            // While paused, gameplay freeze is enforced (session timer paused, animations gated, actions blocked).
+            // Keep lightweight render/refresh cadence without advancing gameplay time.
             if (Time.unscaledTime >= nextRefresh)
             {
                 nextRefresh = Time.unscaledTime + 0.1f;
-                updateTimer.Execute(ActiveSession);
+                if (!IsGameplayPaused)
+                {
+                    updateTimer.Execute(ActiveSession);
+                }
                 Render();
             }
 
@@ -411,7 +419,10 @@ namespace Witch.Presentation.Shop
                 EvaluateGuidedTutorialProgress();
             }
 
-            TryAutoResolveExpense();
+            if (!IsGameplayPaused)
+            {
+                TryAutoResolveExpense();
+            }
         }
 
         private void OnEnable()
@@ -429,25 +440,6 @@ namespace Witch.Presentation.Shop
                 guidebookAction.performed += HandleGuidebookAction;
                 guidebookAction.Enable();
             }
-        }
-
-        private void OnDisable()
-        {
-            lifetimeCancellation?.Cancel();
-            lifetimeCancellation?.Dispose();
-            lifetimeCancellation = null;
-            if (pauseAction != null)
-            {
-                pauseAction.performed -= HandlePauseAction;
-                pauseAction.Disable();
-            }
-            if (guidebookAction != null)
-            {
-                guidebookAction.performed -= HandleGuidebookAction;
-                guidebookAction.Disable();
-            }
-            pauseAction = null;
-            guidebookAction = null;
         }
 
         private void HandlePauseAction(InputAction.CallbackContext context)
@@ -501,6 +493,11 @@ namespace Witch.Presentation.Shop
 
         public bool LoadHerbIntoGrinder(string herbId)
         {
+            if (IsGameplayPaused)
+            {
+                SetStatus("The shop is paused.");
+                return false;
+            }
             if (farewellPlaying)
             {
                 SetStatus("Wait for the Hunter to finish before preparing medicine.");
@@ -547,6 +544,12 @@ namespace Witch.Presentation.Shop
 
         public PreparationResult GrindLoadedHerb()
         {
+            if (IsGameplayPaused)
+            {
+                PreparationResult blocked = PreparationResult.Failure("The shop is paused.");
+                SetStatus(blocked.ErrorMessage);
+                return blocked;
+            }
             if (guidedTutorialActive && guidedTutorialStep != ShopGuidedTutorialStep.Grind && guidedTutorialStep != ShopGuidedTutorialStep.LoadHerbs)
             {
                 PreparationResult blocked = PreparationResult.Failure("Follow the current tutorial step.");
@@ -572,6 +575,11 @@ namespace Witch.Presentation.Shop
 
         public void EjectLoadedHerb()
         {
+            if (IsGameplayPaused)
+            {
+                SetStatus("The shop is paused.");
+                return;
+            }
             if (!GuidedTutorialAllowsUndo())
             {
                 SetStatus("Undo is disabled during the tutorial.");
@@ -595,6 +603,12 @@ namespace Witch.Presentation.Shop
 
         public PreparationResult AddGroundHerbToPot()
         {
+            if (IsGameplayPaused)
+            {
+                PreparationResult blocked = PreparationResult.Failure("The shop is paused.");
+                SetStatus(blocked.ErrorMessage);
+                return blocked;
+            }
             if (guidedTutorialActive && !GuidedTutorialAllowsAddToPot())
             {
                 PreparationResult blocked = PreparationResult.Failure("Follow the current tutorial step.");
@@ -621,6 +635,12 @@ namespace Witch.Presentation.Shop
 
         public PreparationResult DiscardGroundHerb()
         {
+            if (IsGameplayPaused)
+            {
+                PreparationResult blocked = PreparationResult.Failure("The shop is paused.");
+                SetStatus(blocked.ErrorMessage);
+                return blocked;
+            }
             if (!GuidedTutorialAllowsUndo())
             {
                 PreparationResult blocked = PreparationResult.Failure("Undo is disabled during the tutorial.");
@@ -636,6 +656,12 @@ namespace Witch.Presentation.Shop
 
         public PreparationResult Brew()
         {
+            if (IsGameplayPaused)
+            {
+                PreparationResult blocked = PreparationResult.Failure("The shop is paused.");
+                SetStatus(blocked.ErrorMessage);
+                return blocked;
+            }
             PreparationResult result = preparation.Brew(ActiveSession);
             string message = !result.Succeeded
                 ? result.ErrorMessage
@@ -661,6 +687,12 @@ namespace Witch.Presentation.Shop
 
         public PreparationResult Discard()
         {
+            if (IsGameplayPaused)
+            {
+                PreparationResult blocked = PreparationResult.Failure("The shop is paused.");
+                SetStatus(blocked.ErrorMessage);
+                return blocked;
+            }
             if (!GuidedTutorialAllowsUndo())
             {
                 PreparationResult blocked = PreparationResult.Failure("Undo is disabled during the tutorial.");
@@ -676,6 +708,12 @@ namespace Witch.Presentation.Shop
 
         public PreparationResult DiscardPotion()
         {
+            if (IsGameplayPaused)
+            {
+                PreparationResult blocked = PreparationResult.Failure("The shop is paused.");
+                SetStatus(blocked.ErrorMessage);
+                return blocked;
+            }
             if (!GuidedTutorialAllowsUndo())
             {
                 PreparationResult blocked = PreparationResult.Failure("Undo is disabled during the tutorial.");
@@ -691,6 +729,11 @@ namespace Witch.Presentation.Shop
 
         public async Task<ServePotionResult> ServeAsync()
         {
+            if (IsGameplayPaused)
+            {
+                SetStatus("The shop is paused.");
+                return ServePotionResult.Failure("The shop is paused.");
+            }
             if (counterCoins != null && ActiveSession != null)
             {
                 heldHeaderMoney = Math.Max(0, ActiveSession.RunState.Money - PendingCounterCoins);
@@ -788,7 +831,7 @@ namespace Witch.Presentation.Shop
                 while (elapsed < 0.2f)
                 {
                     cancellationToken.ThrowIfCancellationRequested();
-                    elapsed += Time.unscaledDeltaTime;
+                    if (!IsGameplayPaused) elapsed += Time.unscaledDeltaTime;
                     await Task.Yield();
                 }
                 await hudView.RevealAdditionalBubbleAsync(text, cancellationToken);
@@ -1062,32 +1105,37 @@ namespace Witch.Presentation.Shop
                 // During guided tutorial the clock must remain frozen; pause UI is blocked by input.
                 return;
             }
-            bool paused = !pausePanel.activeSelf;
+
+            bool pause = !userPaused;
             // Never unfreeze while guided tutorial timer is frozen.
-            if (!paused && guidedTutorialTimerFrozen)
+            if (!pause && guidedTutorialTimerFrozen)
             {
                 pausePanel.SetActive(false);
+                if (pauseOverlay != null) pauseOverlay.SetActive(false);
+                userPaused = false;
+                Time.timeScale = 1f;
+                setTimerPaused.Execute(ActiveSession, true);
                 return;
             }
-            setTimerPaused.Execute(ActiveSession, paused);
-            pausePanel.SetActive(paused);
 
-            if (pauseOverlay != null)
-            {
-                pauseOverlay.SetActive(paused);
-            }
+            userPaused = pause;
+            setTimerPaused.Execute(ActiveSession, pause || guidedTutorialTimerFrozen);
+            pausePanel.SetActive(pause);
+            if (pauseOverlay != null) pauseOverlay.SetActive(pause);
+            Time.timeScale = pause ? 0f : 1f;
             audioService?.Play(GameAudioCueIds.UiClick);
-            SetStatus(paused ? "Paused. Shop time is frozen." : "Back to work. Shop time is moving again.");
+            SetStatus(pause ? "Paused. Shop time is frozen." : "Back to work. Shop time is moving again.");
         }
 
         private void OnSettingsOpened()
         {
-            pausePanel.SetActive(false);
+            // Keep user pause active while settings are open from the pause menu.
+            if (pausePanel != null) pausePanel.SetActive(false);
         }
 
         private void OnSettingsClosed()
         {
-            pausePanel.SetActive(true);
+            if (pausePanel != null) pausePanel.SetActive(userPaused);
         }
 
         public void ConfigureRestart(RestartDayUseCase useCase)
@@ -1103,18 +1151,15 @@ namespace Witch.Presentation.Shop
                 return;
             }
 
-            if (pausePanel != null && pausePanel.activeSelf && setTimerPaused != null)
-            {
-                pausePanel.SetActive(false);
-                if (!guidedTutorialTimerFrozen)
-                {
-                    setTimerPaused.Execute(ActiveSession, false);
-                }
-            }
+            bool wasUserPaused = userPaused;
+            userPaused = false;
+            if (pausePanel != null) pausePanel.SetActive(false);
+            if (pauseOverlay != null) pauseOverlay.SetActive(false);
+            Time.timeScale = 1f;
 
-            if (pauseOverlay != null)
+            if (wasUserPaused && setTimerPaused != null && !guidedTutorialTimerFrozen)
             {
-                pauseOverlay.SetActive(false);
+                setTimerPaused.Execute(ActiveSession, false);
             }
 
             ClearCounterCoins();
@@ -1247,6 +1292,36 @@ namespace Witch.Presentation.Shop
                 MarkGuidedTutorialSeen();
             }
             Render();
+        }
+
+        private void OnDisable()
+        {
+            userPaused = false;
+            Time.timeScale = 1f;
+            if (pauseAction != null)
+            {
+                pauseAction.performed -= HandlePauseAction;
+                pauseAction.Disable();
+                pauseAction = null;
+            }
+            if (guidebookAction != null)
+            {
+                guidebookAction.performed -= HandleGuidebookAction;
+                guidebookAction.Disable();
+                guidebookAction = null;
+            }
+            if (settingsPanelPresenter != null)
+            {
+                settingsPanelPresenter.Opened -= OnSettingsOpened;
+                settingsPanelPresenter.Closed -= OnSettingsClosed;
+            }
+            if (counterCoins != null)
+            {
+                counterCoins.Collected -= OnCounterCoinsCollected;
+            }
+            lifetimeCancellation?.Cancel();
+            lifetimeCancellation?.Dispose();
+            lifetimeCancellation = null;
         }
 
         private async void MarkGuidedTutorialSeen()
@@ -1647,6 +1722,14 @@ namespace Witch.Presentation.Shop
                 throw new InvalidOperationException("Shop scene is missing authored UI references.");
             }
 
+            if (hudView != null) hudView.IsGameplayPaused = () => IsGameplayPaused;
+            if (counterCoins != null) counterCoins.IsGameplayPaused = () => IsGameplayPaused;
+            if (moneyGainPopUp != null) moneyGainPopUp.IsGameplayPaused = () => IsGameplayPaused;
+            if (suspicionFocus != null) suspicionFocus.IsGameplayPaused = () => IsGameplayPaused;
+            if (herbUnlockAnnouncement != null) herbUnlockAnnouncement.IsGameplayPaused = () => IsGameplayPaused;
+            if (potionRevealAnimator != null) potionRevealAnimator.IsGameplayPaused = () => IsGameplayPaused;
+            if (guidebookFlipAnimator != null) guidebookFlipAnimator.IsGameplayPaused = () => IsGameplayPaused;
+
             if (viewBound)
             {
                 return;
@@ -1791,6 +1874,11 @@ namespace Witch.Presentation.Shop
 
         public void RequestServe()
         {
+            if (IsGameplayPaused)
+            {
+                SetStatus("The shop is paused.");
+                return;
+            }
             if (guidedTutorialActive && !GuidedTutorialAllowsServe())
             {
                 SetStatus("Follow the current tutorial step before serving.");

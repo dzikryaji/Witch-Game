@@ -30,6 +30,9 @@ namespace Witch.Presentation.Shop
 
         public event Action<int> Collected;
 
+        public Func<bool> IsGameplayPaused { get; set; }
+        private bool Paused => IsGameplayPaused != null && IsGameplayPaused();
+
         public int Amount { get; private set; }
 
         public bool HasCoins => Amount > 0;
@@ -93,10 +96,13 @@ namespace Witch.Presentation.Shop
             Collect();
         }
 
+        private float pulseTime;
+
         private void Update()
         {
             if (!waiting || popRoutine != null) return;
-            float wave = 0.5f + 0.5f * Mathf.Sin(Time.unscaledTime * 6f);
+            if (!Paused) pulseTime += Time.unscaledDeltaTime;
+            float wave = 0.5f + 0.5f * Mathf.Sin(pulseTime * 6f);
             transform.localScale = baseScale * (1f + waitingPulse * wave);
         }
 
@@ -105,7 +111,7 @@ namespace Witch.Presentation.Shop
             float elapsed = 0f;
             while (elapsed < popDuration)
             {
-                elapsed += Time.unscaledDeltaTime;
+                if (!Paused) elapsed += Time.unscaledDeltaTime;
                 float progress = Mathf.Clamp01(elapsed / popDuration);
                 transform.localScale = baseScale * Mathf.LerpUnclamped(0.6f, 1f, EaseOutBack(progress));
                 yield return null;
@@ -120,7 +126,7 @@ namespace Witch.Presentation.Shop
             float elapsed = 0f;
             while (elapsed < autoCollectDelay)
             {
-                elapsed += Time.unscaledDeltaTime;
+                if (!Paused) elapsed += Time.unscaledDeltaTime;
                 yield return null;
             }
 
