@@ -7,6 +7,9 @@ using Witch.Application.Flow;
 using Witch.Application.Ports;
 using Witch.Domain.Progression;
 using UnityEngine.UI;
+using UnityEngine.InputSystem;
+using Witch.Presentation;
+using Witch.Presentation.Settings;
 
 namespace Witch.Presentation.Rewind
 {
@@ -21,6 +24,16 @@ namespace Witch.Presentation.Rewind
         [SerializeField] private RewindTimeUpPopupView timeUpPopup;
         [SerializeField, Min(5f)] private float timeLimitSeconds = 60f;
         [SerializeField] private RewindHeaderView header;
+
+        [Header("Pause")]
+        [SerializeField] private Button pauseButton;
+        [SerializeField] private GameObject pausePanel;
+        [SerializeField] private GameObject pauseOverlay;
+        [SerializeField] private Button resumeButton;
+        [SerializeField] private Button settingsButton;
+        [SerializeField] private Button quitButton;
+        [SerializeField] private SettingsPanelPresenter settingsPanelPresenter;
+        [SerializeField] private ConfirmPopupView quitConfirm;
 
         private float remainingSeconds;
         private bool timerRunning;
@@ -42,6 +55,7 @@ namespace Witch.Presentation.Rewind
         private const int CompletionHoldMs = 500;
         private int FlipDelayMs(int index) => Mathf.CeilToInt(cardSlots[index].FlipDuration * 1000f);
 
+        public bool IsPaused { get; private set; }
         public bool IsInitialized => sessionStore != null;
         public GameSession ActiveSession => sessionStore?.ActiveSession;
         public RewindBoard Board { get; private set; }
@@ -128,6 +142,7 @@ namespace Witch.Presentation.Rewind
             matched = new bool[Board.Cards.Count];
             EnsureCardViews(Board.Cards.Count);
             BindCards();
+            BindPause();
             header?.Render(ActiveSession);
             if (timeUpPopup != null)
             {
@@ -143,7 +158,7 @@ namespace Witch.Presentation.Rewind
 
         public async Task<bool> FlipCardAsync(int index)
         {
-            if (Board == null || IsResolvingMismatch || index < 0 || index >= Board.Cards.Count || matched[index] || revealed[index] || IsTimedOut || IsComplete)
+            if (Board == null || IsResolvingMismatch || index < 0 || index >= Board.Cards.Count || matched[index] || revealed[index] || IsTimedOut || IsComplete || IsPaused)
             {
                 return false;
             }
@@ -276,7 +291,7 @@ namespace Witch.Presentation.Rewind
                         : symbols[Board.Cards[index]],
                     visible,
                     isMatched,
-                    !isMatched && !IsResolvingMismatch && !IsComplete && !IsTimedOut);
+                    !isMatched && !IsResolvingMismatch && !IsComplete && !IsTimedOut && !IsPaused);
             }
         }
 
@@ -297,7 +312,9 @@ namespace Witch.Presentation.Rewind
 
         private void Update()
         {
-            if (!timerRunning) return;
+            if (Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame) HandleEscape();
+
+            if (!timerRunning || IsPaused) return;
 
             remainingSeconds -= Time.unscaledDeltaTime;
             if (remainingSeconds <= 0f)
@@ -353,7 +370,7 @@ namespace Witch.Presentation.Rewind
             }
 
             returningToMenu = true;
-            timeUpPopup?.SetInteractable(false); 
+            timeUpPopup?.SetInteractable(false);
             audioService?.Play(GameAudioCueIds.UiClick);
 
             try
@@ -375,6 +392,78 @@ namespace Witch.Presentation.Rewind
                 timeUpPopup?.SetInteractable(true);
                 Debug.LogException(exception, this);
             }
+        }
+
+        private void BindPause()
+        {
+            pausePanel?.SetActive(false);
+            pauseOverlay?.SetActive(false);
+            quitConfirm?.Hide();
+
+            Bind(pauseButton, TogglePause);
+            Bind(resumeButton, TogglePause);
+            Bind(quitButton, AskToQuit);
+            if (settingsButton != null && settingsPanelPresenter != null)
+            {
+                Bind(settingsButton, settingsPanelPresenter.Open);
+                settingsPanelPresenter.Opened -= OnSettingsOpened;
+                settingsPanelPresenter.Opened += OnSettingsOpened;
+                settingsPanelPresenter.Closed -= OnSettingsClosed;
+                settingsPanelPresenter.Closed += OnSettingsClosed;
+            }
+        }
+
+        private static void Bind(Button button, UnityEngine.Events.UnityAction action)
+        {
+            if (button == null) return;
+            button.onClick.RemoveListener(action);   // safe if Initialize runs twice
+            button.onClick.AddListener(action);
+        }
+
+        public void TogglePause()
+        {
+            // Not while a pair is resolving, the popup or settings are open, or the board is finished.
+            if (Board == null || IsComplete || IsTimedOut || IsResolvingMismatch || returningToMenu) return;
+            if (quitConfirm != null && quitConfirm.IsVisible) return;
+            if (settingsPanelPresenter != null && settingsPanelPresenter.IsOpen) return;
+
+            IsPaused = !IsPaused;
+            pausePanel?.SetActive(IsPaused);
+            pauseOverlay?.SetActive(IsPaused);
+            if (!IsPaused) SetPauseContentVisible(true);
+            audioService?.Play(GameAudioCueIds.UiClick);
+            RenderCards();                           // greys out or restores the cards
+        }
+
+        private void AskToQuit()
+        {
+            if (quitConfirm == null) return;
+
+            quitConfirm.Show(
+                "Quit",
+                "Return to the main menu? Any progress you've made today won't be saved.",
+                ReturnToMainMenu
+            );
+        }
+
+        private void HandleEscape()
+        {
+            if (quitConfirm != null && quitConfirm.IsVisible) { quitConfirm.Hide(); return; }
+            if (settingsPanelPresenter != null && settingsPanelPresenter.IsOpen) { settingsPanelPresenter.Cancel(); return; }
+            TogglePause();
+        }
+
+        private void OnSettingsOpened() => SetPauseContentVisible(false);
+        private void OnSettingsClosed() => SetPauseContentVisible(true);
+
+        private void SetPauseContentVisible(bool visible)
+        {
+            if (pausePanel == null) return;
+            CanvasGroup group = pausePanel.GetComponent<CanvasGroup>();
+            if (group == null) group = pausePanel.AddComponent<CanvasGroup>();
+            group.alpha = visible ? 1f : 0f;
+            group.interactable = visible;
+            group.blocksRaycasts = visible;
         }
     }
 }
