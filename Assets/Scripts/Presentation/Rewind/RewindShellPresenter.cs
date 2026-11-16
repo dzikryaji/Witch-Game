@@ -35,6 +35,11 @@ namespace Witch.Presentation.Rewind
         [SerializeField] private SettingsPanelPresenter settingsPanelPresenter;
         [SerializeField] private ConfirmPopupView quitConfirm;
 
+        [Header("Win Popup")]
+        [SerializeField] private GameObject winPopup;
+        [SerializeField] private GameObject popUpOverlay;
+        [SerializeField] private Button winContinueButton;
+
         private float remainingSeconds;
         private bool timerRunning;
         private int boardGeneration;
@@ -54,6 +59,7 @@ namespace Witch.Presentation.Rewind
         private IReadOnlyList<string> symbols;
         private const int CompletionHoldMs = 500;
         private int FlipDelayMs(int index) => Mathf.CeilToInt(cardSlots[index].FlipDuration * 1000f);
+        private bool completing;
 
         public bool IsPaused { get; private set; }
         public bool IsInitialized => sessionStore != null;
@@ -190,13 +196,15 @@ namespace Witch.Presentation.Rewind
                 if (AllMatched())
                 {
                     IsComplete = true;
+                    timerRunning = false;
                     header?.DrainSuspicion(0.5f);
                     RenderCards();
                     audioService?.Play(GameAudioCueIds.MinigameComplete);
                     audioService?.StopMusic();
-                    await Task.Delay(CompletionHoldMs, lifetime.Token);   // show the final match before leaving
-                    RewindTransactionResult result = await completeRewind.ExecuteAsync(ActiveSession, lifetime.Token);
-                    return result.Succeeded;
+                    await Task.Delay(CompletionHoldMs, lifetime.Token);   // let the last match be seen
+                    if (generation != boardGeneration) return false;
+                    ShowWinPopup();
+                    return true;
                 }
 
                 RenderCards();
@@ -411,6 +419,11 @@ namespace Witch.Presentation.Rewind
                 settingsPanelPresenter.Closed -= OnSettingsClosed;
                 settingsPanelPresenter.Closed += OnSettingsClosed;
             }
+
+            winPopup?.SetActive(false);
+            popUpOverlay?.SetActive(false);
+
+            Bind(winContinueButton, OnWinContinueClicked);
         }
 
         private static void Bind(Button button, UnityEngine.Events.UnityAction action)
@@ -464,6 +477,42 @@ namespace Witch.Presentation.Rewind
             group.alpha = visible ? 1f : 0f;
             group.interactable = visible;
             group.blocksRaycasts = visible;
+        }
+
+        private void ShowWinPopup()
+        {
+            popUpOverlay?.SetActive(true);
+            winPopup?.SetActive(true);
+        }
+
+        private async void OnWinContinueClicked()
+        {
+            if (completing) return;
+            completing = true;
+            if (winContinueButton != null) winContinueButton.interactable = false;   // blocks double clicks
+            audioService?.Play(GameAudioCueIds.UiClick);
+
+            try
+            {
+                RewindTransactionResult result = await completeRewind.ExecuteAsync(ActiveSession, lifetime.Token);
+                if (!result.Succeeded)
+                {
+                    Debug.LogWarning("Could not finish the rewind: " + result.ErrorMessage, this);
+                    completing = false;
+                    if (winContinueButton != null) winContinueButton.interactable = true;   // let the player try again
+                }
+                // On success the use case has already saved and loaded the Shop, so the popup stays up until then.
+            }
+            catch (OperationCanceledException) when (lifetime.IsCancellationRequested)
+            {
+                // scene closed while loading
+            }
+            catch (Exception exception)
+            {
+                completing = false;
+                if (winContinueButton != null) winContinueButton.interactable = true;
+                Debug.LogException(exception, this);
+            }
         }
     }
 }
