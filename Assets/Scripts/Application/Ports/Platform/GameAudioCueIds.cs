@@ -6,7 +6,8 @@ namespace Witch.Application.Ports
     {
         public const string MainMenuMusic = "BGM_MAIN_MENU";
         public const string ShopMusic = "BGM_SHOP";
-        public const string RewindMusic = "BGM_REWIND_MINIGAME";
+        public const string MinigameMusic = "BGM_MINIGAME";
+        public const string WitchHunterMusic = "BGM_WITCH_HUNTER";
         public const string GameOverMusic = "BGM_GAME_OVER";
         public const string VictoryMusic = "BGM_GAME_COMPLETE";
         public const string ShopAmbience = "SFX_SHOP_AMBIENCE";
@@ -26,7 +27,7 @@ namespace Witch.Application.Ports
 
         public static IReadOnlyList<string> Required { get; } = new[]
         {
-            MainMenuMusic, ShopMusic, RewindMusic, GameOverMusic, VictoryMusic,
+            MainMenuMusic, ShopMusic, MinigameMusic, WitchHunterMusic, GameOverMusic, VictoryMusic,
             ShopAmbience, CustomerBell, PageFlip, Grind, HerbPluck,
             BrewSuccess, Discard, Payment, Wrong,
             CardMatch, CardMismatch,

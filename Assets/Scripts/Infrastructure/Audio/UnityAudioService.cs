@@ -91,6 +91,7 @@ namespace Witch.Infrastructure.Audio
 
             if (string.Equals(currentMusic, cueId, StringComparison.Ordinal) && music.isPlaying)
             {
+                SyncShopAmbience(cueId);
                 return ServiceResult.Success();
             }
 
@@ -103,6 +104,7 @@ namespace Witch.Infrastructure.Audio
             music.clip = clip;
             music.loop = cueId != GameAudioCueIds.GameOverMusic && cueId != GameAudioCueIds.VictoryMusic;
             music.Play();
+            SyncShopAmbience(cueId);
             return ServiceResult.Success();
         }
 
@@ -133,6 +135,7 @@ namespace Witch.Infrastructure.Audio
         {
             music.Stop();
             currentMusic = null;
+            StopAmbience();
         }
 
         public void StopAmbience()
@@ -154,6 +157,17 @@ namespace Witch.Infrastructure.Audio
         private bool TryGetClip(string cueId, out AudioClip clip)
         {
             return clipsById.TryGetValue(cueId, out clip) && clip != null;
+        }
+
+        private void SyncShopAmbience(string musicCueId)
+        {
+            if (string.Equals(musicCueId, GameAudioCueIds.ShopMusic, StringComparison.Ordinal))
+            {
+                PlayAmbience(GameAudioCueIds.ShopAmbience);
+                return;
+            }
+
+            StopAmbience();
         }
 
         private ServiceResult MissingCue(string cueId)

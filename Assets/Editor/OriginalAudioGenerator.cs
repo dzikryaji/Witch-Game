@@ -17,11 +17,12 @@ namespace Witch.Editor
 
         private static readonly KeyValuePair<string, string>[] Cues =
         {
-            Pair("BGM_MAIN_MENU", BgmFolder + "/AlkaKrab/Medieval Vol. 2 1 (Loop).ogg"),
-            Pair("BGM_SHOP", BgmFolder + "/AlkaKrab/Medieval Vol. 2 2 (Loop).ogg"),
-            Pair("BGM_REWIND_MINIGAME", BgmFolder + "/AlkaKrab/Medieval Vol. 2 3 (Loop).ogg"),
-            Pair("BGM_GAME_OVER", BgmFolder + "/AlkaKrab/Medieval Vol. 2 5 (Loop).ogg"),
-            Pair("BGM_GAME_COMPLETE", BgmFolder + "/AlkaKrab/Medieval Vol. 2 6 (Loop).ogg"),
+            Pair("BGM_MAIN_MENU", BgmFolder + "/medieval_1.ogg"),
+            Pair("BGM_SHOP", BgmFolder + "/medieval_2.ogg"),
+            Pair("BGM_MINIGAME", BgmFolder + "/medieval_6.ogg"),
+            Pair("BGM_WITCH_HUNTER", BgmFolder + "/medieval_3.ogg"),
+            Pair("BGM_GAME_OVER", BgmFolder + "/medieval_4.ogg"),
+            Pair("BGM_GAME_COMPLETE", BgmFolder + "/medieval_5.ogg"),
             Pair("SFX_SHOP_AMBIENCE", SfxFolder + "/ShopAmbience.ogg"),
             Pair("SFX_CUSTOMER_BELL", SfxFolder + "/CustomerBell.mp3"),
             Pair("SFX_PAGE_FLIP", SfxFolder + "/PageFlip.mp3"),

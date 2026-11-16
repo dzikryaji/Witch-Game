@@ -327,7 +327,6 @@ namespace Witch.Presentation.Shop
             if (herbUnlockAnnouncement != null) herbUnlockAnnouncement.Hide();
             hudView.ClearCustomer();
             audioService?.PlayMusic(GameAudioCueIds.ShopMusic);
-            audioService?.PlayAmbience(GameAudioCueIds.ShopAmbience);
             Exception initException = null;
             try
             {
@@ -1688,7 +1687,7 @@ namespace Witch.Presentation.Shop
         {
             ClearCounterCoins();
             SetStatus("KNOCK. KNOCK. Hunters suspect poisoning. Cast the memory spell before they enter; the day will rewind.");
-            audioService?.StopMusic();
+            audioService?.PlayMusic(GameAudioCueIds.WitchHunterMusic);
 
             // Freeze the clock before the Hunter speaks, so reading the accusation never costs shop time.
             setTimerPaused?.Execute(ActiveSession, true);
