@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using TMPro;
 using UnityEngine;
@@ -29,6 +30,9 @@ namespace Witch.Presentation.Shop
         private Color baseColor = Color.white;
         private bool baseCaptured;
         private Coroutine routine;
+
+        public Func<bool> IsGameplayPaused { get; set; }
+        private bool Paused => IsGameplayPaused != null && IsGameplayPaused();
 
         public void Show(int amount)
         {
@@ -69,6 +73,7 @@ namespace Witch.Presentation.Shop
             float elapsed = 0f;
             while (elapsed < duration)
             {
+                if (!Paused) elapsed += Time.unscaledDeltaTime;
                 float t = Mathf.Clamp01(elapsed / duration);
 
                 float easedRise = 1f - (1f - t) * (1f - t);
@@ -83,7 +88,6 @@ namespace Witch.Presentation.Shop
                 }
 
                 yield return null;
-                elapsed += Time.unscaledDeltaTime;
             }
 
             routine = null;

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -26,6 +27,9 @@ namespace Witch.Presentation.Shop
         private bool captured;
         private Coroutine routine;
         private TaskCompletionSource<bool> finished = CompletedSignal();
+
+        public Func<bool> IsGameplayPaused { get; set; }
+        private bool Paused => IsGameplayPaused != null && IsGameplayPaused();
 
         public bool IsPlaying => routine != null;
 
@@ -81,7 +85,7 @@ namespace Witch.Presentation.Shop
             float waited = 0f;
             while (waited < holdDuration)
             {
-                waited += Time.unscaledDeltaTime;
+                if (!Paused) waited += Time.unscaledDeltaTime;
                 yield return null;
             }
 
@@ -95,10 +99,11 @@ namespace Witch.Presentation.Shop
         private IEnumerator Animate(float from, float to, float duration, Vector2 bigDelta)
         {
             float elapsed = 0f;
-            while (elapsed < duration)
+            float safeDuration = Mathf.Max(0.0001f, duration);
+            while (elapsed < safeDuration)
             {
-                elapsed += Time.unscaledDeltaTime;
-                Apply(Mathf.SmoothStep(from, to, Mathf.Clamp01(elapsed / duration)), bigDelta);
+                if (!Paused) elapsed += Time.unscaledDeltaTime;
+                Apply(Mathf.SmoothStep(from, to, Mathf.Clamp01(elapsed / safeDuration)), bigDelta);
                 yield return null;
             }
             Apply(to, bigDelta);

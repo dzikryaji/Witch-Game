@@ -43,12 +43,14 @@ namespace Witch.Infrastructure.Persistence
                 {
                     string json = JsonUtility.ToJson(new SettingsDto
                     {
-                        schemaVersion = 1,
+                        schemaVersion = 2,
                         masterVolume = settings.MasterVolume,
                         musicVolume = settings.MusicVolume,
                         soundVolume = settings.SoundVolume,
-                        reducedMismatchDelay = settings.ReducedMismatchDelay
+                        reducedMismatchDelay = settings.ReducedMismatchDelay,
+                        useAppleChanceryFont = settings.UseAppleChanceryFont
                     }, true);
+                    Debug.Log($"[FontDebug] JsonSettingsRepository.Save useAppleChanceryFont={settings.UseAppleChanceryFont} path={primaryPath} json={json}");
                     fileStore.WriteAtomically(primaryPath, previousPath, json);
                     return SaveStateResult.Success();
                 }
@@ -86,11 +88,14 @@ namespace Witch.Infrastructure.Persistence
 
             try
             {
-                SettingsDto dto = JsonUtility.FromJson<SettingsDto>(fileStore.ReadAllText(path));
+                string json = fileStore.ReadAllText(path);
+                SettingsDto dto = JsonUtility.FromJson<SettingsDto>(json);
                 float masterVolume = dto.schemaVersion > 0 ? dto.masterVolume : 1f;
                 bool reducedDelay = dto.schemaVersion > 0 ? dto.reducedMismatchDelay : dto.reducedMotion;
+                bool useAppleChanceryFont = dto.schemaVersion >= 2 ? dto.useAppleChanceryFont : true;
+                Debug.Log($"[FontDebug] JsonSettingsRepository.Read path={path} schema={dto.schemaVersion} useAppleChanceryFont={useAppleChanceryFont} json={json}");
                 return SettingsLoadResult.Success(
-                    new GameSettingsState(masterVolume, dto.musicVolume, dto.soundVolume, reducedDelay));
+                    new GameSettingsState(masterVolume, dto.musicVolume, dto.soundVolume, reducedDelay, useAppleChanceryFont));
             }
             catch (Exception exception)
             {
@@ -107,6 +112,7 @@ namespace Witch.Infrastructure.Persistence
             public float soundVolume;
             public bool reducedMismatchDelay;
             public bool reducedMotion;
+            public bool useAppleChanceryFont;
         }
     }
 }

@@ -24,6 +24,9 @@ namespace Witch.Presentation.Shop
         private CanvasGroup canvasGroup;
         private Coroutine routine;
 
+        public Func<bool> IsGameplayPaused { get; set; }
+        private bool Paused => IsGameplayPaused != null && IsGameplayPaused();
+
         private void Awake()
         {
             rectTransform = (RectTransform)transform;
@@ -66,7 +69,12 @@ namespace Witch.Presentation.Shop
             });
 
             // 4. Tahan sebentar 
-            yield return new WaitForSecondsRealtime(holdDuration);
+            float holdElapsed = 0f;
+            while (holdElapsed < holdDuration)
+            {
+                if (!Paused) holdElapsed += Time.unscaledDeltaTime;
+                yield return null;
+            }
 
             // 5. Terbang ke meja kasir sambil mengecil.
             yield return Animate(moveDuration, t =>
@@ -106,11 +114,14 @@ namespace Witch.Presentation.Shop
         }
 
         // Menjalankan step(t) tiap frame, t naik dari 0 ke 1 selama `duration` detik.
-        private static IEnumerator Animate(float duration, Action<float> step)
+        private IEnumerator Animate(float duration, Action<float> step)
         {
-            for (float t = 0f; t < 1f; t += Time.unscaledDeltaTime / duration)
+            float elapsed = 0f;
+            float safeDuration = Mathf.Max(0.0001f, duration);
+            while (elapsed < safeDuration)
             {
-                step(t);
+                if (!Paused) elapsed += Time.unscaledDeltaTime;
+                step(Mathf.Clamp01(elapsed / safeDuration));
                 yield return null;
             }
             step(1f);
