@@ -13650,7 +13650,6 @@ MonoBehaviour:
   - {fileID: 774608382}
   - {fileID: 508442618}
   - {fileID: 1180479543}
-  herbButtonPrefab: {fileID: 2032393651}
   herbButtonContainer: {fileID: 777695454}
   grinderDropZone: {fileID: 1655776003}
   cauldronDropZone: {fileID: 585389695}
@@ -13700,14 +13699,6 @@ MonoBehaviour:
   tutorialContinueButton: {fileID: 867646881}
   tutorialSkipButton: {fileID: 277456718}
   tutorialMaskView: {fileID: 1896270833}
-  tutorialHighlights:
-  - {fileID: 1354619371}
-  - {fileID: 651576050}
-  - {fileID: 239288224}
-  - {fileID: 1600617990}
-  - {fileID: 2200000101}
-  - {fileID: 2200000201}
-  - {fileID: 712666493}
   inputActions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   minigameIntroPopup: {fileID: 800859453}
   potionRevealAnimator: {fileID: 1755746941}
@@ -13772,6 +13763,8 @@ MonoBehaviour:
   charactersPerSecond: 40
   bubblePause: 0.8
   growDuration: 0.5
+  appleChanceryFont: {fileID: 12800000, guid: d8d992533265a49d49453f742e2c4b1e, type: 3}
+  hoeflerFont: {fileID: 12800000, guid: cdf5ed56015d64d18a729967509e3214, type: 3}
 --- !u!1 &1655776001
 GameObject:
   m_ObjectHideFlags: 0
@@ -18012,17 +18005,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
---- !u!114 &2032393651 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 922121672742872547, guid: 56ffd86123e5b46c4ab6af028dee4316, type: 3}
-  m_PrefabInstance: {fileID: 2032393648}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4a97ad1489ab74dd78f7449080d591c1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Witch.Presentation::Witch.Presentation.Shop.HerbDragItem
 --- !u!1 &2046001086
 GameObject:
   m_ObjectHideFlags: 0

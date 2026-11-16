@@ -36,6 +36,9 @@ namespace Witch.Presentation.MainMenu
         private IDayStartSnapshotRepository snapshotRepository;
         private IActiveAttemptMetadataRepository attemptRepository;
         private bool viewBound;
+        private Toggle fontOnToggle;
+        private Toggle fontOffToggle;
+        private bool syncingFontToggles;
 
         public bool IsInitialized { get; private set; }
         public bool IsBusy { get; private set; }
@@ -202,30 +205,41 @@ namespace Witch.Presentation.MainMenu
         float soundVolume,
         float musicVolume,
         bool reducedMismatchDelay)
+        {
+            EnsureInitialized();
+
+            var value = new GameSettingsState(
+                LoadedSettings != null ? LoadedSettings.MasterVolume : 1f,
+                musicVolume,
+                soundVolume,
+                reducedMismatchDelay,
+                ResolveFontPreference());
+
+            SaveStateResult result = await settingsService.SaveAsync(value);
+
+            if (result.Succeeded)
             {
-                EnsureInitialized();
-
-                var value = new GameSettingsState(
-                    LoadedSettings.MasterVolume,
-                    musicVolume,
-                    soundVolume,
-                    reducedMismatchDelay);
-
-                SaveStateResult result = await settingsService.SaveAsync(value);
-
-                if (result.Succeeded)
-                {
-                    LoadedSettings = value;
-                    audioService?.ApplySettings(value);
-                    LastErrorMessage = null;
-                    RenderError();
-                    return true;
-                }
-
-                LastErrorMessage = result.ErrorMessage;
+                LoadedSettings = value;
+                audioService?.ApplySettings(value);
+                LastErrorMessage = null;
                 RenderError();
-                return false;
+                return true;
             }
+
+            LastErrorMessage = result.ErrorMessage;
+            RenderError();
+            return false;
+        }
+
+        private bool ResolveFontPreference()
+        {
+            if (fontOnToggle != null)
+            {
+                return fontOnToggle.isOn;
+            }
+
+            return LoadedSettings != null ? LoadedSettings.UseAppleChanceryFont : GameSettingsState.Default.UseAppleChanceryFont;
+        }
 
         public void ToggleSettings()
         {
@@ -233,8 +247,35 @@ namespace Witch.Presentation.MainMenu
 
             settingsOverlay.SetActive(isOpening);
             settingsPanel.SetActive(isOpening);
+            if (isOpening)
+            {
+                bool saved = (LoadedSettings ?? settingsService?.Current ?? GameSettingsState.Default).UseAppleChanceryFont;
+                ApplyFontToggleState(saved);
+            }
 
             audioService?.Play(GameAudioCueIds.UiClick);
+        }
+
+        private void ApplyFontToggleState(bool useAppleChanceryFont)
+        {
+            syncingFontToggles = true;
+            try
+            {
+                // ToggleGroup.allowSwitchOff is false in scene: turn target on (never set Font On false directly).
+                if (useAppleChanceryFont)
+                {
+                    if (fontOnToggle != null) fontOnToggle.SetIsOnWithoutNotify(true);
+                }
+                else
+                {
+                    if (fontOffToggle != null) fontOffToggle.SetIsOnWithoutNotify(true);
+                    else if (fontOnToggle != null) fontOnToggle.SetIsOnWithoutNotify(false);
+                }
+            }
+            finally
+            {
+                syncingFontToggles = false;
+            }
         }
 
         public ServiceResult Quit()
@@ -255,6 +296,7 @@ namespace Witch.Presentation.MainMenu
                 return;
             }
 
+            BindFontToggle();
             newGameButton.onClick.AddListener(OnNewGameClicked);
             continueButton.onClick.AddListener(OnContinueClicked);
             settingsButton.onClick.AddListener(ToggleSettings);
@@ -264,6 +306,66 @@ namespace Witch.Presentation.MainMenu
             masterSlider.onValueChanged.AddListener(_ => ApplyLiveVolumes());
             masterSlider.gameObject.AddComponent<SoundSliderRelease>().OnReleased = PlaySoundPreview;
             viewBound = true;
+        }
+
+        private void BindFontToggle()
+        {
+            if (settingsPanel == null) return;
+
+            Toggle[] toggles = settingsPanel.GetComponentsInChildren<Toggle>(true);
+            for (int i = 0; i < toggles.Length; i++)
+            {
+                Toggle toggle = toggles[i];
+                if (toggle == null) continue;
+                if (toggle.gameObject.name == "Font On")
+                {
+                    fontOnToggle = toggle;
+                    fontOnToggle.onValueChanged.AddListener(OnFontToggleChanged);
+                }
+                else if (toggle.gameObject.name == "Font Off")
+                {
+                    fontOffToggle = toggle;
+                }
+            }
+        }
+
+        private void OnFontToggleChanged(bool _)
+        {
+            if (syncingFontToggles || !IsInitialized || settingsService == null) return;
+
+            bool resolved = ResolveFontPreference();
+            bool saved = (settingsService.Current ?? LoadedSettings ?? GameSettingsState.Default).UseAppleChanceryFont;
+            Debug.Log($"[FontDebug] MainMenuPresenter.OnFontToggleChanged toggleIsOn={fontOnToggle?.isOn} resolved={resolved} saved={saved}");
+            if (resolved == saved) return;
+
+            RunUiAction(SaveFontPreferenceAsync);
+        }
+
+        private async Task<bool> SaveFontPreferenceAsync()
+        {
+            GameSettingsState current = settingsService.Current ?? LoadedSettings ?? GameSettingsState.Default;
+            bool resolved = ResolveFontPreference();
+            var value = new GameSettingsState(
+                current.MasterVolume,
+                current.MusicVolume,
+                current.SoundVolume,
+                current.ReducedMismatchDelay,
+                resolved);
+            Debug.Log($"[FontDebug] MainMenuPresenter.SaveFontPreferenceAsync saving UseAppleChanceryFont={resolved}");
+
+            SaveStateResult result = await settingsService.SaveAsync(value);
+            Debug.Log($"[FontDebug] MainMenuPresenter.SaveFontPreferenceAsync saveSucceeded={result.Succeeded} saved={value.UseAppleChanceryFont}");
+            if (result.Succeeded)
+            {
+                LoadedSettings = value;
+                LastErrorMessage = null;
+                RenderError();
+                return true;
+            }
+
+            LastErrorMessage = result.ErrorMessage;
+            RenderError();
+            return false;
         }
 
         private void OnNewGameClicked()
@@ -365,7 +467,6 @@ namespace Witch.Presentation.MainMenu
                 LastErrorMessage = exception.Message;
                 RenderError();
                 Debug.LogException(exception, this);
-                ResetBusy();
             }
         }
 
@@ -383,7 +484,8 @@ namespace Witch.Presentation.MainMenu
                 LoadedSettings != null ? LoadedSettings.MasterVolume : 1f,
                 musicSlider.value,
                 masterSlider.value,
-                reducedDelayToggle.isOn));
+                reducedDelayToggle.isOn,
+                ResolveFontPreference()));
         }
 
         private void PlaySoundPreview()
@@ -409,11 +511,13 @@ namespace Witch.Presentation.MainMenu
             }
 
             LoadedSettings = settingsService.Current;
+            Debug.Log($"[FontDebug] MainMenuPresenter.LoadSettingsOrDefaultsAsync LoadedSettings.UseAppleChanceryFont={LoadedSettings.UseAppleChanceryFont}");
             audioService?.ApplySettings(LoadedSettings);
             masterSlider.SetValueWithoutNotify(LoadedSettings.SoundVolume);
             musicSlider.SetValueWithoutNotify(LoadedSettings.MusicVolume);
             // soundSlider.SetValueWithoutNotify(LoadedSettings.SoundVolume);
             reducedDelayToggle.SetIsOnWithoutNotify(LoadedSettings.ReducedMismatchDelay);
+            ApplyFontToggleState(LoadedSettings.UseAppleChanceryFont);
         }
 
         private void SetBusy(bool busy, Button source)
