@@ -12,8 +12,8 @@ PlayerSettings:
   targetDevice: 2
   useOnDemandResources: 0
   accelerometerFrequency: 60
-  companyName: Witch Game Team
-  productName: Witching Hours
+  companyName: Kuwa Kuwitch Studio
+  productName: White Willow
   defaultCursor: {fileID: 0}
   cursorHotspot: {x: 0, y: 0}
   m_SplashScreenBackgroundColor: {r: 0.13725491, g: 0.12156863, b: 0.1254902, a: 1}
@@ -657,14 +657,14 @@ PlayerSettings:
   editorAssembliesCompatibilityLevel: 1
   m_RenderingPath: 1
   m_MobileRenderingPath: 1
-  metroPackageName: Witch Game
+  metroPackageName: White Willow
   metroPackageVersion: 
   metroCertificatePath: 
   metroCertificatePassword: 
   metroCertificateSubject: 
   metroCertificateIssuer: 
   metroCertificateNotAfter: 0000000000000000
-  metroApplicationDescription: Witch Game
+  metroApplicationDescription: White Willow
   wsaImages: {}
   metroTileShortName: 
   metroTileShowName: 0
@@ -738,7 +738,7 @@ PlayerSettings:
   cloudProjectId: 9d2a2876-8f8a-4bd1-85ed-691e1b0fb9ad
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
-  projectName: Witch Game
+  projectName: White Willow
   organizationId: dzikryaji
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0
