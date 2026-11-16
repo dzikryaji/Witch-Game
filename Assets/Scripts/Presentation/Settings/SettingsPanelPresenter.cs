@@ -66,9 +66,11 @@ namespace Witch.Presentation.Settings
         {
             GameSettingsState saved = settingsService.Current;
             return new GameSettingsState(
+                saved.MasterVolume,
                 musicSlider.value,
                 soundSlider.value,
-                saved.ReducedMismatchDelay);
+                saved.ReducedMismatchDelay,
+                saved.UseAppleChanceryFont);
         }
 
         private void Preview(bool playSample)

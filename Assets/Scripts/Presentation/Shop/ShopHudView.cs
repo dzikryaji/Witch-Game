@@ -33,6 +33,12 @@ namespace Witch.Presentation.Shop
         [SerializeField] private float bubblePause = 0.8f;
         [SerializeField] private float growDuration = 0.5f;
 
+        [Header("Order bubble fonts")]
+        [SerializeField] private Font appleChanceryFont;
+        [SerializeField] private Font hoeflerFont;
+
+        private Font activeOrderBubbleFont;
+
         /// <summary>One order bubble plus the layout slot that owns its space in the list.</summary>
         private sealed class BubbleSlot
         {
@@ -80,6 +86,80 @@ namespace Witch.Presentation.Shop
 
         public void ResetDayCycleToMorning() => dayCycleView?.ResetToMorning();
         public void ShowDayCycleEndOfDay() => dayCycleView?.ShowEndOfDay();
+
+        /// <param name="useAppleChanceryFont">Saved Main Menu toggle state: true (ON) = Apple Chancery, false (OFF) = Hoefler.</param>
+        public void ApplyOrderBubbleFontPreference(bool useAppleChanceryFont)
+        {
+            Debug.Log("[FontDebug] ShopHudView.ApplyOrderBubbleFontPreference refs " +
+                $"appleChancery={(appleChanceryFont != null ? appleChanceryFont.name : "null")} " +
+                $"hoefler={(hoeflerFont != null ? hoeflerFont.name : "null")} " +
+                $"useAppleChanceryFont={useAppleChanceryFont}");
+
+            Font preferred = useAppleChanceryFont ? appleChanceryFont : hoeflerFont;
+            if (preferred == null)
+            {
+                preferred = useAppleChanceryFont ? hoeflerFont : appleChanceryFont;
+            }
+
+            if (preferred != null)
+            {
+                activeOrderBubbleFont = preferred;
+            }
+
+            Debug.Log("[FontDebug] ShopHudView.ApplyOrderBubbleFontPreference chosen=" +
+                (activeOrderBubbleFont != null ? activeOrderBubbleFont.name : "null") +
+                $" useAppleChanceryFont={useAppleChanceryFont}");
+
+            for (int i = 0; i < bubbleSlots.Count; i++)
+            {
+                BubbleSlot bubble = bubbleSlots[i];
+                if (bubble?.Label == null) continue;
+                if (activeOrderBubbleFont != null)
+                {
+                    ApplyOrderBubbleFontStyle(bubble.Label, useAppleChanceryFont);
+                    bubble.Label.font = activeOrderBubbleFont;
+                    Debug.Log($"[FontDebug] ShopHudView.ApplyOrderBubbleFontPreference existing slot={i} font={bubble.Label.font?.name ?? "null"} style={bubble.Label.fontStyle}");
+                    StartCoroutine(LogFontNextFrame(bubble.Label, $"existing[{i}]"));
+                }
+            }
+        }
+
+        private void ApplyOrderBubbleFont(Text label)
+        {
+            if (label == null) return;
+            if (activeOrderBubbleFont == null)
+            {
+                activeOrderBubbleFont = appleChanceryFont != null ? appleChanceryFont : label.font;
+            }
+
+            if (activeOrderBubbleFont != null)
+            {
+                label.font = activeOrderBubbleFont;
+            }
+
+            // OFF (Hoefler) must render at normal weight; ON unchanged.
+            // New/reused slots inherit prefab style; clear stale bold when Hoefler selected.
+            if (activeOrderBubbleFont == hoeflerFont)
+            {
+                label.fontStyle = FontStyle.Normal;
+            }
+        }
+
+        private void ApplyOrderBubbleFontStyle(Text label, bool useAppleChanceryFont)
+        {
+            if (label == null) return;
+            // OFF (Hoefler) must render at normal weight; ON unchanged.
+            if (!useAppleChanceryFont)
+            {
+                label.fontStyle = FontStyle.Normal;
+            }
+        }
+
+        private IEnumerator LogFontNextFrame(Text label, string context)
+        {
+            yield return null;
+            Debug.Log($"[FontDebug] ShopHudView font next-frame {context}={label?.font?.name ?? "null"} style={label?.fontStyle}");
+        }
 
         private void Awake()
         {
@@ -384,6 +464,9 @@ namespace Witch.Presentation.Shop
 
             // Measure with the FULL text so the bubble never resizes while it is being typed.
             Text label = bubble.GetComponentInChildren<Text>(true);
+            ApplyOrderBubbleFont(label);
+            Debug.Log($"[FontDebug] ShopHudView.CreateBubbleSlot slot={number} font={label?.font?.name ?? "null"} style={label?.fontStyle} active={activeOrderBubbleFont?.name ?? "null"}");
+            StartCoroutine(LogFontNextFrame(label, $"slot[{number}]"));
             label.text = content;
             Canvas.ForceUpdateCanvases();
             RectTransform textRect = label.rectTransform;

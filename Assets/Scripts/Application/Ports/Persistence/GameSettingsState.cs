@@ -11,6 +11,11 @@ namespace Witch.Application.Ports
         }
 
         public GameSettingsState(float masterVolume, float musicVolume, float soundVolume, bool reducedMismatchDelay)
+            : this(masterVolume, musicVolume, soundVolume, reducedMismatchDelay, true)
+        {
+        }
+
+        public GameSettingsState(float masterVolume, float musicVolume, float soundVolume, bool reducedMismatchDelay, bool useAppleChanceryFont)
         {
             ValidateVolume(masterVolume, nameof(masterVolume));
             ValidateVolume(musicVolume, nameof(musicVolume));
@@ -20,14 +25,17 @@ namespace Witch.Application.Ports
             MusicVolume = musicVolume;
             SoundVolume = soundVolume;
             ReducedMismatchDelay = reducedMismatchDelay;
+            UseAppleChanceryFont = useAppleChanceryFont;
         }
 
-        public static GameSettingsState Default => new GameSettingsState(1f, 0.45f, 0.8f, false);
+        public static GameSettingsState Default => new GameSettingsState(1f, 0.45f, 0.8f, false, true);
 
         public float MasterVolume { get; }
         public float MusicVolume { get; }
         public float SoundVolume { get; }
         public bool ReducedMismatchDelay { get; }
+        /// <summary>Saved Main Menu font toggle state (true = ON, false = OFF). Shop maps ON to Hoefler, OFF to Apple Chancery.</summary>
+        public bool UseAppleChanceryFont { get; }
 
         // Kept as a compatibility alias for the initial prototype settings schema.
         public bool ReducedMotion => ReducedMismatchDelay;
