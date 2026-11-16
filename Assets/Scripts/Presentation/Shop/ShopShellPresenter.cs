@@ -1645,6 +1645,11 @@ namespace Witch.Presentation.Shop
                 witchHunter.Illustration);
             await hudView.EntranceComplete;
             if (cancellationToken.IsCancellationRequested) return;
+            if (pauseOverlay != null)
+            {
+                pauseOverlay.SetActive(true);
+            }
+
             minigameIntroPopup.Show();
         }
 
@@ -1701,7 +1706,13 @@ namespace Witch.Presentation.Shop
         private void OnMinigameIntroClicked()
         {
             if (actionInProgress) return;
-            minigameIntroPopup.SetInteractable(false); // prevents double clicks
+
+            if (pauseOverlay != null)
+            {
+                pauseOverlay.SetActive(userPaused);
+            }
+
+            minigameIntroPopup.SetInteractable(false);
             RunUiAction(() => StartRewindAsync(lifetimeCancellation?.Token ?? CancellationToken.None));
         }
 

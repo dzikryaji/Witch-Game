@@ -5721,9 +5721,9 @@ RectTransform:
   - {fileID: 1913204796}
   - {fileID: 1755746935}
   - {fileID: 1254706134}
-  - {fileID: 800859450}
   - {fileID: 1805433693}
   - {fileID: 1548974741}
+  - {fileID: 800859450}
   - {fileID: 1618865273}
   - {fileID: 1676331306}
   - {fileID: 1999059851}
@@ -14178,7 +14178,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1927431698}
   m_HandleRect: {fileID: 1927431696}
   m_Direction: 2
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
