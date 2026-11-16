@@ -14,6 +14,7 @@ namespace Witch.Presentation.Shop
         LoadHerbs = 4,
         Grind = 5,
         AddToCauldron = 6,
-        Serve = 7
+        Serve = 7,
+        ScrollShelf = 8
     }
 }
