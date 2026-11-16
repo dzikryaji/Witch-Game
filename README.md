@@ -1,6 +1,6 @@
-# Witching Hours
+# White Willow
 
-Witching Hours is a mouse-and-keyboard order-deduction game about a witch hiding behind a medieval herbalist shop. This repository currently contains the full fourteen-day progression.
+White Willow is a mouse-and-keyboard order-deduction game about a witch hiding behind a medieval herbalist shop. This repository currently contains the full fourteen-day progression.
 
 All customers are Villagers. Hunters are an outside narrative threat triggered by repeated wrong orders. Hunter identity deduction, Hunter customers, newspaper gameplay, magical-herb variants, arrests, and hexes are not part of the current game.
 
