@@ -13,14 +13,15 @@ MonoBehaviour:
   m_Name: Order_Hard_Cool16
   m_EditorClassIdentifier: Witch.Infrastructure::Witch.Infrastructure.Content.OrderDefinition
   stableId: order.hard.c16
-  difficulty: 2
+  difficulty: 3
   orderBubbles:
-  - "Hello. Fever and swelling keep my younger brother bedridden."
-  - "Violent fits shake him whenever he wakes."
-  - "The priory book recommends Sambucus nigra."
-  - "Its delicate white flowers make a light tea."
-  - "Pair it with the hard, unpleasant-smelling leaf."
-  - "He drinks freely, with healthy kidneys and strong heartbeat."
+  - Good day to you.
+  - Fever and swelling keep my younger brother bedridden.
+  - Violent fits shake him whenever he wakes.
+  - The priory book recommends Sambucus nigra.
+  - Its delicate white flowers make a light tea.
+  - Pair it with the hard, unpleasant-smelling leaf.
+  - He drinks freely, with healthy kidneys and strong heartbeat.
   firstHerbId: herb.elderflower
   secondHerbId: herb.henbane
   customer: {fileID: 11400000, guid: 4678338d721f2462d8a1979c0e069692, type: 2}

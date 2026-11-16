@@ -13,14 +13,14 @@ MonoBehaviour:
   m_Name: Order_Hard_Cleanse13
   m_EditorClassIdentifier: Witch.Infrastructure::Witch.Infrastructure.Content.OrderDefinition
   stableId: order.hard.cl13
-  difficulty: 2
+  difficulty: 3
   orderBubbles:
-  - "Good morning."
-  - "A grand feast blocked digestion and dirtied my blood."
-  - "I need heaviness eased and mild toxins cleansed."
-  - "Bring the ridged seeds with feathery fronds."
-  - "Add the tough, earthy root."
-  - "I can rest safely today."
+  - Good day.
+  - A grand feast blocked digestion and dirtied my blood.
+  - I need heaviness eased and mild toxins cleansed.
+  - Bring the ridged seeds with feathery fronds.
+  - Add the tough, earthy root.
+  - I can rest safely today.
   firstHerbId: herb.fennel
   secondHerbId: herb.burdockRoot
   customer: {fileID: 11400000, guid: b00255ad8c02b4e98960925f8af4e92b, type: 2}

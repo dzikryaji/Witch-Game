@@ -13,13 +13,14 @@ MonoBehaviour:
   m_Name: Order_Hard_Soothe09
   m_EditorClassIdentifier: Witch.Infrastructure::Witch.Infrastructure.Content.OrderDefinition
   stableId: order.hard.s09
-  difficulty: 2
+  difficulty: 3
   orderBubbles:
-  - "Morning. Anxiety makes my heart race and interrupts sleep."
-  - "Intense headaches and panic attacks trouble me too."
-  - "Frightening dreams do not usually scare me."
-  - "I am not dizzy, faint, or weak from blood loss."
-  - "Find a strong, earthy root and sweet-smelling purple stem."
+  - Good day to you.
+  - Anxiety makes my heart race and interrupts sleep.
+  - Intense headaches and panic attacks trouble me too.
+  - Frightening dreams do not usually scare me.
+  - I am not dizzy, faint, or weak from blood loss.
+  - Find a strong, earthy root and sweet-smelling purple stem.
   firstHerbId: herb.valerian
   secondHerbId: herb.lavender
   customer: {fileID: 11400000, guid: b00255ad8c02b4e98960925f8af4e92b, type: 2}

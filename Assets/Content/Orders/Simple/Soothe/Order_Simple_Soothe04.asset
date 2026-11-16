@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: Order_Simple_Soothe04
   m_EditorClassIdentifier: Witch.Infrastructure::Witch.Infrastructure.Content.OrderDefinition
   stableId: order.simple.s04
-  difficulty: 0
+  difficulty: 1
   orderBubbles:
-  - "Hi. I need something to settle me down."
-  - "I can’t stop coughing in fits,"
-  - "and I have muscle cramps in my ribs."
-  - "My midwife prescribed Matricaria chamomilla for the cramps,"
-  - "and Atropa belladonna for the coughing fits."
+  - Hello. I need something to settle me down.
+  - "I can\u2019t stop coughing in fits,"
+  - and I have muscle cramps in my ribs.
+  - My midwife prescribed Matricaria chamomilla for the cramps,
+  - and Atropa belladonna for the coughing fits.
   firstHerbId: herb.chamomile
   secondHerbId: herb.belladonnaBerry
   customer: {fileID: 11400000, guid: 12795f040a17d43ce94d717cf5b31324, type: 2}

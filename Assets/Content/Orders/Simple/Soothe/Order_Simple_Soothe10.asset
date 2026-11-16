@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: Order_Simple_Soothe10
   m_EditorClassIdentifier: Witch.Infrastructure::Witch.Infrastructure.Content.OrderDefinition
   stableId: order.simple.s10
-  difficulty: 0
+  difficulty: 1
   orderBubbles:
-  - "Hello. Something soothing, please."
-  - "My husband is hysterical,"
-  - "and he’s coughing in fits that won’t stop."
-  - "My husband's healer prescribed Passiflora for his hysteria,"
-  - "and Atropa belladonna for the coughing fits."
+  - Excuse me. Something soothing, please.
+  - My husband is hysterical,
+  - "and he\u2019s coughing in fits that won\u2019t stop."
+  - My husband's healer prescribed Passiflora for his hysteria,
+  - and Atropa belladonna for the coughing fits.
   firstHerbId: herb.passionFlower
   secondHerbId: herb.belladonnaBerry
   customer: {fileID: 11400000, guid: 12795f040a17d43ce94d717cf5b31324, type: 2}

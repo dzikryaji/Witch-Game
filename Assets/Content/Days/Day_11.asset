@@ -18,4 +18,4 @@ MonoBehaviour:
   dailyExpense: 20
   unlockedCategoryIds:
   - category.mend
-  orderDifficulties: 0100000002000000i
+  orderDifficulties: 0200000003000000i

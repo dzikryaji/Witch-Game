@@ -18,4 +18,4 @@ MonoBehaviour:
   dailyExpense: 0
   unlockedCategoryIds:
   - category.soothe
-  orderDifficulties: 00000000i
+  orderDifficulties: 01000000i

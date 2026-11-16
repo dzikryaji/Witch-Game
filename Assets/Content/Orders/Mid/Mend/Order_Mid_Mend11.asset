@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: Order_Mid_Mend11
   m_EditorClassIdentifier: Witch.Infrastructure::Witch.Infrastructure.Content.OrderDefinition
   stableId: order.mid.m11
-  difficulty: 1
+  difficulty: 2
   orderBubbles:
-  - "Good morning."
-  - "A cart crushed my hand, leaving aching bones and scratches."
-  - "Bring the wide, hairy leaf with a strong root."
-  - "Add the thick, golden resin."
-  - "The scratches are shallow, and I have no fever."
+  - Hi there.
+  - A cart crushed my hand, leaving aching bones and scratches.
+  - Bring the wide, hairy leaf with a strong root.
+  - Add the thick, golden resin.
+  - The scratches are shallow, and I have no fever.
   firstHerbId: herb.comfrey
   secondHerbId: herb.pineResin
   customer: {fileID: 11400000, guid: 7a06e32b0a26b416c9f59776c3880e92, type: 2}

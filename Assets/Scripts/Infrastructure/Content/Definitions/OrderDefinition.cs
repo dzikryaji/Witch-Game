@@ -7,9 +7,10 @@ namespace Witch.Infrastructure.Content
 {
     public enum OrderDifficulty
     {
-        Simple = 0,
-        Mid = 1,
-        Hard = 2
+        Tutorial = 0,
+        Simple = 1,
+        Mid = 2,
+        Hard = 3
     }
 
     [CreateAssetMenu(menuName = "Witch/Content/Order", fileName = "Order_")]

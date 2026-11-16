@@ -13,12 +13,12 @@ MonoBehaviour:
   m_Name: Order_Hard_Warm20
   m_EditorClassIdentifier: Witch.Infrastructure::Witch.Infrastructure.Content.OrderDefinition
   stableId: order.hard.w20
-  difficulty: 2
+  difficulty: 3
   orderBubbles:
-  - "Hello. Deep muscle fatigue accompanies chills and chest mucus."
-  - "Bring the spicy, sweet tree bark."
-  - "Add the small, rough yellow seeds."
-  - "My skin is unbroken, and I have no fever."
+  - Hi. Deep muscle fatigue accompanies chills and chest mucus.
+  - Bring the spicy, sweet tree bark.
+  - Add the small, rough yellow seeds.
+  - My skin is unbroken, and I have no fever.
   firstHerbId: herb.cinnamon
   secondHerbId: herb.mustardSeed
   customer: {fileID: 11400000, guid: 10000000000000000000000000000006, type: 2}

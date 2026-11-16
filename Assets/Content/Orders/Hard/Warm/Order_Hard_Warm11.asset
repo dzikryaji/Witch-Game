@@ -13,12 +13,12 @@ MonoBehaviour:
   m_Name: Order_Hard_Warm11
   m_EditorClassIdentifier: Witch.Infrastructure::Witch.Infrastructure.Content.OrderDefinition
   stableId: order.hard.w11
-  difficulty: 2
+  difficulty: 3
   orderBubbles:
-  - "Good afternoon. Rain brought chills, chest mucus, and lost appetite."
-  - "Bring the small, rough yellow seeds."
-  - "Add the twisted, tough root with strong flavor."
-  - "I have no wounds, scrapes, or bleeding ulcers."
+  - Greetings. Rain brought chills, chest mucus, and lost appetite.
+  - Bring the small, rough yellow seeds.
+  - Add the twisted, tough root with strong flavor.
+  - I have no wounds, scrapes, or bleeding ulcers.
   firstHerbId: herb.mustardSeed
   secondHerbId: herb.ginger
   customer: {fileID: 11400000, guid: 10000000000000000000000000000006, type: 2}

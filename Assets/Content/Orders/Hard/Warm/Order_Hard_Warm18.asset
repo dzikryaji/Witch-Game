@@ -13,12 +13,12 @@ MonoBehaviour:
   m_Name: Order_Hard_Warm18
   m_EditorClassIdentifier: Witch.Infrastructure::Witch.Infrastructure.Content.OrderDefinition
   stableId: order.hard.w18
-  difficulty: 2
+  difficulty: 3
   orderBubbles:
-  - "Good afternoon. Violent shivering accompanies muscles exhausted by cold travel."
-  - "Bring the tiny, dried bud."
-  - "Add the spicy, sweet tree bark."
-  - "My heartbeat is steady, and I have no fever."
+  - Excuse me. Violent shivering accompanies muscles exhausted by cold travel.
+  - Bring the tiny, dried bud.
+  - Add the spicy, sweet tree bark.
+  - My heartbeat is steady, and I have no fever.
   firstHerbId: herb.clove
   secondHerbId: herb.cinnamon
   customer: {fileID: 11400000, guid: 7a06e32b0a26b416c9f59776c3880e92, type: 2}
