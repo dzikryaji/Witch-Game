@@ -3,6 +3,7 @@ using System.Collections;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
+using Witch.Application.Ports;
 
 namespace Witch.Presentation.Shop
 {
@@ -42,6 +43,7 @@ namespace Witch.Presentation.Shop
         private TaskCompletionSource<bool> finished;
 
         public Func<bool> IsGameplayPaused { get; set; }
+        public IGameAudioService AudioService { get; set; }
         private bool Paused => IsGameplayPaused != null && IsGameplayPaused();
 
         public bool IsShowing => finished != null;
@@ -65,6 +67,7 @@ namespace Witch.Presentation.Shop
             canDismiss = false;
             dismissRequested = false;
             gameObject.SetActive(true);
+            AudioService?.Play(GameAudioCueIds.PageFlip);
             routine = StartCoroutine(Run());
             return finished.Task;
         }
@@ -98,7 +101,9 @@ namespace Witch.Presentation.Shop
 
         private void OnDismissClicked()
         {
-            if (canDismiss) dismissRequested = true;
+            if (!canDismiss) return;
+            AudioService?.Play(GameAudioCueIds.PageFlip);
+            dismissRequested = true;
         }
 
         private IEnumerator Run()

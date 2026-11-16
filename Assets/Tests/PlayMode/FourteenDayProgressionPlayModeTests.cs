@@ -89,9 +89,9 @@ namespace Witch.Bootstrap.PlayModeTests
             yield return WaitForAutoResolvedExpense(presenter);
             Assert.That(presenter.ActiveSession.CurrentPhase, Is.EqualTo(GamePhase.GameOver));
             Assert.That(presenter.ActiveSession.RunState.Money, Is.Zero);
-            Assert.That(harness.Audio.Played, Does.Contain(GameAudioCueIds.ExpenseFail));
+            Assert.That(harness.Audio.Played, Does.Contain(GameAudioCueIds.Wrong));
             Assert.That(harness.Audio.Played, Does.Contain(GameAudioCueIds.GameOverMusic));
-            Assert.That(harness.Audio.Played, Does.Not.Contain(GameAudioCueIds.ExpensePay));
+            Assert.That(harness.Audio.Played, Does.Not.Contain(GameAudioCueIds.Correct));
             // Retry Day button removed: GameOver currently has no progression-panel exit.
             Assert.That(GameObject.Find("Retry Day"), Is.Null);
         }

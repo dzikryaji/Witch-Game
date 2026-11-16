@@ -590,6 +590,7 @@ namespace Witch.Presentation.Shop
 
         public void EjectLoadedHerb()
         {
+            audioService?.Play(GameAudioCueIds.UiClick);
             if (IsGameplayPaused)
             {
                 SetStatus("The shop is paused.");
@@ -780,7 +781,6 @@ namespace Witch.Presentation.Shop
             {
                 await ShowServeFeedbackBubbleAsync(ShopServeFeedback.GetCorrectLine(), cancellationToken);
                 if (cancellationToken.IsCancellationRequested) return result;
-                audioService?.Play(GameAudioCueIds.OrderCorrect);
                 if (counterCoins != null && result.Outcome.Payment > 0)
                 {
                     // The payment is already saved; the coins only delay when the header shows it.
@@ -799,7 +799,7 @@ namespace Witch.Presentation.Shop
                 await ShowServeFeedbackBubbleAsync(ShopServeFeedback.GetIncorrectLine(), cancellationToken);
                 if (cancellationToken.IsCancellationRequested) return result;
                 SetStatus("Wrong potion. No coins. Suspicion increased. At 3, Hunters investigate the suspicious 'herbalist'.");
-                audioService?.Play(GameAudioCueIds.OrderWrong);
+                audioService?.Play(GameAudioCueIds.Wrong);
                 if (suspicionFocus != null) suspicionFocus.Play();
             }
 
@@ -915,17 +915,17 @@ namespace Witch.Presentation.Shop
                 SetStatus("Daily expense resolved.");
                 if (ActiveSession.CurrentPhase == Witch.Domain.GamePhase.GameOver)
                 {
-                    audioService?.Play(GameAudioCueIds.ExpenseFail);
+                    audioService?.Play(GameAudioCueIds.Wrong);
                     audioService?.PlayMusic(GameAudioCueIds.GameOverMusic);
                 }
                 else if (ActiveSession.CurrentPhase == Witch.Domain.GamePhase.Victory)
                 {
-                    audioService?.Play(GameAudioCueIds.ExpensePay);
+                    audioService?.Play(GameAudioCueIds.Correct);
                     audioService?.PlayMusic(GameAudioCueIds.VictoryMusic);
                 }
                 else
                 {
-                    audioService?.Play(GameAudioCueIds.ExpensePay);
+                    audioService?.Play(GameAudioCueIds.Correct);
                 }
 
                 Render();
@@ -1793,7 +1793,11 @@ namespace Witch.Presentation.Shop
             if (counterCoins != null) counterCoins.IsGameplayPaused = () => IsGameplayPaused;
             if (moneyGainPopUp != null) moneyGainPopUp.IsGameplayPaused = () => IsGameplayPaused;
             if (suspicionFocus != null) suspicionFocus.IsGameplayPaused = () => IsGameplayPaused;
-            if (herbUnlockAnnouncement != null) herbUnlockAnnouncement.IsGameplayPaused = () => IsGameplayPaused;
+            if (herbUnlockAnnouncement != null)
+            {
+                herbUnlockAnnouncement.IsGameplayPaused = () => IsGameplayPaused;
+                herbUnlockAnnouncement.AudioService = audioService;
+            }
             if (potionRevealAnimator != null) potionRevealAnimator.IsGameplayPaused = () => IsGameplayPaused;
             if (guidebookFlipAnimator != null) guidebookFlipAnimator.IsGameplayPaused = () => IsGameplayPaused;
 

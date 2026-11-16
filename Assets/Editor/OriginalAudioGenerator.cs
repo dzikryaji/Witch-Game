@@ -29,14 +29,12 @@ namespace Witch.Editor
             Pair("SFX_HERB_PLUCK", SfxFolder + "/HerbPluck.wav"),
             Pair("SFX_BREW_SUCCESS", SfxFolder + "/BrewSuccess.wav"),
             Pair("SFX_DISCARD", SfxFolder + "/Discard.wav"),
-            Pair("SFX_ORDER_CORRECT", SfxFolder + "/OrderCorrect_Original.wav"),
-            Pair("SFX_PAYMENT_COINS", SfxFolder + "/Coins_Original.wav"),
-            Pair("SFX_ORDER_WRONG", SfxFolder + "/OrderWrong_Original.wav"),
+            Pair("SFX_PAYMENT_COINS", SfxFolder + "/Coins.mp3"),
+            Pair("SFX_WRONG", SfxFolder + "/Wrong.wav"),
             Pair("SFX_CARD_MATCH", SfxFolder + "/CardMatch.wav"),
             Pair("SFX_CARD_MISMATCH", SfxFolder + "/CardMismatch.wav"),
             Pair("SFX_MINIGAME_COMPLETE", SfxFolder + "/MinigameComplete_Original.wav"),
-            Pair("SFX_EXPENSE_PAY", SfxFolder + "/ExpensePay_Original.wav"),
-            Pair("SFX_EXPENSE_FAIL", SfxFolder + "/ExpenseFail_Original.wav"),
+            Pair("SFX_CORRECT", SfxFolder + "/Correct.wav"),
             Pair("SFX_UI_CLICK", SfxFolder + "/UiClick.ogg")
         };
 
@@ -73,16 +71,16 @@ namespace Witch.Editor
                 switch (cueId)
                 {
                     case "SFX_PAYMENT_COINS":
-                    case "SFX_EXPENSE_PAY":
                         value = CoinCluster(time, duration);
                         break;
+                    case "SFX_CORRECT":
+                        value = Arpeggio(time, duration, new[] { 60, 64, 67, 72 });
+                        break;
                     case "SFX_BREW_SUCCESS":
-                    case "SFX_ORDER_CORRECT":
                     case "SFX_MINIGAME_COMPLETE":
                         value = Arpeggio(time, duration, new[] { 60, 64, 67, 72 });
                         break;
-                    case "SFX_ORDER_WRONG":
-                    case "SFX_EXPENSE_FAIL":
+                    case "SFX_WRONG":
                         value = Arpeggio(time, duration, new[] { 55, 51, 48, 43 });
                         break;
                     default:
@@ -125,8 +123,8 @@ namespace Witch.Editor
             switch (cueId)
             {
                 case "SFX_MINIGAME_COMPLETE": return 1.5f;
-                case "SFX_PAYMENT_COINS":
-                case "SFX_EXPENSE_PAY": return 0.75f;
+                case "SFX_PAYMENT_COINS": return 0.75f;
+                case "SFX_CORRECT": return 0.48f;
                 default: return 0.48f;
             }
         }
