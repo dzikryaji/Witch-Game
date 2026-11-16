@@ -62,11 +62,16 @@ namespace Witch.Presentation.Shop
         [SerializeField] private GameObject progressionPanel;
         [SerializeField] private Text progressionText;
         [SerializeField] private Text dayTitleText;
-        [SerializeField] private Text correctOrdersText;
-        [SerializeField] private Text wrongOrdersText;
-        [SerializeField] private Text coinsEarnedText;
-        [SerializeField] private Text taxPaidText;
-        [SerializeField] private Text coinsRemainingText;
+        [SerializeField] private GameObject correctOrdersRow;
+        [SerializeField] private Text correctOrdersValueText;
+        [SerializeField] private GameObject wrongOrdersRow;
+        [SerializeField] private Text wrongOrdersValueText;
+        [SerializeField] private GameObject coinsEarnedRow;
+        [SerializeField] private Text coinsEarnedValueText;
+        [SerializeField] private GameObject taxPaidRow;
+        [SerializeField] private Text taxPaidValueText;
+        [SerializeField] private GameObject coinsRemainingRow;
+        [SerializeField] private Text coinsRemainingValueText;
         [SerializeField] private Button continueButton;
         [SerializeField] private GameObject pausePanel;
         [SerializeField] private Button resumeButton;
@@ -203,11 +208,16 @@ namespace Witch.Presentation.Shop
             && progressionPanel != null
             && progressionText != null
             && dayTitleText != null
-            && correctOrdersText != null
-            && wrongOrdersText != null
-            && coinsEarnedText != null
-            && taxPaidText != null
-            && coinsRemainingText != null
+            && correctOrdersRow != null
+            && correctOrdersValueText != null
+            && wrongOrdersRow != null
+            && wrongOrdersValueText != null
+            && coinsEarnedRow != null
+            && coinsEarnedValueText != null
+            && taxPaidRow != null
+            && taxPaidValueText != null
+            && coinsRemainingRow != null
+            && coinsRemainingValueText != null
             && continueButton != null
             && pausePanel != null
             && resumeButton != null
@@ -2260,22 +2270,22 @@ namespace Witch.Presentation.Shop
                 dayTitleText.text = session.CurrentPhase == Witch.Domain.GamePhase.Victory
                     ? dayNumber + " DAYS COMPLETE"
                     : "DAY " + dayNumber + " COMPLETE";
-                correctOrdersText.text = "Correct Orders									.................................." + (summary == null ? 0 : summary.CorrectOrders);
-                wrongOrdersText.text = "Wrong Orders									.................................." + (summary == null ? 0 : summary.WrongOrders);
-                coinsEarnedText.text = "Your Today's Income		    		    ................................$" + (summary == null ? 0 : summary.CoinsEarned);
-                taxPaidText.text = "Tax													................................$" + (summary == null ? 0 : summary.TaxPaid);
-                coinsRemainingText.text = "Current Total Coin												   $" + (summary == null ? 0 : summary.CoinsRemaining);
+                correctOrdersValueText.text = (summary == null ? 0 : summary.CorrectOrders).ToString();
+                wrongOrdersValueText.text = (summary == null ? 0 : summary.WrongOrders).ToString();
+                coinsEarnedValueText.text = "$" + (summary == null ? 0 : summary.CoinsEarned).ToString();
+                taxPaidValueText.text = "$" + (summary == null ? 0 : summary.TaxPaid).ToString();
+                coinsRemainingValueText.text = "$" + (summary == null ? 0 : summary.CoinsRemaining).ToString();
             }
         }
 
         private void SetSummaryRowsVisible(bool visible)
         {
             if (dayTitleText != null) dayTitleText.gameObject.SetActive(visible);
-            if (correctOrdersText != null) correctOrdersText.gameObject.SetActive(visible);
-            if (wrongOrdersText != null) wrongOrdersText.gameObject.SetActive(visible);
-            if (coinsEarnedText != null) coinsEarnedText.gameObject.SetActive(visible);
-            if (taxPaidText != null) taxPaidText.gameObject.SetActive(visible);
-            if (coinsRemainingText != null) coinsRemainingText.gameObject.SetActive(visible);
+            if (correctOrdersRow != null) correctOrdersRow.SetActive(visible);
+            if (wrongOrdersRow != null) wrongOrdersRow.SetActive(visible);
+            if (coinsEarnedRow != null) coinsEarnedRow.SetActive(visible);
+            if (taxPaidRow != null) taxPaidRow.SetActive(visible);
+            if (coinsRemainingRow != null) coinsRemainingRow.SetActive(visible);
         }
 
         private void OnContinueClicked() => RunUiAction(ContinueNextDayAsync);
