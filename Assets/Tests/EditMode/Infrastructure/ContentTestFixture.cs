@@ -81,10 +81,11 @@ namespace Witch.Infrastructure.Tests
             string text,
             string first,
             string second,
-            CustomerDefinition customer = null)
+            CustomerDefinition customer = null,
+            OrderDifficulty difficulty = OrderDifficulty.Simple)
         {
             var value = ScriptableObject.CreateInstance<OrderDefinition>();
-            value.Configure(id, new[] { text }, first, second, customerDefinition: customer);
+            value.Configure(id, new[] { text }, first, second, difficulty, customerDefinition: customer);
             return value;
         }
 

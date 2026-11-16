@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: Order_Hard_Soothe18
   m_EditorClassIdentifier: Witch.Infrastructure::Witch.Infrastructure.Content.OrderDefinition
   stableId: order.hard.s18
-  difficulty: 2
+  difficulty: 3
   orderBubbles:
-  - "Afternoon. Painful headaches sometimes trigger sudden panic attacks."
-  - "Repeated coughing fits make my throat uncomfortable."
-  - "I have no dizziness, faintness, or blood-loss weakness."
-  - "My throat is not swollen, and I can swallow."
-  - "Find a sweet-smelling purple stem and dark, sweet-tasting nightshade berry."
+  - Hi. Painful headaches sometimes trigger sudden panic attacks.
+  - Repeated coughing fits make my throat uncomfortable.
+  - I have no dizziness, faintness, or blood-loss weakness.
+  - My throat is not swollen, and I can swallow.
+  - Find a sweet-smelling purple stem and dark, sweet-tasting nightshade berry.
   firstHerbId: herb.lavender
   secondHerbId: herb.belladonnaBerry
   customer: {fileID: 11400000, guid: b00255ad8c02b4e98960925f8af4e92b, type: 2}

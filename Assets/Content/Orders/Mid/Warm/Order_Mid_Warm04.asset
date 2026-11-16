@@ -13,12 +13,12 @@ MonoBehaviour:
   m_Name: Order_Mid_Warm04
   m_EditorClassIdentifier: Witch.Infrastructure::Witch.Infrastructure.Content.OrderDefinition
   stableId: order.mid.w04
-  difficulty: 1
+  difficulty: 2
   orderBubbles:
-  - "Hello. Exhaustion, blocked airways, and nausea overwhelm me."
-  - "Bring the bright red pepper."
-  - "Add the twisted, tough root with strong flavor."
-  - "My lungs are strong, without asthma, wounds, or ulcers."
+  - Good day. Exhaustion, blocked airways, and nausea overwhelm me.
+  - Bring the bright red pepper.
+  - Add the twisted, tough root with strong flavor.
+  - My lungs are strong, without asthma, wounds, or ulcers.
   firstHerbId: herb.cayennePepper
   secondHerbId: herb.ginger
   customer: {fileID: 11400000, guid: 7a06e32b0a26b416c9f59776c3880e92, type: 2}

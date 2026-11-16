@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: Order_Hard_Mend07
   m_EditorClassIdentifier: Witch.Infrastructure::Witch.Infrastructure.Content.OrderDefinition
   stableId: order.hard.m07
-  difficulty: 2
+  difficulty: 3
   orderBubbles:
-  - "Good morning."
-  - "My arm bleeds heavily, with a splinter buried nearby."
-  - "Bring the thick, flat weed."
-  - "Add the thick, golden resin."
-  - "I have no fever or circulation problems."
+  - Hello there.
+  - My arm bleeds heavily, with a splinter buried nearby.
+  - Bring the thick, flat weed.
+  - Add the thick, golden resin.
+  - I have no fever or circulation problems.
   firstHerbId: herb.plantainLeaf
   secondHerbId: herb.pineResin
   customer: {fileID: 11400000, guid: 3965e9fdac9e6466c91a76e9ffa93d8b, type: 2}

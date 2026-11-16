@@ -643,8 +643,13 @@ namespace Witch.Bootstrap.PlayModeTests
                         new ShopEncounterViewData(
                             "customer.tutorial",
                             "Tutorial Villager",
-                            new OrderRequest("order.simple.w01", new HerbPair("herb.ginger", "herb.mustardSeed")),
-                            "Ginger and Mustard Seed.")
+                            new OrderRequest("order.tutorial.w01", new HerbPair("herb.ginger", "herb.mustardSeed")),
+                            new[]
+                            {
+                                "Hello there!",
+                                "My belly aches, and I've caught a chill.",
+                                "Ginger and Mustard Seed, please."
+                            })
                     },
                     new[]
                     {
@@ -660,11 +665,11 @@ namespace Witch.Bootstrap.PlayModeTests
                     null,
                     false,
                     null,
-                    "order.simple.w01"));
+                    "order.tutorial.w01"));
 
-            // Guided tutorial runs on the first real customer (Warm 01), once per run, with timer frozen.
+            // Guided tutorial runs on the first real customer (tutorial.w01), once per run, with timer frozen.
             Assert.That(presenter.ActiveSession.CurrentPhase, Is.EqualTo(GamePhase.CustomerEncounter));
-            Assert.That(presenter.ActiveSession.AttemptState.ActiveOrder?.OrderId, Is.EqualTo("order.simple.w01"));
+            Assert.That(presenter.ActiveSession.AttemptState.ActiveOrder?.OrderId, Is.EqualTo("order.tutorial.w01"));
             Assert.That(presenter.GuidedTutorialActive || presenter.TutorialVisible, Is.True);
             Assert.That(audio.Played, Does.Contain(GameAudioCueIds.CustomerBell));
 
@@ -702,8 +707,13 @@ namespace Witch.Bootstrap.PlayModeTests
                         new ShopEncounterViewData(
                             "customer.tutorial",
                             "Tutorial Villager",
-                            new OrderRequest("order.simple.w01", new HerbPair("herb.ginger", "herb.mustardSeed")),
-                            "Ginger and Mustard Seed.")
+                            new OrderRequest("order.tutorial.w01", new HerbPair("herb.ginger", "herb.mustardSeed")),
+                            new[]
+                            {
+                                "Hello there!",
+                                "My belly aches, and I've caught a chill.",
+                                "Ginger and Mustard Seed, please."
+                            })
                     },
                     new[]
                     {
@@ -719,7 +729,7 @@ namespace Witch.Bootstrap.PlayModeTests
                     null,
                     false,
                     null,
-                    "order.simple.w01"));
+                    "order.tutorial.w01"));
 
             Assert.That(presenter.GuidedTutorialActive || presenter.TutorialVisible, Is.True);
 

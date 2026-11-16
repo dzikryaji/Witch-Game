@@ -13,14 +13,14 @@ MonoBehaviour:
   m_Name: Order_Simple_Warm06
   m_EditorClassIdentifier: Witch.Infrastructure::Witch.Infrastructure.Content.OrderDefinition
   stableId: order.simple.w06
-  difficulty: 0
+  difficulty: 1
   orderBubbles:
-  - "Good morning."
-  - "Mine work exhausted my son before freezing air chilled him."
-  - "He barely stands, shivers, and coughs thick mucus."
-  - "His wheezing is unchanged, without fever or wounds."
-  - "The mine healer prescribed Cinnamomum for fatigue."
-  - "He paired it with Sinapis alba for chills and mucus."
+  - Hello hello.
+  - Mine work exhausted my son before freezing air chilled him.
+  - He barely stands, shivers, and coughs thick mucus.
+  - His wheezing is unchanged, without fever or wounds.
+  - The mine healer prescribed Cinnamomum for fatigue.
+  - He paired it with Sinapis alba for chills and mucus.
   firstHerbId: herb.cinnamon
   secondHerbId: herb.mustardSeed
   customer: {fileID: 11400000, guid: 10000000000000000000000000000006, type: 2}

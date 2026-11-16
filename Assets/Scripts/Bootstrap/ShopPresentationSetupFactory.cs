@@ -78,7 +78,7 @@ namespace Witch.Bootstrap
 
             List<GuidebookPageViewData> guidebook = CreateGuidebookPages(session);
 
-            const string guidedTutorialOrderId = "order.simple.w01";
+            const string guidedTutorialOrderId = "order.tutorial.w01";
             bool guidedTutorialEligible = session.RunState.CurrentDayNumber == 1
                 && !(session.RunState.TutorialFlags.TryGetValue(ShopTutorialFlags.Day1GuidedCompleted, out bool completed) && completed);
             // In-memory guard to avoid re-triggering within same session lifetime edge cases.

@@ -13,17 +13,17 @@ MonoBehaviour:
   m_Name: Order_Simple_Cool06
   m_EditorClassIdentifier: Witch.Infrastructure::Witch.Infrastructure.Content.OrderDefinition
   stableId: order.simple.c06
-  difficulty: 0
+  difficulty: 1
   orderBubbles:
-  - "Excuse me."
-  - "My younger brother has a high fever, swollen hands,"
-  - "and tremors violent enough to spoil every line he writes."
-  - "He drinks plenty, has sound kidneys,"
-  - "and his heart is young and strong."
-  - "A physician's margin note prescribes Sambucus nigra for the fever"
-  - "and Hyoscyamus niger for the fits."
-  - "Please prepare those two."
-  - "The parish can survive one day without his handwriting."
+  - Hi there.
+  - My younger brother has a high fever, swollen hands,
+  - and tremors violent enough to spoil every line he writes.
+  - He drinks plenty, has sound kidneys,
+  - and his heart is young and strong.
+  - A physician's margin note prescribes Sambucus nigra for the fever
+  - and Hyoscyamus niger for the fits.
+  - Please prepare those two.
+  - The parish can survive one day without his handwriting.
   firstHerbId: herb.elderflower
   secondHerbId: herb.henbane
   customer: {fileID: 11400000, guid: b00255ad8c02b4e98960925f8af4e92b, type: 2}

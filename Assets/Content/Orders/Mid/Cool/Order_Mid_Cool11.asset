@@ -13,13 +13,14 @@ MonoBehaviour:
   m_Name: Order_Mid_Cool11
   m_EditorClassIdentifier: Witch.Infrastructure::Witch.Infrastructure.Content.OrderDefinition
   stableId: order.mid.c11
-  difficulty: 1
+  difficulty: 2
   orderBubbles:
-  - "Afternoon. Winter sickness blocked my wife’s sinuses and caused fever."
-  - "Swelling now makes her fingers painfully stiff."
-  - "I need the sharp-smelling, dark green leaf."
-  - "And the delicate white flowers suited for light tea."
-  - "She drinks plenty, and reflux never troubles her."
+  - Good day.
+  - "Winter sickness blocked my wife\u2019s sinuses and caused fever."
+  - Swelling now makes her fingers painfully stiff.
+  - I need the sharp-smelling, dark green leaf.
+  - And the delicate white flowers suited for light tea.
+  - She drinks plenty, and reflux never troubles her.
   firstHerbId: herb.peppermint
   secondHerbId: herb.elderflower
   customer: {fileID: 11400000, guid: 4678338d721f2462d8a1979c0e069692, type: 2}
