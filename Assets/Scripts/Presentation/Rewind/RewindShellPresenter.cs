@@ -61,6 +61,8 @@ namespace Witch.Presentation.Rewind
         private const int CompletionHoldMs = 500;
         private int FlipDelayMs(int index) => Mathf.CeilToInt(cardSlots[index].FlipDuration * 1000f);
         private bool completing;
+        private bool gameOverMusicStarted;
+        private bool gameOverAmbienceStarted;
 
         public bool IsPaused { get; private set; }
         public bool IsInitialized => sessionStore != null;
@@ -183,7 +185,7 @@ namespace Witch.Presentation.Rewind
 
             int previous = firstIndex;
             firstIndex = -1;
-            IsResolvingMismatch = true;      
+            IsResolvingMismatch = true;
             RenderCards();
             await Task.Delay(FlipDelayMs(index), lifetime.Token);
             if (generation != boardGeneration) return false;
@@ -202,7 +204,7 @@ namespace Witch.Presentation.Rewind
                     RenderCards();
                     audioService?.Play(GameAudioCueIds.MinigameComplete);
                     audioService?.StopMusic();
-                    await Task.Delay(CompletionHoldMs, lifetime.Token);   // let the last match be seen
+                    await Task.Delay(CompletionHoldMs, lifetime.Token);
                     if (generation != boardGeneration) return false;
                     ShowWinPopup();
                     return true;
@@ -280,6 +282,7 @@ namespace Witch.Presentation.Rewind
 
         private void OnDestroy()
         {
+            StopGameOverAudio();
             lifetime.Cancel();
             lifetime.Dispose();
             foreach (RewindCardView view in cardSlots)
@@ -341,7 +344,7 @@ namespace Witch.Presentation.Rewind
             if (timerText == null) return;
             int seconds = Mathf.CeilToInt(remainingSeconds);
             timerText.text = (seconds / 60).ToString("00") + ":" + (seconds % 60).ToString("00");
-            timerText.fontStyle = seconds <= 10 ? FontStyle.Bold : FontStyle.Normal; 
+            timerText.fontStyle = seconds <= 10 ? FontStyle.Bold : FontStyle.Normal;
         }
 
         private void ResetTimer()
@@ -354,32 +357,78 @@ namespace Witch.Presentation.Rewind
 
         private async void OnTimeUp()
         {
+            if (IsTimedOut || IsComplete || gameOverMusicStarted) return;
+
             timerRunning = false;
-            IsTimedOut = true;                       // blocks the cards, pause button, and Esc from this moment on
-            boardGeneration++;                       // cancels any flip that is still waiting
+            IsTimedOut = true;
+            boardGeneration++;
             IsResolvingMismatch = false;
             firstIndex = -1;
             RenderCards();
             audioService?.Play(GameAudioCueIds.CardMismatch);
             audioService?.StopMusic();
+            PlayGameOverMusicOnce();
 
             try
             {
                 if (failCutscene != null && failCutscene.IsAuthored)
                 {
-                    await failCutscene.PlayAsync(lifetime.Token);   // fade to black, then the picture fades in
+                    await failCutscene.PlayAsync(lifetime.Token, TryStartGameOverAmbienceOnce);
+                }
+                else
+                {
+                    TryStartGameOverAmbienceOnce();
                 }
 
-                timeUpPopup?.Show();                                // the game over popup appears over the picture
+                timeUpPopup?.Show();
             }
             catch (OperationCanceledException) when (lifetime.IsCancellationRequested)
             {
-                // the scene was closed during the cutscene
             }
             catch (Exception exception)
             {
                 Debug.LogException(exception, this);
-                timeUpPopup?.Show();                                // never leave the player without a way out
+                TryStartGameOverAmbienceOnce();
+                timeUpPopup?.Show();
+            }
+        }
+
+        private void PlayGameOverMusicOnce()
+        {
+            if (gameOverMusicStarted || audioService == null) return;
+            gameOverMusicStarted = true;
+            audioService.PlayMusic(GameAudioCueIds.GameOverMusic);
+        }
+
+        private void TryStartGameOverAmbienceOnce()
+        {
+            if (gameOverAmbienceStarted || audioService == null) return;
+            if (lifetime.IsCancellationRequested) return;
+            if (!IsTimedOut || IsComplete) return;
+
+            gameOverAmbienceStarted = true;
+            audioService.PlayAmbience(GameAudioCueIds.StakeAmbience);
+        }
+
+        private void StopGameOverAudio()
+        {
+            if (audioService == null)
+            {
+                gameOverMusicStarted = false;
+                gameOverAmbienceStarted = false;
+                return;
+            }
+
+            if (gameOverMusicStarted)
+            {
+                audioService.StopMusic();
+                gameOverMusicStarted = false;
+            }
+
+            if (gameOverAmbienceStarted)
+            {
+                audioService.StopAmbience();
+                gameOverAmbienceStarted = false;
             }
         }
 
@@ -399,6 +448,7 @@ namespace Witch.Presentation.Rewind
 
             returningToMenu = true;
             timeUpPopup?.SetInteractable(false);
+            StopGameOverAudio();
             audioService?.Play(GameAudioCueIds.UiClick);
 
             try
@@ -412,7 +462,6 @@ namespace Witch.Presentation.Rewind
             }
             catch (OperationCanceledException) when (lifetime.IsCancellationRequested)
             {
-                // scene closed while loading
             }
             catch (Exception exception)
             {
@@ -449,13 +498,12 @@ namespace Witch.Presentation.Rewind
         private static void Bind(Button button, UnityEngine.Events.UnityAction action)
         {
             if (button == null) return;
-            button.onClick.RemoveListener(action);   // safe if Initialize runs twice
+            button.onClick.RemoveListener(action);
             button.onClick.AddListener(action);
         }
 
         public void TogglePause()
         {
-            // Not while a pair is resolving, the popup or settings are open, or the board is finished.
             if (Board == null || IsComplete || IsTimedOut || IsResolvingMismatch || returningToMenu) return;
             if (quitConfirm != null && quitConfirm.IsVisible) return;
             if (settingsPanelPresenter != null && settingsPanelPresenter.IsOpen) return;
@@ -465,7 +513,7 @@ namespace Witch.Presentation.Rewind
             pauseOverlay?.SetActive(IsPaused);
             if (!IsPaused) SetPauseContentVisible(true);
             audioService?.Play(GameAudioCueIds.UiClick);
-            RenderCards();                           // greys out or restores the cards
+            RenderCards();
         }
 
         private void AskToQuit()
@@ -509,7 +557,7 @@ namespace Witch.Presentation.Rewind
         {
             if (completing) return;
             completing = true;
-            if (winContinueButton != null) winContinueButton.interactable = false;   // blocks double clicks
+            if (winContinueButton != null) winContinueButton.interactable = false;
             audioService?.Play(GameAudioCueIds.UiClick);
 
             try
@@ -519,13 +567,11 @@ namespace Witch.Presentation.Rewind
                 {
                     Debug.LogWarning("Could not finish the rewind: " + result.ErrorMessage, this);
                     completing = false;
-                    if (winContinueButton != null) winContinueButton.interactable = true;   // let the player try again
+                    if (winContinueButton != null) winContinueButton.interactable = true;
                 }
-                // On success the use case has already saved and loaded the Shop, so the popup stays up until then.
             }
             catch (OperationCanceledException) when (lifetime.IsCancellationRequested)
             {
-                // scene closed while loading
             }
             catch (Exception exception)
             {
