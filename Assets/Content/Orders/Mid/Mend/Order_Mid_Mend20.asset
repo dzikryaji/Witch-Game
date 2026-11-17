@@ -13,12 +13,12 @@ MonoBehaviour:
   m_Name: Order_Mid_Mend20
   m_EditorClassIdentifier: Witch.Infrastructure::Witch.Infrastructure.Content.OrderDefinition
   stableId: order.mid.m20
-  difficulty: 1
+  difficulty: 2
   orderBubbles:
-  - "Good afternoon. My wrist buckles, and my palm bleeds heavily."
-  - "Bring the bright yellow flower."
-  - "Add the thick, flat weed."
-  - "My lungs and circulation remain strong."
+  - Greetings. My wrist buckles, and my palm bleeds heavily.
+  - Bring the bright yellow flower.
+  - Add the thick, flat weed.
+  - My lungs and circulation remain strong.
   firstHerbId: herb.arnicaFlower
   secondHerbId: herb.plantainLeaf
   customer: {fileID: 11400000, guid: b00255ad8c02b4e98960925f8af4e92b, type: 2}

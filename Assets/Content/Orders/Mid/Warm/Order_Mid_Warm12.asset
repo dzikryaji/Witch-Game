@@ -13,12 +13,13 @@ MonoBehaviour:
   m_Name: Order_Mid_Warm12
   m_EditorClassIdentifier: Witch.Infrastructure::Witch.Infrastructure.Content.OrderDefinition
   stableId: order.mid.w12
-  difficulty: 1
+  difficulty: 2
   orderBubbles:
-  - "Hi. My mouth is numb, and exhaustion drains all energy."
-  - "Bring the tiny, dried bud."
-  - "Add the bright red pepper."
-  - "My heartbeat and lungs are strong, without asthma."
+  - Hello hello.
+  - My mouth is numb, and exhaustion drains all energy.
+  - Bring the tiny, dried bud.
+  - Add the bright red pepper.
+  - My heartbeat and lungs are strong, without asthma.
   firstHerbId: herb.clove
   secondHerbId: herb.cayennePepper
   customer: {fileID: 11400000, guid: b00255ad8c02b4e98960925f8af4e92b, type: 2}

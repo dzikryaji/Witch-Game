@@ -13,12 +13,12 @@ MonoBehaviour:
   m_Name: Order_Mid_Warm07
   m_EditorClassIdentifier: Witch.Infrastructure::Witch.Infrastructure.Content.OrderDefinition
   stableId: order.mid.w07
-  difficulty: 1
+  difficulty: 2
   orderBubbles:
-  - "Good morning. Exhaustion accompanies blocked airways, chills, and chest mucus."
-  - "Bring the bright red pepper."
-  - "Add the small, rough yellow seeds."
-  - "My lungs are strong, and my skin is unbroken."
+  - Hi there. Exhaustion accompanies blocked airways, chills, and chest mucus.
+  - Bring the bright red pepper.
+  - Add the small, rough yellow seeds.
+  - My lungs are strong, and my skin is unbroken.
   firstHerbId: herb.cayennePepper
   secondHerbId: herb.mustardSeed
   customer: {fileID: 11400000, guid: 3965e9fdac9e6466c91a76e9ffa93d8b, type: 2}

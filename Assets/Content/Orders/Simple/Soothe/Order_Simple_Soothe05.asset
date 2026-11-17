@@ -13,12 +13,12 @@ MonoBehaviour:
   m_Name: Order_Simple_Soothe05
   m_EditorClassIdentifier: Witch.Infrastructure::Witch.Infrastructure.Content.OrderDefinition
   stableId: order.simple.s05
-  difficulty: 0
+  difficulty: 1
   orderBubbles:
-  - "Morning. Something gentle, please."
-  - "Something for my racing heart and my intense headache."
-  - "The physician prescribed Valeriana officianalis for my racing heart,"
-  - "and Lavandula for the headache."
+  - Hello there. Something gentle, please.
+  - Something for my racing heart and my intense headache.
+  - The physician prescribed Valeriana officianalis for my racing heart,
+  - and Lavandula for the headache.
   firstHerbId: herb.valerian
   secondHerbId: herb.lavender
   customer: {fileID: 11400000, guid: b00255ad8c02b4e98960925f8af4e92b, type: 2}

@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: Order_Hard_Cool14
   m_EditorClassIdentifier: Witch.Infrastructure::Witch.Infrastructure.Content.OrderDefinition
   stableId: order.hard.c14
-  difficulty: 2
+  difficulty: 3
   orderBubbles:
-  - "Good afternoon. An adder bite caused fever and blocked sinuses."
-  - "Venomous heat now spreads through my cousin’s blood."
-  - "Bring the sharp-smelling dark green leaf."
-  - "Add the rough leaf with blue, star-like flowers."
-  - "He stays warm and has no reflux."
+  - Hello there. An adder bite caused fever and blocked sinuses.
+  - "Venomous heat now spreads through my cousin\u2019s blood."
+  - Bring the sharp-smelling dark green leaf.
+  - Add the rough leaf with blue, star-like flowers.
+  - He stays warm and has no reflux.
   firstHerbId: herb.peppermint
   secondHerbId: herb.borage
   customer: {fileID: 11400000, guid: 7a06e32b0a26b416c9f59776c3880e92, type: 2}

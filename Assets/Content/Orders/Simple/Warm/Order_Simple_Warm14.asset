@@ -13,12 +13,12 @@ MonoBehaviour:
   m_Name: Order_Simple_Warm14
   m_EditorClassIdentifier: Witch.Infrastructure::Witch.Infrastructure.Content.OrderDefinition
   stableId: order.simple.w14
-  difficulty: 0
+  difficulty: 1
   orderBubbles:
-  - "Hi. My chest is heavy with mucus."
-  - "These dreadful chills have kept me awake all night."
-  - "A healer prescribed Sinapis alba for chills and mucus."
-  - "They paired it with Cinnamon for added warmth."
+  - Hello. My chest is heavy with mucus.
+  - These dreadful chills have kept me awake all night.
+  - A healer prescribed Sinapis alba for chills and mucus.
+  - They paired it with Cinnamon for added warmth.
   firstHerbId: herb.cinnamon
   secondHerbId: herb.mustardSeed
   customer: {fileID: 11400000, guid: 3965e9fdac9e6466c91a76e9ffa93d8b, type: 2}

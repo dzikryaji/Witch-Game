@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: Order_Simple_Soothe08
   m_EditorClassIdentifier: Witch.Infrastructure::Witch.Infrastructure.Content.OrderDefinition
   stableId: order.simple.s08
-  difficulty: 0
+  difficulty: 1
   orderBubbles:
-  - "Hello. Something soothing, please."
-  - "I keep having panic attacks,"
-  - "and I crushed my hand badly in the loom."
-  - "The loom mistress's remedy book prescribes Lavandula for panic,"
-  - "and Passiflora for my crushed hand."
+  - Hi. Something soothing, please.
+  - I keep having panic attacks,
+  - and I crushed my hand badly in the loom.
+  - The loom mistress's remedy book prescribes Lavandula for panic,
+  - and Passiflora for my crushed hand.
   firstHerbId: herb.lavender
   secondHerbId: herb.passionFlower
   customer: {fileID: 11400000, guid: 12795f040a17d43ce94d717cf5b31324, type: 2}

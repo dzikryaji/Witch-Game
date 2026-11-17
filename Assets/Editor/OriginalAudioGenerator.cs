@@ -17,11 +17,12 @@ namespace Witch.Editor
 
         private static readonly KeyValuePair<string, string>[] Cues =
         {
-            Pair("BGM_MAIN_MENU", BgmFolder + "/AlkaKrab/Medieval Vol. 2 1 (Loop).ogg"),
-            Pair("BGM_SHOP", BgmFolder + "/AlkaKrab/Medieval Vol. 2 2 (Loop).ogg"),
-            Pair("BGM_REWIND_MINIGAME", BgmFolder + "/AlkaKrab/Medieval Vol. 2 3 (Loop).ogg"),
-            Pair("BGM_GAME_OVER", BgmFolder + "/AlkaKrab/Medieval Vol. 2 5 (Loop).ogg"),
-            Pair("BGM_GAME_COMPLETE", BgmFolder + "/AlkaKrab/Medieval Vol. 2 6 (Loop).ogg"),
+            Pair("BGM_MAIN_MENU", BgmFolder + "/medieval_1.ogg"),
+            Pair("BGM_SHOP", BgmFolder + "/medieval_2.ogg"),
+            Pair("BGM_MINIGAME", BgmFolder + "/medieval_6.ogg"),
+            Pair("BGM_WITCH_HUNTER", BgmFolder + "/medieval_3.ogg"),
+            Pair("BGM_GAME_OVER", BgmFolder + "/medieval_4.ogg"),
+            Pair("BGM_GAME_COMPLETE", BgmFolder + "/medieval_5.ogg"),
             Pair("SFX_SHOP_AMBIENCE", SfxFolder + "/ShopAmbience.ogg"),
             Pair("SFX_CUSTOMER_BELL", SfxFolder + "/CustomerBell.mp3"),
             Pair("SFX_PAGE_FLIP", SfxFolder + "/PageFlip.mp3"),
@@ -29,14 +30,12 @@ namespace Witch.Editor
             Pair("SFX_HERB_PLUCK", SfxFolder + "/HerbPluck.wav"),
             Pair("SFX_BREW_SUCCESS", SfxFolder + "/BrewSuccess.wav"),
             Pair("SFX_DISCARD", SfxFolder + "/Discard.wav"),
-            Pair("SFX_ORDER_CORRECT", SfxFolder + "/OrderCorrect_Original.wav"),
-            Pair("SFX_PAYMENT_COINS", SfxFolder + "/Coins_Original.wav"),
-            Pair("SFX_ORDER_WRONG", SfxFolder + "/OrderWrong_Original.wav"),
+            Pair("SFX_PAYMENT_COINS", SfxFolder + "/Coins.mp3"),
+            Pair("SFX_WRONG", SfxFolder + "/Wrong.wav"),
             Pair("SFX_CARD_MATCH", SfxFolder + "/CardMatch.wav"),
             Pair("SFX_CARD_MISMATCH", SfxFolder + "/CardMismatch.wav"),
             Pair("SFX_MINIGAME_COMPLETE", SfxFolder + "/MinigameComplete_Original.wav"),
-            Pair("SFX_EXPENSE_PAY", SfxFolder + "/ExpensePay_Original.wav"),
-            Pair("SFX_EXPENSE_FAIL", SfxFolder + "/ExpenseFail_Original.wav"),
+            Pair("SFX_CORRECT", SfxFolder + "/Correct.wav"),
             Pair("SFX_UI_CLICK", SfxFolder + "/UiClick.ogg")
         };
 
@@ -73,16 +72,16 @@ namespace Witch.Editor
                 switch (cueId)
                 {
                     case "SFX_PAYMENT_COINS":
-                    case "SFX_EXPENSE_PAY":
                         value = CoinCluster(time, duration);
                         break;
+                    case "SFX_CORRECT":
+                        value = Arpeggio(time, duration, new[] { 60, 64, 67, 72 });
+                        break;
                     case "SFX_BREW_SUCCESS":
-                    case "SFX_ORDER_CORRECT":
                     case "SFX_MINIGAME_COMPLETE":
                         value = Arpeggio(time, duration, new[] { 60, 64, 67, 72 });
                         break;
-                    case "SFX_ORDER_WRONG":
-                    case "SFX_EXPENSE_FAIL":
+                    case "SFX_WRONG":
                         value = Arpeggio(time, duration, new[] { 55, 51, 48, 43 });
                         break;
                     default:
@@ -125,8 +124,8 @@ namespace Witch.Editor
             switch (cueId)
             {
                 case "SFX_MINIGAME_COMPLETE": return 1.5f;
-                case "SFX_PAYMENT_COINS":
-                case "SFX_EXPENSE_PAY": return 0.75f;
+                case "SFX_PAYMENT_COINS": return 0.75f;
+                case "SFX_CORRECT": return 0.48f;
                 default: return 0.48f;
             }
         }

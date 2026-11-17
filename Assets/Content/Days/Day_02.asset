@@ -17,4 +17,4 @@ MonoBehaviour:
   timerSeconds: 120
   dailyExpense: 20
   unlockedCategoryIds: []
-  orderDifficulties: 00000000i
+  orderDifficulties: 0000000001000000i

@@ -24,6 +24,7 @@ namespace Witch.Presentation.Rewind
         [SerializeField] private RewindTimeUpPopupView timeUpPopup;
         [SerializeField, Min(5f)] private float timeLimitSeconds = 60f;
         [SerializeField] private RewindHeaderView header;
+        [SerializeField] private RewindFailCutsceneView failCutscene;
 
         [Header("Pause")]
         [SerializeField] private Button pauseButton;
@@ -34,6 +35,11 @@ namespace Witch.Presentation.Rewind
         [SerializeField] private Button quitButton;
         [SerializeField] private SettingsPanelPresenter settingsPanelPresenter;
         [SerializeField] private ConfirmPopupView quitConfirm;
+
+        [Header("Win Popup")]
+        [SerializeField] private GameObject winPopup;
+        [SerializeField] private GameObject popUpOverlay;
+        [SerializeField] private Button winContinueButton;
 
         private float remainingSeconds;
         private bool timerRunning;
@@ -54,6 +60,7 @@ namespace Witch.Presentation.Rewind
         private IReadOnlyList<string> symbols;
         private const int CompletionHoldMs = 500;
         private int FlipDelayMs(int index) => Mathf.CeilToInt(cardSlots[index].FlipDuration * 1000f);
+        private bool completing;
 
         public bool IsPaused { get; private set; }
         public bool IsInitialized => sessionStore != null;
@@ -137,7 +144,7 @@ namespace Witch.Presentation.Rewind
             {
                 throw new InvalidOperationException("Rewind content has fewer symbols than board pairs.");
             }
-            symbols = symbolKeys;
+            symbols = ShuffleSymbols(symbolKeys, Board.Seed);
             revealed = new bool[Board.Cards.Count];
             matched = new bool[Board.Cards.Count];
             EnsureCardViews(Board.Cards.Count);
@@ -153,7 +160,7 @@ namespace Witch.Presentation.Rewind
             if (boardLayout != null) boardLayout.Apply(Board.Cards.Count);
             RenderCards();
             audioService?.StopAmbience();
-            audioService?.PlayMusic(GameAudioCueIds.RewindMusic);
+            audioService?.PlayMusic(GameAudioCueIds.MinigameMusic);
         }
 
         public async Task<bool> FlipCardAsync(int index)
@@ -190,13 +197,15 @@ namespace Witch.Presentation.Rewind
                 if (AllMatched())
                 {
                     IsComplete = true;
+                    timerRunning = false;
                     header?.DrainSuspicion(0.5f);
                     RenderCards();
                     audioService?.Play(GameAudioCueIds.MinigameComplete);
                     audioService?.StopMusic();
-                    await Task.Delay(CompletionHoldMs, lifetime.Token);   // show the final match before leaving
-                    RewindTransactionResult result = await completeRewind.ExecuteAsync(ActiveSession, lifetime.Token);
-                    return result.Succeeded;
+                    await Task.Delay(CompletionHoldMs, lifetime.Token);   // let the last match be seen
+                    if (generation != boardGeneration) return false;
+                    ShowWinPopup();
+                    return true;
                 }
 
                 RenderCards();
@@ -343,16 +352,35 @@ namespace Witch.Presentation.Rewind
             RenderTimer();
         }
 
-        private void OnTimeUp()
+        private async void OnTimeUp()
         {
             timerRunning = false;
-            IsTimedOut = true;
-            boardGeneration++;          
+            IsTimedOut = true;                       // blocks the cards, pause button, and Esc from this moment on
+            boardGeneration++;                       // cancels any flip that is still waiting
             IsResolvingMismatch = false;
             firstIndex = -1;
             RenderCards();
             audioService?.Play(GameAudioCueIds.CardMismatch);
-            timeUpPopup?.Show();
+            audioService?.StopMusic();
+
+            try
+            {
+                if (failCutscene != null && failCutscene.IsAuthored)
+                {
+                    await failCutscene.PlayAsync(lifetime.Token);   // fade to black, then the picture fades in
+                }
+
+                timeUpPopup?.Show();                                // the game over popup appears over the picture
+            }
+            catch (OperationCanceledException) when (lifetime.IsCancellationRequested)
+            {
+                // the scene was closed during the cutscene
+            }
+            catch (Exception exception)
+            {
+                Debug.LogException(exception, this);
+                timeUpPopup?.Show();                                // never leave the player without a way out
+            }
         }
 
         public void ConfigureNavigation(ISceneLoader loader)
@@ -411,6 +439,11 @@ namespace Witch.Presentation.Rewind
                 settingsPanelPresenter.Closed -= OnSettingsClosed;
                 settingsPanelPresenter.Closed += OnSettingsClosed;
             }
+
+            winPopup?.SetActive(false);
+            popUpOverlay?.SetActive(false);
+
+            Bind(winContinueButton, OnWinContinueClicked);
         }
 
         private static void Bind(Button button, UnityEngine.Events.UnityAction action)
@@ -464,6 +497,58 @@ namespace Witch.Presentation.Rewind
             group.alpha = visible ? 1f : 0f;
             group.interactable = visible;
             group.blocksRaycasts = visible;
+        }
+
+        private void ShowWinPopup()
+        {
+            popUpOverlay?.SetActive(true);
+            winPopup?.SetActive(true);
+        }
+
+        private async void OnWinContinueClicked()
+        {
+            if (completing) return;
+            completing = true;
+            if (winContinueButton != null) winContinueButton.interactable = false;   // blocks double clicks
+            audioService?.Play(GameAudioCueIds.UiClick);
+
+            try
+            {
+                RewindTransactionResult result = await completeRewind.ExecuteAsync(ActiveSession, lifetime.Token);
+                if (!result.Succeeded)
+                {
+                    Debug.LogWarning("Could not finish the rewind: " + result.ErrorMessage, this);
+                    completing = false;
+                    if (winContinueButton != null) winContinueButton.interactable = true;   // let the player try again
+                }
+                // On success the use case has already saved and loaded the Shop, so the popup stays up until then.
+            }
+            catch (OperationCanceledException) when (lifetime.IsCancellationRequested)
+            {
+                // scene closed while loading
+            }
+            catch (Exception exception)
+            {
+                completing = false;
+                if (winContinueButton != null) winContinueButton.interactable = true;
+                Debug.LogException(exception, this);
+            }
+        }
+
+        private static IReadOnlyList<string> ShuffleSymbols(IReadOnlyList<string> keys, int seed)
+        {
+            if (keys == null) return null;
+
+            var copy = new List<string>(keys);
+            var random = new System.Random(seed ^ 0x5bd1e995);
+            for (int i = copy.Count - 1; i > 0; i--)
+            {
+                int j = random.Next(i + 1);
+                string temp = copy[i];
+                copy[i] = copy[j];
+                copy[j] = temp;
+            }
+            return copy;
         }
     }
 }

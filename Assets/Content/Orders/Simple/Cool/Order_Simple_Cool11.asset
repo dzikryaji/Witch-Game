@@ -13,14 +13,15 @@ MonoBehaviour:
   m_Name: Order_Simple_Cool11
   m_EditorClassIdentifier: Witch.Infrastructure::Witch.Infrastructure.Content.OrderDefinition
   stableId: order.simple.c11
-  difficulty: 0
+  difficulty: 1
   orderBubbles:
-  - "Hello. A long illness gave my nephew fever and swelling."
-  - "Now violent fits keep him from holding a spoon."
-  - "He drinks freely, with healthy kidneys and heart."
-  - "The priory book prescribes Sambucus nigra for fever."
-  - "It adds Hyoscyamus niger for the violent fits."
-  - "The Bells have paid for enough hymns already."
+  - Good day.
+  - A long illness gave my nephew fever and swelling.
+  - Now violent fits keep him from holding a spoon.
+  - He drinks freely, with healthy kidneys and heart.
+  - The priory book prescribes Sambucus nigra for fever.
+  - It adds Hyoscyamus niger for the violent fits.
+  - The Bells have paid for enough hymns already.
   firstHerbId: herb.elderflower
   secondHerbId: herb.henbane
   customer: {fileID: 11400000, guid: 4678338d721f2462d8a1979c0e069692, type: 2}

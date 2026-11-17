@@ -13,14 +13,14 @@ MonoBehaviour:
   m_Name: Order_Simple_Soothe01
   m_EditorClassIdentifier: Witch.Infrastructure::Witch.Infrastructure.Content.OrderDefinition
   stableId: order.simple.s01
-  difficulty: 0
+  difficulty: 1
   orderBubbles:
-  - "Hello. I need something soothing."
-  - "I get muscle cramps in my legs,"
-  - "and I have bad anxiety."
-  - "I need to sleep deeply."
-  - "My healer's notes prescribe Matricaria chamomilla for the cramps,"
-  - "and Valeriana officianalis for anxiety and deep sleep."
+  - Hello there. I need something soothing.
+  - I get muscle cramps in my legs,
+  - and I have bad anxiety.
+  - I need to sleep deeply.
+  - My healer's notes prescribe Matricaria chamomilla for the cramps,
+  - and Valeriana officianalis for anxiety and deep sleep.
   firstHerbId: herb.chamomile
   secondHerbId: herb.valerian
   customer: {fileID: 11400000, guid: b00255ad8c02b4e98960925f8af4e92b, type: 2}

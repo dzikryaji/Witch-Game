@@ -67,11 +67,16 @@ namespace Witch.Presentation.Shop
         [SerializeField] private GameObject progressionPanel;
         [SerializeField] private Text progressionText;
         [SerializeField] private Text dayTitleText;
-        [SerializeField] private Text correctOrdersText;
-        [SerializeField] private Text wrongOrdersText;
-        [SerializeField] private Text coinsEarnedText;
-        [SerializeField] private Text taxPaidText;
-        [SerializeField] private Text coinsRemainingText;
+        [SerializeField] private GameObject correctOrdersRow;
+        [SerializeField] private Text correctOrdersValueText;
+        [SerializeField] private GameObject wrongOrdersRow;
+        [SerializeField] private Text wrongOrdersValueText;
+        [SerializeField] private GameObject coinsEarnedRow;
+        [SerializeField] private Text coinsEarnedValueText;
+        [SerializeField] private GameObject taxPaidRow;
+        [SerializeField] private Text taxPaidValueText;
+        [SerializeField] private GameObject coinsRemainingRow;
+        [SerializeField] private Text coinsRemainingValueText;
         [SerializeField] private Button continueButton;
         [SerializeField] private GameObject pausePanel;
         [SerializeField] private Button resumeButton;
@@ -211,11 +216,16 @@ namespace Witch.Presentation.Shop
             && progressionPanel != null
             && progressionText != null
             && dayTitleText != null
-            && correctOrdersText != null
-            && wrongOrdersText != null
-            && coinsEarnedText != null
-            && taxPaidText != null
-            && coinsRemainingText != null
+            && correctOrdersRow != null
+            && correctOrdersValueText != null
+            && wrongOrdersRow != null
+            && wrongOrdersValueText != null
+            && coinsEarnedRow != null
+            && coinsEarnedValueText != null
+            && taxPaidRow != null
+            && taxPaidValueText != null
+            && coinsRemainingRow != null
+            && coinsRemainingValueText != null
             && continueButton != null
             && pausePanel != null
             && resumeButton != null
@@ -340,7 +350,6 @@ namespace Witch.Presentation.Shop
             if (herbUnlockAnnouncement != null) herbUnlockAnnouncement.Hide();
             hudView.ClearCustomer();
             audioService?.PlayMusic(GameAudioCueIds.ShopMusic);
-            audioService?.PlayAmbience(GameAudioCueIds.ShopAmbience);
             Exception initException = null;
             try
             {
@@ -709,6 +718,7 @@ namespace Witch.Presentation.Shop
         public void EjectLoadedHerb()
         {
             if (stationAnimationPlaying) return;
+            audioService?.Play(GameAudioCueIds.UiClick);
             if (IsGameplayPaused)
             {
                 SetStatus("The shop is paused.");
@@ -899,7 +909,6 @@ namespace Witch.Presentation.Shop
             {
                 await ShowServeFeedbackBubbleAsync(ShopServeFeedback.GetCorrectLine(), cancellationToken);
                 if (cancellationToken.IsCancellationRequested) return result;
-                audioService?.Play(GameAudioCueIds.OrderCorrect);
                 if (counterCoins != null && result.Outcome.Payment > 0)
                 {
                     // The payment is already saved; the coins only delay when the header shows it.
@@ -918,7 +927,7 @@ namespace Witch.Presentation.Shop
                 await ShowServeFeedbackBubbleAsync(ShopServeFeedback.GetIncorrectLine(), cancellationToken);
                 if (cancellationToken.IsCancellationRequested) return result;
                 SetStatus("Wrong potion. No coins. Suspicion increased. At 3, Hunters investigate the suspicious 'herbalist'.");
-                audioService?.Play(GameAudioCueIds.OrderWrong);
+                audioService?.Play(GameAudioCueIds.Wrong);
                 if (suspicionFocus != null) suspicionFocus.Play();
             }
 
@@ -1034,17 +1043,17 @@ namespace Witch.Presentation.Shop
                 SetStatus("Daily expense resolved.");
                 if (ActiveSession.CurrentPhase == Witch.Domain.GamePhase.GameOver)
                 {
-                    audioService?.Play(GameAudioCueIds.ExpenseFail);
+                    audioService?.Play(GameAudioCueIds.Wrong);
                     audioService?.PlayMusic(GameAudioCueIds.GameOverMusic);
                 }
                 else if (ActiveSession.CurrentPhase == Witch.Domain.GamePhase.Victory)
                 {
-                    audioService?.Play(GameAudioCueIds.ExpensePay);
+                    audioService?.Play(GameAudioCueIds.Correct);
                     audioService?.PlayMusic(GameAudioCueIds.VictoryMusic);
                 }
                 else
                 {
-                    audioService?.Play(GameAudioCueIds.ExpensePay);
+                    audioService?.Play(GameAudioCueIds.Correct);
                 }
 
                 Render();
@@ -1807,7 +1816,7 @@ namespace Witch.Presentation.Shop
         {
             ClearCounterCoins();
             SetStatus("KNOCK. KNOCK. Hunters suspect poisoning. Cast the memory spell before they enter; the day will rewind.");
-            audioService?.StopMusic();
+            audioService?.PlayMusic(GameAudioCueIds.WitchHunterMusic);
 
             // Freeze the clock before the Hunter speaks, so reading the accusation never costs shop time.
             setTimerPaused?.Execute(ActiveSession, true);
@@ -1912,7 +1921,11 @@ namespace Witch.Presentation.Shop
             if (counterCoins != null) counterCoins.IsGameplayPaused = () => IsGameplayPaused;
             if (moneyGainPopUp != null) moneyGainPopUp.IsGameplayPaused = () => IsGameplayPaused;
             if (suspicionFocus != null) suspicionFocus.IsGameplayPaused = () => IsGameplayPaused;
-            if (herbUnlockAnnouncement != null) herbUnlockAnnouncement.IsGameplayPaused = () => IsGameplayPaused;
+            if (herbUnlockAnnouncement != null)
+            {
+                herbUnlockAnnouncement.IsGameplayPaused = () => IsGameplayPaused;
+                herbUnlockAnnouncement.AudioService = audioService;
+            }
             if (potionRevealAnimator != null) potionRevealAnimator.IsGameplayPaused = () => IsGameplayPaused;
             if (grinderAnimation != null) grinderAnimation.IsGameplayPaused = () => IsGameplayPaused;
             if (brewingAnimation != null) brewingAnimation.IsGameplayPaused = () => IsGameplayPaused;
@@ -2381,22 +2394,22 @@ namespace Witch.Presentation.Shop
                 dayTitleText.text = session.CurrentPhase == Witch.Domain.GamePhase.Victory
                     ? dayNumber + " DAYS COMPLETE"
                     : "DAY " + dayNumber + " COMPLETE";
-                correctOrdersText.text = "Correct Orders									.................................." + (summary == null ? 0 : summary.CorrectOrders);
-                wrongOrdersText.text = "Wrong Orders									.................................." + (summary == null ? 0 : summary.WrongOrders);
-                coinsEarnedText.text = "Your Today's Income		    		    ................................$" + (summary == null ? 0 : summary.CoinsEarned);
-                taxPaidText.text = "Tax													................................$" + (summary == null ? 0 : summary.TaxPaid);
-                coinsRemainingText.text = "Current Total Coin												   $" + (summary == null ? 0 : summary.CoinsRemaining);
+                correctOrdersValueText.text = (summary == null ? 0 : summary.CorrectOrders).ToString();
+                wrongOrdersValueText.text = (summary == null ? 0 : summary.WrongOrders).ToString();
+                coinsEarnedValueText.text = "$" + (summary == null ? 0 : summary.CoinsEarned).ToString();
+                taxPaidValueText.text = "$" + (summary == null ? 0 : summary.TaxPaid).ToString();
+                coinsRemainingValueText.text = "$" + (summary == null ? 0 : summary.CoinsRemaining).ToString();
             }
         }
 
         private void SetSummaryRowsVisible(bool visible)
         {
             if (dayTitleText != null) dayTitleText.gameObject.SetActive(visible);
-            if (correctOrdersText != null) correctOrdersText.gameObject.SetActive(visible);
-            if (wrongOrdersText != null) wrongOrdersText.gameObject.SetActive(visible);
-            if (coinsEarnedText != null) coinsEarnedText.gameObject.SetActive(visible);
-            if (taxPaidText != null) taxPaidText.gameObject.SetActive(visible);
-            if (coinsRemainingText != null) coinsRemainingText.gameObject.SetActive(visible);
+            if (correctOrdersRow != null) correctOrdersRow.SetActive(visible);
+            if (wrongOrdersRow != null) wrongOrdersRow.SetActive(visible);
+            if (coinsEarnedRow != null) coinsEarnedRow.SetActive(visible);
+            if (taxPaidRow != null) taxPaidRow.SetActive(visible);
+            if (coinsRemainingRow != null) coinsRemainingRow.SetActive(visible);
         }
 
         private void OnContinueClicked() => RunUiAction(ContinueNextDayAsync);

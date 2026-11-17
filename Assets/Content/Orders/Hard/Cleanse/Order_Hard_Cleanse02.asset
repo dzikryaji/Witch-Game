@@ -13,13 +13,14 @@ MonoBehaviour:
   m_Name: Order_Hard_Cleanse02
   m_EditorClassIdentifier: Witch.Infrastructure::Witch.Infrastructure.Content.OrderDefinition
   stableId: order.hard.cl02
-  difficulty: 2
+  difficulty: 3
   orderBubbles:
-  - "Afternoon. Spoiled food poisoned my stomach and left me sluggish."
-  - "I need swallowed toxins expelled and blood cleansed."
-  - "Bring the tough, earthy root."
-  - "Add the dark, toxic flower with deep-growing roots."
-  - "I can rest and have no throat ulcers."
+  - Good day.
+  - Spoiled food poisoned my stomach and left me sluggish.
+  - I need swallowed toxins expelled and blood cleansed.
+  - Bring the tough, earthy root.
+  - Add the dark, toxic flower with deep-growing roots.
+  - I can rest and have no throat ulcers.
   firstHerbId: herb.burdockRoot
   secondHerbId: herb.blackHellebore
   customer: {fileID: 11400000, guid: 10000000000000000000000000000006, type: 2}
