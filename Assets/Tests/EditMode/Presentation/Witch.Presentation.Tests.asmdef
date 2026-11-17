@@ -2,7 +2,9 @@
     "name": "Witch.Presentation.Tests",
     "rootNamespace": "Witch.Presentation.Tests",
     "references": [
-        "Witch.Presentation"
+        "Witch.Presentation",
+        "Witch.Application",
+        "Witch.Domain"
     ],
     "includePlatforms": [
         "Editor"

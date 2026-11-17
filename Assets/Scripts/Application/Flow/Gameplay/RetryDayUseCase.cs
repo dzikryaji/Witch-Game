@@ -18,7 +18,7 @@ namespace Witch.Application.Flow
             this.sceneLoader = sceneLoader ?? throw new ArgumentNullException(nameof(sceneLoader));
         }
 
-        public async Task<ExpenseResolutionResult> ExecuteAsync(
+        public async Task<ExpenseResolutionResult> PrepareAsync(
             GameSession session,
             CancellationToken cancellationToken = default)
         {
@@ -73,6 +73,19 @@ namespace Witch.Application.Flow
             }
 
             session.RetryDay(snapshot, metadata);
+            return ExpenseResolutionResult.Success();
+        }
+
+        public async Task<ExpenseResolutionResult> ExecuteAsync(
+            GameSession session,
+            CancellationToken cancellationToken = default)
+        {
+            ExpenseResolutionResult prepared = await PrepareAsync(session, cancellationToken);
+            if (!prepared.Succeeded)
+            {
+                return prepared;
+            }
+
             SceneLoadResult scene = await sceneLoader.LoadAsync(SceneId.Shop, cancellationToken);
             if (!scene.Succeeded)
             {

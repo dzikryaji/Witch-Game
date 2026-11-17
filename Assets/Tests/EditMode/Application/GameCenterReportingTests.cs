@@ -236,7 +236,7 @@ namespace Witch.Application.Tests
         // ---- Phase 2 achievements ----
 
         [Test]
-        public async Task FirstCorrectServe_ReportsFirstRemedyOnce()
+        public void FirstCorrectServe_ReportsFirstRemedyOnce()
         {
             var clock = new FakeClock();
             GameSession session = CreateSession();
@@ -260,7 +260,7 @@ namespace Witch.Application.Tests
         }
 
         [Test]
-        public async Task RepeatedCorrectServes_ReportsFirstRemedyOnlyOnce()
+        public void RepeatedCorrectServes_ReportsFirstRemedyOnlyOnce()
         {
             var clock = new FakeClock();
             GameSession session = CreateSession();
@@ -332,7 +332,7 @@ namespace Witch.Application.Tests
         }
 
         [Test]
-        public async Task NotAllCategoriesServed_ReportsNoFiveArts()
+        public void NotAllCategoriesServed_ReportsNoFiveArts()
         {
             var clock = new FakeClock();
             GameSession session = CreateSession();
