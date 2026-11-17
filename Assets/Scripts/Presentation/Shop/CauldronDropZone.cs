@@ -14,7 +14,7 @@ namespace Witch.Presentation.Shop
             if (presenter == null || eventData.pointerDrag == null) return;
             if (eventData.pointerDrag.GetComponent<GroundHerbDragItem>() != null)
             {
-                presenter.AddGroundHerbToPot();
+                presenter.AddGroundHerbToPotAnimated();
             }
         }
     }
