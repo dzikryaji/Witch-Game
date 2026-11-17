@@ -24,6 +24,7 @@ namespace Witch.Presentation.Rewind
         [SerializeField] private RewindTimeUpPopupView timeUpPopup;
         [SerializeField, Min(5f)] private float timeLimitSeconds = 60f;
         [SerializeField] private RewindHeaderView header;
+        [SerializeField] private RewindFailCutsceneView failCutscene;
 
         [Header("Pause")]
         [SerializeField] private Button pauseButton;
@@ -351,16 +352,35 @@ namespace Witch.Presentation.Rewind
             RenderTimer();
         }
 
-        private void OnTimeUp()
+        private async void OnTimeUp()
         {
             timerRunning = false;
-            IsTimedOut = true;
-            boardGeneration++;          
+            IsTimedOut = true;                       // blocks the cards, pause button, and Esc from this moment on
+            boardGeneration++;                       // cancels any flip that is still waiting
             IsResolvingMismatch = false;
             firstIndex = -1;
             RenderCards();
             audioService?.Play(GameAudioCueIds.CardMismatch);
-            timeUpPopup?.Show();
+            audioService?.StopMusic();
+
+            try
+            {
+                if (failCutscene != null && failCutscene.IsAuthored)
+                {
+                    await failCutscene.PlayAsync(lifetime.Token);   // fade to black, then the picture fades in
+                }
+
+                timeUpPopup?.Show();                                // the game over popup appears over the picture
+            }
+            catch (OperationCanceledException) when (lifetime.IsCancellationRequested)
+            {
+                // the scene was closed during the cutscene
+            }
+            catch (Exception exception)
+            {
+                Debug.LogException(exception, this);
+                timeUpPopup?.Show();                                // never leave the player without a way out
+            }
         }
 
         public void ConfigureNavigation(ISceneLoader loader)
