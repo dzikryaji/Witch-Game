@@ -13,12 +13,12 @@ MonoBehaviour:
   m_Name: Order_Hard_Warm08
   m_EditorClassIdentifier: Witch.Infrastructure::Witch.Infrastructure.Content.OrderDefinition
   stableId: order.hard.w08
-  difficulty: 2
+  difficulty: 3
   orderBubbles:
-  - "Excuse me. Mouth numbness accompanies severe muscle exhaustion."
-  - "Bring the tiny, dried bud."
-  - "Add the spicy, sweet tree bark."
-  - "My heartbeat is steady, and I have no fever."
+  - Hi there. Mouth numbness accompanies severe muscle exhaustion.
+  - Bring the tiny, dried bud.
+  - Add the spicy, sweet tree bark.
+  - My heartbeat is steady, and I have no fever.
   firstHerbId: herb.clove
   secondHerbId: herb.cinnamon
   customer: {fileID: 11400000, guid: b00255ad8c02b4e98960925f8af4e92b, type: 2}

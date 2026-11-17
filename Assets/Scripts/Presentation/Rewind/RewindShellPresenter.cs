@@ -159,7 +159,7 @@ namespace Witch.Presentation.Rewind
             if (boardLayout != null) boardLayout.Apply(Board.Cards.Count);
             RenderCards();
             audioService?.StopAmbience();
-            audioService?.PlayMusic(GameAudioCueIds.RewindMusic);
+            audioService?.PlayMusic(GameAudioCueIds.MinigameMusic);
         }
 
         public async Task<bool> FlipCardAsync(int index)

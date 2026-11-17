@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Witch.Infrastructure::Witch.Infrastructure.Content.DayDefinition
   stableId: day.1
   dayNumber: 1
-  timerSeconds: 300
-  dailyExpense: 20
+  timerSeconds: 10
+  dailyExpense: 0
   unlockedCategoryIds:
   - category.warm
   - category.cool

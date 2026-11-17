@@ -60,6 +60,7 @@ namespace Witch.Presentation.Shop
         private Sprite placeholderCustomerSprite;
         private bool playerScrolledOrders;
         private bool skipTyping;
+        private int forceScrollToNewestRequests;
 
         private const float AnimationDistance = 260f;
         private const float AnimationDuration = 0.5f;
@@ -254,16 +255,33 @@ namespace Witch.Presentation.Shop
             bubbleSlots.Add(bubble);
             skipTyping = false;
 
-            await RunCoroutineAsync(GrowSlot(bubble), cancellationToken);
-            await RunCoroutineAsync(AnimateEntry(bubble.Bubble, bubble.Group, Vector2.zero), cancellationToken);
-            await RunCoroutineAsync(TypeText(bubble), cancellationToken);
-
-            float elapsed = 0f;
-            while (elapsed < bubblePause)
+            forceScrollToNewestRequests++;
+            playerScrolledOrders = false;
+            try
             {
-                cancellationToken.ThrowIfCancellationRequested();
-                if (!Paused) elapsed += Time.unscaledDeltaTime;
-                await Task.Yield();
+                ScrollToNewest(forceRebuild: true);
+
+                await RunCoroutineAsync(GrowSlot(bubble), cancellationToken);
+                ScrollToNewest(forceRebuild: true);
+                await RunCoroutineAsync(AnimateEntry(bubble.Bubble, bubble.Group, Vector2.zero), cancellationToken);
+                ScrollToNewest(forceRebuild: true);
+                await RunCoroutineAsync(TypeText(bubble), cancellationToken);
+                ScrollToNewest(forceRebuild: true);
+
+                float elapsed = 0f;
+                while (elapsed < bubblePause)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    if (!Paused) elapsed += Time.unscaledDeltaTime;
+                    ScrollToNewest();
+                    await Task.Yield();
+                }
+
+                ScrollToNewest(forceRebuild: true);
+            }
+            finally
+            {
+                forceScrollToNewestRequests = Mathf.Max(0, forceScrollToNewestRequests - 1);
             }
         }
 
@@ -571,7 +589,7 @@ namespace Witch.Presentation.Shop
             bubble.Group.alpha = 0f;
             bubble.SlotLayout.preferredHeight = 0f;
             bubble.Slot.gameObject.SetActive(true);
-            if (!playerScrolledOrders) SnapToNewest();
+            ScrollToNewest(forceRebuild: true);
 
             float duration = Mathf.Max(0.01f, growDuration);
             float elapsed = 0f;
@@ -581,10 +599,12 @@ namespace Witch.Presentation.Shop
                 float progress = Mathf.Clamp01(elapsed / duration);
                 float eased = 1f - Mathf.Pow(1f - progress, 3f);
                 bubble.SlotLayout.preferredHeight = Mathf.Lerp(0f, bubble.FullSlotHeight, eased);
+                ScrollToNewest();
                 yield return null;
             }
 
             bubble.SlotLayout.preferredHeight = bubble.FullSlotHeight;
+            ScrollToNewest(forceRebuild: true);
         }
 
         private IEnumerator AnimateEntry(RectTransform target, CanvasGroup group, Vector2 restPosition)
@@ -669,13 +689,29 @@ namespace Witch.Presentation.Shop
         /// <summary>The list is bottom anchored, so content y = 0 shows the newest bubble.</summary>
         private void SnapToNewest()
         {
+            if (orderBubbleScrollRect == null || orderBubbleContent == null) return;
             orderBubbleScrollRect.StopMovement();
             Vector2 position = orderBubbleContent.anchoredPosition;
             position.y = 0f;
             orderBubbleContent.anchoredPosition = position;
         }
 
-        public void StopOrderBubbleAutoScroll() => playerScrolledOrders = true;
+        private void ScrollToNewest(bool forceRebuild = false)
+        {
+            if (forceScrollToNewestRequests <= 0 && playerScrolledOrders) return;
+            if (forceRebuild && orderBubbleContent != null)
+            {
+                LayoutRebuilder.ForceRebuildLayoutImmediate(orderBubbleContent);
+                Canvas.ForceUpdateCanvases();
+            }
+            SnapToNewest();
+        }
+
+        public void StopOrderBubbleAutoScroll()
+        {
+            if (forceScrollToNewestRequests > 0) return;
+            playerScrolledOrders = true;
+        }
 
         private void StopEntrance()
         {

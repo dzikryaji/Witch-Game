@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: Order_Mid_Cool15
   m_EditorClassIdentifier: Witch.Infrastructure::Witch.Infrastructure.Content.OrderDefinition
   stableId: order.mid.c15
-  difficulty: 1
+  difficulty: 2
   orderBubbles:
-  - "Good morning. Persistent fever swells my husband’s knees."
-  - "His joints and muscles ache with every step."
-  - "Bring the delicate white flowers brewed into light tea."
-  - "Add the tough strip of bark."
-  - "He drinks freely and breathes strongly."
+  - "Greetings. Persistent fever swells my husband\u2019s knees."
+  - His joints and muscles ache with every step.
+  - Bring the delicate white flowers brewed into light tea.
+  - Add the tough strip of bark.
+  - He drinks freely and breathes strongly.
   firstHerbId: herb.elderflower
   secondHerbId: herb.whiteWillow
   customer: {fileID: 11400000, guid: 10000000000000000000000000000006, type: 2}

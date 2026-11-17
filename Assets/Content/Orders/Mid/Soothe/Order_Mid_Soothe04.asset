@@ -13,14 +13,14 @@ MonoBehaviour:
   m_Name: Order_Mid_Soothe04
   m_EditorClassIdentifier: Witch.Infrastructure::Witch.Infrastructure.Content.OrderDefinition
   stableId: order.mid.s04
-  difficulty: 1
+  difficulty: 2
   orderBubbles:
-  - "Good afternoon."
-  - "My nerves feel unsettled, and my muscles keep cramping."
-  - "Intense headaches sometimes bring panic attacks."
-  - "No pollen or spring-flower allergies trouble me."
-  - "I have no dizziness, faintness, or blood-loss weakness."
-  - "Find small, fragrant flowers beside a sweet-smelling purple stem."
+  - Hello there.
+  - My nerves feel unsettled, and my muscles keep cramping.
+  - Intense headaches sometimes bring panic attacks.
+  - No pollen or spring-flower allergies trouble me.
+  - I have no dizziness, faintness, or blood-loss weakness.
+  - Find small, fragrant flowers beside a sweet-smelling purple stem.
   firstHerbId: herb.chamomile
   secondHerbId: herb.lavender
   customer: {fileID: 11400000, guid: b00255ad8c02b4e98960925f8af4e92b, type: 2}

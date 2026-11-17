@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: Order_Hard_Cleanse20
   m_EditorClassIdentifier: Witch.Infrastructure::Witch.Infrastructure.Content.OrderDefinition
   stableId: order.hard.cl20
-  difficulty: 2
+  difficulty: 3
   orderBubbles:
-  - "Good morning. Something swallowed poisoned my heavy, sluggish stomach."
-  - "I need toxins expelled and digestion eased."
-  - "Bring the dark flower with deep-growing roots."
-  - "Add the feathery fronds with ridged seeds."
-  - "I have no acid illness or throat ulcers."
+  - Hi. Something swallowed poisoned my heavy, sluggish stomach.
+  - I need toxins expelled and digestion eased.
+  - Bring the dark flower with deep-growing roots.
+  - Add the feathery fronds with ridged seeds.
+  - I have no acid illness or throat ulcers.
   firstHerbId: herb.blackHellebore
   secondHerbId: herb.fennel
   customer: {fileID: 11400000, guid: 7a06e32b0a26b416c9f59776c3880e92, type: 2}

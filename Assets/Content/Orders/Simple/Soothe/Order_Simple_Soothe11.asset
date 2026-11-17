@@ -13,12 +13,12 @@ MonoBehaviour:
   m_Name: Order_Simple_Soothe11
   m_EditorClassIdentifier: Witch.Infrastructure::Witch.Infrastructure.Content.OrderDefinition
   stableId: order.simple.s11
-  difficulty: 0
+  difficulty: 1
   orderBubbles:
-  - "Hi. Something to help me relax, please."
-  - "I have a mild chest cough and a racing heart."
-  - "My healer's notes prescribe Matricaria chamomilla for the cough,"
-  - "and Valeriana officianalis for my racing heart."
+  - Hello there. Something to help me relax, please.
+  - I have a mild chest cough and a racing heart.
+  - My healer's notes prescribe Matricaria chamomilla for the cough,
+  - and Valeriana officianalis for my racing heart.
   firstHerbId: herb.chamomile
   secondHerbId: herb.valerian
   customer: {fileID: 11400000, guid: 3965e9fdac9e6466c91a76e9ffa93d8b, type: 2}

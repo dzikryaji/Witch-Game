@@ -8,9 +8,11 @@ namespace Witch.Presentation.Shop
         [SerializeField] private ShopGuidedTutorialStep step;
         [SerializeField] private RectTransform[] holeRects = Array.Empty<RectTransform>();
         [SerializeField] private RectTransform[] extraInputRects = Array.Empty<RectTransform>();
+        [SerializeField] private RectTransform textAnchor;
 
         public ShopGuidedTutorialStep Step => step;
         public RectTransform[] HoleRects => holeRects;
+        public RectTransform TextAnchor => textAnchor;
 
         public bool Contains(Vector2 screenPoint, Camera eventCamera)
         {

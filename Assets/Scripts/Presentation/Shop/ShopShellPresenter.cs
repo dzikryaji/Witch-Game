@@ -50,6 +50,7 @@ namespace Witch.Presentation.Shop
         [Tooltip("Optional. Highlights the suspicion bar when an order is wrong.")]
         [SerializeField] private SuspicionFocusView suspicionFocus;
         [SerializeField] private HerbUnlockAnnouncementView herbUnlockAnnouncement;
+        [SerializeField] private Image shelfFillerImage;
         [SerializeField] private Text grinderInputText;
         [SerializeField] private GameObject groundHerbObject;
         [SerializeField] private Text groundHerbText;
@@ -61,11 +62,16 @@ namespace Witch.Presentation.Shop
         [SerializeField] private GameObject progressionPanel;
         [SerializeField] private Text progressionText;
         [SerializeField] private Text dayTitleText;
-        [SerializeField] private Text correctOrdersText;
-        [SerializeField] private Text wrongOrdersText;
-        [SerializeField] private Text coinsEarnedText;
-        [SerializeField] private Text taxPaidText;
-        [SerializeField] private Text coinsRemainingText;
+        [SerializeField] private GameObject correctOrdersRow;
+        [SerializeField] private Text correctOrdersValueText;
+        [SerializeField] private GameObject wrongOrdersRow;
+        [SerializeField] private Text wrongOrdersValueText;
+        [SerializeField] private GameObject coinsEarnedRow;
+        [SerializeField] private Text coinsEarnedValueText;
+        [SerializeField] private GameObject taxPaidRow;
+        [SerializeField] private Text taxPaidValueText;
+        [SerializeField] private GameObject coinsRemainingRow;
+        [SerializeField] private Text coinsRemainingValueText;
         [SerializeField] private Button continueButton;
         [SerializeField] private GameObject pausePanel;
         [SerializeField] private Button resumeButton;
@@ -131,6 +137,17 @@ namespace Witch.Presentation.Shop
         private string guidedTutorialOrderId;
         private bool guidedTutorialTimerFrozen;
         private bool guidedTutorialWaitingForServe;
+        private const int HerbSlotsVisibleWithoutScroll = 10;
+        private const float ShelfScrollHandleLength = 144f;
+        private const float TutorialTextMaxWidth = 300f;
+        private readonly List<HerbShelfSection> herbShelfSections = new List<HerbShelfSection>();
+        private ScrollRect herbShelfScroll;
+        private Transform shelfFillerHome;
+        private bool shelfHandleDirty;
+        private Vector2 tutorialPanelRest;
+        private bool tutorialPanelRestCaptured;
+        private bool shelfScrollTutorialActive;
+        private bool shelfScrollTutorialSkipped;
         private IRunStateTransactionRepository saveRepository;
         private MarkTutorialFlagUseCase markTutorialFlagUseCase;
         private readonly List<HerbDragItem> herbSlots = new List<HerbDragItem>();
@@ -191,11 +208,16 @@ namespace Witch.Presentation.Shop
             && progressionPanel != null
             && progressionText != null
             && dayTitleText != null
-            && correctOrdersText != null
-            && wrongOrdersText != null
-            && coinsEarnedText != null
-            && taxPaidText != null
-            && coinsRemainingText != null
+            && correctOrdersRow != null
+            && correctOrdersValueText != null
+            && wrongOrdersRow != null
+            && wrongOrdersValueText != null
+            && coinsEarnedRow != null
+            && coinsEarnedValueText != null
+            && taxPaidRow != null
+            && taxPaidValueText != null
+            && coinsRemainingRow != null
+            && coinsRemainingValueText != null
             && continueButton != null
             && pausePanel != null
             && resumeButton != null
@@ -304,6 +326,8 @@ namespace Witch.Presentation.Shop
             progressionPanel.SetActive(false);
             pausePanel.SetActive(false);
             tutorialPanel.SetActive(false);
+            shelfScrollTutorialActive = false;
+            shelfScrollTutorialSkipped = false;
             if (tutorialMaskView != null) tutorialMaskView.Hide();
             groundHerbObject.SetActive(false);
             preparedPotionObject.SetActive(false);
@@ -313,7 +337,6 @@ namespace Witch.Presentation.Shop
             if (herbUnlockAnnouncement != null) herbUnlockAnnouncement.Hide();
             hudView.ClearCustomer();
             audioService?.PlayMusic(GameAudioCueIds.ShopMusic);
-            audioService?.PlayAmbience(GameAudioCueIds.ShopAmbience);
             Exception initException = null;
             try
             {
@@ -396,6 +419,7 @@ namespace Witch.Presentation.Shop
 
         private void Update()
         {
+            RefreshShelfScrollHandle();
             if (!IsInitialized || updateTimer == null || ActiveSession == null)
             {
                 return;
@@ -575,6 +599,7 @@ namespace Witch.Presentation.Shop
 
         public void EjectLoadedHerb()
         {
+            audioService?.Play(GameAudioCueIds.UiClick);
             if (IsGameplayPaused)
             {
                 SetStatus("The shop is paused.");
@@ -765,7 +790,6 @@ namespace Witch.Presentation.Shop
             {
                 await ShowServeFeedbackBubbleAsync(ShopServeFeedback.GetCorrectLine(), cancellationToken);
                 if (cancellationToken.IsCancellationRequested) return result;
-                audioService?.Play(GameAudioCueIds.OrderCorrect);
                 if (counterCoins != null && result.Outcome.Payment > 0)
                 {
                     // The payment is already saved; the coins only delay when the header shows it.
@@ -784,7 +808,7 @@ namespace Witch.Presentation.Shop
                 await ShowServeFeedbackBubbleAsync(ShopServeFeedback.GetIncorrectLine(), cancellationToken);
                 if (cancellationToken.IsCancellationRequested) return result;
                 SetStatus("Wrong potion. No coins. Suspicion increased. At 3, Hunters investigate the suspicious 'herbalist'.");
-                audioService?.Play(GameAudioCueIds.OrderWrong);
+                audioService?.Play(GameAudioCueIds.Wrong);
                 if (suspicionFocus != null) suspicionFocus.Play();
             }
 
@@ -900,17 +924,17 @@ namespace Witch.Presentation.Shop
                 SetStatus("Daily expense resolved.");
                 if (ActiveSession.CurrentPhase == Witch.Domain.GamePhase.GameOver)
                 {
-                    audioService?.Play(GameAudioCueIds.ExpenseFail);
+                    audioService?.Play(GameAudioCueIds.Wrong);
                     audioService?.PlayMusic(GameAudioCueIds.GameOverMusic);
                 }
                 else if (ActiveSession.CurrentPhase == Witch.Domain.GamePhase.Victory)
                 {
-                    audioService?.Play(GameAudioCueIds.ExpensePay);
+                    audioService?.Play(GameAudioCueIds.Correct);
                     audioService?.PlayMusic(GameAudioCueIds.VictoryMusic);
                 }
                 else
                 {
-                    audioService?.Play(GameAudioCueIds.ExpensePay);
+                    audioService?.Play(GameAudioCueIds.Correct);
                 }
 
                 Render();
@@ -1379,6 +1403,12 @@ namespace Witch.Presentation.Shop
 
         private void OnTutorialSkipClicked()
         {
+            if (shelfScrollTutorialActive)
+            {
+                audioService?.Play(GameAudioCueIds.UiClick);
+                shelfScrollTutorialSkipped = true;
+                return;
+            }
             if (!guidedTutorialActive && !(tutorialPanel != null && tutorialPanel.activeSelf)) return;
             audioService?.Play(GameAudioCueIds.UiClick);
             EndGuidedTutorial(skipped: true);
@@ -1472,7 +1502,7 @@ namespace Witch.Presentation.Shop
         private void UpdateGuidedTutorialUi()
         {
             if (!guidedTutorialActive || tutorialText == null) return;
-            tutorialText.text = GetGuidedTutorialStepText(guidedTutorialStep);
+            SetTutorialText(GetGuidedTutorialStepText(guidedTutorialStep));
             if (tutorialContinueButton != null)
             {
                 bool showContinue = guidedTutorialStep == ShopGuidedTutorialStep.ReadOrder;
@@ -1512,6 +1542,41 @@ namespace Witch.Presentation.Shop
         {
             if (tutorialMaskView == null || !guidedTutorialActive) return;
             tutorialMaskView.ShowStep(guidedTutorialStep);
+            PlaceTutorialPanel(guidedTutorialStep);
+        }
+
+        private void SetTutorialText(string value)
+        {
+            if (tutorialText == null) return;
+            tutorialText.text = value;
+            LayoutElement element = tutorialText.GetComponent<LayoutElement>();
+            if (element != null)
+            {
+                element.preferredWidth = Mathf.Min(tutorialText.preferredWidth, TutorialTextMaxWidth);
+            }
+        }
+
+        private void PlaceTutorialPanel(ShopGuidedTutorialStep step)
+        {
+            if (tutorialPanel == null) return;
+            RectTransform panel = (RectTransform)tutorialPanel.transform;
+            if (!tutorialPanelRestCaptured)
+            {
+                tutorialPanelRest = panel.anchoredPosition;
+                tutorialPanelRestCaptured = true;
+            }
+
+            if (tutorialMaskView != null
+                && tutorialMaskView.TryGetMask(step, out TutorialStepMask mask)
+                && mask != null
+                && mask.TextAnchor != null)
+            {
+                panel.position = mask.TextAnchor.position;
+            }
+            else
+            {
+                panel.anchoredPosition = tutorialPanelRest;
+            }
         }
 
         private bool GuidedTutorialAllowsHerb(string herbId)
@@ -1632,7 +1697,7 @@ namespace Witch.Presentation.Shop
         {
             ClearCounterCoins();
             SetStatus("KNOCK. KNOCK. Hunters suspect poisoning. Cast the memory spell before they enter; the day will rewind.");
-            audioService?.StopMusic();
+            audioService?.PlayMusic(GameAudioCueIds.WitchHunterMusic);
 
             // Freeze the clock before the Hunter speaks, so reading the accusation never costs shop time.
             setTimerPaused?.Execute(ActiveSession, true);
@@ -1737,7 +1802,11 @@ namespace Witch.Presentation.Shop
             if (counterCoins != null) counterCoins.IsGameplayPaused = () => IsGameplayPaused;
             if (moneyGainPopUp != null) moneyGainPopUp.IsGameplayPaused = () => IsGameplayPaused;
             if (suspicionFocus != null) suspicionFocus.IsGameplayPaused = () => IsGameplayPaused;
-            if (herbUnlockAnnouncement != null) herbUnlockAnnouncement.IsGameplayPaused = () => IsGameplayPaused;
+            if (herbUnlockAnnouncement != null)
+            {
+                herbUnlockAnnouncement.IsGameplayPaused = () => IsGameplayPaused;
+                herbUnlockAnnouncement.AudioService = audioService;
+            }
             if (potionRevealAnimator != null) potionRevealAnimator.IsGameplayPaused = () => IsGameplayPaused;
             if (guidebookFlipAnimator != null) guidebookFlipAnimator.IsGameplayPaused = () => IsGameplayPaused;
 
@@ -1881,6 +1950,199 @@ namespace Witch.Presentation.Shop
             {
                 herbSlots[0].GetComponent<Button>().Select();
             }
+
+            ConfigureHerbShelfScroll();
+        }
+
+        private bool HerbShelfNeedsScroll => setup != null && setup.Herbs.Count > HerbSlotsVisibleWithoutScroll;
+
+        private void ConfigureHerbShelfScroll()
+        {
+            if (herbShelfScroll == null && herbSlots.Count > 0)
+            {
+                herbShelfScroll = herbSlots[0].GetComponentInParent<ScrollRect>(true);
+            }
+            if (herbShelfScroll == null) return;
+
+            bool canScroll = HerbShelfNeedsScroll;
+            ApplyHerbShelfLimit(canScroll);
+            herbShelfScroll.StopMovement();
+            herbShelfScroll.vertical = canScroll;
+            herbShelfScroll.verticalNormalizedPosition = 1f;
+            if (herbShelfScroll.verticalScrollbar != null)
+            {
+                herbShelfScroll.verticalScrollbar.gameObject.SetActive(canScroll);
+            }
+        }
+
+        private sealed class HerbShelfSection
+        {
+            public LayoutElement Element;
+            public GridLayoutGroup Grid;
+            public float FullHeight;
+            public int FirstSlot;
+            public int SlotCount;
+        }
+
+        private void BuildHerbShelfSections()
+        {
+            if (herbShelfSections.Count > 0) return;
+            HerbShelfSection current = null;
+            for (int index = 0; index < herbSlots.Count; index++)
+            {
+                Transform parent = herbSlots[index].transform.parent;
+                GridLayoutGroup grid = parent != null ? parent.GetComponent<GridLayoutGroup>() : null;
+                if (grid == null) continue;
+                if (current == null || current.Grid != grid)
+                {
+                    LayoutElement element = grid.GetComponentInParent<LayoutElement>(true);
+                    if (element == null) continue;
+                    current = new HerbShelfSection
+                    {
+                        Element = element,
+                        Grid = grid,
+                        FullHeight = element.preferredHeight,
+                        FirstSlot = index,
+                        SlotCount = 0
+                    };
+                    herbShelfSections.Add(current);
+                }
+                current.SlotCount++;
+            }
+        }
+
+        private void ApplyHerbShelfLimit(bool limited)
+        {
+            BuildHerbShelfSections();
+            int slotLimit = int.MaxValue;
+            foreach (HerbShelfSection section in herbShelfSections)
+            {
+                int columns = Mathf.Max(1, section.Grid.constraintCount);
+                if (limited && slotLimit == int.MaxValue)
+                {
+                    slotLimit = Mathf.CeilToInt(setup.Herbs.Count / (float)columns) * columns;
+                }
+
+                int totalRows = Mathf.CeilToInt(section.SlotCount / (float)columns);
+                int visibleSlots = Mathf.Clamp(slotLimit - section.FirstSlot, 0, section.SlotCount);
+                int visibleRows = limited ? Mathf.CeilToInt(visibleSlots / (float)columns) : totalRows;
+                if (limited && slotLimit - section.FirstSlot > section.SlotCount) visibleRows = totalRows;
+                section.Element.preferredHeight = visibleRows >= totalRows
+                    ? section.FullHeight
+                    : visibleRows * (section.Grid.cellSize.y + section.Grid.spacing.y);
+            }
+
+            PlaceShelfFiller(slotLimit, limited && slotLimit > setup.Herbs.Count);
+            shelfHandleDirty = limited;
+        }
+
+        private void PlaceShelfFiller(int slotLimit, bool show)
+        {
+            if (shelfFillerImage == null) return;
+            RectTransform filler = shelfFillerImage.rectTransform;
+            if (shelfFillerHome == null) shelfFillerHome = filler.parent;
+            int index = slotLimit - 1;
+            if (show && index >= 0 && index < herbSlots.Count)
+            {
+                filler.SetParent(herbSlots[index].transform, false);
+                filler.anchorMin = Vector2.zero;
+                filler.anchorMax = Vector2.one;
+                filler.offsetMin = Vector2.zero;
+                filler.offsetMax = Vector2.zero;
+            }
+            else if (filler.parent != shelfFillerHome)
+            {
+                filler.SetParent(shelfFillerHome, false);
+                filler.SetAsLastSibling();
+            }
+
+            shelfFillerImage.gameObject.SetActive(show && shelfFillerImage.sprite != null);
+        }
+
+        private void RefreshShelfScrollHandle()
+        {
+            if (!shelfHandleDirty || herbShelfScroll == null) return;
+            Scrollbar bar = herbShelfScroll.verticalScrollbar;
+            if (bar == null || bar.handleRect == null || !(bar.handleRect.parent is RectTransform slidingArea))
+            {
+                shelfHandleDirty = false;
+                return;
+            }
+
+            RectTransform viewport = herbShelfScroll.viewport != null
+                ? herbShelfScroll.viewport
+                : (RectTransform)herbShelfScroll.transform;
+            float viewportHeight = viewport.rect.height;
+            float trackHeight = ((RectTransform)bar.transform).rect.height;
+            float contentHeight = 0f;
+            foreach (HerbShelfSection section in herbShelfSections)
+            {
+                contentHeight += Mathf.Max(0f, section.Element.preferredHeight);
+            }
+            if (viewportHeight <= 0f || trackHeight <= 0f) return;
+
+            shelfHandleDirty = false;
+            if (contentHeight <= viewportHeight) return;
+            float size = viewportHeight / contentHeight;
+            float extra = Mathf.Max(0f, (size * trackHeight - ShelfScrollHandleLength) / (1f - size));
+            slidingArea.sizeDelta = new Vector2(slidingArea.sizeDelta.x, extra);
+            bar.handleRect.sizeDelta = new Vector2(bar.handleRect.sizeDelta.x, -extra);
+        }
+
+        private bool NewestHerbSlotRevealed()
+        {
+            if (herbShelfScroll == null || setup == null || herbSlots.Count == 0) return true;
+            int lastIndex = Mathf.Min(setup.Herbs.Count, herbSlots.Count) - 1;
+            if (lastIndex < 0) return true;
+            RectTransform viewport = herbShelfScroll.viewport != null
+                ? herbShelfScroll.viewport
+                : (RectTransform)herbShelfScroll.transform;
+            var slotCorners = new Vector3[4];
+            var viewportCorners = new Vector3[4];
+            ((RectTransform)herbSlots[lastIndex].transform).GetWorldCorners(slotCorners);
+            viewport.GetWorldCorners(viewportCorners);
+            return slotCorners[0].y >= viewportCorners[0].y - 0.01f;
+        }
+
+        private async Task RunShelfScrollTutorialAsync()
+        {
+            if (herbShelfScroll == null || !HerbShelfNeedsScroll || tutorialPanel == null || tutorialText == null) return;
+
+            CancellationToken cancellationToken = lifetimeCancellation?.Token ?? CancellationToken.None;
+            shelfScrollTutorialActive = true;
+            shelfScrollTutorialSkipped = false;
+            herbShelfScroll.StopMovement();
+            herbShelfScroll.verticalNormalizedPosition = 1f;
+            SetTutorialText("New herbs have arrived! Scroll the shelf down to find them.");
+            if (tutorialContinueButton != null) tutorialContinueButton.gameObject.SetActive(false);
+            if (tutorialSkipButton != null) tutorialSkipButton.gameObject.SetActive(true);
+            bool maskShown = tutorialMaskView != null
+                && tutorialMaskView.TryGetMask(ShopGuidedTutorialStep.ScrollShelf, out TutorialStepMask shelfMask)
+                && shelfMask != null;
+            if (maskShown) tutorialMaskView.ShowStep(ShopGuidedTutorialStep.ScrollShelf);
+            else if (tutorialMaskView != null) tutorialMaskView.Hide();
+            tutorialPanel.SetActive(true);
+            PlaceTutorialPanel(ShopGuidedTutorialStep.ScrollShelf);
+            try
+            {
+                await Task.Yield();
+                while (shelfScrollTutorialActive && !shelfScrollTutorialSkipped && !NewestHerbSlotRevealed())
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    await Task.Yield();
+                }
+            }
+            finally
+            {
+                bool wasActive = shelfScrollTutorialActive;
+                shelfScrollTutorialActive = false;
+                shelfScrollTutorialSkipped = false;
+                if (wasActive && this != null)
+                {
+                    if (tutorialPanel != null) tutorialPanel.SetActive(false);
+                    if (maskShown && tutorialMaskView != null) tutorialMaskView.Hide();
+                }
+            }
         }
 
         public void RequestServe()
@@ -2011,22 +2273,22 @@ namespace Witch.Presentation.Shop
                 dayTitleText.text = session.CurrentPhase == Witch.Domain.GamePhase.Victory
                     ? dayNumber + " DAYS COMPLETE"
                     : "DAY " + dayNumber + " COMPLETE";
-                correctOrdersText.text = "Correct Orders									.................................." + (summary == null ? 0 : summary.CorrectOrders);
-                wrongOrdersText.text = "Wrong Orders									.................................." + (summary == null ? 0 : summary.WrongOrders);
-                coinsEarnedText.text = "Your Today's Income		    		    ................................$" + (summary == null ? 0 : summary.CoinsEarned);
-                taxPaidText.text = "Tax													................................$" + (summary == null ? 0 : summary.TaxPaid);
-                coinsRemainingText.text = "Current Total Coin												   $" + (summary == null ? 0 : summary.CoinsRemaining);
+                correctOrdersValueText.text = (summary == null ? 0 : summary.CorrectOrders).ToString();
+                wrongOrdersValueText.text = (summary == null ? 0 : summary.WrongOrders).ToString();
+                coinsEarnedValueText.text = "$" + (summary == null ? 0 : summary.CoinsEarned).ToString();
+                taxPaidValueText.text = "$" + (summary == null ? 0 : summary.TaxPaid).ToString();
+                coinsRemainingValueText.text = "$" + (summary == null ? 0 : summary.CoinsRemaining).ToString();
             }
         }
 
         private void SetSummaryRowsVisible(bool visible)
         {
             if (dayTitleText != null) dayTitleText.gameObject.SetActive(visible);
-            if (correctOrdersText != null) correctOrdersText.gameObject.SetActive(visible);
-            if (wrongOrdersText != null) wrongOrdersText.gameObject.SetActive(visible);
-            if (coinsEarnedText != null) coinsEarnedText.gameObject.SetActive(visible);
-            if (taxPaidText != null) taxPaidText.gameObject.SetActive(visible);
-            if (coinsRemainingText != null) coinsRemainingText.gameObject.SetActive(visible);
+            if (correctOrdersRow != null) correctOrdersRow.SetActive(visible);
+            if (wrongOrdersRow != null) wrongOrdersRow.SetActive(visible);
+            if (coinsEarnedRow != null) coinsEarnedRow.SetActive(visible);
+            if (taxPaidRow != null) taxPaidRow.SetActive(visible);
+            if (coinsRemainingRow != null) coinsRemainingRow.SetActive(visible);
         }
 
         private void OnContinueClicked() => RunUiAction(ContinueNextDayAsync);
@@ -2396,6 +2658,9 @@ namespace Witch.Presentation.Shop
             {
                 bool shown = await herbUnlockAnnouncement.ShowAsync(categoryId);
                 if (!shown || ActiveSession == null) return;
+
+                await RunShelfScrollTutorialAsync();
+                if (ActiveSession == null) return;
 
                 if (markTutorialFlagUseCase != null)
                 {

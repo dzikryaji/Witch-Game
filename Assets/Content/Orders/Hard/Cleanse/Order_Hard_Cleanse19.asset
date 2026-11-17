@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: Order_Hard_Cleanse19
   m_EditorClassIdentifier: Witch.Infrastructure::Witch.Infrastructure.Content.OrderDefinition
   stableId: order.hard.cl19
-  difficulty: 2
+  difficulty: 3
   orderBubbles:
-  - "Excuse me. Breakfast left me bloated with stomach toxins."
-  - "I need excess water released and toxins absorbed."
-  - "Bring the sharp-edged leaf with a yellow flower."
-  - "Add the tough, drying leaf."
-  - "I drink freely and have no constipation."
+  - Hello there. Breakfast left me bloated with stomach toxins.
+  - I need excess water released and toxins absorbed.
+  - Bring the sharp-edged leaf with a yellow flower.
+  - Add the tough, drying leaf.
+  - I drink freely and have no constipation.
   firstHerbId: herb.dandelion
   secondHerbId: herb.sennaLeaf
   customer: {fileID: 11400000, guid: b00255ad8c02b4e98960925f8af4e92b, type: 2}

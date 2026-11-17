@@ -13,14 +13,14 @@ MonoBehaviour:
   m_Name: Order_Mid_Cleanse09
   m_EditorClassIdentifier: Witch.Infrastructure::Witch.Infrastructure.Content.OrderDefinition
   stableId: order.mid.cl09
-  difficulty: 1
+  difficulty: 2
   orderBubbles:
-  - "Excuse me."
-  - "Something swallowed poisons my stomach and dirties my blood."
-  - "I need both toxins expelled and cleansed."
-  - "Bring the dark flower with deep-growing roots."
-  - "Add the tough, earthy root."
-  - "I can rest and have no throat ulcers."
+  - Hi there.
+  - Something swallowed poisons my stomach and dirties my blood.
+  - I need both toxins expelled and cleansed.
+  - Bring the dark flower with deep-growing roots.
+  - Add the tough, earthy root.
+  - I can rest and have no throat ulcers.
   firstHerbId: herb.blackHellebore
   secondHerbId: herb.burdockRoot
   customer: {fileID: 11400000, guid: 10000000000000000000000000000006, type: 2}
