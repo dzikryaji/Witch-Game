@@ -43,6 +43,7 @@ namespace Witch.Presentation.Shop
         [SerializeField] private GuidebookPageView guidebookFlipBack;
         [Tooltip("Optional. Jumps back to the Contents spread; hidden while the Contents spread is open.")]
         [SerializeField] private Button guidebookContentsButton;
+        [SerializeField] private Button guidebookCloseButton;
         [Tooltip("Optional. Coins a happy customer leaves on the counter after a correct order; the player taps them to collect.")]
         [SerializeField] private CounterCoinsView counterCoins;
         [Tooltip("Optional. The \"+10\" that floats up next to the header money when coins are collected.")]
@@ -1643,7 +1644,7 @@ namespace Witch.Presentation.Shop
                 case ShopGuidedTutorialStep.NavigateToMustardSeed:
                     return "Turn to the spread that shows Mustard Seed.";
                 case ShopGuidedTutorialStep.CloseGuidebook:
-                    return "Click outside the guidebook to close it and return to the counter.";
+                    return "Press the close button to close the guidebook and return to the counter.";
                 case ShopGuidedTutorialStep.LoadHerbs:
                     return "Drag Ginger and Mustard Seed into the grinder.";
                 case ShopGuidedTutorialStep.Grind:
@@ -1966,6 +1967,7 @@ namespace Witch.Presentation.Shop
             guidebookPreviousButton.onClick.AddListener(PreviousGuidebookPage);
             guidebookNextButton.onClick.AddListener(NextGuidebookPage);
             if (guidebookContentsButton != null) guidebookContentsButton.onClick.AddListener(OpenGuidebookContents);
+            if (guidebookCloseButton != null) guidebookCloseButton.onClick.AddListener(CloseGuidebook);
             if (counterCoins != null)
             {
                 counterCoins.Collected -= OnCounterCoinsCollected;
@@ -1998,10 +2000,12 @@ namespace Witch.Presentation.Shop
             if (backdrop == null && guidebookPanel.transform.parent != null)
                 backdrop = guidebookPanel.transform.parent.Find("Read Backdrop");
             if (backdrop == null) return;
+            GuidebookBackdropCloseButton closer = backdrop.GetComponent<GuidebookBackdropCloseButton>();
+            if (closer != null) closer.enabled = false;
             Button button = backdrop.GetComponent<Button>();
             if (button == null) return;
             button.onClick.RemoveAllListeners();
-            button.onClick.AddListener(CloseGuidebook);
+            button.enabled = false;
         }
 
         private void ConfigureHerbButtons()
