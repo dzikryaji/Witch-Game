@@ -2860,7 +2860,7 @@ namespace Witch.Presentation.Shop
                 return;
             }
 
-            ResumeEncounter();
+            ResumeEncounter(unpauseTimer: true);
             if (ShouldRunGuidedTutorial()
                 && ActiveSession != null
                 && ActiveSession.CurrentPhase == Witch.Domain.GamePhase.CustomerEncounter)
@@ -2905,34 +2905,64 @@ namespace Witch.Presentation.Shop
             }
             finally
             {
+                bool cancelled = cancellationToken.IsCancellationRequested;
+                bool hunterLeft = !cancelled;
                 farewellPlaying = false;
-                if (!cancellationToken.IsCancellationRequested)
+                if (!cancelled)
                 {
-                    StartEncounterOrResume(resume);
+                    // Restore the resumed encounter while the timer stays frozen, then unpause once after the hunter fully left.
+                    StartEncounterOrResumeAfterHunterLeft(resume);
                     Render();
-
-                    // If the farewell deferred the timer release (post-rewind reveal or resume), release it now.
-                    if (setTimerPaused != null
-                        && ActiveSession != null
-                        && !(guidedTutorialActive && guidedTutorialTimerFrozen)
-                        && !(ShouldRunGuidedTutorial()
-                             && ActiveSession.CurrentPhase == Witch.Domain.GamePhase.CustomerEncounter
-                             && IsTutorialOrderActive()))
-                    {
-                        try
-                        {
-                            setTimerPaused.Execute(ActiveSession, false);
-                        }
-                        catch (Exception exception)
-                        {
-                            Debug.LogException(exception, this);
-                        }
-                    }
+                    TryUnpauseShopTimerAfterHunterLeft(hunterLeft);
                 }
             }
         }
 
-        private void ResumeEncounter()
+        private void StartEncounterOrResumeAfterHunterLeft(bool resume)
+        {
+            if (!resume)
+            {
+                BeginArrival();
+                return;
+            }
+
+            ResumeEncounter(unpauseTimer: false);
+            if (ShouldRunGuidedTutorial()
+                && ActiveSession != null
+                && ActiveSession.CurrentPhase == Witch.Domain.GamePhase.CustomerEncounter)
+            {
+                TryStartGuidedTutorialForCurrentEncounter();
+            }
+        }
+
+        private bool CanUnpauseShopTimerNow()
+        {
+            return setTimerPaused != null
+                && ActiveSession != null
+                && !farewellPlaying
+                && !waitingForTransitionRelease
+                && !(guidedTutorialActive && guidedTutorialTimerFrozen)
+                && !(ShouldRunGuidedTutorial()
+                    && ActiveSession.CurrentPhase == Witch.Domain.GamePhase.CustomerEncounter
+                    && IsTutorialOrderActive());
+        }
+
+        private void TryUnpauseShopTimerAfterHunterLeft(bool hunterLeft)
+        {
+            if (!hunterLeft || !CanUnpauseShopTimerNow()) return;
+            try
+            {
+                setTimerPaused.Execute(ActiveSession, false);
+            }
+            catch (Exception exception)
+            {
+                Debug.LogException(exception, this);
+            }
+        }
+
+        private void ResumeEncounter() => ResumeEncounter(unpauseTimer: true);
+
+        private void ResumeEncounter(bool unpauseTimer)
         {
             ResetAutoResolveExpenseState();
             string orderId = ActiveSession.AttemptState.ActiveOrder.OrderId;
@@ -2948,7 +2978,7 @@ namespace Witch.Presentation.Shop
                     encounter.CustomerIllustration);
             }
 
-            if (!guidedTutorialTimerFrozen && !waitingForTransitionRelease)
+            if (unpauseTimer && !farewellPlaying && !guidedTutorialTimerFrozen && !waitingForTransitionRelease)
             {
                 setTimerPaused?.Execute(ActiveSession, false); // clock continues from the remaining time
             }
@@ -3068,13 +3098,7 @@ namespace Witch.Presentation.Shop
 
                 waitingForTransitionRelease = false;
                 if (farewellPlaying) return; // the farewell releases the clock once it ends
-                if (setTimerPaused == null) return;
-
-                // Day 1 guided tutorial keeps timer frozen until serve/skip (existing behavior).
-                if (guidedTutorialActive && guidedTutorialTimerFrozen)
-                {
-                    return;
-                }
+                if (!CanUnpauseShopTimerNow()) return;
 
                 setTimerPaused.Execute(ActiveSession, false);
             }
