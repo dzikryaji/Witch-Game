@@ -7,14 +7,16 @@ using UnityEngine.UI;
 
 namespace Witch.Presentation.Credits
 {
+    // Editing credits (scene-authored):
+    // - Each child of Content is a row, in sibling order (top to bottom on screen). Logo row comes first.
+    // - Edit text/style/size/color/alignment per row in the Inspector (code does not override row styles).
+    // - Duplicate a row to add a line; delete/reorder rows freely.
+    // - Use a Spacer row (empty object with a LayoutElement.preferredHeight) for gaps. Spacer rows have no Graphic.
+    // - The last ACTIVE child of Content with a Graphic (TextMeshProUGUI or Image) decides when credits exit.
     public sealed class CreditsRoll : MonoBehaviour
     {
         [SerializeField] private RectTransform viewport;
         [SerializeField] private RectTransform content;
-        [SerializeField] private Image companyIcon;
-        [SerializeField] private TMP_Text creditsText;
-        [SerializeField] private TextAsset creditsSource;
-        [SerializeField] private TMP_FontAsset creditsFontAsset;
         [SerializeField] private TMP_Text hint;
         [SerializeField] private Button returnButton;
         [SerializeField] private float scrollSpeed = 40f;
@@ -23,7 +25,6 @@ namespace Witch.Presentation.Credits
         [SerializeField] private float exitTriggerFromTop = 0.3333f;
         [Tooltip("Optional delay after the trigger line is reached before exit (0 = immediate).")]
         [SerializeField] private float endHoldSeconds = 0f;
-        [SerializeField] private float iconSpacing = 48f;
 
         public event Action ReturnRequested;
 
@@ -50,15 +51,13 @@ namespace Witch.Presentation.Credits
                 return;
             }
 
-            ApplyTextAndStyle();
             LayoutContent();
             ResetState();
 
-            hint.gameObject.SetActive(false);
-            returnButton.interactable = false;
+            if (hint != null) hint.gameObject.SetActive(false);
+            if (returnButton != null) returnButton.interactable = false;
 
             IsPlaying = true;
-            float lastY = GetLastVisibleLineBottomInViewport();
         }
 
         private void Update()
@@ -83,12 +82,13 @@ namespace Witch.Presentation.Credits
             pos.y += scrollSpeed * dt;
             content.anchoredPosition = pos;
 
-            float triggerViewportY = TriggerViewportY();
-            float lastLineViewportY = GetLastVisibleLineBottomInViewport();
-            if (!triggerReached && lastLineViewportY >= triggerViewportY)
+            if (!triggerReached && TryGetLastRowBottomInViewport(out float lastLineViewportY))
             {
-                triggerReached = true;
-                holdElapsed = 0f;
+                if (lastLineViewportY >= TriggerViewportY())
+                {
+                    triggerReached = true;
+                    holdElapsed = 0f;
+                }
             }
 
             if (triggerReached)
@@ -118,16 +118,6 @@ namespace Witch.Presentation.Credits
         {
             if (viewport == null) viewport = FindChildRect("Viewport");
             if (content == null) content = FindChildRect("Content");
-            if (companyIcon == null)
-            {
-                Transform t = FindChildTransform("Company Icon");
-                if (t != null) companyIcon = t.GetComponent<Image>();
-            }
-            if (creditsText == null)
-            {
-                Transform t = FindChildTransform("Credits Text");
-                if (t != null) creditsText = t.GetComponent<TMP_Text>();
-            }
             if (hint == null)
             {
                 Transform t = FindChildTransform("Hint Text");
@@ -171,146 +161,99 @@ namespace Witch.Presentation.Credits
             }
             if (viewport == null) Add("Viewport");
             if (content == null) Add("Content");
-            if (companyIcon == null) Add("Company Icon");
-            if (creditsText == null) Add("Credits Text");
             if (hint == null) Add("Hint Text");
             if (returnButton == null) Add("Return Button");
             return sb == null ? string.Empty : sb.ToString();
         }
 
-        private void ApplyTextAndStyle()
-        {
-            if (creditsSource != null)
-            {
-                creditsText.text = creditsSource.text ?? string.Empty;
-            }
-
-            if (creditsFontAsset != null)
-            {
-                creditsText.font = creditsFontAsset;
-                hint.font = creditsFontAsset;
-            }
-
-            ApplyWhiteStyle(creditsText);
-            ApplyWhiteStyle(hint);
-
-            creditsText.alignment = TextAlignmentOptions.Center;
-            creditsText.textWrappingMode = TextWrappingModes.Normal;
-            creditsText.fontSize = 34f;
-            creditsText.fontStyle = FontStyles.Normal;
-
-            hint.text = "Click again to return to Main Menu";
-            hint.alignment = TextAlignmentOptions.BottomRight;
-            hint.textWrappingMode = TextWrappingModes.Normal;
-            hint.fontSize = 34f;
-            hint.fontStyle = FontStyles.Normal;
-        }
-
-        private static void ApplyWhiteStyle(TMP_Text text)
-        {
-            if (text == null) return;
-            text.color = Color.white;
-            text.fontStyle = FontStyles.Normal;
-            text.fontWeight = FontWeight.Regular;
-            text.outlineWidth = 0f;
-        }
-
         private void LayoutContent()
         {
+            if (content == null || viewport == null) return;
+
             Canvas.ForceUpdateCanvases();
-            if (creditsText != null) creditsText.ForceMeshUpdate(true, true);
             LayoutRebuilder.ForceRebuildLayoutImmediate(content);
             Canvas.ForceUpdateCanvases();
-            if (creditsText != null) creditsText.ForceMeshUpdate(true, true);
 
-            float width = Mathf.Max(content.rect.width > 1f ? content.rect.width : 1500f, 1024f);
-            content.sizeDelta = new Vector2(width, content.sizeDelta.y);
-            float y = 0f;
+            // Start: content TOP edge exactly at viewport BOTTOM edge (nothing visible), derived from current rects.
+            float viewportBottomY = GetViewportLocalBottomY();
+            float contentTopY = GetContentTopInViewportLocal();
+            startY = content.anchoredPosition.y + (viewportBottomY - contentTopY);
 
-            if (companyIcon != null)
-            {
-                RectTransform iconRt = companyIcon.rectTransform;
-                iconRt.anchorMin = new Vector2(0.5f, 1f);
-                iconRt.anchorMax = new Vector2(0.5f, 1f);
-                iconRt.pivot = new Vector2(0.5f, 1f);
-                float iconW = 1024f;
-                float iconH = 404f;
-                if (companyIcon.sprite != null && companyIcon.sprite.rect.width > 0f)
-                {
-                    iconH = iconW * (companyIcon.sprite.rect.height / companyIcon.sprite.rect.width);
-                }
-                iconRt.sizeDelta = new Vector2(iconW, iconH);
-                iconRt.anchoredPosition = new Vector2(0f, -y);
-                y += iconRt.rect.height > 0f ? iconRt.rect.height : iconH;
-                y += iconSpacing;
-            }
-
-            float textTop = y;
-            if (creditsText != null)
-            {
-                RectTransform textRt = creditsText.rectTransform;
-                textRt.anchorMin = new Vector2(0.5f, 1f);
-                textRt.anchorMax = new Vector2(0.5f, 1f);
-                textRt.pivot = new Vector2(0.5f, 1f);
-                textRt.sizeDelta = new Vector2(width, 0f);
-                LayoutRebuilder.ForceRebuildLayoutImmediate(textRt);
-                float preferred = creditsText.preferredHeight;
-                if (preferred < 1f) preferred = textRt.rect.height;
-                textRt.sizeDelta = new Vector2(width, preferred);
-                textRt.anchoredPosition = new Vector2(0f, -textTop);
-                y += preferred;
-            }
-
-            float contentHeight = Mathf.Max(1f, y);
-            content.sizeDelta = new Vector2(width, contentHeight);
-
-            float viewportHeight = viewport.rect.height > 1f ? viewport.rect.height : 1080f;
-            startY = -viewportHeight;
             Vector2 pos = content.anchoredPosition;
             pos.y = startY;
             content.anchoredPosition = pos;
             Canvas.ForceUpdateCanvases();
 
-            // Measure bottom of last visible (non-empty) text line in viewport space via TMP textInfo.
             float triggerViewportY = TriggerViewportY();
-            float lastLineViewportY = GetLastVisibleLineBottomInViewport();
-            float delta = triggerViewportY - lastLineViewportY;
-            triggerContentY = startY + Mathf.Max(0f, delta);
-            EstimatedDurationSeconds = scrollSpeed > 0f ? Mathf.Max(0f, triggerContentY - startY) / scrollSpeed : 0f;
+            if (TryGetLastRowBottomInViewport(out float lastLineViewportY))
+            {
+                float delta = triggerViewportY - lastLineViewportY;
+                triggerContentY = startY + Mathf.Max(0f, delta);
+            }
+            else
+            {
+                triggerContentY = startY;
+            }
+
+            float distance = Mathf.Max(0f, triggerContentY - startY);
+            EstimatedDurationSeconds = scrollSpeed > 0f ? distance / scrollSpeed : 0f;
         }
 
-        // Bottom of last line with visible characters in viewport local Y (ignores trailing blank/newline-only lines).
-        private float GetLastVisibleLineBottomInViewport()
+        private float GetViewportLocalBottomY()
         {
-            if (creditsText == null || viewport == null)
+            Vector3[] corners = new Vector3[4];
+            viewport.GetWorldCorners(corners);
+            float minY = float.PositiveInfinity;
+            for (int i = 0; i < 4; i++)
             {
-                return 0f;
+                float y = viewport.InverseTransformPoint(corners[i]).y;
+                if (y < minY) minY = y;
             }
+            return minY;
+        }
 
-            creditsText.ForceMeshUpdate(true, true);
-            TMP_TextInfo info = creditsText.textInfo;
-            if (info == null || info.lineCount == 0)
+        private float GetContentTopInViewportLocal()
+        {
+            Vector3[] corners = new Vector3[4];
+            content.GetWorldCorners(corners);
+            float maxY = float.NegativeInfinity;
+            for (int i = 0; i < 4; i++)
             {
-                info = creditsText.GetTextInfo(creditsText.text);
+                float y = viewport.InverseTransformPoint(corners[i]).y;
+                if (y > maxY) maxY = y;
             }
+            return maxY;
+        }
 
-            if (info != null && info.lineCount > 0)
+        // Last ACTIVE child with a Graphic (Text/Image). Spacer rows have no Graphic and are ignored.
+        private bool TryGetLastRowBottomInViewport(out float bottomViewportY)
+        {
+            bottomViewportY = 0f;
+            if (content == null || viewport == null) return false;
+
+            for (int i = content.childCount - 1; i >= 0; i--)
             {
-                for (int i = info.lineCount - 1; i >= 0; i--)
+                Transform child = content.GetChild(i);
+                if (child == null || !child.gameObject.activeInHierarchy) continue;
+                Graphic g = child.GetComponent<Graphic>();
+                if (g == null) continue;
+
+                RectTransform rt = child as RectTransform;
+                if (rt == null) continue;
+
+                Vector3[] corners = new Vector3[4];
+                rt.GetWorldCorners(corners);
+                float minY = float.PositiveInfinity;
+                for (int c = 0; c < 4; c++)
                 {
-                    TMP_LineInfo line = info.lineInfo[i];
-                    if (line.characterCount > 0 && line.visibleCharacterCount > 0)
-                    {
-                        Vector3 world = creditsText.rectTransform.TransformPoint(new Vector3(0f, line.lineExtents.min.y, 0f));
-                        Vector3 local = viewport.InverseTransformPoint(world);
-                        return local.y;
-                    }
+                    float y = viewport.InverseTransformPoint(corners[c]).y;
+                    if (y < minY) minY = y;
                 }
+                bottomViewportY = minY;
+                return true;
             }
 
-            // Fallback: text bounds bottom in viewport space.
-            Vector3 fbWorld = creditsText.rectTransform.TransformPoint(new Vector3(0f, creditsText.textBounds.min.y, 0f));
-            return viewport.InverseTransformPoint(fbWorld).y;
+            return false;
         }
 
         private void ResetState()
