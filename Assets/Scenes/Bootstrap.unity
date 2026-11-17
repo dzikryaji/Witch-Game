@@ -212,12 +212,14 @@ MonoBehaviour:
     clip: {fileID: 8300000, guid: f6001bf6c5dd4d3db78b8cdab9887aca, type: 3}
   - cueId: SFX_BREW_SUCCESS
     clip: {fileID: 8300000, guid: 617ac18a65bc468f9281596652b89551, type: 3}
+  - cueId: SFX_BOILING
+    clip: {fileID: 8300000, guid: eab46db18628344eebcb6cb4da683661, type: 3}
   - cueId: SFX_DISCARD
     clip: {fileID: 8300000, guid: df1022ccc4f54cf092d1cd57ae49962d, type: 3}
   - cueId: SFX_ORDER_CORRECT
     clip: {fileID: 8300000, guid: f764ddc5eaaf8431a9e8e49eba98c342, type: 3}
   - cueId: SFX_PAYMENT_COINS
-    clip: {fileID: 8300000, guid: b30c3c12aa48d425b86383274e1e95f5, type: 3}
+    clip: {fileID: 8300000, guid: 75552547469dc4c54b824e40a2b0b294, type: 3}
   - cueId: SFX_ORDER_WRONG
     clip: {fileID: 8300000, guid: c6f104c55fb1f429b88dba8e2ce28653, type: 3}
   - cueId: SFX_CARD_MATCH

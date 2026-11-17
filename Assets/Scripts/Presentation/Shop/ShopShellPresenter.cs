@@ -51,6 +51,11 @@ namespace Witch.Presentation.Shop
         [SerializeField] private SuspicionFocusView suspicionFocus;
         [SerializeField] private HerbUnlockAnnouncementView herbUnlockAnnouncement;
         [SerializeField] private Image shelfFillerImage;
+        [SerializeField] private GrinderAnimationView grinderAnimation;
+        [SerializeField] private BrewingAnimationView brewingAnimation;
+        [SerializeField, Min(0f)] private float stationAnimationSeconds = 3f;
+        [SerializeField, Min(0f)] private float brewingAnimationSeconds = 2f;
+        [SerializeField, Min(0.1f)] private float grinderSoundInterval = 1.02f;
         [SerializeField] private Text grinderInputText;
         [SerializeField] private GameObject groundHerbObject;
         [SerializeField] private Text groundHerbText;
@@ -141,6 +146,9 @@ namespace Witch.Presentation.Shop
         private bool shelfHandleDirty;
         private Vector2 tutorialPanelRest;
         private bool tutorialPanelRestCaptured;
+        private bool stationAnimationPlaying;
+        private bool brewAnimationPlaying;
+        private bool grindSoundPlayed;
         private bool shelfScrollTutorialActive;
         private bool shelfScrollTutorialSkipped;
         private IRunStateTransactionRepository saveRepository;
@@ -316,6 +324,11 @@ namespace Witch.Presentation.Shop
             progressionPanel.SetActive(false);
             pausePanel.SetActive(false);
             tutorialPanel.SetActive(false);
+            stationAnimationPlaying = false;
+            brewAnimationPlaying = false;
+            grindSoundPlayed = false;
+            if (grinderAnimation != null) grinderAnimation.Stop();
+            if (brewingAnimation != null) brewingAnimation.Stop();
             shelfScrollTutorialActive = false;
             shelfScrollTutorialSkipped = false;
             if (tutorialMaskView != null) tutorialMaskView.Hide();
@@ -501,7 +514,7 @@ namespace Witch.Presentation.Shop
             SetStatus(result.Succeeded
                 ? "Ground " + DisplayName(firstHerbId) + " and " + DisplayName(secondHerbId) + ". Drag the bowl into the pot."
                 : result.ErrorMessage);
-            if (result.Succeeded) audioService?.Play(GameAudioCueIds.Grind);
+            if (result.Succeeded && !grindSoundPlayed) audioService?.Play(GameAudioCueIds.Grind);
             Render();
             return result;
         }
@@ -588,8 +601,114 @@ namespace Witch.Presentation.Shop
             return result;
         }
 
+        public async void GrindLoadedHerbAnimated()
+        {
+            if (stationAnimationPlaying) return;
+            GameSession session = ActiveSession;
+            bool canAnimate = grinderAnimation != null
+                && stationAnimationSeconds > 0f
+                && !IsGameplayPaused
+                && !farewellPlaying
+                && GrinderIsFull
+                && session != null
+                && session.CurrentPhase == Witch.Domain.GamePhase.CustomerEncounter
+                && (!guidedTutorialActive
+                    || guidedTutorialStep == ShopGuidedTutorialStep.Grind
+                    || guidedTutorialStep == ShopGuidedTutorialStep.LoadHerbs);
+            if (!canAnimate)
+            {
+                GrindLoadedHerb();
+                return;
+            }
+
+            stationAnimationPlaying = true;
+            grindSoundPlayed = true;
+            RepeatGrindSound(stationAnimationSeconds);
+            bool finished = false;
+            try
+            {
+                await grinderAnimation.PlayAsync(
+                    stationAnimationSeconds,
+                    lifetimeCancellation?.Token ?? CancellationToken.None);
+                finished = true;
+            }
+            catch (OperationCanceledException)
+            {
+            }
+            catch (Exception exception)
+            {
+                Debug.LogException(exception, this);
+            }
+
+            if (this == null) return;
+            stationAnimationPlaying = false;
+            if (finished && ActiveSession == session) GrindLoadedHerb();
+            grindSoundPlayed = false;
+        }
+
+        private async void RepeatGrindSound(float duration)
+        {
+            float elapsed = 0f;
+            float nextPlay = 0f;
+            while (this != null && stationAnimationPlaying && grindSoundPlayed && elapsed < duration)
+            {
+                if (elapsed >= nextPlay && duration - elapsed >= grinderSoundInterval * 0.5f)
+                {
+                    audioService?.Play(GameAudioCueIds.Grind);
+                    nextPlay += grinderSoundInterval;
+                }
+
+                await Task.Yield();
+                if (!IsGameplayPaused) elapsed += Time.unscaledDeltaTime;
+            }
+        }
+
+        public async void AddGroundHerbToPotAnimated()
+        {
+            if (stationAnimationPlaying) return;
+            GameSession session = ActiveSession;
+            bool canAnimate = brewingAnimation != null
+                && brewingAnimationSeconds > 0f
+                && !IsGameplayPaused
+                && session != null
+                && session.GroundMixture != null
+                && (!guidedTutorialActive || GuidedTutorialAllowsAddToPot());
+            if (!canAnimate)
+            {
+                AddGroundHerbToPot();
+                return;
+            }
+
+            stationAnimationPlaying = true;
+            brewAnimationPlaying = true;
+            audioService?.Play(GameAudioCueIds.Boiling);
+            Render();
+            bool finished = false;
+            try
+            {
+                await brewingAnimation.PlayAsync(
+                    brewingAnimationSeconds,
+                    lifetimeCancellation?.Token ?? CancellationToken.None);
+                finished = true;
+            }
+            catch (OperationCanceledException)
+            {
+            }
+            catch (Exception exception)
+            {
+                Debug.LogException(exception, this);
+            }
+
+            if (this == null) return;
+            stationAnimationPlaying = false;
+            brewAnimationPlaying = false;
+            if (finished && ActiveSession == session) AddGroundHerbToPot();
+            else Render();
+        }
+
         public void EjectLoadedHerb()
         {
+            if (stationAnimationPlaying) return;
             if (IsGameplayPaused)
             {
                 SetStatus("The shop is paused.");
@@ -1795,6 +1914,8 @@ namespace Witch.Presentation.Shop
             if (suspicionFocus != null) suspicionFocus.IsGameplayPaused = () => IsGameplayPaused;
             if (herbUnlockAnnouncement != null) herbUnlockAnnouncement.IsGameplayPaused = () => IsGameplayPaused;
             if (potionRevealAnimator != null) potionRevealAnimator.IsGameplayPaused = () => IsGameplayPaused;
+            if (grinderAnimation != null) grinderAnimation.IsGameplayPaused = () => IsGameplayPaused;
+            if (brewingAnimation != null) brewingAnimation.IsGameplayPaused = () => IsGameplayPaused;
             if (guidebookFlipAnimator != null) guidebookFlipAnimator.IsGameplayPaused = () => IsGameplayPaused;
 
             if (viewBound)
@@ -1823,7 +1944,7 @@ namespace Witch.Presentation.Shop
             cauldronDropZone.Initialize(this);
             discardDropZone.Initialize(this);
             potionServeDropZone.Initialize(this);
-            grindButton.onClick.AddListener(() => GrindLoadedHerb());
+            grindButton.onClick.AddListener(GrindLoadedHerbAnimated);
             ejectGrinderButton.onClick.AddListener(EjectLoadedHerb);
             discardGroundButton.onClick.AddListener(() => DiscardGroundHerb());
             emptyPotButton.onClick.AddListener(() => Discard());
@@ -2164,7 +2285,7 @@ namespace Witch.Presentation.Shop
             grindButton.interactable = GrinderIsFull;
             ShowHerbImages(grinderFirstHerbImages, grinderFirstHerbId);
             ShowHerbImages(grinderSecondHerbImages, grinderSecondHerbId);
-            bool hasGroundHerb = session.GroundMixture != null;
+            bool hasGroundHerb = session.GroundMixture != null && !brewAnimationPlaying;
             groundHerbObject.SetActive(hasGroundHerb);
             if (hasGroundHerb)
             {
