@@ -2045,7 +2045,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 727440085}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8c52203495228416a94a9254ec5000dc, type: 3}
+  m_Script: {fileID: 11500000, guid: 8dedd86e786414d639b323f9343cbab9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Witch.Presentation::Witch.Presentation.Rewind.RewindFailCutsceneView
   root: {fileID: 727440085}
@@ -2592,7 +2592,7 @@ MonoBehaviour:
   boardLayout: {fileID: 1245532827}
   timerText: {fileID: 381156774}
   timeUpPopup: {fileID: 67254096}
-  timeLimitSeconds: 10
+  timeLimitSeconds: 60
   header: {fileID: 1220888290}
   failCutscene: {fileID: 727440087}
   pauseButton: {fileID: 1203943373}
