@@ -1063,6 +1063,7 @@ namespace Witch.Bootstrap.PlayModeTests
         private sealed class FakeAudioService : IGameAudioService
         {
             public readonly List<string> Played = new List<string>();
+            public float MusicRemainingSeconds => 0f;
             public ServiceResult Play(string cueId) { Played.Add(cueId); return ServiceResult.Success(); }
             public ServiceResult PlayMusic(string cueId) { Played.Add(cueId); return ServiceResult.Success(); }
             public ServiceResult PlayAmbience(string cueId) { Played.Add(cueId); return ServiceResult.Success(); }

@@ -31,6 +31,19 @@ namespace Witch.Infrastructure.Audio
         public bool HasAuthoredChannels => music != null && sfx != null && ambience != null && ui != null;
         public int AuthoredCueCount => clipsById.Count;
 
+        public float MusicRemainingSeconds
+        {
+            get
+            {
+                if (music == null || music.clip == null || !music.isPlaying)
+                {
+                    return 0f;
+                }
+
+                return Mathf.Max(0f, music.clip.length - music.time);
+            }
+        }
+
         public bool TryValidateRequiredCues(out string error)
         {
             string[] missing = GameAudioCueIds.Required.Where(id => !TryGetClip(id, out _)).ToArray();
