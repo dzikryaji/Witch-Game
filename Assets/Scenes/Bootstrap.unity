@@ -232,6 +232,8 @@ MonoBehaviour:
     clip: {fileID: 8300000, guid: 803b613385f144c6fbf10068221ea5fe, type: 3}
   - cueId: SFX_UI_CLICK
     clip: {fileID: 8300000, guid: 4af5dc81939d43d2b9e748dec0b96666, type: 3}
+  - cueId: SFX_STAKE_AMBIENCE
+    clip: {fileID: 8300000, guid: e9b43869c3594f0c94b7780866b7539e, type: 3}
   music: {fileID: 2133554573}
   sfx: {fileID: 1048499787}
   ambience: {fileID: 313298146}

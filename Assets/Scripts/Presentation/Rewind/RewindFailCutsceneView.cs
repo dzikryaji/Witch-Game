@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -15,7 +16,7 @@ namespace Witch.Presentation.Rewind
 
         public bool IsAuthored => root != null && blackout != null && picture != null;
 
-        public async Task PlayAsync(CancellationToken cancellationToken)
+        public async Task PlayAsync(CancellationToken cancellationToken, Action onPictureRevealed = null)
         {
             root.SetActive(true);
             blackout.alpha = 0f;
@@ -36,6 +37,7 @@ namespace Witch.Presentation.Rewind
 
             // Fade in the witch picture.
             await Fade(picture, 0f, 1f, cancellationToken);
+            onPictureRevealed?.Invoke();
             if (holdSeconds > 0f)
             {
                 await Task.Delay(Mathf.RoundToInt(holdSeconds * 1000f), cancellationToken);

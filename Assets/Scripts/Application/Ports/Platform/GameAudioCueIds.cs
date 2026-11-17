@@ -11,6 +11,7 @@ namespace Witch.Application.Ports
         public const string GameOverMusic = "BGM_GAME_OVER";
         public const string VictoryMusic = "BGM_GAME_COMPLETE";
         public const string ShopAmbience = "SFX_SHOP_AMBIENCE";
+        public const string StakeAmbience = "SFX_STAKE_AMBIENCE";
         public const string CustomerBell = "SFX_CUSTOMER_BELL";
         public const string PageFlip = "SFX_PAGE_FLIP";
         public const string Grind = "SFX_GRINDER";

@@ -148,7 +148,6 @@ namespace Witch.Infrastructure.Audio
         {
             music.Stop();
             currentMusic = null;
-            StopAmbience();
         }
 
         public void StopAmbience()
