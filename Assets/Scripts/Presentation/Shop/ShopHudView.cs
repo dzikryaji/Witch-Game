@@ -436,6 +436,27 @@ namespace Witch.Presentation.Shop
                 || session.CurrentPhase == Witch.Domain.GamePhase.Victory
                 || session.CurrentPhase == Witch.Domain.GamePhase.ExpenseCheck;
             dayCycleView?.Render(remaining, session.DayStartSnapshot.TimerDuration, freezeEndOfDay);
+#if UNITY_EDITOR
+            if (dayCycleView != null && dayCycleView.IsAuthored)
+            {
+                float expectedProgress = freezeEndOfDay
+                    ? 1f
+                    : ShopDayCycleView.CalculateProgress(remaining, session.DayStartSnapshot.TimerDuration);
+                bool morningResetException = dayCycleView.IsMorningResetPending && Mathf.Approximately(dayCycleView.LastRenderedProgress, 0f);
+                if (!morningResetException && Mathf.Abs(dayCycleView.LastRenderedProgress - expectedProgress) > 0.001f)
+                {
+                    Debug.LogWarning(
+                        "[DayCycleSync] Background progress differs from timer progress. " +
+                        "expected=" + expectedProgress.ToString("0.###") +
+                        " actual=" + dayCycleView.LastRenderedProgress.ToString("0.###") +
+                        " remaining=" + remaining +
+                        " duration=" + session.DayStartSnapshot.TimerDuration +
+                        " phase=" + session.CurrentPhase +
+                        " paused=" + session.TimerPaused +
+                        " stopped=" + session.TimerStopped);
+                }
+            }
+#endif
             dayText.text = "Day " + session.RunState.CurrentDayNumber + "/14";
             timerText.text = "Time  " + ((int)remaining.TotalMinutes).ToString("00") + ":" + remaining.Seconds.ToString("00");
             moneyText.text = ": $" + Mathf.Max(0, session.RunState.Money - pendingCoins);

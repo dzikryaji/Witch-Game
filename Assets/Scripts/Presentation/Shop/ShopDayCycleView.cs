@@ -17,6 +17,11 @@ namespace Witch.Presentation.Shop
         private Vector2 cloudsStartPosition;
         private bool positionsCached;
         private bool freezeAtEndOfDay;
+        private float lastRenderedProgress;
+        private bool morningResetPending;
+
+        public float LastRenderedProgress => lastRenderedProgress;
+        public bool IsMorningResetPending => morningResetPending;
 
         public bool IsAuthored => sky != null
             && sun != null
@@ -43,6 +48,7 @@ namespace Witch.Presentation.Shop
             if (!IsAuthored) return;
             if (!positionsCached) CachePositions();
 
+            morningResetPending = false;
             float progress = forceEndOfDay ? 1f : CalculateProgress(remaining, duration);
             ApplyProgress(progress);
         }
@@ -52,6 +58,7 @@ namespace Witch.Presentation.Shop
             freezeAtEndOfDay = false;
             if (!IsAuthored) return;
             if (!positionsCached) CachePositions();
+            morningResetPending = true;
             ApplyProgress(0f);
         }
 
@@ -60,6 +67,7 @@ namespace Witch.Presentation.Shop
             freezeAtEndOfDay = true;
             if (!IsAuthored) return;
             if (!positionsCached) CachePositions();
+            morningResetPending = false;
             ApplyProgress(1f);
         }
 
@@ -71,6 +79,7 @@ namespace Witch.Presentation.Shop
 
         private void ApplyProgress(float progress)
         {
+            lastRenderedProgress = progress;
             float sunset = Mathf.SmoothStep(0f, 1f, progress);
 
             sky.color = Color.Lerp(Color.white, new Color(1f, 0.62f, 0.43f), sunset);
