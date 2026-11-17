@@ -2406,10 +2406,14 @@ namespace Witch.Presentation.Shop
 
             continueButton.gameObject.SetActive(
                 session.CurrentPhase == Witch.Domain.GamePhase.DaySummary
-                || session.CurrentPhase == Witch.Domain.GamePhase.Victory);
+                || session.CurrentPhase == Witch.Domain.GamePhase.Victory
+                || session.CurrentPhase == Witch.Domain.GamePhase.GameOver);
+            SetContinueButtonLabel(
+                session.CurrentPhase == Witch.Domain.GamePhase.GameOver ? "Retry" : "Continue");
 
-            SetSummaryRowsVisible(showSummary);
-            progressionText.gameObject.SetActive(showGameOver || showClosingError);
+            bool showGameOverSummary = showGameOver && !showClosingError;
+            SetSummaryRowsVisible(showSummary || showGameOverSummary);
+            progressionText.gameObject.SetActive(showClosingError);
 
             if (showClosingError)
             {
@@ -2417,27 +2421,31 @@ namespace Witch.Presentation.Shop
                 return;
             }
 
-            if (showGameOver)
-            {
-                progressionText.text = "GAME OVER\nNot enough coins. Nothing was deducted.";
-                return;
-            }
-
-            if (showSummary)
+            if (showSummary || showGameOverSummary)
             {
                 DaySummaryData summary = session.LastDaySummary;
                 int dayNumber = summary == null ? session.RunState.CurrentDayNumber : summary.DayNumber;
                 int completionDay = resolveExpense != null && resolveExpense.CompletionDay > 0
                     ? resolveExpense.CompletionDay
                     : dayNumber;
-                dayTitleText.text = session.CurrentPhase == Witch.Domain.GamePhase.Victory
-                    ? $"ALL {completionDay} DAYS COMPLETE"
-                    : "DAY " + dayNumber + " COMPLETE";
+                if (showGameOverSummary)
+                {
+                    dayTitleText.text = "DAY " + dayNumber + " FAILED";
+                }
+                else
+                {
+                    dayTitleText.text = session.CurrentPhase == Witch.Domain.GamePhase.Victory
+                        ? $"ALL {completionDay} DAYS COMPLETE"
+                        : "DAY " + dayNumber + " COMPLETE";
+                }
+
                 correctOrdersValueText.text = (summary == null ? 0 : summary.CorrectOrders).ToString();
                 wrongOrdersValueText.text = (summary == null ? 0 : summary.WrongOrders).ToString();
                 coinsEarnedValueText.text = "$" + (summary == null ? 0 : summary.CoinsEarned).ToString();
                 taxPaidValueText.text = "$" + (summary == null ? 0 : summary.TaxPaid).ToString();
-                coinsRemainingValueText.text = "$" + (summary == null ? 0 : summary.CoinsRemaining).ToString();
+                coinsRemainingValueText.text = showGameOverSummary
+                    ? "Failed"
+                    : "$" + (summary == null ? 0 : summary.CoinsRemaining).ToString();
             }
         }
 
@@ -2453,9 +2461,20 @@ namespace Witch.Presentation.Shop
 
         private void OnContinueClicked()
         {
-            if (ActiveSession != null && ActiveSession.CurrentPhase == Witch.Domain.GamePhase.Victory)
+            if (ActiveSession == null)
+            {
+                return;
+            }
+
+            if (ActiveSession.CurrentPhase == Witch.Domain.GamePhase.Victory)
             {
                 StartCredits();
+                return;
+            }
+
+            if (ActiveSession.CurrentPhase == Witch.Domain.GamePhase.GameOver)
+            {
+                RunUiAction(() => RetryFailedDayAsync());
                 return;
             }
 
@@ -2616,6 +2635,78 @@ namespace Witch.Presentation.Shop
             {
                 actionInProgress = false;
             }
+        }
+
+        private Text ContinueButtonLabel =>
+            continueButton == null ? null : continueButton.GetComponentInChildren<Text>(true);
+
+        private void SetContinueButtonLabel(string label)
+        {
+            Text text = ContinueButtonLabel;
+            if (text != null)
+            {
+                text.text = label;
+            }
+        }
+
+        private async Task<ExpenseResolutionResult> RetryFailedDayAsync()
+        {
+            CancellationToken cancellationToken = lifetimeCancellation?.Token ?? CancellationToken.None;
+            if (retryDay == null || ActiveSession == null || ActiveSession.CurrentPhase != GamePhase.GameOver)
+            {
+                SetStatus("Retry is not available.");
+                return ExpenseResolutionResult.Failure(ExpenseResolutionError.InvalidPhase, "Retry is not available.");
+            }
+
+            if (dayTransition != null && dayTransition.IsPlaying)
+            {
+                return ExpenseResolutionResult.Failure(ExpenseResolutionError.InvalidPhase, "Day transition is already running.");
+            }
+
+            if (dayTransition != null)
+            {
+                int retryDayNumber = ActiveSession.RunState.CurrentDayNumber;
+                var completion = new TaskCompletionSource<ExpenseResolutionResult>();
+                dayTransition.PlayDayToDayTransition(retryDayNumber, async () =>
+                {
+                    ExpenseResolutionResult prepared = await retryDay.PrepareAsync(ActiveSession, cancellationToken);
+                    if (!prepared.Succeeded)
+                    {
+                        dayTransition.CancelPendingReveal();
+                        completion.TrySetResult(prepared);
+                        return;
+                    }
+
+                    SceneLoadResult scene = await sceneLoader.LoadAsync(SceneId.Shop, CancellationToken.None);
+                    if (!scene.Succeeded)
+                    {
+                        dayTransition.CancelPendingReveal();
+                        await sceneLoader.LoadAsync(SceneId.MainMenu, CancellationToken.None);
+                        completion.TrySetResult(ExpenseResolutionResult.Failure(ExpenseResolutionError.SceneLoadFailed, scene.ErrorMessage));
+                        return;
+                    }
+
+                    completion.TrySetResult(ExpenseResolutionResult.Success());
+                });
+
+                ExpenseResolutionResult transitioned = await completion.Task;
+                if (!transitioned.Succeeded)
+                {
+                    Debug.LogError("Retry from game over failed: " + transitioned.ErrorMessage, this);
+                    SetStatus("Could not retry the day: " + transitioned.ErrorMessage);
+                }
+
+                return transitioned;
+            }
+
+            ExpenseResolutionResult direct = await retryDay.ExecuteAsync(ActiveSession, cancellationToken);
+            if (!direct.Succeeded)
+            {
+                Debug.LogError("Retry from game over failed: " + direct.ErrorMessage, this);
+                SetStatus("Could not retry the day: " + direct.ErrorMessage);
+            }
+
+            return direct;
         }
 
         private string DisplayName(string herbId)

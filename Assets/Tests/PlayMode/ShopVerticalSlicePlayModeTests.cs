@@ -42,16 +42,12 @@ namespace Witch.Bootstrap.PlayModeTests
 
         private static void DisableInputOwners()
         {
-            foreach (ShopShellPresenter presenter in Object.FindObjectsByType<ShopShellPresenter>(
-                         FindObjectsInactive.Include,
-                         FindObjectsSortMode.None))
+            foreach (ShopShellPresenter presenter in Object.FindObjectsByType<ShopShellPresenter>(FindObjectsInactive.Include))
             {
                 presenter.enabled = false;
             }
 
-            foreach (InputSystemUIInputModule inputModule in Object.FindObjectsByType<InputSystemUIInputModule>(
-                         FindObjectsInactive.Include,
-                         FindObjectsSortMode.None))
+            foreach (InputSystemUIInputModule inputModule in Object.FindObjectsByType<InputSystemUIInputModule>(FindObjectsInactive.Include))
             {
                 inputModule.enabled = false;
             }

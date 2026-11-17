@@ -74,16 +74,28 @@ namespace Witch.Application.Tests
                 clock);
 
             ExpenseResolutionResult failedExpense = await resolve.ExecuteAsync(session);
-            ExpenseResolutionResult retry = await new RetryDayUseCase(saves, scenes).ExecuteAsync(session);
 
             Assert.That(failedExpense.Outcome.Kind, Is.EqualTo(ExpenseOutcomeKind.GameOver));
+            Assert.That(session.CurrentPhase, Is.EqualTo(GamePhase.GameOver));
             Assert.That(failedExpense.Outcome.UpdatedRunState.Money, Is.Zero);
+            Assert.That(session.LastDaySummary, Is.Not.Null);
+            Assert.That(session.LastDaySummary.DayNumber, Is.EqualTo(1));
+            Assert.That(session.LastDaySummary.CorrectOrders, Is.EqualTo(0));
+            Assert.That(session.LastDaySummary.WrongOrders, Is.EqualTo(1));
+            Assert.That(session.LastDaySummary.TaxPaid, Is.EqualTo(20));
+            Assert.That(session.LastDaySummary.CoinsRemaining, Is.EqualTo(0));
+            Assert.That(saves.SaveCallCount, Is.EqualTo(0), "Game over should not persist a new save.");
+
+            ExpenseResolutionResult retry = await new RetryDayUseCase(saves, scenes).ExecuteAsync(session);
+
             Assert.That(retry.Succeeded, Is.True, retry.ErrorMessage);
             Assert.That(session.CurrentPhase, Is.EqualTo(GamePhase.ShopPreparation));
             Assert.That(session.DayStartSnapshot.OrderSeed, Is.EqualTo(originalSeed));
             Assert.That(session.RunState.Suspicion, Is.EqualTo(1));
             Assert.That(session.RunState.Money, Is.Zero);
+            Assert.That(session.RunState.CurrentDayNumber, Is.EqualTo(1));
             Assert.That(session.RunState.SeenOrderIds, Is.Empty);
+            Assert.That(saves.SaveCallCount, Is.EqualTo(1), "Retry persists the restored day-start snapshot.");
         }
 
         [Test]

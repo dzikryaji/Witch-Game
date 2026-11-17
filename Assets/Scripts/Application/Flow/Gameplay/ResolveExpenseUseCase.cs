@@ -56,8 +56,16 @@ namespace Witch.Application.Flow
                 session.DayStartSnapshot.ExpenseValue);
             if (outcome.Kind == ExpenseOutcomeKind.GameOver)
             {
+                var daySummary = new DaySummaryData(
+                    session.AttemptMetadata.CorrectServiceCountToday,
+                    session.AttemptMetadata.WrongServiceCountToday,
+                    session.AttemptMetadata.CoinsEarnedToday,
+                    session.DayStartSnapshot.ExpenseValue,
+                    session.RunState.Money,
+                    paidDay);
                 session.BeginExpenseCheck();
                 session.ApplyExpenseFailure(outcome.UpdatedRunState);
+                session.SetLastDaySummary(daySummary);
                 return ExpenseResolutionResult.Success(outcome);
             }
 
