@@ -52,6 +52,7 @@ namespace Witch.Presentation.Shop
         [Tooltip("Optional. Highlights the suspicion bar when an order is wrong.")]
         [SerializeField] private SuspicionFocusView suspicionFocus;
         [SerializeField] private HerbUnlockAnnouncementView herbUnlockAnnouncement;
+        [SerializeField] private ClosedSignView closedSignView;
         [SerializeField] private Image shelfFillerImage;
         [SerializeField] private GrinderAnimationView grinderAnimation;
         [SerializeField] private BrewingAnimationView brewingAnimation;
@@ -191,6 +192,7 @@ namespace Witch.Presentation.Shop
         private bool userPaused;
         // User-initiated Shop pause freezes gameplay/presentation; system timer freezes (guided tutorial, rewind staging, transitions) do not.
         private bool IsGameplayPaused => userPaused;
+        private bool? lastKnownQueueOpen;
         public bool HasAuthoredView => hudView != null
             && hudView.IsAuthored
             && herbButtons != null
@@ -413,6 +415,8 @@ namespace Witch.Presentation.Shop
                     Debug.LogException(ex, this);
                 }
             }
+
+            SyncClosedSign(initial: true);
         }
 
         private void ValidateGuidedTutorialMasksIfEnabled()
@@ -453,6 +457,7 @@ namespace Witch.Presentation.Shop
                 {
                     updateTimer.Execute(ActiveSession);
                 }
+                SyncClosedSign(initial: false);
                 Render();
             }
 
@@ -1314,6 +1319,7 @@ namespace Witch.Presentation.Shop
             }
 
             ClearCounterCoins();
+            if (closedSignView != null) closedSignView.HideAndReset();
             if (playClickSound)
             {
                 audioService?.Play(GameAudioCueIds.UiClick);
@@ -1936,6 +1942,11 @@ namespace Witch.Presentation.Shop
             if (counterCoins != null) counterCoins.IsGameplayPaused = () => IsGameplayPaused;
             if (moneyGainPopUp != null) moneyGainPopUp.IsGameplayPaused = () => IsGameplayPaused;
             if (suspicionFocus != null) suspicionFocus.IsGameplayPaused = () => IsGameplayPaused;
+            if (closedSignView != null)
+            {
+                closedSignView.IsGameplayPaused = () => IsGameplayPaused;
+                closedSignView.AudioService = audioService;
+            }
             if (herbUnlockAnnouncement != null)
             {
                 herbUnlockAnnouncement.IsGameplayPaused = () => IsGameplayPaused;
@@ -2308,6 +2319,65 @@ namespace Witch.Presentation.Shop
                 return;
             }
             RunUiAction(ServeAsync);
+        }
+
+        private bool ShouldShowClosedSign(GameSession session)
+        {
+            if (session == null) return false;
+            if (!session.TimerState.QueueOpen) return true;
+
+            switch (session.CurrentPhase)
+            {
+                case Witch.Domain.GamePhase.ClosingEncounter:
+                case Witch.Domain.GamePhase.DaySummary:
+                case Witch.Domain.GamePhase.ExpenseCheck:
+                case Witch.Domain.GamePhase.GameOver:
+                case Witch.Domain.GamePhase.Victory:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        private void SyncClosedSign(bool initial)
+        {
+            if (closedSignView == null || ActiveSession == null) return;
+
+            bool showClosedSign = ShouldShowClosedSign(ActiveSession);
+            bool queueOpen = ActiveSession.TimerState.QueueOpen;
+
+            if (!showClosedSign)
+            {
+                // Queue open/shop not closed for the day: keep hidden for fresh/open sessions without mid-day closed resets.
+                if (closedSignView.IsVisible)
+                {
+                    // Defensive: should only become visible when shop is closed for the day.
+                    closedSignView.HideAndReset();
+                }
+                lastKnownQueueOpen = queueOpen;
+                return;
+            }
+
+            // Closed for the day: keep visible until explicit reset (day transition cover/Main Menu/fresh session init).
+            if (!lastKnownQueueOpen.HasValue)
+            {
+                closedSignView.ShowInstant();
+                lastKnownQueueOpen = queueOpen;
+                return;
+            }
+
+            if (lastKnownQueueOpen.Value && !queueOpen && !initial)
+            {
+                closedSignView.PlayEntrance();
+                lastKnownQueueOpen = false;
+                return;
+            }
+
+            if (!closedSignView.IsVisible)
+            {
+                closedSignView.ShowInstant();
+            }
+            lastKnownQueueOpen = queueOpen;
         }
 
         private void Render()
@@ -2998,6 +3068,11 @@ namespace Witch.Presentation.Shop
                 int day = ActiveSession.RunState.CurrentDayNumber;
                 dayTransition.SetDayNumber(day);
                 hudView.ResetDayCycleToMorning();
+                if (closedSignView != null)
+                {
+                    closedSignView.HideAndReset();
+                    lastKnownQueueOpen = null;
+                }
                 if (setTimerPaused != null)
                 {
                     setTimerPaused.Execute(ActiveSession, true);
