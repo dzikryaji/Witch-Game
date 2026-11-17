@@ -12,5 +12,6 @@ namespace Witch.Application.Ports
         void StopMusic();
         void StopAmbience();
         void ApplySettings(GameSettingsState settings);
+        float MusicRemainingSeconds { get; }
     }
 }

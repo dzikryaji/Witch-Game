@@ -33,6 +33,8 @@ namespace Witch.Application.Flow
             this.gameCenter = gameCenter;
         }
 
+        public int CompletionDay => expenseRules.CompletionDay;
+
         public async Task<ExpenseResolutionResult> ExecuteAsync(
             GameSession session,
             CancellationToken cancellationToken = default)

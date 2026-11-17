@@ -12,6 +12,7 @@ using Witch.Domain;
 using Witch.Domain.Potions;
 using Witch.Domain.Progression;
 using Witch.Presentation;
+using Witch.Presentation.Credits;
 
 namespace Witch.Presentation.Shop
 {
@@ -78,6 +79,8 @@ namespace Witch.Presentation.Shop
         [SerializeField] private GameObject coinsRemainingRow;
         [SerializeField] private Text coinsRemainingValueText;
         [SerializeField] private Button continueButton;
+        [SerializeField] private GameObject creditsPanel;
+        [SerializeField] private Witch.Presentation.Credits.CreditsRoll creditsRoll;
         [SerializeField] private GameObject pausePanel;
         [SerializeField] private Button resumeButton;
         [SerializeField] private Button mainMenuButton;
@@ -131,6 +134,8 @@ namespace Witch.Presentation.Shop
         private bool actionInProgress;
         private bool autoResolveExpenseInFlight;
         private bool autoResolveExpenseAttempted;
+        private bool creditsActive;
+        private bool creditsExitStarted;
         private int? heldHeaderMoney;
         private readonly HashSet<string> announcedUnlocks = new HashSet<string>(StringComparer.Ordinal);
         private string autoResolveExpenseError;
@@ -481,6 +486,7 @@ namespace Witch.Presentation.Shop
 
         private void HandlePauseAction(InputAction.CallbackContext context)
         {
+            if (creditsActive) return;
             if (settingsPanelPresenter != null && settingsPanelPresenter.IsOpen)
             {
                 settingsPanelPresenter.Cancel();
@@ -496,6 +502,7 @@ namespace Witch.Presentation.Shop
 
         private void HandleGuidebookAction(InputAction.CallbackContext context)
         {
+            if (creditsActive) return;
             if (!IsInitialized || MinigameIntroVisible) return;
             if (guidedTutorialActive)
             {
@@ -1286,7 +1293,7 @@ namespace Witch.Presentation.Shop
             restartDay = useCase ?? throw new ArgumentNullException(nameof(useCase));
         }
 
-        public async Task ReturnToMainMenuAsync()
+        public async Task ReturnToMainMenuAsync(bool playClickSound = true)
         {
             if (sceneLoader == null || ActiveSession == null)
             {
@@ -1306,7 +1313,10 @@ namespace Witch.Presentation.Shop
             }
 
             ClearCounterCoins();
-            audioService?.Play(GameAudioCueIds.UiClick);
+            if (playClickSound)
+            {
+                audioService?.Play(GameAudioCueIds.UiClick);
+            }
             SceneLoadResult result = await sceneLoader.LoadAsync(
                 SceneId.MainMenu,
                 lifetimeCancellation?.Token ?? CancellationToken.None);
@@ -1457,6 +1467,10 @@ namespace Witch.Presentation.Shop
             {
                 settingsPanelPresenter.Opened -= OnSettingsOpened;
                 settingsPanelPresenter.Closed -= OnSettingsClosed;
+            }
+            if (creditsRoll != null)
+            {
+                creditsRoll.ReturnRequested -= OnCreditsReturnRequested;
             }
             if (counterCoins != null)
             {
@@ -1971,6 +1985,17 @@ namespace Witch.Presentation.Shop
                 counterCoins.Collected -= OnCounterCoinsCollected;
                 counterCoins.Collected += OnCounterCoinsCollected;
             }
+            if (creditsRoll != null)
+            {
+                creditsRoll.ReturnRequested -= OnCreditsReturnRequested;
+                creditsRoll.ReturnRequested += OnCreditsReturnRequested;
+            }
+            if (creditsPanel != null)
+            {
+                creditsPanel.SetActive(false);
+            }
+            creditsActive = false;
+            creditsExitStarted = false;
             guidebookLeftPage.BindPageLinks(GoToGuidebookPage);
             guidebookRightPage.BindPageLinks(GoToGuidebookPage);
             pauseButton.onClick.AddListener(TogglePause);
@@ -2338,6 +2363,11 @@ namespace Witch.Presentation.Shop
 
         private void RenderProgression(GameSession session)
         {
+            if (creditsActive)
+            {
+                return;
+            }
+
             if (progressionPanel == null || resolveExpense == null)
             {
                 return;
@@ -2370,7 +2400,9 @@ namespace Witch.Presentation.Shop
                 return;
             }
 
-            continueButton.gameObject.SetActive(session.CurrentPhase == Witch.Domain.GamePhase.DaySummary);
+            continueButton.gameObject.SetActive(
+                session.CurrentPhase == Witch.Domain.GamePhase.DaySummary
+                || session.CurrentPhase == Witch.Domain.GamePhase.Victory);
 
             SetSummaryRowsVisible(showSummary);
             progressionText.gameObject.SetActive(showGameOver || showClosingError);
@@ -2391,8 +2423,11 @@ namespace Witch.Presentation.Shop
             {
                 DaySummaryData summary = session.LastDaySummary;
                 int dayNumber = summary == null ? session.RunState.CurrentDayNumber : summary.DayNumber;
+                int completionDay = resolveExpense != null && resolveExpense.CompletionDay > 0
+                    ? resolveExpense.CompletionDay
+                    : dayNumber;
                 dayTitleText.text = session.CurrentPhase == Witch.Domain.GamePhase.Victory
-                    ? dayNumber + " DAYS COMPLETE"
+                    ? $"ALL {completionDay} DAYS COMPLETE"
                     : "DAY " + dayNumber + " COMPLETE";
                 correctOrdersValueText.text = (summary == null ? 0 : summary.CorrectOrders).ToString();
                 wrongOrdersValueText.text = (summary == null ? 0 : summary.WrongOrders).ToString();
@@ -2412,7 +2447,110 @@ namespace Witch.Presentation.Shop
             if (coinsRemainingRow != null) coinsRemainingRow.SetActive(visible);
         }
 
-        private void OnContinueClicked() => RunUiAction(ContinueNextDayAsync);
+        private void OnContinueClicked()
+        {
+            if (ActiveSession != null && ActiveSession.CurrentPhase == Witch.Domain.GamePhase.Victory)
+            {
+                StartCredits();
+                return;
+            }
+
+            RunUiAction(ContinueNextDayAsync);
+        }
+
+        private void StartCredits()
+        {
+            if (creditsPanel == null || creditsRoll == null)
+            {
+                SetStatus("Credits are not available.");
+                return;
+            }
+
+            if (creditsActive)
+            {
+                return;
+            }
+
+            creditsActive = true;
+            creditsExitStarted = false;
+            if (progressionPanel != null)
+            {
+                progressionPanel.SetActive(false);
+            }
+            if (pausePanel != null) pausePanel.SetActive(false);
+            if (pauseOverlay != null) pauseOverlay.SetActive(false);
+
+            creditsPanel.SetActive(true);
+            creditsPanel.transform.SetAsLastSibling();
+            creditsRoll.Play();
+            audioService?.Play(GameAudioCueIds.UiClick);
+
+            if (audioService != null)
+            {
+                float remaining = audioService.MusicRemainingSeconds;
+                float needed = creditsRoll.TotalDurationSeconds;
+                if (needed > remaining)
+                {
+                    Debug.LogWarning(
+                        $"Credits may outlast game-complete BGM. Needed={needed:F2}s Remaining={remaining:F2}s",
+                        this);
+                }
+            }
+        }
+
+        private void OnCreditsReturnRequested()
+        {
+            if (!creditsActive || creditsExitStarted)
+            {
+                return;
+            }
+
+            creditsExitStarted = true;
+            if (creditsPanel != null)
+            {
+                creditsPanel.SetActive(true);
+                creditsPanel.transform.SetAsLastSibling();
+            }
+
+            RunUiAction(ReturnFromCreditsAsync);
+        }
+
+        private async Task ReturnFromCreditsAsync()
+        {
+            bool wasCreditsActive = creditsActive;
+            creditsActive = true;
+            try
+            {
+                if (creditsPanel != null)
+                {
+                    creditsPanel.SetActive(true);
+                    creditsPanel.transform.SetAsLastSibling();
+                }
+                await ReturnToMainMenuAsync(playClickSound: false);
+                // If still alive (load failed), fall back to shop.
+                if (this != null && gameObject != null)
+                {
+                    var active = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
+                    if (active.name != SceneId.MainMenu.ToString())
+                    {
+                        creditsActive = false;
+                        creditsExitStarted = false;
+                        if (creditsPanel != null) creditsPanel.SetActive(false);
+                        if (ActiveSession != null)
+                        {
+                            Render();
+                        }
+                    }
+                }
+            }
+            catch
+            {
+                creditsActive = wasCreditsActive;
+                creditsExitStarted = false;
+                if (creditsPanel != null) creditsPanel.SetActive(false);
+                throw;
+            }
+        }
 
         public async Task RestartDayAsync()
         {
@@ -2864,7 +3002,7 @@ namespace Witch.Presentation.Shop
 
                 case ConfirmationAction.Quit:
                     pendingConfirmation = ConfirmationAction.None;
-                    RunUiAction(ReturnToMainMenuAsync);
+                    RunUiAction(() => ReturnToMainMenuAsync());
                     break;
             }
         }
