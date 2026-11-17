@@ -227,7 +227,7 @@ namespace Witch.Bootstrap
             enterRewind = new EnterRewindUseCase(
                 runRepository,
                 sceneLoader,
-                new DeterministicRandomSource(randomSeed + 1));
+                orderRandom);
             completeRewind = new CompleteRewindUseCase(
                 runRepository,
                 sceneLoader,
