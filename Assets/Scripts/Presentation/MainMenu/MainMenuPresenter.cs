@@ -406,10 +406,15 @@ namespace Witch.Presentation.MainMenu
                     var attemptResult = await attemptRepository.LoadLatestActiveAttemptMetadataAsync();
                     if (snapshotResult != null && snapshotResult.Succeeded && attemptResult != null && attemptResult.Succeeded)
                     {
+                        if (snapshotResult.Snapshot.RunState.RunCompleted)
+                        {
+                            // Completed run: Continue behaves exactly like New Game.
+                            return await NewGameWithStoryAsync();
+                        }
+
                         bool pendingRewind = attemptResult.Metadata.PendingRewind;
                         bool thresholdReached = attemptResult.Metadata.Suspicion >= RunState.RewindSuspicionThreshold;
-                        bool runCompleted = snapshotResult.Snapshot.RunState.RunCompleted;
-                        coverShop = !(pendingRewind && !runCompleted);
+                        coverShop = !(pendingRewind);
                         day = snapshotResult.Snapshot.RunState.CurrentDayNumber;
                         if (day < 1) day = 1;
                     }
