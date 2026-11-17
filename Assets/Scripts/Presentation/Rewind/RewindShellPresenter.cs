@@ -143,7 +143,7 @@ namespace Witch.Presentation.Rewind
             {
                 throw new InvalidOperationException("Rewind content has fewer symbols than board pairs.");
             }
-            symbols = symbolKeys;
+            symbols = ShuffleSymbols(symbolKeys, Board.Seed);
             revealed = new bool[Board.Cards.Count];
             matched = new bool[Board.Cards.Count];
             EnsureCardViews(Board.Cards.Count);
@@ -513,6 +513,22 @@ namespace Witch.Presentation.Rewind
                 if (winContinueButton != null) winContinueButton.interactable = true;
                 Debug.LogException(exception, this);
             }
+        }
+
+        private static IReadOnlyList<string> ShuffleSymbols(IReadOnlyList<string> keys, int seed)
+        {
+            if (keys == null) return null;
+
+            var copy = new List<string>(keys);
+            var random = new System.Random(seed ^ 0x5bd1e995);
+            for (int i = copy.Count - 1; i > 0; i--)
+            {
+                int j = random.Next(i + 1);
+                string temp = copy[i];
+                copy[i] = copy[j];
+                copy[j] = temp;
+            }
+            return copy;
         }
     }
 }
