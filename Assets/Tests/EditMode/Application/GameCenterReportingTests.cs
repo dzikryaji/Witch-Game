@@ -357,21 +357,21 @@ namespace Witch.Application.Tests
         }
 
         [Test]
-        public async Task FirstCompletedRewind_ReportsMemoryMenderOnce()
+        public async Task FirstCompletedMinigameWin_ReportsMemoryMenderOnce()
         {
             var clock = new FakeClock();
-            GameSession session = CreatePendingRewindSession(clock);
+            GameSession session = CreatePendingMinigameSession(clock);
             var gameCenter = new RecordingGameCenterService();
-            var complete = new CompleteRewindUseCase(
+            var complete = new CompleteMinigameUseCase(
                 new FakeSaveRepository(),
                 new FakeSceneLoader(),
                 new FakeRandomSource(),
                 gameCenter);
 
-            // EnterRewind moves RewindPending -> RewindMinigame, then CompleteRewind completes it
-            await new EnterRewindUseCase(new FakeSaveRepository(), new FakeSceneLoader(), new FakeRandomSource())
+            // EnterMinigame moves MinigamePending -> MatchCardMinigame, then CompleteMinigame completes it
+            await new EnterMinigameUseCase(new FakeSaveRepository(), new FakeSceneLoader(), new FakeRandomSource())
                 .ExecuteAsync(session);
-            RewindTransactionResult result = await complete.ExecuteAsync(session);
+            MinigameTransactionResult result = await complete.ExecuteAsync(session);
 
             Assert.That(result.Succeeded, Is.True, result.ErrorMessage);
             Assert.That(gameCenter.Reports, Has.Count.EqualTo(1));
@@ -380,23 +380,23 @@ namespace Witch.Application.Tests
         }
 
         [Test]
-        public async Task RepeatedRewinds_ReportsMemoryMenderOnlyOnce()
+        public async Task RepeatedMinigameWins_ReportsMemoryMenderOnlyOnce()
         {
             var clock = new FakeClock();
             var gameCenter = new RecordingGameCenterService();
-            var complete = new CompleteRewindUseCase(
+            var complete = new CompleteMinigameUseCase(
                 new FakeSaveRepository(),
                 new FakeSceneLoader(),
                 new FakeRandomSource(),
                 gameCenter);
 
-            GameSession session = CreatePendingRewindSession(clock);
-            await new EnterRewindUseCase(new FakeSaveRepository(), new FakeSceneLoader(), new FakeRandomSource())
+            GameSession session = CreatePendingMinigameSession(clock);
+            await new EnterMinigameUseCase(new FakeSaveRepository(), new FakeSceneLoader(), new FakeRandomSource())
                 .ExecuteAsync(session);
             await complete.ExecuteAsync(session);
 
-            session = CreatePendingRewindSession(clock);
-            await new EnterRewindUseCase(new FakeSaveRepository(), new FakeSceneLoader(), new FakeRandomSource())
+            session = CreatePendingMinigameSession(clock);
+            await new EnterMinigameUseCase(new FakeSaveRepository(), new FakeSceneLoader(), new FakeRandomSource())
                 .ExecuteAsync(session);
             await complete.ExecuteAsync(session);
 
@@ -439,20 +439,20 @@ namespace Witch.Application.Tests
         }
 
         [Test]
-        public async Task RewindReportingException_KeepsRewindResultUnchanged()
+        public async Task MinigameReportingException_KeepsMinigameResultUnchanged()
         {
             var clock = new FakeClock();
-            GameSession session = CreatePendingRewindSession(clock);
+            GameSession session = CreatePendingMinigameSession(clock);
             var gameCenter = new RecordingGameCenterService { ShouldThrow = true };
-            var complete = new CompleteRewindUseCase(
+            var complete = new CompleteMinigameUseCase(
                 new FakeSaveRepository(),
                 new FakeSceneLoader(),
                 new FakeRandomSource(),
                 gameCenter);
 
-            await new EnterRewindUseCase(new FakeSaveRepository(), new FakeSceneLoader(), new FakeRandomSource())
+            await new EnterMinigameUseCase(new FakeSaveRepository(), new FakeSceneLoader(), new FakeRandomSource())
                 .ExecuteAsync(session);
-            RewindTransactionResult result = await complete.ExecuteAsync(session);
+            MinigameTransactionResult result = await complete.ExecuteAsync(session);
 
             Assert.That(result.Succeeded, Is.True, result.ErrorMessage);
         }
@@ -517,10 +517,10 @@ namespace Witch.Application.Tests
             serve.Execute(session);
         }
 
-        private static GameSession CreatePendingRewindSession(FakeClock clock)
+        private static GameSession CreatePendingMinigameSession(FakeClock clock)
         {
             GameSession session = new StartNewRunUseCase().Execute(new StartNewRunCommand(
-                "run.rewind",
+                "run.minigame",
                 101,
                 new[] { "category.warm" },
                 new[] { "herb.ginger", "herb.mint", "herb.sage" },
@@ -536,7 +536,7 @@ namespace Witch.Application.Tests
             var prepare = new PotionPreparationUseCase(rules);
             var serve = new ServePotionUseCase(rules);
 
-            // Serve 3 wrong potions to reach suspicion threshold (3) and trigger RewindPending
+            // Serve 3 wrong potions to reach suspicion threshold (3) and trigger MinigamePending
             for (int index = 0; index < 3; index++)
             {
                 new AdmitCustomerUseCase(clock).Execute(
@@ -550,7 +550,7 @@ namespace Witch.Application.Tests
                 serve.Execute(session);
             }
 
-            Assert.That(session.CurrentPhase, Is.EqualTo(GamePhase.RewindPending));
+            Assert.That(session.CurrentPhase, Is.EqualTo(GamePhase.MinigamePending));
             return session;
         }
 

@@ -55,20 +55,20 @@ namespace Witch.Application.Flow
                 return LoadRunResult.Failure(LoadRunError.LoadFailed, attemptResult.ErrorMessage);
             }
 
-            bool pendingRewind = attemptResult.Metadata.PendingRewind;
-            bool thresholdReached = attemptResult.Metadata.Suspicion >= Witch.Domain.Progression.RunState.RewindSuspicionThreshold;
+            bool pendingMinigame = attemptResult.Metadata.PendingMinigame;
+            bool thresholdReached = attemptResult.Metadata.Suspicion >= Witch.Domain.Progression.RunState.MinigameSuspicionThreshold;
             bool runCompleted = snapshotResult.Snapshot.RunState.RunCompleted;
             var session = new GameSession(
                 snapshotResult.Snapshot,
                 attemptResult.Metadata,
                 runCompleted
                     ? GamePhase.Victory
-                    : pendingRewind || thresholdReached
-                        ? GamePhase.RewindPending
+                    : pendingMinigame || thresholdReached
+                        ? GamePhase.MinigamePending
                         : GamePhase.ShopPreparation);
             sessionStore.SetActive(session);
 
-            SceneId targetScene = pendingRewind && !runCompleted ? SceneId.RewindMinigame : SceneId.Shop;
+            SceneId targetScene = pendingMinigame && !runCompleted ? SceneId.MatchCardMinigame : SceneId.Shop;
             SceneLoadResult sceneResult = await sceneLoader.LoadAsync(targetScene, cancellationToken);
             if (!sceneResult.Succeeded)
             {
@@ -76,9 +76,9 @@ namespace Witch.Application.Flow
                 return LoadRunResult.Failure(LoadRunError.SceneLoadFailed, sceneResult.ErrorMessage);
             }
 
-            if (pendingRewind)
+            if (pendingMinigame)
             {
-                session.TryTransition(GamePhase.RewindMinigame);
+                session.TryTransition(GamePhase.MinigameActive);
             }
 
             return LoadRunResult.Success(session);

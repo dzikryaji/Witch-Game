@@ -251,7 +251,7 @@ namespace Witch.Infrastructure.Persistence
         public int day;
         public int money;
         public int suspicion;
-        public int rewindCount;
+        public int minigameWinCount;
         public string[] categoryIds;
         public string[] herbIds;
         public string[] guidebookIds;
@@ -267,8 +267,8 @@ namespace Witch.Infrastructure.Persistence
         public string runId;
         public int day;
         public int suspicion;
-        public int rewindCount;
-        public bool pendingRewind;
+        public int minigameWinCount;
+        public bool pendingMinigame;
         public int minigameBoardSeed;
         public int activeOrderSeed;
         public int wrongServiceCountToday;
@@ -308,8 +308,8 @@ namespace Witch.Infrastructure.Persistence
                     runId = metadata.RunId,
                     day = metadata.DayNumber,
                     suspicion = metadata.Suspicion,
-                    rewindCount = metadata.RewindCount,
-                    pendingRewind = metadata.PendingRewind,
+                    minigameWinCount = metadata.MinigameWinCount,
+                    pendingMinigame = metadata.PendingMinigame,
                     minigameBoardSeed = metadata.MinigameBoardSeed,
                     activeOrderSeed = metadata.ActiveOrderSeed,
                     wrongServiceCountToday = metadata.WrongServiceCountToday,
@@ -341,7 +341,7 @@ namespace Witch.Infrastructure.Persistence
                 state.day,
                 state.money,
                 state.suspicion,
-                state.rewindCount,
+                state.minigameWinCount,
                 MigrateCategoryIds(state.categoryIds),
                 MigrateHerbIds(state.herbIds),
                 state.guidebookIds ?? new string[0],
@@ -365,8 +365,8 @@ namespace Witch.Infrastructure.Persistence
                 envelope.attempt.runId,
                 envelope.attempt.day,
                 envelope.attempt.suspicion,
-                envelope.attempt.rewindCount,
-                envelope.attempt.pendingRewind,
+                envelope.attempt.minigameWinCount,
+                envelope.attempt.pendingMinigame,
                 envelope.attempt.minigameBoardSeed,
                 envelope.attempt.activeOrderSeed,
                 envelope.attempt.wrongServiceCountToday,
@@ -386,7 +386,7 @@ namespace Witch.Infrastructure.Persistence
                 day = state.CurrentDayNumber,
                 money = state.Money,
                 suspicion = state.Suspicion,
-                rewindCount = state.RewindCount,
+                minigameWinCount = state.MinigameWinCount,
                 categoryIds = Copy(state.UnlockedCategoryIds),
                 herbIds = Copy(state.UnlockedHerbIds),
                 guidebookIds = Copy(state.UnlockedGuidebookEntryIds),

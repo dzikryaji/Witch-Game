@@ -20,8 +20,8 @@ namespace Witch.Infrastructure.Content
             ValidateStableIds(catalog.Customers.Where(value => value != null).ToArray(), "Customer", errors);
             ValidateStableIds(catalog.Days, "Day", errors);
             ValidateStableIds(catalog.HerbCategories, "Herb category", errors);
-            ValidateStableIds(catalog.RewindCards, "Rewind card", errors);
-            ValidateRequiredDefinition(catalog.RewindDifficulty, "Rewind difficulty", errors);
+            ValidateStableIds(catalog.MatchCards, "Match Card", errors);
+            ValidateRequiredDefinition(catalog.MatchCardDifficulty, "Match Card difficulty", errors);
             ValidateWitchHunterDialogue(catalog.WitchHunterDialogue, errors);
 
             if (catalog.StartingMoney < 0 || catalog.CorrectOrderPayment < 0)
@@ -284,24 +284,24 @@ namespace Witch.Infrastructure.Content
                 errors.Add("Day definitions must be contiguous starting at day 1.");
             }
 
-            if (catalog.RewindDifficulty != null)
+            if (catalog.MatchCardDifficulty != null)
             {
-                int start = catalog.RewindDifficulty.StartingPairCount;
-                int maximum = catalog.RewindDifficulty.MaximumPairCount;
+                int start = catalog.MatchCardDifficulty.StartingPairCount;
+                int maximum = catalog.MatchCardDifficulty.MaximumPairCount;
                 if (start < 1 || maximum < start)
                 {
-                    errors.Add("Rewind difficulty requires a positive pair range.");
+                    errors.Add("Match Card difficulty requires a positive pair range.");
                 }
                 else
                 {
-                    int uniqueCards = catalog.RewindCards
+                    int uniqueCards = catalog.MatchCards
                         .Where(value => value != null && !string.IsNullOrWhiteSpace(value.StableId))
                         .Select(value => value.StableId)
                         .Distinct(StringComparer.Ordinal)
                         .Count();
                     if (uniqueCards < maximum)
                     {
-                        errors.Add("Rewind pool requires at least " + maximum + " unique rewind cards.");
+                        errors.Add("Match Card pool requires at least " + maximum + " unique Match Cards.");
                     }
                 }
             }

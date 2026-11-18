@@ -15,7 +15,7 @@ namespace Witch.Editor
             "Assets/Scenes/Bootstrap.unity",
             "Assets/Scenes/MainMenu.unity",
             "Assets/Scenes/Shop.unity",
-            "Assets/Scenes/RewindMinigame.unity"
+            "Assets/Scenes/MatchCardMinigame.unity"
         };
 
         public static void BuildMacArm64()
@@ -36,7 +36,7 @@ namespace Witch.Editor
                 .ToArray();
             if (!scenes.SequenceEqual(ProductionScenes))
             {
-                throw new InvalidOperationException("Game build requires Bootstrap, MainMenu, Shop, and RewindMinigame in that order.");
+                throw new InvalidOperationException("Game build requires Bootstrap, MainMenu, Shop, and MatchCardMinigame in that order.");
             }
 
             PlayerSettings.SetArchitecture(NamedBuildTarget.Standalone, 1);

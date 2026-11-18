@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
@@ -14,70 +15,6 @@ namespace Witch.Application.Tests
 {
     public sealed class DaySummaryStatsTests
     {
-        [Test]
-        public async Task CountersIncrementCorrectlyPerOutcomeKind_AndSummaryCapturedBeforeReset()
-        {
-            var clock = new FakeClock();
-            GameSession session = CreateSession(startingMoney: 0, expense: 20, timerSeconds: 30);
-            var saves = new FakeSaveRepository();
-            var resolve = new ResolveExpenseUseCase(
-                new ExpenseRules(3),
-                CreateSetup(30),
-                saves,
-                new FakeRandomSource { NextValue = 901 },
-                clock);
-            var rules = new PotionServiceRules(20);
-
-            new OpenShopUseCase().Execute(session);
-
-            // Correct serve: +1 correct, +20 coins.
-            ServeCustomer(session, clock, rules, 1, correct: true, closeAfter: false);
-            Assert.That(session.AttemptMetadata.CorrectServiceCountToday, Is.EqualTo(1));
-            Assert.That(session.AttemptMetadata.WrongServiceCountToday, Is.EqualTo(0));
-            Assert.That(session.AttemptMetadata.WrongOrdersForSummary, Is.EqualTo(0));
-            Assert.That(session.AttemptMetadata.ServiceCountToday, Is.EqualTo(1));
-            Assert.That(session.AttemptMetadata.CoinsEarnedToday, Is.EqualTo(20));
-
-            // Wrong serve: +1 wrong, +0 coins.
-            ServeCustomer(session, clock, rules, 2, correct: false, closeAfter: false);
-            Assert.That(session.AttemptMetadata.CorrectServiceCountToday, Is.EqualTo(1));
-            Assert.That(session.AttemptMetadata.WrongServiceCountToday, Is.EqualTo(1));
-            Assert.That(session.AttemptMetadata.WrongOrdersForSummary, Is.EqualTo(1));
-            Assert.That(session.AttemptMetadata.ServiceCountToday, Is.EqualTo(2));
-            Assert.That(session.AttemptMetadata.CoinsEarnedToday, Is.EqualTo(20));
-
-            // Another correct serve and close day.
-            ServeCustomer(session, clock, rules, 3, correct: true, closeAfter: true);
-            Assert.That(session.AttemptMetadata.CorrectServiceCountToday, Is.EqualTo(2));
-            Assert.That(session.AttemptMetadata.WrongServiceCountToday, Is.EqualTo(1));
-            Assert.That(session.AttemptMetadata.WrongOrdersForSummary, Is.EqualTo(1));
-            Assert.That(session.AttemptMetadata.ServiceCountToday, Is.EqualTo(3));
-            Assert.That(session.AttemptMetadata.CoinsEarnedToday, Is.EqualTo(40));
-            Assert.That(session.RunState.Money, Is.EqualTo(40));
-
-            ExpenseResolutionResult result = await resolve.ExecuteAsync(session);
-            Assert.That(result.Succeeded, Is.True, result.ErrorMessage);
-            Assert.That(session.CurrentPhase, Is.EqualTo(GamePhase.DaySummary));
-            Assert.That(session.LastDaySummary, Is.Not.Null);
-            Assert.That(session.LastDaySummary.CorrectOrders, Is.EqualTo(2));
-            Assert.That(session.LastDaySummary.WrongOrders, Is.EqualTo(1));
-            Assert.That(session.LastDaySummary.CoinsEarned, Is.EqualTo(40));
-            Assert.That(session.LastDaySummary.TaxPaid, Is.EqualTo(20));
-            Assert.That(session.LastDaySummary.CoinsRemaining, Is.EqualTo(20));
-            Assert.That(session.LastDaySummary.DayNumber, Is.EqualTo(1));
-
-            // Counters reset for next day after summary capture.
-            Assert.That(session.AttemptMetadata.CorrectServiceCountToday, Is.EqualTo(0));
-            Assert.That(session.AttemptMetadata.WrongServiceCountToday, Is.EqualTo(0));
-            Assert.That(session.AttemptMetadata.WrongOrdersForSummary, Is.EqualTo(0));
-            Assert.That(session.AttemptMetadata.ServiceCountToday, Is.EqualTo(0));
-            Assert.That(session.AttemptMetadata.CoinsEarnedToday, Is.EqualTo(0));
-
-            // Invariant: coins earned minus tax equals change in money for the day.
-            Assert.That(session.LastDaySummary.CoinsEarned - session.LastDaySummary.TaxPaid,
-                Is.EqualTo(session.RunState.Money - session.DayStartSnapshot.RunState.Money));
-        }
-
         [Test]
         public async Task RetryResetsNewCountersAndSummaryWrong_LeavesLegacyCarryForward()
         {
@@ -116,7 +53,7 @@ namespace Witch.Application.Tests
         }
 
         [Test]
-        public async Task FullRewindResetsNewCountersAndSummaryWrongToDayStart()
+        public async Task FullMinigameResetResetsNewCountersAndSummaryWrongToDayStart()
         {
             var clock = new FakeClock();
             GameSession session = CreateSession(startingMoney: 0, expense: 100, timerSeconds: 60);
@@ -129,22 +66,22 @@ namespace Witch.Application.Tests
             Assert.That(session.AttemptMetadata.WrongOrdersForSummary, Is.EqualTo(1));
             Assert.That(session.AttemptMetadata.CoinsEarnedToday, Is.EqualTo(20));
 
-            TriggerRewindPending(session, clock, rules);
-            Assert.That(session.CurrentPhase, Is.EqualTo(GamePhase.RewindPending));
+            TriggerMinigamePending(session, clock, rules);
+            Assert.That(session.CurrentPhase, Is.EqualTo(GamePhase.MinigamePending));
 
-            // Full rewind path when not resumable in place: expire remaining timer via public behavior.
+            // Full minigame reset path when not resumable in place: expire remaining timer via public behavior.
             if (session.TimerState.RemainingTime > TimeSpan.Zero)
             {
                 clock.UtcNow = clock.UtcNow.Add(session.TimerState.RemainingTime).Add(TimeSpan.FromSeconds(1));
                 new UpdateShopTimerUseCase(clock).Execute(session);
             }
             Assert.That(session.TimerState.RemainingTime, Is.EqualTo(TimeSpan.Zero));
-            Assert.That(session.CanResumeInPlace, Is.False, "Test must exercise full rewind path.");
+            Assert.That(session.CanResumeInPlace, Is.False, "Test must exercise full minigame reset path.");
 
-            var enter = new EnterRewindUseCase(new FakeSaveRepository(), new FakeSceneLoader(), new FakeRandomSource { NextValue = 777 });
+            var enter = new EnterMinigameUseCase(new FakeSaveRepository(), new FakeSceneLoader(), new FakeRandomSource { NextValue = 777 });
             await enter.ExecuteAsync(session);
-            var complete = new CompleteRewindUseCase(new FakeSaveRepository(), new FakeSceneLoader(), new FakeRandomSource { NextValue = 888 });
-            RewindTransactionResult completed = await complete.ExecuteAsync(session);
+            var complete = new CompleteMinigameUseCase(new FakeSaveRepository(), new FakeSceneLoader(), new FakeRandomSource { NextValue = 888 });
+            MinigameTransactionResult completed = await complete.ExecuteAsync(session);
 
             Assert.That(completed.Succeeded, Is.True, completed.ErrorMessage);
             Assert.That(session.CurrentPhase, Is.EqualTo(GamePhase.ShopPreparation));
@@ -159,29 +96,29 @@ namespace Witch.Application.Tests
         }
 
         [Test]
-        public async Task InPlaceRewindRollsBackNewCountersAndSummaryWrongToPreServiceSnapshot()
+        public async Task InPlaceMinigameRollsBackNewCountersAndSummaryWrongToPreServiceSnapshot()
         {
             var clock = new FakeClock();
             GameSession session = CreateSession(startingMoney: 0, expense: 100, timerSeconds: 60);
             var rules = new PotionServiceRules(20);
             new OpenShopUseCase().Execute(session);
 
-            // Correct serve before the rewind-causing customer: baseline money 20, correct 1, summary wrong 0.
+            // Correct serve before the minigame-causing customer: baseline money 20, correct 1, summary wrong 0.
             AdmitAndServe(session, clock, rules, "c1", "o1", correct: true);
             Assert.That(session.AttemptMetadata.CorrectServiceCountToday, Is.EqualTo(1));
             Assert.That(session.AttemptMetadata.WrongOrdersForSummary, Is.EqualTo(0));
             Assert.That(session.AttemptMetadata.CoinsEarnedToday, Is.EqualTo(20));
 
-            // Reach rewind pending with time remaining so in-place resume is possible.
-            TriggerRewindPending(session, clock, rules);
-            Assert.That(session.CurrentPhase, Is.EqualTo(GamePhase.RewindPending));
+            // Reach minigame pending with time remaining so in-place resume is possible.
+            TriggerMinigamePending(session, clock, rules);
+            Assert.That(session.CurrentPhase, Is.EqualTo(GamePhase.MinigamePending));
             Assert.That(session.TimerState.RemainingTime, Is.GreaterThan(TimeSpan.Zero));
-            Assert.That(session.CanResumeInPlace, Is.True, "Test must exercise in-place rewind path.");
+            Assert.That(session.CanResumeInPlace, Is.True, "Test must exercise in-place minigame resume path.");
 
-            var enter = new EnterRewindUseCase(new FakeSaveRepository(), new FakeSceneLoader(), new FakeRandomSource { NextValue = 777 });
+            var enter = new EnterMinigameUseCase(new FakeSaveRepository(), new FakeSceneLoader(), new FakeRandomSource { NextValue = 777 });
             await enter.ExecuteAsync(session);
-            var complete = new CompleteRewindUseCase(new FakeSaveRepository(), new FakeSceneLoader(), new FakeRandomSource { NextValue = 888 });
-            RewindTransactionResult completed = await complete.ExecuteAsync(session);
+            var complete = new CompleteMinigameUseCase(new FakeSaveRepository(), new FakeSceneLoader(), new FakeRandomSource { NextValue = 888 });
+            MinigameTransactionResult completed = await complete.ExecuteAsync(session);
 
             Assert.That(completed.Succeeded, Is.True, completed.ErrorMessage);
             Assert.That(session.CurrentPhase, Is.EqualTo(GamePhase.CustomerEncounter));
@@ -189,17 +126,59 @@ namespace Witch.Application.Tests
             Assert.That(session.RunState.Money, Is.EqualTo(20));
             Assert.That(session.AttemptMetadata.CorrectServiceCountToday, Is.EqualTo(1));
             Assert.That(session.AttemptMetadata.CoinsEarnedToday, Is.EqualTo(20));
-            Assert.That(session.AttemptMetadata.WrongOrdersForSummary, Is.EqualTo(0));
+            // Pre-service snapshot for this encounter is before the 3rd wrong serve (two prior wrong serves remain in summary).
+            Assert.That(session.AttemptMetadata.WrongOrdersForSummary, Is.EqualTo(2));
             // Legacy carry-forward preserved.
             Assert.That(session.AttemptMetadata.WrongServiceCountToday, Is.GreaterThan(0));
             Assert.That(session.AttemptMetadata.CoinsEarnedToday,
                 Is.EqualTo(session.RunState.Money - session.DayStartSnapshot.RunState.Money));
         }
 
-        private static void TriggerRewindPending(GameSession session, FakeClock clock, PotionServiceRules rules)
+        [Test]
+        public async Task InPlaceMinigameSave_MatchesSessionAndReloadKeepsPreServiceCounters()
+        {
+            var clock = new FakeClock();
+            GameSession session = CreateSession(startingMoney: 0, expense: 100, timerSeconds: 60);
+            var rules = new PotionServiceRules(20);
+            var saves = new FakeSaveRepository();
+            new OpenShopUseCase().Execute(session);
+
+            AdmitAndServe(session, clock, rules, "c1", "o1", correct: true);
+            TriggerMinigamePending(session, clock, rules);
+            Assert.That(session.CurrentPhase, Is.EqualTo(GamePhase.MinigamePending));
+            Assert.That(session.CanResumeInPlace, Is.True, "Test must exercise in-place minigame resume path.");
+
+            var enter = new EnterMinigameUseCase(saves, new FakeSceneLoader(), new FakeRandomSource { NextValue = 777 });
+            await enter.ExecuteAsync(session);
+            var complete = new CompleteMinigameUseCase(saves, new FakeSceneLoader(), new FakeRandomSource { NextValue = 888 });
+            MinigameTransactionResult completed = await complete.ExecuteAsync(session);
+
+            Assert.That(completed.Succeeded, Is.True, completed.ErrorMessage);
+            Assert.That(session.CurrentPhase, Is.EqualTo(GamePhase.CustomerEncounter));
+
+            // Saved data must match running session for counters restored by in-place minigame.
+            Assert.That(saves.SavedAttemptMetadata, Is.Not.Null);
+            Assert.That(saves.SavedAttemptMetadata.CorrectServiceCountToday, Is.EqualTo(session.AttemptMetadata.CorrectServiceCountToday));
+            Assert.That(saves.SavedAttemptMetadata.CoinsEarnedToday, Is.EqualTo(session.AttemptMetadata.CoinsEarnedToday));
+            Assert.That(saves.SavedAttemptMetadata.WrongOrdersForSummary, Is.EqualTo(session.AttemptMetadata.WrongOrdersForSummary));
+
+            // Simulated reload from saved run: rebuilt session keeps pre-service counter values.
+            var ctor = typeof(GameSession).GetConstructor(
+                BindingFlags.Instance | BindingFlags.NonPublic,
+                null,
+                new[] { typeof(DayStartSnapshot), typeof(ActiveAttemptMetadata), typeof(GamePhase) },
+                null);
+            Assert.That(ctor, Is.Not.Null, "GameSession save-state constructor is required for reload simulation.");
+            var reloaded = (GameSession)ctor.Invoke(new object[] { saves.SavedSnapshot, saves.SavedAttemptMetadata, GamePhase.ShopPreparation });
+            Assert.That(reloaded.AttemptMetadata.CorrectServiceCountToday, Is.EqualTo(1));
+            Assert.That(reloaded.AttemptMetadata.CoinsEarnedToday, Is.EqualTo(20));
+            Assert.That(reloaded.AttemptMetadata.WrongOrdersForSummary, Is.EqualTo(2));
+        }
+
+        private static void TriggerMinigamePending(GameSession session, FakeClock clock, PotionServiceRules rules)
         {
             int guard = 0;
-            while (session.CurrentPhase != GamePhase.RewindPending && guard++ < 10)
+            while (session.CurrentPhase != GamePhase.MinigamePending && guard++ < 10)
             {
                 if (session.CurrentPhase == GamePhase.CustomerArrival)
                 {

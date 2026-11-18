@@ -125,9 +125,9 @@ namespace Witch.Infrastructure.Content
         public string Description { get; }
     }
 
-    public sealed class RewindCardContent
+    public sealed class MatchCardContent
     {
-        public RewindCardContent(string stableId, string symbolKey)
+        public MatchCardContent(string stableId, string symbolKey)
         {
             StableId = stableId;
             SymbolKey = symbolKey;
@@ -137,9 +137,9 @@ namespace Witch.Infrastructure.Content
         public string SymbolKey { get; }
     }
 
-    public sealed class RewindDifficultyContent
+    public sealed class MatchCardDifficultyContent
     {
-        public RewindDifficultyContent(string stableId, int startingPairCount, int maximumPairCount)
+        public MatchCardDifficultyContent(string stableId, int startingPairCount, int maximumPairCount)
         {
             StableId = stableId;
             StartingPairCount = startingPairCount;

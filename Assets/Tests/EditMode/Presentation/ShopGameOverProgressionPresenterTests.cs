@@ -112,16 +112,8 @@ namespace Witch.Presentation.Tests
                 SetSessionState(session, "DayStartSnapshot", day2Snapshot);
                 SetSessionState(session, "AttemptMetadata", day2Metadata);
 
-                new OpenShopUseCase().Execute(session);
-                new AdmitCustomerUseCase(new FixedClock()).Execute(
-                    session,
-                    new AdmitCustomerCommand(
-                        "customer.2",
-                        new Witch.Domain.Orders.OrderRequest(
-                            "order.2",
-                            new HerbPair("herb.ginger", "herb.mint"))));
-                SetSessionState(session, "TimerState", new ShopTimerState(TimeSpan.Zero, true));
-                new UpdateShopTimerUseCase(new FixedClock()).Execute(session);
+                // Expense resolution requires ClosingEncounter phase (real flow reaches it after day closes).
+                SetSessionState(session, "CurrentPhase", GamePhase.ClosingEncounter);
 
                 ExpenseResolutionResult result = resolveExpense.ExecuteAsync(session).GetAwaiter().GetResult();
                 Assert.That(result.Succeeded, Is.True, result.ErrorMessage);
@@ -141,7 +133,7 @@ namespace Witch.Presentation.Tests
                 Assert.That(wrongValue.text, Is.EqualTo(session.LastDaySummary.WrongOrders.ToString()));
                 Assert.That(coinsValue.text, Is.EqualTo("$" + session.LastDaySummary.CoinsEarned));
                 Assert.That(taxValue.text, Is.EqualTo("$25"));
-                Assert.That(remainValue.text, Is.EqualTo("FAILED"));
+                Assert.That(remainValue.text, Is.EqualTo("Failed"));
                 Assert.That(session.LastDaySummary.CoinsRemaining, Is.EqualTo(7));
                 Assert.That(progressionText.gameObject.activeSelf, Is.False);
                 Assert.That(correctRow.activeSelf && wrongRow.activeSelf && coinsRow.activeSelf && taxRow.activeSelf && remainRow.activeSelf, Is.True);

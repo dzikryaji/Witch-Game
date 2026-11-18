@@ -12,8 +12,8 @@ namespace Witch.Infrastructure.Content
         [SerializeField] private CustomerDefinition[] customers = Array.Empty<CustomerDefinition>();
         [SerializeField] private DayDefinition[] days = Array.Empty<DayDefinition>();
         [SerializeField] private HerbCategoryDefinition[] herbCategories = Array.Empty<HerbCategoryDefinition>();
-        [SerializeField] private RewindCardDefinition[] rewindCards = Array.Empty<RewindCardDefinition>();
-        [SerializeField] private RewindDifficultyDefinition rewindDifficulty;
+        [SerializeField] private MatchCardDefinition[] matchCardDefinitions = Array.Empty<MatchCardDefinition>();
+        [SerializeField] private MatchCardDifficultyDefinition matchCardDifficulty;
         [SerializeField] private WitchHunterDialogueDefinition witchHunterDialogue;
         [SerializeField, Min(0)] private int startingMoney;
         [SerializeField, Min(0)] private int correctOrderPayment = 10;
@@ -23,8 +23,8 @@ namespace Witch.Infrastructure.Content
         public IReadOnlyList<CustomerDefinition> Customers => customers;
         public IReadOnlyList<DayDefinition> Days => days;
         public IReadOnlyList<HerbCategoryDefinition> HerbCategories => herbCategories;
-        public IReadOnlyList<RewindCardDefinition> RewindCards => rewindCards;
-        public RewindDifficultyDefinition RewindDifficulty => rewindDifficulty;
+        public IReadOnlyList<MatchCardDefinition> MatchCards => matchCardDefinitions;
+        public MatchCardDifficultyDefinition MatchCardDifficulty => matchCardDifficulty;
         public WitchHunterDialogueDefinition WitchHunterDialogue => witchHunterDialogue;
         public int StartingMoney => startingMoney;
         public int CorrectOrderPayment => correctOrderPayment;
@@ -35,8 +35,8 @@ namespace Witch.Infrastructure.Content
             IReadOnlyList<CustomerDefinition> customerValues,
             IReadOnlyList<DayDefinition> dayValues,
             IReadOnlyList<HerbCategoryDefinition> categoryValues,
-            IReadOnlyList<RewindCardDefinition> cardValues,
-            RewindDifficultyDefinition difficulty,
+            IReadOnlyList<MatchCardDefinition> cardValues,
+            MatchCardDifficultyDefinition difficulty,
             int initialMoney = 0,
             int orderPayment = 10,
             WitchHunterDialogueDefinition witchHunterDialogueDefinition = null)
@@ -47,8 +47,8 @@ namespace Witch.Infrastructure.Content
             customers = Copy(customerValues);
             days = Copy(dayValues);
             herbCategories = Copy(categoryValues);
-            rewindCards = Copy(cardValues);
-            rewindDifficulty = difficulty;
+            matchCardDefinitions = Copy(cardValues);
+            matchCardDifficulty = difficulty;
             startingMoney = initialMoney;
             correctOrderPayment = orderPayment;
             witchHunterDialogue = witchHunterDialogueDefinition;

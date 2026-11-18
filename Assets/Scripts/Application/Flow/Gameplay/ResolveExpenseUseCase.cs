@@ -94,7 +94,7 @@ namespace Witch.Application.Flow
                     completedRun.RunId,
                     completedRun.CurrentDayNumber,
                     completedRun.Suspicion,
-                    completedRun.RewindCount,
+                    completedRun.MinigameWinCount,
                     false,
                     0,
                     session.AttemptMetadata.ActiveOrderSeed);
@@ -141,7 +141,7 @@ namespace Witch.Application.Flow
                 nextRunState.RunId,
                 nextDay,
                 nextRunState.Suspicion,
-                nextRunState.RewindCount,
+                nextRunState.MinigameWinCount,
                 false,
                 0,
                 nextSeed,
@@ -179,7 +179,7 @@ namespace Witch.Application.Flow
 
             // D1: Clean Ledger can only unlock on Day 2 or later, never together with First Shift.
             // D2: Clean Ledger needs at least one customer served that day.
-            // D3: Clean Ledger fails if the rewind minigame was played that day.
+            // D3: Clean Ledger fails if the minigame was played that day.
             if (paidDay > RunState.FirstDay && !servedWrongToday && serviceCountToday > 0 && !minigamePlayedToday && !cleanLedgerReported)
             {
                 cleanLedgerReported = true;

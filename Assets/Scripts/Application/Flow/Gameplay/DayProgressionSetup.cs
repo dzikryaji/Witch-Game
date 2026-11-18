@@ -98,7 +98,7 @@ namespace Witch.Application.Flow
                 state.CurrentDayNumber,
                 state.Money,
                 state.Suspicion,
-                state.RewindCount,
+                state.MinigameWinCount,
                 state.UnlockedCategoryIds.Concat(active.SelectMany(value => value.CategoryIds)).Distinct(StringComparer.Ordinal).ToArray(),
                 state.UnlockedHerbIds.Concat(active.SelectMany(value => value.HerbIds)).Distinct(StringComparer.Ordinal).ToArray(),
                 state.UnlockedGuidebookEntryIds.Concat(active.SelectMany(value => value.GuidebookEntryIds)).Distinct(StringComparer.Ordinal).ToArray(),

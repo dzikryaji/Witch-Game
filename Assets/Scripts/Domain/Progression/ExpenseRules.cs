@@ -42,7 +42,7 @@ namespace Witch.Domain.Progression
                         runState.CurrentDayNumber,
                         remainingMoney,
                         runState.Suspicion,
-                        runState.RewindCount));
+                        runState.MinigameWinCount));
             }
 
             return new ExpenseOutcome(
@@ -51,7 +51,7 @@ namespace Witch.Domain.Progression
                     runState.CurrentDayNumber + 1,
                     remainingMoney,
                     runState.Suspicion,
-                    runState.RewindCount));
+                    runState.MinigameWinCount));
         }
     }
 }

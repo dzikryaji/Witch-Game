@@ -8,9 +8,9 @@ namespace Witch.EditorTools
     {
         private const int Size = 64;
         private const int Radius = 16;
-        private const string AssetPath = "Assets/Art/UI/Rewind/RoundedCard.png";
+        private const string AssetPath = "Assets/Art/UI/MatchCard/RoundedCard.png";
 
-        [MenuItem("Witch/Rewind/Create Rounded Card Sprite")]
+        [MenuItem("Witch/Match Card/Create Rounded Card Sprite")]
         public static void Create()
         {
             var texture = new Texture2D(Size, Size, TextureFormat.RGBA32, false);

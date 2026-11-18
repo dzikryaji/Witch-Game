@@ -15,8 +15,8 @@ namespace Witch.Infrastructure.Content
             IDictionary<string, CustomerContent> customersById,
             IDictionary<int, DayContent> daysByNumber,
             IDictionary<string, HerbCategoryContent> herbCategoriesById,
-            IReadOnlyList<RewindCardContent> rewindCards,
-            RewindDifficultyContent rewindDifficulty,
+            IReadOnlyList<MatchCardContent> matchCards,
+            MatchCardDifficultyContent matchCardDifficulty,
             NewRunSetup newRunSetup,
             DayProgressionSetup dayProgressionSetup,
             ExpenseRules expenseRules,
@@ -33,8 +33,8 @@ namespace Witch.Infrastructure.Content
                 new Dictionary<int, DayContent>(daysByNumber));
             HerbCategoriesById = new ReadOnlyDictionary<string, HerbCategoryContent>(
                 new Dictionary<string, HerbCategoryContent>(herbCategoriesById));
-            RewindCards = new List<RewindCardContent>(rewindCards).AsReadOnly();
-            RewindDifficulty = rewindDifficulty;
+            MatchCards = new List<MatchCardContent>(matchCards).AsReadOnly();
+            MatchCardDifficulty = matchCardDifficulty;
             NewRunSetup = newRunSetup;
             DayProgressionSetup = dayProgressionSetup;
             ExpenseRules = expenseRules;
@@ -47,13 +47,13 @@ namespace Witch.Infrastructure.Content
         public IReadOnlyDictionary<string, CustomerContent> CustomersById { get; }
         public IReadOnlyDictionary<int, DayContent> DaysByNumber { get; }
         public IReadOnlyDictionary<string, HerbCategoryContent> HerbCategoriesById { get; }
-        public IReadOnlyList<RewindCardContent> RewindCards { get; }
-        public IReadOnlyList<string> RewindCardIds
+        public IReadOnlyList<MatchCardContent> MatchCards { get; }
+        public IReadOnlyList<string> MatchCardIds
         {
             get
             {
-                var ids = new List<string>(RewindCards.Count);
-                foreach (RewindCardContent card in RewindCards)
+                var ids = new List<string>(MatchCards.Count);
+                foreach (MatchCardContent card in MatchCards)
                 {
                     ids.Add(card.StableId);
                 }
@@ -62,7 +62,7 @@ namespace Witch.Infrastructure.Content
             }
         }
 
-        public RewindDifficultyContent RewindDifficulty { get; }
+        public MatchCardDifficultyContent MatchCardDifficulty { get; }
         public NewRunSetup NewRunSetup { get; }
         public DayProgressionSetup DayProgressionSetup { get; }
         public ExpenseRules ExpenseRules { get; }

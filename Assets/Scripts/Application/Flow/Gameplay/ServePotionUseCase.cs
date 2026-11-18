@@ -101,7 +101,7 @@ namespace Witch.Application.Flow
                     outcome.UpdatedRunState.RunId,
                     outcome.UpdatedRunState.CurrentDayNumber,
                     outcome.UpdatedRunState.Suspicion,
-                    outcome.UpdatedRunState.RewindCount,
+                    outcome.UpdatedRunState.MinigameWinCount,
                     false,
                     0,
                     session.AttemptMetadata.ActiveOrderSeed,

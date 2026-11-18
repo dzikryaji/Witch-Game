@@ -34,7 +34,7 @@ namespace Witch.Application.Flow
                 return ExpenseResolutionResult.Failure(ExpenseResolutionError.InvalidPhase, "The day can only be restarted while the shop is open.");
             }
 
-            // Exact day-start values: money, suspicion and rewind count as captured at the start of the day.
+            // Exact day-start values: money, suspicion and minigame win count as captured at the start of the day.
             RunState restartState = session.DayStartSnapshot.RunState;
             if (restartState.CurrentDayNumber == 1)
             {
@@ -55,7 +55,7 @@ namespace Witch.Application.Flow
                 restartState.RunId,
                 restartState.CurrentDayNumber,
                 restartState.Suspicion,
-                restartState.RewindCount,
+                restartState.MinigameWinCount,
                 false,
                 0,
                 snapshot.OrderSeed,

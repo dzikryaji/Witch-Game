@@ -19,7 +19,7 @@ namespace Witch.Infrastructure.Tests
                 "Assets/Scenes/Bootstrap.unity",
                 "Assets/Scenes/MainMenu.unity",
                 "Assets/Scenes/Shop.unity",
-                "Assets/Scenes/RewindMinigame.unity"
+                "Assets/Scenes/MatchCardMinigame.unity"
             }));
         }
 
