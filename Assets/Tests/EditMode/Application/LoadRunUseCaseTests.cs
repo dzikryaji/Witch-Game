@@ -71,11 +71,11 @@ namespace Witch.Application.Tests
         }
 
         [Test]
-        public async Task Execute_WithPendingRewind_RoutesToRewindMinigame()
+        public async Task Execute_WithPendingMinigame_RoutesToMatchCardMinigame()
         {
             var repository = new FakeSaveRepository
             {
-                LatestLoadResult = LoadStateResult.Success(CreateSavedGame("run.rewind", pendingRewind: true))
+                LatestLoadResult = LoadStateResult.Success(CreateSavedGame("run.minigame", pendingMinigame: true))
             };
             var sessionStore = new GameSessionStore();
             var sceneLoader = new FakeSceneLoader();
@@ -84,8 +84,8 @@ namespace Witch.Application.Tests
             LoadRunResult result = await useCase.ExecuteAsync(LoadRunCommand.Latest());
 
             Assert.That(result.Succeeded, Is.True, result.ErrorMessage);
-            Assert.That(result.Session.CurrentPhase, Is.EqualTo(Witch.Domain.GamePhase.RewindMinigame));
-            Assert.That(sceneLoader.LastRequestedScene, Is.EqualTo(SceneId.RewindMinigame));
+            Assert.That(result.Session.CurrentPhase, Is.EqualTo(Witch.Domain.GamePhase.MinigameActive));
+            Assert.That(sceneLoader.LastRequestedScene, Is.EqualTo(SceneId.MatchCardMinigame));
         }
 
         [Test]
@@ -144,15 +144,15 @@ namespace Witch.Application.Tests
 
         private static GameSaveState CreateSavedGame(
             string runId,
-            bool pendingRewind = false,
+            bool pendingMinigame = false,
             bool runCompleted = false)
         {
             var runState = new RunState(
                 runId,
                 1,
                 0,
-                pendingRewind ? RunState.RewindSuspicionThreshold : 0,
-                pendingRewind ? 1 : 0,
+                pendingMinigame ? RunState.MinigameSuspicionThreshold : 0,
+                pendingMinigame ? 1 : 0,
                 new[] { "category.warm" },
                 new[] { "herb.ginger", "herb.mint" },
                 new[] { "guidebook.warm" });
@@ -160,7 +160,7 @@ namespace Witch.Application.Tests
                 1,
                 0,
                 0,
-                pendingRewind ? 0 : runState.RewindCount);
+                pendingMinigame ? 0 : runState.MinigameWinCount);
             if (runCompleted)
             {
                 snapshotState = snapshotState.MarkCompleted();
@@ -178,9 +178,9 @@ namespace Witch.Application.Tests
                 runId,
                 1,
                 runState.Suspicion,
-                runState.RewindCount,
-                pendingRewind,
-                pendingRewind ? 777 : 0,
+                runState.MinigameWinCount,
+                pendingMinigame,
+                pendingMinigame ? 777 : 0,
                 1234);
             return new GameSaveState(snapshot, metadata);
         }

@@ -16,8 +16,8 @@ namespace Witch.Editor
         [MenuItem(MenuRoot + "Start Scene/Shop")]
         private static void SetStartShop() { WitchDebugSession.StartScene = WitchDebugSession.StartSceneShop; LogState(); }
 
-        [MenuItem(MenuRoot + "Start Scene/Rewind Minigame")]
-        private static void SetStartRewind() { WitchDebugSession.StartScene = WitchDebugSession.StartSceneRewind; LogState(); }
+        [MenuItem(MenuRoot + "Start Scene/Match Card Minigame")]
+        private static void SetStartMatchCardMinigame() { WitchDebugSession.StartScene = WitchDebugSession.StartSceneMinigame; LogState(); }
 
         [MenuItem(MenuRoot + "Start Day/Day 1")] private static void Day1() { SetDay(1); }
         [MenuItem(MenuRoot + "Start Day/Day 2")] private static void Day2() { SetDay(2); }

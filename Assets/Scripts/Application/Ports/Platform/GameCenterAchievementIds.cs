@@ -55,7 +55,7 @@ namespace Witch.Application.Ports
         public static string FiveArts => BundleNamespace + "." + FiveArtsSuffix;
 
         /// <summary>
-        /// Clean Ledger: Day 2 or later, at least one customer served, no wrong service that day, and no rewind minigame played that day.
+        /// Clean Ledger: Day 2 or later, at least one customer served, no wrong service that day, and no minigame played that day.
         /// </summary>
         public static string CleanLedger => BundleNamespace + "." + CleanLedgerSuffix;
     }

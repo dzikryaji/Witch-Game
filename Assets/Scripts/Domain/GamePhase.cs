@@ -7,8 +7,8 @@ namespace Witch.Domain
         CustomerEncounter,
         ClosingEncounter,
         ExpenseCheck,
-        RewindPending,
-        RewindMinigame,
+        MinigamePending,
+        MinigameActive,
         DaySummary,
         Victory,
         GameOver

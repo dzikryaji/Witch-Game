@@ -27008,7 +27008,7 @@ MonoBehaviour:
     m_LineSpacing: 1.08
   m_Text: 'Your mistakes have caught up with you.
 
-    Cast a spell to erase his memories before he uncovers the truth. '
+    Cast a spell to erase his memories before he uncovers the truth.'
 --- !u!222 &2099672255
 CanvasRenderer:
   m_ObjectHideFlags: 0

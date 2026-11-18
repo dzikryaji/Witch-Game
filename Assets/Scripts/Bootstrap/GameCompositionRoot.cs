@@ -11,7 +11,7 @@ using Witch.Infrastructure.Platform;
 using Witch.Infrastructure.Scenes;
 using Witch.Presentation;
 using Witch.Presentation.MainMenu;
-using Witch.Presentation.Rewind;
+using Witch.Presentation.MatchCard;
 using Witch.Presentation.Shop;
 using Witch.Presentation.Settings;
 #if UNITY_EDITOR
@@ -42,8 +42,8 @@ namespace Witch.Bootstrap
         private PotionPreparationUseCase potionPreparation;
         private ServePotionUseCase servePotion;
         private UpdateShopTimerUseCase updateShopTimer;
-        private EnterRewindUseCase enterRewind;
-        private CompleteRewindUseCase completeRewind;
+        private EnterMinigameUseCase enterMinigame;
+        private CompleteMinigameUseCase completeMinigame;
         private ResolveExpenseUseCase resolveExpense;
         private RetryDayUseCase retryDay;
         private RestartDayUseCase restartDay;
@@ -224,11 +224,11 @@ namespace Witch.Bootstrap
                 herbCategoryIds);
             updateShopTimer = new UpdateShopTimerUseCase(clock);
             setShopTimerPaused = new SetShopTimerPausedUseCase(clock);
-            enterRewind = new EnterRewindUseCase(
+            enterMinigame = new EnterMinigameUseCase(
                 runRepository,
                 sceneLoader,
                 orderRandom);
-            completeRewind = new CompleteRewindUseCase(
+            completeMinigame = new CompleteMinigameUseCase(
                 runRepository,
                 sceneLoader,
                 new DeterministicRandomSource(randomSeed + 2),
@@ -359,28 +359,28 @@ namespace Witch.Bootstrap
                             potionPreparation,
                             servePotion,
                             updateShopTimer,
-                            enterRewind,
+                            enterMinigame,
                             shopPresentationFactory.Create(sessionStore.ActiveSession));
                         presenter.ConfigureProgression(resolveExpense, retryDay, continueToNextDay);
                     }
                 }
 
-                foreach (RewindShellPresenter presenter in root.GetComponentsInChildren<RewindShellPresenter>(true))
+                foreach (MatchCardShellPresenter presenter in root.GetComponentsInChildren<MatchCardShellPresenter>(true))
                 {
-                    var symbols = new System.Collections.Generic.List<string>(runtimeContent.RewindCards.Count);
-                    foreach (RewindCardContent card in runtimeContent.RewindCards)
+                    var symbols = new System.Collections.Generic.List<string>(runtimeContent.MatchCards.Count);
+                    foreach (MatchCardContent card in runtimeContent.MatchCards)
                     {
                         symbols.Add(card.SymbolKey);
                     }
                     presenter.ConfigureNavigation(sceneLoader);
                     presenter.Initialize(
                         sessionStore,
-                        completeRewind,
+                        completeMinigame,
                         audioService,
                         settingsService.Current,
                         symbols,
-                        runtimeContent.RewindDifficulty.StartingPairCount,
-                        runtimeContent.RewindDifficulty.MaximumPairCount);
+                        runtimeContent.MatchCardDifficulty.StartingPairCount,
+                        runtimeContent.MatchCardDifficulty.MaximumPairCount);
                 }
 
                 foreach (SettingsPanelPresenter presenter in root.GetComponentsInChildren<SettingsPanelPresenter>(true))
@@ -414,18 +414,18 @@ namespace Witch.Bootstrap
             string scene = WitchDebugRuntime.StartScene;
             int day = WitchDebugRuntime.StartDay;
 
-            if (string.Equals(scene, WitchDebugRuntime.StartSceneRewind, System.StringComparison.Ordinal))
+            if (string.Equals(scene, WitchDebugRuntime.StartSceneMinigame, System.StringComparison.Ordinal))
             {
-                // Debug Rewind entry: playable in-memory session matching EnterRewind metadata/state
-                // (PendingRewind, RewindMinigame phase, suspicion at threshold, board/order seeds).
-                // Real Shop->Rewind does not cover with Day Transition; do not leave a cover over Rewind.
+                // Debug minigame entry: playable in-memory session matching EnterMinigame metadata/state
+                // (PendingMinigame, MatchCardMinigame phase, suspicion at threshold, board/order seeds).
+                // Real Shop to Match Card minigame does not cover with Day Transition; do not leave a cover over the minigame.
                 if (DayTransition != null)
                 {
                     DayTransition.CancelPendingReveal();
                     DayTransition.HideImmediate();
                 }
 
-                GameSession session = DevelopmentStartupSessionFactory.CreatePendingRewind(
+                GameSession session = DevelopmentStartupSessionFactory.CreatePendingMinigame(
                     runtimeContent.NewRunSetup,
                     runtimeContent.NewRunSetup.StartingMoney,
                     0,
@@ -435,15 +435,15 @@ namespace Witch.Bootstrap
                 SaveStateResult save = await runRepository.SaveRunStateAsync(session.DayStartSnapshot, session.AttemptMetadata);
                 if (!save.Succeeded)
                 {
-                    FailStartup("Bootstrap could not prepare debug Rewind Minigame: " + save.ErrorMessage);
+                    FailStartup("Bootstrap could not prepare debug Match Card minigame: " + save.ErrorMessage);
                     return;
                 }
 
                 sessionStore.SetActive(session);
-                SceneLoadResult rewindResult = await sceneLoader.LoadAsync(SceneId.RewindMinigame);
-                if (!rewindResult.Succeeded)
+                SceneLoadResult minigameResult = await sceneLoader.LoadAsync(SceneId.MatchCardMinigame);
+                if (!minigameResult.Succeeded)
                 {
-                    FailStartup("Bootstrap could not open debug Rewind Minigame: " + rewindResult.ErrorMessage);
+                    FailStartup("Bootstrap could not open debug Match Card minigame: " + minigameResult.ErrorMessage);
                 }
                 return;
             }

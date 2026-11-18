@@ -77,9 +77,10 @@ namespace Witch.Infrastructure.Tests
             await repository.SaveRunStateAsync(save.DayStartSnapshot, save.AttemptMetadata);
             string path = Path.Combine(temporaryDirectory, JsonRunRepository.CurrentRunFileName);
             string json = File.ReadAllText(path);
-            json = json.Replace("\"correctServiceCountToday\": 0,", string.Empty);
-            json = json.Replace("\"coinsEarnedToday\": 0,", string.Empty);
-            json = json.Replace("\"wrongOrdersForSummary\": 0", string.Empty);
+            json = System.Text.RegularExpressions.Regex.Replace(json, ",?\\s*\"correctServiceCountToday\"\\s*:\\s*0", string.Empty);
+            json = System.Text.RegularExpressions.Regex.Replace(json, ",?\\s*\"coinsEarnedToday\"\\s*:\\s*0", string.Empty);
+            json = System.Text.RegularExpressions.Regex.Replace(json, ",?\\s*\"wrongOrdersForSummary\"\\s*:\\s*0", string.Empty);
+            json = System.Text.RegularExpressions.Regex.Replace(json, ",(\\s*[}\\]])", "$1");
             File.WriteAllText(path, json);
 
             LoadStateResult load = await repository.LoadLatestAsync();
@@ -214,7 +215,7 @@ namespace Witch.Infrastructure.Tests
         }
 
         [Test]
-        public async Task QuitAtSuspicionTwoAndPendingRewindReloadSafelyThenRewindChangesSeed()
+        public async Task QuitAtSuspicionTwoAndPendingMinigameReloadSafelyThenMinigameChangesSeed()
         {
             var repository = new InMemoryRunRepository();
             GameSession session = CreateSession();
@@ -227,30 +228,30 @@ namespace Witch.Infrastructure.Tests
 
             Assert.That(suspicionTwo.RunState.Suspicion, Is.EqualTo(2));
             Assert.That(suspicionTwo.AttemptMetadata.ActiveOrderSeed, Is.EqualTo(777));
-            Assert.That(suspicionTwo.RunState.RewindCount, Is.Zero);
+            Assert.That(suspicionTwo.RunState.MinigameWinCount, Is.Zero);
 
             await ServeWrongAsync(session, repository, rules, 3);
-            await new EnterRewindUseCase(
+            await new EnterMinigameUseCase(
                     repository,
                     new TestSceneLoader(),
                     new FixedRandomSource(888))
                 .ExecuteAsync(session);
             GameSession pending = await ReloadAsync(repository);
 
-            Assert.That(pending.CurrentPhase, Is.EqualTo(GamePhase.RewindMinigame));
-            Assert.That(pending.AttemptMetadata.PendingRewind, Is.True);
+            Assert.That(pending.CurrentPhase, Is.EqualTo(GamePhase.MinigameActive));
+            Assert.That(pending.AttemptMetadata.PendingMinigame, Is.True);
             Assert.That(pending.AttemptMetadata.MinigameBoardSeed, Is.EqualTo(888));
 
-            await new CompleteRewindUseCase(
+            await new CompleteMinigameUseCase(
                     repository,
                     new TestSceneLoader(),
                     new FixedRandomSource(999))
                 .ExecuteAsync(pending);
-            GameSession rewound = await ReloadAsync(repository);
+            GameSession resumed = await ReloadAsync(repository);
 
-            Assert.That(rewound.RunState.Suspicion, Is.Zero);
-            Assert.That(rewound.RunState.RewindCount, Is.EqualTo(1));
-            Assert.That(rewound.AttemptMetadata.ActiveOrderSeed, Is.EqualTo(999));
+            Assert.That(resumed.RunState.Suspicion, Is.Zero);
+            Assert.That(resumed.RunState.MinigameWinCount, Is.EqualTo(1));
+            Assert.That(resumed.AttemptMetadata.ActiveOrderSeed, Is.EqualTo(999));
         }
 
         [Test]

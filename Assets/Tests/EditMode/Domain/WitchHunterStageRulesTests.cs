@@ -7,25 +7,25 @@ namespace Witch.Domain.Tests
     public sealed class WitchHunterStageRulesTests
     {
         [Test]
-        public void NoCompletedRewinds_ResolvesFirstStage()
+        public void NoCompletedMinigameWins_ResolvesFirstStage()
         {
             Assert.That(WitchHunterStageRules.ResolveStageIndex(0, 5), Is.Zero);
         }
 
         [Test]
-        public void OneCompletedRewind_ResolvesSecondStage()
+        public void OneCompletedMinigameWin_ResolvesSecondStage()
         {
             Assert.That(WitchHunterStageRules.ResolveStageIndex(1, 5), Is.EqualTo(1));
         }
 
         [Test]
-        public void LastCompletedRewind_ResolvesLastStage()
+        public void LastCompletedMinigameWin_ResolvesLastStage()
         {
             Assert.That(WitchHunterStageRules.ResolveStageIndex(4, 5), Is.EqualTo(4));
         }
 
         [Test]
-        public void RewindsAboveLastStage_StayOnLastStage()
+        public void MinigameWinsAboveLastStage_StayOnLastStage()
         {
             Assert.That(WitchHunterStageRules.ResolveStageIndex(5, 5), Is.EqualTo(4));
             Assert.That(WitchHunterStageRules.ResolveStageIndex(99, 5), Is.EqualTo(4));
@@ -48,7 +48,7 @@ namespace Witch.Domain.Tests
         }
 
         [Test]
-        public void NegativeCompletedRewinds_Throws()
+        public void NegativeCompletedMinigameWins_Throws()
         {
             Assert.Throws<ArgumentOutOfRangeException>(
                 () => WitchHunterStageRules.ResolveStageIndex(-1, 5));

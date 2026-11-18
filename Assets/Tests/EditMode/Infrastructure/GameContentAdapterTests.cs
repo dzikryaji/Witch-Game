@@ -76,32 +76,29 @@ namespace Witch.Infrastructure.Tests
             GameContentCatalogDefinition catalog = AssetDatabase.LoadAssetAtPath<GameContentCatalogDefinition>(
                 "Assets/Content/GameContentCatalog.asset");
             GameContentLoadResult result = new GameContentAdapter().Load(catalog);
-            if (!result.Succeeded)
-            {
-                Assert.Ignore("Blocked by intentionally untouched DayDefinition assets under enum remap (day schedules now deserialize differently). " + string.Join(" | ", result.Errors));
-            }
+            Assert.That(result.Succeeded, Is.True, string.Join("\n", result.Errors));
 
             GameRuntimeContent content = result.Content;
 
-            // DayDefinition assets are intentionally untouched in this sync pass.
-            // Their serialized difficulty ints were authored with the old enum mapping
-            // (Simple=0, Mid=1, Hard=2) and now deserialize under the new mapping
-            // (Tutorial=0, Simple=1, Mid=2, Hard=3) until day schedules are updated.
+            // Confirmed 14-day difficulty schedule (Tutorial=0, Simple=1, Mid=2, Hard=3).
             Assert.That(content.DaysByNumber[1].OrderDifficulties, Is.EqualTo(new[] { OrderDifficulty.Tutorial }));
-            Assert.That(content.DaysByNumber[2].OrderDifficulties, Is.EqualTo(new[] { OrderDifficulty.Tutorial }));
-            Assert.That(content.DaysByNumber[3].OrderDifficulties, Is.EqualTo(new[] { OrderDifficulty.Tutorial }));
-            Assert.That(content.DaysByNumber[4].OrderDifficulties,
-                Is.EqualTo(new[] { OrderDifficulty.Tutorial, OrderDifficulty.Simple }));
-            Assert.That(content.DaysByNumber[5].OrderDifficulties,
-                Is.EqualTo(new[] { OrderDifficulty.Tutorial, OrderDifficulty.Simple }));
-            Assert.That(content.DaysByNumber[6].OrderDifficulties, Is.EqualTo(new[] { OrderDifficulty.Simple }));
+            Assert.That(content.DaysByNumber[2].OrderDifficulties, Is.EqualTo(new[] { OrderDifficulty.Tutorial, OrderDifficulty.Simple }));
+            Assert.That(content.DaysByNumber[3].OrderDifficulties, Is.EqualTo(new[] { OrderDifficulty.Simple }));
+            Assert.That(content.DaysByNumber[4].OrderDifficulties, Is.EqualTo(new[] { OrderDifficulty.Simple, OrderDifficulty.Mid }));
+            Assert.That(content.DaysByNumber[5].OrderDifficulties, Is.EqualTo(new[] { OrderDifficulty.Simple, OrderDifficulty.Mid }));
+            Assert.That(content.DaysByNumber[6].OrderDifficulties, Is.EqualTo(new[] { OrderDifficulty.Mid }));
+            Assert.That(content.DaysByNumber[7].OrderDifficulties, Is.EqualTo(new[] { OrderDifficulty.Mid }));
+            Assert.That(content.DaysByNumber[8].OrderDifficulties, Is.EqualTo(new[] { OrderDifficulty.Mid }));
+            Assert.That(content.DaysByNumber[9].OrderDifficulties, Is.EqualTo(new[] { OrderDifficulty.Mid, OrderDifficulty.Hard }));
+            Assert.That(content.DaysByNumber[10].OrderDifficulties, Is.EqualTo(new[] { OrderDifficulty.Mid, OrderDifficulty.Hard }));
+            Assert.That(content.DaysByNumber[11].OrderDifficulties, Is.EqualTo(new[] { OrderDifficulty.Mid, OrderDifficulty.Hard }));
+            Assert.That(content.DaysByNumber[12].OrderDifficulties, Is.EqualTo(new[] { OrderDifficulty.Hard }));
+            Assert.That(content.DaysByNumber[13].OrderDifficulties, Is.EqualTo(new[] { OrderDifficulty.Hard }));
+            Assert.That(content.DaysByNumber[14].OrderDifficulties, Is.EqualTo(new[] { OrderDifficulty.Hard }));
+
+            Assert.That(content.DaysByNumber[3].UnlockedCategoryIds, Does.Contain("category.soothe"));
             Assert.That(content.DaysByNumber[7].UnlockedCategoryIds, Does.Contain("category.cleanse"));
-            Assert.That(content.DaysByNumber[8].OrderDifficulties, Is.EqualTo(new[] { OrderDifficulty.Simple }));
-            Assert.That(content.DaysByNumber[9].OrderDifficulties,
-                Is.EqualTo(new[] { OrderDifficulty.Simple, OrderDifficulty.Mid }));
             Assert.That(content.DaysByNumber[11].UnlockedCategoryIds, Does.Contain("category.mend"));
-            Assert.That(content.DaysByNumber[12].OrderDifficulties, Is.EqualTo(new[] { OrderDifficulty.Mid }));
-            Assert.That(content.DaysByNumber[14].OrderDifficulties, Is.EqualTo(new[] { OrderDifficulty.Mid }));
         }
 
         [Test]
@@ -117,7 +114,7 @@ namespace Witch.Infrastructure.Tests
             Assert.That(result.Content.NewRunSetup.FirstDayTimerDuration, Is.EqualTo(TimeSpan.FromMinutes(4)));
             Assert.That(result.Content.NewRunSetup.FirstDayExpenseValue, Is.EqualTo(20));
             Assert.That(result.Content.ExpenseRules.CompletionDay, Is.EqualTo(1));
-            Assert.That(result.Content.RewindCardIds.Count, Is.EqualTo(3));
+            Assert.That(result.Content.MatchCardIds.Count, Is.EqualTo(3));
             Assert.That(result.Content.OrdersById.Values.All(order =>
                 order.Customer.StableId == "customer.nervous-villager"), Is.True);
         }
@@ -231,8 +228,8 @@ namespace Witch.Infrastructure.Tests
                 Array.Empty<CustomerDefinition>(),
                 catalog.Days.ToArray(),
                 catalog.HerbCategories.ToArray(),
-                catalog.RewindCards.ToArray(),
-                catalog.RewindDifficulty,
+                catalog.MatchCards.ToArray(),
+                catalog.MatchCardDifficulty,
                 witchHunterDialogueDefinition: catalog.WitchHunterDialogue);
 
             GameContentLoadResult result = new GameContentAdapter().Load(catalog);
@@ -259,8 +256,8 @@ namespace Witch.Infrastructure.Tests
                 catalog.Customers.Append(customer).ToArray(),
                 catalog.Days.ToArray(),
                 catalog.HerbCategories.ToArray(),
-                catalog.RewindCards.ToArray(),
-                catalog.RewindDifficulty,
+                catalog.MatchCards.ToArray(),
+                catalog.MatchCardDifficulty,
                 witchHunterDialogueDefinition: catalog.WitchHunterDialogue);
 
             GameContentLoadResult result = new GameContentAdapter().Load(catalog);
@@ -364,8 +361,8 @@ namespace Witch.Infrastructure.Tests
                 catalog.Customers.ToArray(),
                 catalog.Days.ToArray(),
                 catalog.HerbCategories.ToArray(),
-                catalog.RewindCards.ToArray(),
-                catalog.RewindDifficulty,
+                catalog.MatchCards.ToArray(),
+                catalog.MatchCardDifficulty,
                 witchHunterDialogueDefinition: dialogue);
         }
 
@@ -373,11 +370,11 @@ namespace Witch.Infrastructure.Tests
         public void Validate_SmallCardPoolReturnsError()
         {
             GameContentCatalogDefinition catalog = ContentTestFixture.CreateValidCatalog();
-            catalog.RewindDifficulty.Configure("rewind.difficulty.default", 3, 4);
+            catalog.MatchCardDifficulty.Configure("matchcard.difficulty.default", 3, 4);
 
             ContentValidationReport report = new GameContentValidator().Validate(catalog);
 
-            Assert.That(report.Errors.Any(error => error.Contains("4 unique rewind cards")), Is.True);
+            Assert.That(report.Errors.Any(error => error.Contains("4 unique Match Cards")), Is.True);
         }
     }
 }

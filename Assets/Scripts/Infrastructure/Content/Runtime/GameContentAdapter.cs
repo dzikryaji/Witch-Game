@@ -91,12 +91,12 @@ namespace Witch.Infrastructure.Content
                     definition.DisplayName,
                     definition.Description),
                 StringComparer.Ordinal);
-            var cards = catalog.RewindCards.Select(definition =>
-                new RewindCardContent(definition.StableId, definition.SymbolKey)).ToList();
-            var difficulty = new RewindDifficultyContent(
-                catalog.RewindDifficulty.StableId,
-                catalog.RewindDifficulty.StartingPairCount,
-                catalog.RewindDifficulty.MaximumPairCount);
+            var matchCards = catalog.MatchCards.Select(definition =>
+                new MatchCardContent(definition.StableId, definition.SymbolKey)).ToList();
+            var matchCardDifficulty = new MatchCardDifficultyContent(
+                catalog.MatchCardDifficulty.StableId,
+                catalog.MatchCardDifficulty.StartingPairCount,
+                catalog.MatchCardDifficulty.MaximumPairCount);
             var dialogueStages = new List<WitchHunterStageContent>(catalog.WitchHunterDialogue.StageCount);
             for (int stageIndex = 0; stageIndex < catalog.WitchHunterDialogue.StageCount; stageIndex++)
             {
@@ -149,8 +149,8 @@ namespace Witch.Infrastructure.Content
                 customers,
                 days,
                 categories,
-                cards,
-                difficulty,
+                matchCards,
+                matchCardDifficulty,
                 newRun,
                 dayProgression,
                 new ExpenseRules(completionDay),

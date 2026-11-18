@@ -113,7 +113,7 @@ namespace Witch.Presentation.Shop
         private PotionPreparationUseCase preparation;
         private ServePotionUseCase servePotion;
         private UpdateShopTimerUseCase updateTimer;
-        private EnterRewindUseCase enterRewind;
+        private EnterMinigameUseCase enterMinigame;
         private ResolveExpenseUseCase resolveExpense;
         private RetryDayUseCase retryDay;
         private RestartDayUseCase restartDay;
@@ -189,7 +189,7 @@ namespace Witch.Presentation.Shop
         public bool MinigameIntroVisible => minigameIntroPopup != null && minigameIntroPopup.IsVisible;
         public bool UnlockAnnouncementVisible => herbUnlockAnnouncement != null && herbUnlockAnnouncement.IsShowing;
         private bool userPaused;
-        // User-initiated Shop pause freezes gameplay/presentation; system timer freezes (guided tutorial, rewind staging, transitions) do not.
+        // User-initiated Shop pause freezes gameplay/presentation; system timer freezes (guided tutorial, minigame staging, transitions) do not.
         private bool IsGameplayPaused => userPaused;
         private bool? lastKnownQueueOpen;
         public bool HasAuthoredView => hudView != null
@@ -307,7 +307,7 @@ namespace Witch.Presentation.Shop
             PotionPreparationUseCase preparationUseCase,
             ServePotionUseCase servePotionUseCase,
             UpdateShopTimerUseCase updateTimerUseCase,
-            EnterRewindUseCase enterRewindUseCase,
+            EnterMinigameUseCase enterMinigameUseCase,
             ShopPresentationSetup presentationSetup)
         {
             Initialize(store);
@@ -316,7 +316,7 @@ namespace Witch.Presentation.Shop
             preparation = preparationUseCase ?? throw new ArgumentNullException(nameof(preparationUseCase));
             servePotion = servePotionUseCase ?? throw new ArgumentNullException(nameof(servePotionUseCase));
             updateTimer = updateTimerUseCase ?? throw new ArgumentNullException(nameof(updateTimerUseCase));
-            enterRewind = enterRewindUseCase;
+            enterMinigame = enterMinigameUseCase;
             setup = presentationSetup ?? throw new ArgumentNullException(nameof(presentationSetup));
             encounterDeck = new ShopEncounterDeck(
                 setup.Encounters,
@@ -401,12 +401,12 @@ namespace Witch.Presentation.Shop
             {
                 try
                 {
-                    if ((ActiveSession.CurrentPhase == Witch.Domain.GamePhase.RewindPending
-                            || (ActiveSession.CurrentPhase == Witch.Domain.GamePhase.RewindMinigame
-                                && ActiveSession.AttemptMetadata.PendingRewind))
-                        && enterRewind != null)
+                    if ((ActiveSession.CurrentPhase == Witch.Domain.GamePhase.MinigamePending
+                            || (ActiveSession.CurrentPhase == Witch.Domain.GamePhase.MinigameActive
+                                && ActiveSession.AttemptMetadata.PendingMinigame))
+                        && enterMinigame != null)
                     {
-                        ResumePendingRewind();
+                        ResumePendingMinigame();
                     }
                 }
                 catch (Exception ex)
@@ -940,10 +940,10 @@ namespace Witch.Presentation.Shop
                 if (cancellationToken.IsCancellationRequested) return result;
             }
 
-            if (ActiveSession.CurrentPhase == Witch.Domain.GamePhase.RewindPending
-                && enterRewind != null)
+            if (ActiveSession.CurrentPhase == Witch.Domain.GamePhase.MinigamePending
+                && enterMinigame != null)
             {
-                await EnterPendingRewindAsync(cancellationToken);
+                await EnterPendingMinigameAsync(cancellationToken);
             }
             else if (ActiveSession.CurrentPhase == Witch.Domain.GamePhase.CustomerArrival
                 || ActiveSession.CurrentPhase == Witch.Domain.GamePhase.ClosingEncounter)
@@ -1816,10 +1816,9 @@ namespace Witch.Presentation.Shop
             }
         }
 
-        private async Task EnterPendingRewindAsync(CancellationToken cancellationToken)
+        private async Task EnterPendingMinigameAsync(CancellationToken cancellationToken)
         {
             ClearCounterCoins();
-            SetStatus("KNOCK. KNOCK. Hunters suspect poisoning. Cast the memory spell before they enter; the day will rewind.");
             audioService?.PlayMusic(GameAudioCueIds.WitchHunterMusic);
 
             // Freeze the clock before the Hunter speaks, so reading the accusation never costs shop time.
@@ -1829,7 +1828,7 @@ namespace Witch.Presentation.Shop
                 ?? throw new InvalidOperationException("Witch Hunter customer data is missing from Shop setup.");
             hudView.SetCustomer(
                 witchHunter.DisplayName,
-                ResolveHunterAccusations(ActiveSession.RunState.RewindCount),
+                ResolveHunterAccusations(ActiveSession.RunState.MinigameWinCount),
                 witchHunter.Illustration);
             await hudView.EntranceComplete;
             if (cancellationToken.IsCancellationRequested) return;
@@ -1841,7 +1840,7 @@ namespace Witch.Presentation.Shop
             minigameIntroPopup.Show();
         }
 
-        private IReadOnlyList<string> ResolveHunterAccusations(int completedRewinds)
+        private IReadOnlyList<string> ResolveHunterAccusations(int completedMinigameWins)
         {
             WitchHunterDialogueViewData dialogue = setup?.WitchHunterDialogue;
             if (dialogue == null || dialogue.StageCount < 1)
@@ -1857,37 +1856,36 @@ namespace Witch.Presentation.Shop
             }
 
             return dialogue.GetAccusations(
-                WitchHunterStageRules.ResolveStageIndex(completedRewinds, dialogue.StageCount));
+                WitchHunterStageRules.ResolveStageIndex(completedMinigameWins, dialogue.StageCount));
         }
 
-        private async Task StartRewindAsync(CancellationToken cancellationToken)
+        private async Task StartMinigameAsync(CancellationToken cancellationToken)
         {
             await Task.Yield();
             cancellationToken.ThrowIfCancellationRequested();
 
-            RewindTransactionResult rewind;
+            MinigameTransactionResult minigameResult;
             try
             {
-                rewind = await enterRewind.ExecuteAsync(ActiveSession, cancellationToken);
+                minigameResult = await enterMinigame.ExecuteAsync(ActiveSession, cancellationToken);
             }
             catch (OperationCanceledException) { throw; }
             catch (Exception exception)
             {
                 Debug.LogException(exception, this);
-                if (MinigameIntroVisible) minigameIntroPopup.Show("Rewind could not start. Please try again.");
+                if (MinigameIntroVisible) minigameIntroPopup.Show("Match Card spell could not start. Please try again.");
                 return;
             }
 
-            if (rewind.Succeeded) return;
+            if (minigameResult.Succeeded) return;
 
-            string error = "Rewind could not start. " + rewind.ErrorMessage;
+            string error = "Match Card spell could not start. " + minigameResult.ErrorMessage;
             if (MinigameIntroVisible)
             {
                 minigameIntroPopup.Show(error); // keeps the popup and re-enables the button
                 return;
             }
 
-            SetStatus(error + " Try again by serving or reloading the run.");
             audioService?.PlayMusic(GameAudioCueIds.ShopMusic);
         }
 
@@ -1901,11 +1899,11 @@ namespace Witch.Presentation.Shop
             }
 
             minigameIntroPopup.SetInteractable(false);
-            RunUiAction(() => StartRewindAsync(lifetimeCancellation?.Token ?? CancellationToken.None));
+            RunUiAction(() => StartMinigameAsync(lifetimeCancellation?.Token ?? CancellationToken.None));
         }
 
-        private void ResumePendingRewind() => RunUiAction(
-            () => EnterPendingRewindAsync(lifetimeCancellation?.Token ?? CancellationToken.None));
+        private void ResumePendingMinigame() => RunUiAction(
+            () => EnterPendingMinigameAsync(lifetimeCancellation?.Token ?? CancellationToken.None));
 
         private ShopEncounterViewData FindNextEncounter()
         {
@@ -2829,7 +2827,7 @@ namespace Witch.Presentation.Shop
             Render();
         }
 
-        // Leaving the shop (Main Menu, Rewind): the money is already saved, so just tidy the counter.
+        // Leaving the shop (Main Menu, Match Card minigame): the money is already saved, so just tidy the counter.
         private void ClearCounterCoins()
         {
             if (counterCoins != null && counterCoins.HasCoins) counterCoins.Clear();
@@ -2896,9 +2894,9 @@ namespace Witch.Presentation.Shop
 
         private void StartEncounterPresentation(bool resume)
         {
-            if (ActiveSession != null && ActiveSession.TryConsumeHunterFarewell(out int completedRewinds))
+            if (ActiveSession != null && ActiveSession.TryConsumeHunterFarewell(out int completedMinigameWins))
             {
-                RunUiAction(() => PlayHunterFarewellAsync(completedRewinds, resume));
+                RunUiAction(() => PlayHunterFarewellAsync(completedMinigameWins, resume));
                 return;
             }
 
@@ -2922,7 +2920,7 @@ namespace Witch.Presentation.Shop
             }
         }
 
-        private async Task PlayHunterFarewellAsync(int completedRewinds, bool resume)
+        private async Task PlayHunterFarewellAsync(int completedMinigameWins, bool resume)
         {
             CancellationToken cancellationToken = lifetimeCancellation?.Token ?? CancellationToken.None;
             farewellPlaying = true;
@@ -2933,7 +2931,7 @@ namespace Witch.Presentation.Shop
                 if (witchHunter != null && dialogue != null && dialogue.StageCount > 0)
                 {
                     int stageIndex = WitchHunterStageRules.ResolveStageIndex(
-                        completedRewinds,
+                        completedMinigameWins,
                         dialogue.StageCount);
 
                     // Hunter was in the shop during the minigame: restore him immediately with the

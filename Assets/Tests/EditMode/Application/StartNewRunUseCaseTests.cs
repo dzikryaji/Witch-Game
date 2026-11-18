@@ -18,11 +18,11 @@ namespace Witch.Application.Tests
             Assert.That(result.Session.RunState.CurrentDayNumber, Is.EqualTo(1));
             Assert.That(result.Session.RunState.Money, Is.Zero);
             Assert.That(result.Session.RunState.Suspicion, Is.Zero);
-            Assert.That(result.Session.RunState.RewindCount, Is.Zero);
+            Assert.That(result.Session.RunState.MinigameWinCount, Is.Zero);
             Assert.That(result.Session.DayStartSnapshot.OrderSeed, Is.EqualTo(1234));
             Assert.That(result.Session.DayStartSnapshot.TimerDuration, Is.EqualTo(TimeSpan.FromMinutes(4)));
             Assert.That(result.Session.AttemptMetadata.ActiveOrderSeed, Is.EqualTo(1234));
-            Assert.That(result.Session.AttemptMetadata.PendingRewind, Is.False);
+            Assert.That(result.Session.AttemptMetadata.PendingMinigame, Is.False);
         }
 
         [Test]

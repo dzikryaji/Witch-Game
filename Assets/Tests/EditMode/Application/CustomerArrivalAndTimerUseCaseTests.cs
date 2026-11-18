@@ -66,7 +66,7 @@ namespace Witch.Application.Tests
         }
 
         [Test]
-        public void StopForRewind_PreventsFurtherTimerProgress()
+        public void StopForMinigame_PreventsFurtherTimerProgress()
         {
             GameSession session = CreateOpenSession();
             var clock = new FakeClock();

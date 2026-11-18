@@ -36,7 +36,7 @@ namespace Witch.Application.Flow
                 session.DayStartSnapshot.RunState.CurrentDayNumber,
                 session.DayStartSnapshot.RunState.Money,
                 session.RunState.Suspicion,
-                session.RunState.RewindCount);
+                session.RunState.MinigameWinCount);
             if (retryState.CurrentDayNumber == 1)
             {
                 retryState = retryState.WithTutorialFlag("shop.tutorial.day1.guided", true);
@@ -53,7 +53,7 @@ namespace Witch.Application.Flow
                 retryState.RunId,
                 retryState.CurrentDayNumber,
                 retryState.Suspicion,
-                retryState.RewindCount,
+                retryState.MinigameWinCount,
                 false,
                 0,
                 snapshot.OrderSeed,

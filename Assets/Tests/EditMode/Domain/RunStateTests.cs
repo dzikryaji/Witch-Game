@@ -14,7 +14,7 @@ namespace Witch.Domain.Tests
                 currentDayNumber: 1,
                 money: 0,
                 suspicion: 0,
-                rewindCount: 0,
+                minigameWinCount: 0,
                 unlockedCategoryIds: new[] { "category.warm" },
                 unlockedHerbIds: new[] { "herb.ginger", "herb.mint" },
                 unlockedGuidebookEntryIds: new[] { "guidebook.warm" },
@@ -25,7 +25,7 @@ namespace Witch.Domain.Tests
             Assert.That(run.CurrentDayNumber, Is.EqualTo(1));
             Assert.That(run.Money, Is.Zero);
             Assert.That(run.Suspicion, Is.Zero);
-            Assert.That(run.RewindCount, Is.Zero);
+            Assert.That(run.MinigameWinCount, Is.Zero);
             Assert.That(run.UnlockedCategoryIds, Is.EqualTo(new[] { "category.warm" }));
             Assert.That(run.UnlockedHerbIds, Is.EqualTo(new[] { "herb.ginger", "herb.mint" }));
             Assert.That(run.UnlockedGuidebookEntryIds, Is.EqualTo(new[] { "guidebook.warm" }));

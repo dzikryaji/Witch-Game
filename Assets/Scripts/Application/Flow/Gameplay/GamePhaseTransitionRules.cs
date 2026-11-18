@@ -16,20 +16,20 @@ namespace Witch.Application.Flow
                     {
                         GamePhase.CustomerArrival,
                         GamePhase.ClosingEncounter,
-                        GamePhase.RewindPending
+                        GamePhase.MinigamePending
                     }
                 },
                 {
                     GamePhase.ClosingEncounter,
-                    new[] { GamePhase.ExpenseCheck, GamePhase.RewindPending }
+                    new[] { GamePhase.ExpenseCheck, GamePhase.MinigamePending }
                 },
                 {
                     GamePhase.ExpenseCheck,
                     new[] { GamePhase.DaySummary, GamePhase.Victory, GamePhase.GameOver }
                 },
-                { GamePhase.RewindPending, new[] { GamePhase.RewindMinigame } },
-                // { GamePhase.RewindMinigame, new[] { GamePhase.ShopPreparation } },
-                { GamePhase.RewindMinigame, new[] { GamePhase.ShopPreparation, GamePhase.CustomerEncounter } },
+                { GamePhase.MinigamePending, new[] { GamePhase.MinigameActive } },
+                // { GamePhase.MinigameActive, new[] { GamePhase.ShopPreparation } },
+                { GamePhase.MinigameActive, new[] { GamePhase.ShopPreparation, GamePhase.CustomerEncounter } },
                 { GamePhase.DaySummary, new[] { GamePhase.ShopPreparation } },
                 { GamePhase.Victory, new GamePhase[0] },
                 { GamePhase.GameOver, new[] { GamePhase.ShopPreparation } }

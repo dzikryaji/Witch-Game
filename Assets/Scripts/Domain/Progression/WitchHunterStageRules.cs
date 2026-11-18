@@ -4,12 +4,12 @@ namespace Witch.Domain.Progression
 {
     public static class WitchHunterStageRules
     {
-        public static int ResolveStageIndex(int completedRewinds, int stageCount)
+        public static int ResolveStageIndex(int completedMinigameWins, int stageCount)
         {
             if (stageCount < 1) throw new ArgumentOutOfRangeException(nameof(stageCount));
-            if (completedRewinds < 0) throw new ArgumentOutOfRangeException(nameof(completedRewinds));
+            if (completedMinigameWins < 0) throw new ArgumentOutOfRangeException(nameof(completedMinigameWins));
 
-            return Math.Min(completedRewinds, stageCount - 1);
+            return Math.Min(completedMinigameWins, stageCount - 1);
         }
     }
 }
