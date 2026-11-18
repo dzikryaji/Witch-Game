@@ -88,6 +88,8 @@ namespace Witch.Presentation.Settings
 
         private async void OnSaveClicked()
         {
+            audioService?.Play(GameAudioCueIds.UiClick);
+
             try
             {
                 GameSettingsState value = CurrentSelection();
