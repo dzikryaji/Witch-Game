@@ -58,7 +58,6 @@ namespace Witch.Presentation.Shop
         [SerializeField] private BrewingAnimationView brewingAnimation;
         [SerializeField, Min(0f)] private float stationAnimationSeconds = 3f;
         [SerializeField, Min(0f)] private float brewingAnimationSeconds = 2f;
-        [SerializeField, Min(0.1f)] private float grinderSoundInterval = 1.02f;
         [SerializeField] private Text grinderInputText;
         [SerializeField] private GameObject groundHerbObject;
         [SerializeField] private Text groundHerbText;
@@ -645,7 +644,7 @@ namespace Witch.Presentation.Shop
 
             stationAnimationPlaying = true;
             grindSoundPlayed = true;
-            RepeatGrindSound(stationAnimationSeconds);
+            audioService?.Play(GameAudioCueIds.Grind);
             bool finished = false;
             try
             {
@@ -668,22 +667,6 @@ namespace Witch.Presentation.Shop
             grindSoundPlayed = false;
         }
 
-        private async void RepeatGrindSound(float duration)
-        {
-            float elapsed = 0f;
-            float nextPlay = 0f;
-            while (this != null && stationAnimationPlaying && grindSoundPlayed && elapsed < duration)
-            {
-                if (elapsed >= nextPlay && duration - elapsed >= grinderSoundInterval * 0.5f)
-                {
-                    audioService?.Play(GameAudioCueIds.Grind);
-                    nextPlay += grinderSoundInterval;
-                }
-
-                await Task.Yield();
-                if (!IsGameplayPaused) elapsed += Time.unscaledDeltaTime;
-            }
-        }
 
         public async void AddGroundHerbToPotAnimated()
         {
