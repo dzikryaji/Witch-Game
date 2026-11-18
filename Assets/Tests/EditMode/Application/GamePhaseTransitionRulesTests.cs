@@ -18,7 +18,8 @@ namespace Witch.Application.Tests
         [TestCase(GamePhase.ExpenseCheck, GamePhase.Victory)]
         [TestCase(GamePhase.ExpenseCheck, GamePhase.GameOver)]
         [TestCase(GamePhase.MinigamePending, GamePhase.MinigameActive)]
-        [TestCase(GamePhase.MinigameActive, GamePhase.ShopPreparation)]
+        [TestCase(GamePhase.MinigameActive, GamePhase.CustomerArrival)]
+        [TestCase(GamePhase.MinigameActive, GamePhase.ClosingEncounter)]
         [TestCase(GamePhase.DaySummary, GamePhase.ShopPreparation)]
         [TestCase(GamePhase.GameOver, GamePhase.ShopPreparation)]
         public void RequiredTransition_IsLegal(GamePhase from, GamePhase to)
@@ -30,6 +31,8 @@ namespace Witch.Application.Tests
         [TestCase(GamePhase.CustomerArrival, GamePhase.Victory)]
         [TestCase(GamePhase.CustomerEncounter, GamePhase.ExpenseCheck)]
         [TestCase(GamePhase.MinigamePending, GamePhase.ShopPreparation)]
+        [TestCase(GamePhase.MinigameActive, GamePhase.ShopPreparation)]
+        [TestCase(GamePhase.MinigameActive, GamePhase.CustomerEncounter)]
         [TestCase(GamePhase.Victory, GamePhase.ShopPreparation)]
         public void SkippedOrTerminalTransition_IsIllegal(GamePhase from, GamePhase to)
         {

@@ -188,6 +188,9 @@ namespace Witch.Presentation.Shop
                     // Spacing moves into each slot so a new slot never makes the older bubbles jump.
                     bubbleSpacing = orderLayoutGroup.spacing;
                     orderLayoutGroup.spacing = 0f;
+                    // Allow variable-width bubbles to size to content and align as authored.
+                    orderLayoutGroup.childControlWidth = true;
+                    orderLayoutGroup.childForceExpandWidth = false;
                 }
             }
         }
@@ -532,6 +535,7 @@ namespace Witch.Presentation.Shop
                 orderBubbleScrollRect.viewport.rect.width,
                 (preferredTextWidth - textRect.sizeDelta.x) / textWidthRatio);
             slotLayout.preferredWidth = width;
+            slotLayout.flexibleWidth = 0f;
             slotRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
 
             float textHeightRatio = Mathf.Max(0.01f, textRect.anchorMax.y - textRect.anchorMin.y);

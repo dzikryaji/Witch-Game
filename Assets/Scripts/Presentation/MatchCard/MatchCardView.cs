@@ -44,7 +44,7 @@ namespace Witch.Presentation.MatchCard
         public void Render(string symbol, bool visible, bool matched, bool interactable)
         {
             Sprite sprite = symbolLibrary != null ? symbolLibrary.Find(symbol) : null;
-            if (sprite == null && (visible || matched) && warnedKeys.Add(symbol ?? string.Empty))
+            if (sprite == null && symbolLibrary != null && (visible || matched) && warnedKeys.Add(symbol ?? string.Empty))
             {
                 Debug.LogWarning($"No herb image for symbol key '{symbol}'. Add it to the Match Card Symbol Library.", this);
             }

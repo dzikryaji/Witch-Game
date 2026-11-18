@@ -40,7 +40,9 @@ namespace Witch.Application.Flow
             if (session.MinigameCompletionApplied
                 && !session.AttemptMetadata.PendingMinigame
                 && (session.CurrentPhase == GamePhase.ShopPreparation
-                    || session.CurrentPhase == GamePhase.CustomerEncounter))
+                    || session.CurrentPhase == GamePhase.CustomerEncounter
+                    || session.CurrentPhase == GamePhase.CustomerArrival
+                    || session.CurrentPhase == GamePhase.ClosingEncounter))
             {
                 SceneLoadResult retryScene = await sceneLoader.LoadAsync(SceneId.Shop, cancellationToken);
                 if (retryScene.Succeeded)
@@ -68,7 +70,7 @@ namespace Witch.Application.Flow
                 session.DayStartSnapshot,
                 session.RunState,
                 nextSeed);
-            var snapshot = new DayStartSnapshot(
+            DayStartSnapshot persistedSnapshot = new DayStartSnapshot(
                 outcome.RestoredRunState,
                 outcome.NextAttemptSeed,
                 session.DayStartSnapshot.TimerDuration,
@@ -76,37 +78,27 @@ namespace Witch.Application.Flow
                 session.DayStartSnapshot.ExpenseValue,
                 session.DayStartSnapshot.SaveVersion,
                 session.DayStartSnapshot.CapturedAtUtc);
-            // Full minigame reset restores money to day start: new day counters reset to 0.
-            // In-place minigame resume restores money and per-day summary counters to pre-service snapshot.
-            // WrongServiceCountToday/ServiceCountToday carry forward unchanged (Clean Ledger depends on them).
-            bool inPlace = session.CanResumeInPlace;
-            int savedCorrectServiceCountToday = 0;
-            int savedCoinsEarnedToday = 0;
-            int savedWrongOrdersForSummary = 0;
-            if (inPlace)
-            {
-                var resume = session.GetResumeSummaryCounters();
-                savedCorrectServiceCountToday = resume.CorrectServiceCountToday;
-                savedCoinsEarnedToday = resume.CoinsEarnedToday;
-                savedWrongOrdersForSummary = resume.WrongOrdersForSummary;
-            }
 
-            var metadata = new ActiveAttemptMetadata(
-                outcome.RestoredRunState.RunId,
-                outcome.RestoredRunState.CurrentDayNumber,
+            // Persisted metadata: session metadata with only suspicion reset, win count incremented,
+            // pending/board seed cleared, and MinigamePlayedToday kept true. Day counters unchanged.
+            // Active order seed handling kept as today (next attempt seed from completion).
+            ActiveAttemptMetadata metadata = new ActiveAttemptMetadata(
+                session.AttemptMetadata.RunId,
+                session.AttemptMetadata.DayNumber,
                 0,
-                outcome.RestoredRunState.MinigameWinCount,
+                completedMinigameWinsBeforeThisOne + 1,
                 false,
                 0,
                 outcome.NextAttemptSeed,
                 session.AttemptMetadata.WrongServiceCountToday,
                 session.AttemptMetadata.ServiceCountToday,
                 true,
-                savedCorrectServiceCountToday,
-                savedCoinsEarnedToday,
-                savedWrongOrdersForSummary);
+                session.AttemptMetadata.CorrectServiceCountToday,
+                session.AttemptMetadata.CoinsEarnedToday,
+                session.AttemptMetadata.WrongOrdersForSummary);
+
             SaveStateResult save = await saveRepository.SaveRunStateAsync(
-                snapshot,
+                persistedSnapshot,
                 metadata,
                 cancellationToken);
             if (!save.Succeeded)
@@ -114,15 +106,15 @@ namespace Witch.Application.Flow
                 return MinigameTransactionResult.Failure(MinigameTransactionError.SaveFailed, save.ErrorMessage);
             }
 
+            session.CompleteMinigameAfterWin(persistedSnapshot, metadata);
+            session.MarkHunterFarewell(completedMinigameWinsBeforeThisOne);
+
             if (gameCenter != null && !memoryMenderReported)
             {
                 memoryMenderReported = true;
                 _ = GameCenterReporting.ReportQuietlyAsync(gameCenter, GameCenterAchievementIds.MemoryMender, 100d);
             }
 
-            if (inPlace) session.CompleteMinigameInPlace(snapshot, metadata);
-            else session.CompleteMinigame(snapshot, metadata);
-            session.MarkHunterFarewell(completedMinigameWinsBeforeThisOne);
             SceneLoadResult scene = await sceneLoader.LoadAsync(SceneId.Shop, cancellationToken);
             if (scene.Succeeded)
             {
