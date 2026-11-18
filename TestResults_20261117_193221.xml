@@ -1,0 +1,1535 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="194" result="Failed(Child)" total="194" passed="181" failed="13" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-11-17 11:31:22Z" end-time="2026-11-17 11:31:38Z" duration="15.5329534">
+  <test-suite type="TestSuite" id="1261" name="White Willow" fullname="White Willow" runstate="Runnable" testcasecount="194" result="Failed" site="Child" start-time="2026-11-17 11:31:22Z" end-time="2026-11-17 11:31:38Z" duration="15.532953" total="194" passed="181" failed="13" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <failure>
+      <message><![CDATA[One or more child tests had errors]]></message>
+    </failure>
+    <test-suite type="Assembly" id="1124" name="Witch.Application.Tests.dll" fullname="/Users/lelaberliani/Documents/Academy/Witch-Game/Library/ScriptAssemblies/Witch.Application.Tests.dll" runstate="Runnable" testcasecount="98" result="Failed" site="Child" start-time="2026-11-17 11:31:22Z" end-time="2026-11-17 11:31:31Z" duration="8.960257" total="98" passed="93" failed="5" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="90183" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <failure>
+        <message><![CDATA[One or more child tests had errors]]></message>
+      </failure>
+      <test-suite type="TestSuite" id="1125" name="Witch" fullname="Witch" runstate="Runnable" testcasecount="98" result="Failed" site="Child" start-time="2026-11-17 11:31:22Z" end-time="2026-11-17 11:31:31Z" duration="8.958854" total="98" passed="93" failed="5" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <failure>
+          <message><![CDATA[One or more child tests had errors]]></message>
+        </failure>
+        <test-suite type="TestSuite" id="1126" name="Application" fullname="Witch.Application" runstate="Runnable" testcasecount="98" result="Failed" site="Child" start-time="2026-11-17 11:31:23Z" end-time="2026-11-17 11:31:31Z" duration="8.856433" total="98" passed="93" failed="5" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <failure>
+            <message><![CDATA[One or more child tests had errors]]></message>
+          </failure>
+          <test-suite type="TestSuite" id="1127" name="Tests" fullname="Witch.Application.Tests" runstate="Runnable" testcasecount="98" result="Failed" site="Child" start-time="2026-11-17 11:31:23Z" end-time="2026-11-17 11:31:31Z" duration="8.850676" total="98" passed="93" failed="5" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <failure>
+              <message><![CDATA[One or more child tests had errors]]></message>
+            </failure>
+            <test-suite type="TestFixture" id="1011" name="CustomerArrivalAndTimerUseCaseTests" fullname="Witch.Application.Tests.CustomerArrivalAndTimerUseCaseTests" classname="Witch.Application.Tests.CustomerArrivalAndTimerUseCaseTests" runstate="Runnable" testcasecount="5" result="Passed" start-time="2026-11-17 11:31:23Z" end-time="2026-11-17 11:31:23Z" duration="0.037592" total="5" passed="5" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1012" name="Admit_FirstCustomerStartsTimerAndDuplicateDoesNotRestartIt" fullname="Witch.Application.Tests.CustomerArrivalAndTimerUseCaseTests.Admit_FirstCustomerStartsTimerAndDuplicateDoesNotRestartIt" methodname="Admit_FirstCustomerStartsTimerAndDuplicateDoesNotRestartIt" classname="Witch.Application.Tests.CustomerArrivalAndTimerUseCaseTests" runstate="Runnable" seed="1833307914" result="Passed" start-time="2026-11-17 11:31:23Z" end-time="2026-11-17 11:31:23Z" duration="0.013992" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1014" name="Pause_FreezesTimerUntilResumed" fullname="Witch.Application.Tests.CustomerArrivalAndTimerUseCaseTests.Pause_FreezesTimerUntilResumed" methodname="Pause_FreezesTimerUntilResumed" classname="Witch.Application.Tests.CustomerArrivalAndTimerUseCaseTests" runstate="Runnable" seed="1279730696" result="Passed" start-time="2026-11-17 11:31:23Z" end-time="2026-11-17 11:31:23Z" duration="0.001194" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1015" name="StopForRewind_PreventsFurtherTimerProgress" fullname="Witch.Application.Tests.CustomerArrivalAndTimerUseCaseTests.StopForRewind_PreventsFurtherTimerProgress" methodname="StopForRewind_PreventsFurtherTimerProgress" classname="Witch.Application.Tests.CustomerArrivalAndTimerUseCaseTests" runstate="Runnable" seed="1900665845" result="Passed" start-time="2026-11-17 11:31:23Z" end-time="2026-11-17 11:31:23Z" duration="0.000482" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1013" name="Tick_DuringEncounterPreparationReducesRemainingTime" fullname="Witch.Application.Tests.CustomerArrivalAndTimerUseCaseTests.Tick_DuringEncounterPreparationReducesRemainingTime" methodname="Tick_DuringEncounterPreparationReducesRemainingTime" classname="Witch.Application.Tests.CustomerArrivalAndTimerUseCaseTests" runstate="Runnable" seed="160284886" result="Passed" start-time="2026-11-17 11:31:23Z" end-time="2026-11-17 11:31:23Z" duration="0.000232" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1016" name="Tick_WhenQueueIsIdleAtZero_ClosesDayWithoutAnotherCustomer" fullname="Witch.Application.Tests.CustomerArrivalAndTimerUseCaseTests.Tick_WhenQueueIsIdleAtZero_ClosesDayWithoutAnotherCustomer" methodname="Tick_WhenQueueIsIdleAtZero_ClosesDayWithoutAnotherCustomer" classname="Witch.Application.Tests.CustomerArrivalAndTimerUseCaseTests" runstate="Runnable" seed="41346134" result="Passed" start-time="2026-11-17 11:31:23Z" end-time="2026-11-17 11:31:23Z" duration="0.000650" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1017" name="DaySummaryStatsTests" fullname="Witch.Application.Tests.DaySummaryStatsTests" classname="Witch.Application.Tests.DaySummaryStatsTests" runstate="Runnable" testcasecount="4" result="Failed" site="Child" start-time="2026-11-17 11:31:23Z" end-time="2026-11-17 11:31:23Z" duration="0.643954" total="4" passed="2" failed="2" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <failure>
+                <message><![CDATA[One or more child tests had errors]]></message>
+              </failure>
+              <test-case id="1018" name="CountersIncrementCorrectlyPerOutcomeKind_AndSummaryCapturedBeforeReset" fullname="Witch.Application.Tests.DaySummaryStatsTests.CountersIncrementCorrectlyPerOutcomeKind_AndSummaryCapturedBeforeReset" methodname="CountersIncrementCorrectlyPerOutcomeKind_AndSummaryCapturedBeforeReset" classname="Witch.Application.Tests.DaySummaryStatsTests" runstate="Runnable" seed="146658405" result="Failed" start-time="2026-11-17 11:31:23Z" end-time="2026-11-17 11:31:23Z" duration="0.136832" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <failure>
+                  <message><![CDATA[  Expected: 0
+  But was:  20
+]]></message>
+                  <stack-trace><![CDATA[at Witch.Application.Tests.DaySummaryStatsTests.CountersIncrementCorrectlyPerOutcomeKind_AndSummaryCapturedBeforeReset () [0x004bf] in /Users/lelaberliani/Documents/Academy/Witch-Game/Assets/Tests/EditMode/Application/DaySummaryStatsTests.cs:77
+at UnityEngine.TestTools.TestRunner.TestTaskWrapper+<Execute>d__2.MoveNext () [0x00063] in ./Library/PackageCache/com.unity.test-framework@80f691d4262b/UnityEngine.TestRunner/TestRunner/TestTaskWrapper.cs:31
+at UnityEngine.TestTools.TestEnumerator+<Execute>d__8.MoveNext () [0x0003a] in ./Library/PackageCache/com.unity.test-framework@80f691d4262b/UnityEngine.TestRunner/NUnitExtensions/Attributes/TestEnumerator.cs:52
+]]></stack-trace>
+                </failure>
+              </test-case>
+              <test-case id="1020" name="FullRewindResetsNewCountersAndSummaryWrongToDayStart" fullname="Witch.Application.Tests.DaySummaryStatsTests.FullRewindResetsNewCountersAndSummaryWrongToDayStart" methodname="FullRewindResetsNewCountersAndSummaryWrongToDayStart" classname="Witch.Application.Tests.DaySummaryStatsTests" runstate="Runnable" seed="1840697737" result="Passed" start-time="2026-11-17 11:31:23Z" end-time="2026-11-17 11:31:23Z" duration="0.118298" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1021" name="InPlaceRewindRollsBackNewCountersAndSummaryWrongToPreServiceSnapshot" fullname="Witch.Application.Tests.DaySummaryStatsTests.InPlaceRewindRollsBackNewCountersAndSummaryWrongToPreServiceSnapshot" methodname="InPlaceRewindRollsBackNewCountersAndSummaryWrongToPreServiceSnapshot" classname="Witch.Application.Tests.DaySummaryStatsTests" runstate="Runnable" seed="2061559218" result="Failed" start-time="2026-11-17 11:31:23Z" end-time="2026-11-17 11:31:23Z" duration="0.201825" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <failure>
+                  <message><![CDATA[  Expected: 0
+  But was:  2
+]]></message>
+                  <stack-trace><![CDATA[at Witch.Application.Tests.DaySummaryStatsTests.InPlaceRewindRollsBackNewCountersAndSummaryWrongToPreServiceSnapshot () [0x002da] in /Users/lelaberliani/Documents/Academy/Witch-Game/Assets/Tests/EditMode/Application/DaySummaryStatsTests.cs:192
+at UnityEngine.TestTools.TestRunner.TestTaskWrapper+<Execute>d__2.MoveNext () [0x00063] in ./Library/PackageCache/com.unity.test-framework@80f691d4262b/UnityEngine.TestRunner/TestRunner/TestTaskWrapper.cs:31
+at UnityEngine.TestTools.TestEnumerator+<Execute>d__8.MoveNext () [0x0003a] in ./Library/PackageCache/com.unity.test-framework@80f691d4262b/UnityEngine.TestRunner/NUnitExtensions/Attributes/TestEnumerator.cs:52
+]]></stack-trace>
+                </failure>
+              </test-case>
+              <test-case id="1019" name="RetryResetsNewCountersAndSummaryWrong_LeavesLegacyCarryForward" fullname="Witch.Application.Tests.DaySummaryStatsTests.RetryResetsNewCountersAndSummaryWrong_LeavesLegacyCarryForward" methodname="RetryResetsNewCountersAndSummaryWrong_LeavesLegacyCarryForward" classname="Witch.Application.Tests.DaySummaryStatsTests" runstate="Runnable" seed="421014812" result="Passed" start-time="2026-11-17 11:31:23Z" end-time="2026-11-17 11:31:23Z" duration="0.108738" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1022" name="DevelopmentStartupSessionFactoryTests" fullname="Witch.Application.Tests.DevelopmentStartupSessionFactoryTests" classname="Witch.Application.Tests.DevelopmentStartupSessionFactoryTests" runstate="Runnable" testcasecount="1" result="Failed" site="Child" start-time="2026-11-17 11:31:23Z" end-time="2026-11-17 11:31:23Z" duration="0.105657" total="1" passed="0" failed="1" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <failure>
+                <message><![CDATA[One or more child tests had errors]]></message>
+              </failure>
+              <test-case id="1023" name="PendingRewindDefaultsCreateImmediatelyPlayableBoardState" fullname="Witch.Application.Tests.DevelopmentStartupSessionFactoryTests.PendingRewindDefaultsCreateImmediatelyPlayableBoardState" methodname="PendingRewindDefaultsCreateImmediatelyPlayableBoardState" classname="Witch.Application.Tests.DevelopmentStartupSessionFactoryTests" runstate="Runnable" seed="461503344" result="Failed" start-time="2026-11-17 11:31:23Z" end-time="2026-11-17 11:31:23Z" duration="0.003078" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <failure>
+                  <message><![CDATA[  Expected: 6
+  But was:  10
+]]></message>
+                  <stack-trace><![CDATA[at Witch.Application.Tests.DevelopmentStartupSessionFactoryTests.PendingRewindDefaultsCreateImmediatelyPlayableBoardState () [0x00128] in /Users/lelaberliani/Documents/Academy/Witch-Game/Assets/Tests/EditMode/Application/DevelopmentStartupSessionFactoryTests.cs:40
+]]></stack-trace>
+                </failure>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1024" name="ExpenseAndAdvancementUseCaseTests" fullname="Witch.Application.Tests.ExpenseAndAdvancementUseCaseTests" classname="Witch.Application.Tests.ExpenseAndAdvancementUseCaseTests" runstate="Runnable" testcasecount="6" result="Passed" start-time="2026-11-17 11:31:23Z" end-time="2026-11-17 11:31:24Z" duration="0.846012" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1030" name="CancellationStopsNextDayPersistence" fullname="Witch.Application.Tests.ExpenseAndAdvancementUseCaseTests.CancellationStopsNextDayPersistence" methodname="CancellationStopsNextDayPersistence" classname="Witch.Application.Tests.ExpenseAndAdvancementUseCaseTests" runstate="Runnable" seed="1312913375" result="Passed" start-time="2026-11-17 11:31:23Z" end-time="2026-11-17 11:31:23Z" duration="0.006971" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1028" name="Continue_SceneFailureFallsBackToMainMenu" fullname="Witch.Application.Tests.ExpenseAndAdvancementUseCaseTests.Continue_SceneFailureFallsBackToMainMenu" methodname="Continue_SceneFailureFallsBackToMainMenu" classname="Witch.Application.Tests.ExpenseAndAdvancementUseCaseTests" runstate="Runnable" seed="1785663385" result="Passed" start-time="2026-11-17 11:31:23Z" end-time="2026-11-17 11:31:24Z" duration="0.198036" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1026" name="FailureDeductsNothingAndRetryRestoresSameSeedWithSuspicion" fullname="Witch.Application.Tests.ExpenseAndAdvancementUseCaseTests.FailureDeductsNothingAndRetryRestoresSameSeedWithSuspicion" methodname="FailureDeductsNothingAndRetryRestoresSameSeedWithSuspicion" classname="Witch.Application.Tests.ExpenseAndAdvancementUseCaseTests" runstate="Runnable" seed="665518898" result="Passed" start-time="2026-11-17 11:31:24Z" end-time="2026-11-17 11:31:24Z" duration="0.110947" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1027" name="NextDaySaveFailureLeavesClosingEncounterAvailableForRetry" fullname="Witch.Application.Tests.ExpenseAndAdvancementUseCaseTests.NextDaySaveFailureLeavesClosingEncounterAvailableForRetry" methodname="NextDaySaveFailureLeavesClosingEncounterAvailableForRetry" classname="Witch.Application.Tests.ExpenseAndAdvancementUseCaseTests" runstate="Runnable" seed="1032184957" result="Passed" start-time="2026-11-17 11:31:24Z" end-time="2026-11-17 11:31:24Z" duration="0.205677" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1029" name="Retry_SceneFailureFallsBackToMainMenu" fullname="Witch.Application.Tests.ExpenseAndAdvancementUseCaseTests.Retry_SceneFailureFallsBackToMainMenu" methodname="Retry_SceneFailureFallsBackToMainMenu" classname="Witch.Application.Tests.ExpenseAndAdvancementUseCaseTests" runstate="Runnable" seed="44979730" result="Passed" start-time="2026-11-17 11:31:24Z" end-time="2026-11-17 11:31:24Z" duration="0.109175" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1025" name="ThreeDayFlow_AdvancesTwiceThenReturnsVictory" fullname="Witch.Application.Tests.ExpenseAndAdvancementUseCaseTests.ThreeDayFlow_AdvancesTwiceThenReturnsVictory" methodname="ThreeDayFlow_AdvancesTwiceThenReturnsVictory" classname="Witch.Application.Tests.ExpenseAndAdvancementUseCaseTests" runstate="Runnable" seed="623781002" result="Passed" start-time="2026-11-17 11:31:24Z" end-time="2026-11-17 11:31:24Z" duration="0.198657" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1031" name="GameCenterReportingTests" fullname="Witch.Application.Tests.GameCenterReportingTests" classname="Witch.Application.Tests.GameCenterReportingTests" runstate="Runnable" testcasecount="22" result="Passed" start-time="2026-11-17 11:31:24Z" end-time="2026-11-17 11:31:27Z" duration="3.125304" total="22" passed="22" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1032" name="AchievementIds_AreStableDistinctAndNamespaced" fullname="Witch.Application.Tests.GameCenterReportingTests.AchievementIds_AreStableDistinctAndNamespaced" methodname="AchievementIds_AreStableDistinctAndNamespaced" classname="Witch.Application.Tests.GameCenterReportingTests" runstate="Runnable" seed="1467987700" result="Passed" start-time="2026-11-17 11:31:24Z" end-time="2026-11-17 11:31:24Z" duration="0.001610" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1046" name="AllCategoriesServed_ReportsFiveArts" fullname="Witch.Application.Tests.GameCenterReportingTests.AllCategoriesServed_ReportsFiveArts" methodname="AllCategoriesServed_ReportsFiveArts" classname="Witch.Application.Tests.GameCenterReportingTests" runstate="Runnable" seed="2060992888" result="Passed" start-time="2026-11-17 11:31:24Z" end-time="2026-11-17 11:31:25Z" duration="0.200612" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1036" name="CleanVictoryDay_ReportsCleanLedgerAndSecretKept" fullname="Witch.Application.Tests.GameCenterReportingTests.CleanVictoryDay_ReportsCleanLedgerAndSecretKept" methodname="CleanVictoryDay_ReportsCleanLedgerAndSecretKept" classname="Witch.Application.Tests.GameCenterReportingTests" runstate="Runnable" seed="1840085044" result="Passed" start-time="2026-11-17 11:31:25Z" end-time="2026-11-17 11:31:25Z" duration="0.107155" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1033" name="DayOneExpenseSuccess_ReportsFirstShiftButNotCleanLedger" fullname="Witch.Application.Tests.GameCenterReportingTests.DayOneExpenseSuccess_ReportsFirstShiftButNotCleanLedger" methodname="DayOneExpenseSuccess_ReportsFirstShiftButNotCleanLedger" classname="Witch.Application.Tests.GameCenterReportingTests" runstate="Runnable" seed="343589556" result="Passed" start-time="2026-11-17 11:31:25Z" end-time="2026-11-17 11:31:25Z" duration="0.202612" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1039" name="DayOneSaveFailure_ReportsNoAchievement" fullname="Witch.Application.Tests.GameCenterReportingTests.DayOneSaveFailure_ReportsNoAchievement" methodname="DayOneSaveFailure_ReportsNoAchievement" classname="Witch.Application.Tests.GameCenterReportingTests" runstate="Runnable" seed="637346425" result="Passed" start-time="2026-11-17 11:31:25Z" end-time="2026-11-17 11:31:25Z" duration="0.106378" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1034" name="DayTwoCleanExpense_ReportsCleanLedgerOnce" fullname="Witch.Application.Tests.GameCenterReportingTests.DayTwoCleanExpense_ReportsCleanLedgerOnce" methodname="DayTwoCleanExpense_ReportsCleanLedgerOnce" classname="Witch.Application.Tests.GameCenterReportingTests" runstate="Runnable" seed="1464448092" result="Passed" start-time="2026-11-17 11:31:25Z" end-time="2026-11-17 11:31:25Z" duration="0.202552" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1042" name="DuplicateVictoryReporting_IsHarmlessToGameplay" fullname="Witch.Application.Tests.GameCenterReportingTests.DuplicateVictoryReporting_IsHarmlessToGameplay" methodname="DuplicateVictoryReporting_IsHarmlessToGameplay" classname="Witch.Application.Tests.GameCenterReportingTests" runstate="Runnable" seed="2116072704" result="Passed" start-time="2026-11-17 11:31:25Z" end-time="2026-11-17 11:31:25Z" duration="0.106607" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1053" name="ExpensePaidAfterWrongService_ReportsNoCleanLedger" fullname="Witch.Application.Tests.GameCenterReportingTests.ExpensePaidAfterWrongService_ReportsNoCleanLedger" methodname="ExpensePaidAfterWrongService_ReportsNoCleanLedger" classname="Witch.Application.Tests.GameCenterReportingTests" runstate="Runnable" seed="1802885805" result="Passed" start-time="2026-11-17 11:31:25Z" end-time="2026-11-17 11:31:25Z" duration="0.202794" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1052" name="ExpensePaidWithNoWrongService_ReportsCleanLedger" fullname="Witch.Application.Tests.GameCenterReportingTests.ExpensePaidWithNoWrongService_ReportsCleanLedger" methodname="ExpensePaidWithNoWrongService_ReportsCleanLedger" classname="Witch.Application.Tests.GameCenterReportingTests" runstate="Runnable" seed="1373097368" result="Passed" start-time="2026-11-17 11:31:25Z" end-time="2026-11-17 11:31:26Z" duration="0.109314" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1038" name="FailedExpense_ReportsNoAchievement" fullname="Witch.Application.Tests.GameCenterReportingTests.FailedExpense_ReportsNoAchievement" methodname="FailedExpense_ReportsNoAchievement" classname="Witch.Application.Tests.GameCenterReportingTests" runstate="Runnable" seed="785244196" result="Passed" start-time="2026-11-17 11:31:26Z" end-time="2026-11-17 11:31:26Z" duration="0.201125" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1048" name="FirstCompletedRewind_ReportsMemoryMenderOnce" fullname="Witch.Application.Tests.GameCenterReportingTests.FirstCompletedRewind_ReportsMemoryMenderOnce" methodname="FirstCompletedRewind_ReportsMemoryMenderOnce" classname="Witch.Application.Tests.GameCenterReportingTests" runstate="Runnable" seed="398898661" result="Passed" start-time="2026-11-17 11:31:26Z" end-time="2026-11-17 11:31:26Z" duration="0.107821" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1044" name="FirstCorrectServe_ReportsFirstRemedyOnce" fullname="Witch.Application.Tests.GameCenterReportingTests.FirstCorrectServe_ReportsFirstRemedyOnce" methodname="FirstCorrectServe_ReportsFirstRemedyOnce" classname="Witch.Application.Tests.GameCenterReportingTests" runstate="Runnable" seed="1554500382" result="Passed" start-time="2026-11-17 11:31:26Z" end-time="2026-11-17 11:31:26Z" duration="0.202234" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1035" name="FullRun_ReportsFirstShiftCleanLedgerAndSecretKeptAtVictory" fullname="Witch.Application.Tests.GameCenterReportingTests.FullRun_ReportsFirstShiftCleanLedgerAndSecretKeptAtVictory" methodname="FullRun_ReportsFirstShiftCleanLedgerAndSecretKeptAtVictory" classname="Witch.Application.Tests.GameCenterReportingTests" runstate="Runnable" seed="211879316" result="Passed" start-time="2026-11-17 11:31:26Z" end-time="2026-11-17 11:31:26Z" duration="0.113087" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1047" name="NotAllCategoriesServed_ReportsNoFiveArts" fullname="Witch.Application.Tests.GameCenterReportingTests.NotAllCategoriesServed_ReportsNoFiveArts" methodname="NotAllCategoriesServed_ReportsNoFiveArts" classname="Witch.Application.Tests.GameCenterReportingTests" runstate="Runnable" seed="1938470771" result="Passed" start-time="2026-11-17 11:31:26Z" end-time="2026-11-17 11:31:26Z" duration="0.202217" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1045" name="RepeatedCorrectServes_ReportsFirstRemedyOnlyOnce" fullname="Witch.Application.Tests.GameCenterReportingTests.RepeatedCorrectServes_ReportsFirstRemedyOnlyOnce" methodname="RepeatedCorrectServes_ReportsFirstRemedyOnlyOnce" classname="Witch.Application.Tests.GameCenterReportingTests" runstate="Runnable" seed="1234843041" result="Passed" start-time="2026-11-17 11:31:26Z" end-time="2026-11-17 11:31:26Z" duration="0.107075" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1049" name="RepeatedRewinds_ReportsMemoryMenderOnlyOnce" fullname="Witch.Application.Tests.GameCenterReportingTests.RepeatedRewinds_ReportsMemoryMenderOnlyOnce" methodname="RepeatedRewinds_ReportsMemoryMenderOnlyOnce" classname="Witch.Application.Tests.GameCenterReportingTests" runstate="Runnable" seed="1208750372" result="Passed" start-time="2026-11-17 11:31:26Z" end-time="2026-11-17 11:31:27Z" duration="0.201875" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1041" name="ReportingException_KeepsGameplayResultUnchanged" fullname="Witch.Application.Tests.GameCenterReportingTests.ReportingException_KeepsGameplayResultUnchanged" methodname="ReportingException_KeepsGameplayResultUnchanged" classname="Witch.Application.Tests.GameCenterReportingTests" runstate="Runnable" seed="1650946270" result="Passed" start-time="2026-11-17 11:31:27Z" end-time="2026-11-17 11:31:27Z" duration="0.108072" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1040" name="ReportingFailure_KeepsGameplayResultUnchanged" fullname="Witch.Application.Tests.GameCenterReportingTests.ReportingFailure_KeepsGameplayResultUnchanged" methodname="ReportingFailure_KeepsGameplayResultUnchanged" classname="Witch.Application.Tests.GameCenterReportingTests" runstate="Runnable" seed="456179848" result="Passed" start-time="2026-11-17 11:31:27Z" end-time="2026-11-17 11:31:27Z" duration="0.198814" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1051" name="RewindReportingException_KeepsRewindResultUnchanged" fullname="Witch.Application.Tests.GameCenterReportingTests.RewindReportingException_KeepsRewindResultUnchanged" methodname="RewindReportingException_KeepsRewindResultUnchanged" classname="Witch.Application.Tests.GameCenterReportingTests" runstate="Runnable" seed="1447005254" result="Passed" start-time="2026-11-17 11:31:27Z" end-time="2026-11-17 11:31:27Z" duration="0.105937" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1050" name="ServeReportingException_KeepsServeResultUnchanged" fullname="Witch.Application.Tests.GameCenterReportingTests.ServeReportingException_KeepsServeResultUnchanged" methodname="ServeReportingException_KeepsServeResultUnchanged" classname="Witch.Application.Tests.GameCenterReportingTests" runstate="Runnable" seed="575256897" result="Passed" start-time="2026-11-17 11:31:27Z" end-time="2026-11-17 11:31:27Z" duration="0.000687" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1037" name="VictoryAfterWrongService_ReportsSecretKeptOnly" fullname="Witch.Application.Tests.GameCenterReportingTests.VictoryAfterWrongService_ReportsSecretKeptOnly" methodname="VictoryAfterWrongService_ReportsSecretKeptOnly" classname="Witch.Application.Tests.GameCenterReportingTests" runstate="Runnable" seed="82182656" result="Passed" start-time="2026-11-17 11:31:27Z" end-time="2026-11-17 11:31:27Z" duration="0.201562" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1043" name="WithoutGameCenterService_ExpenseFlowIsUnchanged" fullname="Witch.Application.Tests.GameCenterReportingTests.WithoutGameCenterService_ExpenseFlowIsUnchanged" methodname="WithoutGameCenterService_ExpenseFlowIsUnchanged" classname="Witch.Application.Tests.GameCenterReportingTests" runstate="Runnable" seed="485554693" result="Passed" start-time="2026-11-17 11:31:27Z" end-time="2026-11-17 11:31:27Z" duration="0.106916" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1054" name="GamePhaseTransitionRulesTests" fullname="Witch.Application.Tests.GamePhaseTransitionRulesTests" classname="Witch.Application.Tests.GamePhaseTransitionRulesTests" runstate="Runnable" testcasecount="20" result="Passed" start-time="2026-11-17 11:31:27Z" end-time="2026-11-17 11:31:28Z" duration="0.206789" total="20" passed="20" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-suite type="ParameterizedMethod" id="1070" name="RequiredTransition_IsLegal" fullname="Witch.Application.Tests.GamePhaseTransitionRulesTests.RequiredTransition_IsLegal" classname="Witch.Application.Tests.GamePhaseTransitionRulesTests" runstate="Runnable" testcasecount="15" result="Passed" start-time="2026-11-17 11:31:28Z" end-time="2026-11-17 11:31:28Z" duration="0.027517" total="15" passed="15" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="1055" name="RequiredTransition_IsLegal(ShopPreparation,CustomerArrival)" fullname="Witch.Application.Tests.GamePhaseTransitionRulesTests.RequiredTransition_IsLegal(ShopPreparation,CustomerArrival)" methodname="RequiredTransition_IsLegal" classname="Witch.Application.Tests.GamePhaseTransitionRulesTests" runstate="Runnable" seed="766642250" result="Passed" start-time="2026-11-17 11:31:28Z" end-time="2026-11-17 11:31:28Z" duration="0.001224" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1056" name="RequiredTransition_IsLegal(CustomerArrival,CustomerEncounter)" fullname="Witch.Application.Tests.GamePhaseTransitionRulesTests.RequiredTransition_IsLegal(CustomerArrival,CustomerEncounter)" methodname="RequiredTransition_IsLegal" classname="Witch.Application.Tests.GamePhaseTransitionRulesTests" runstate="Runnable" seed="786257" result="Passed" start-time="2026-11-17 11:31:28Z" end-time="2026-11-17 11:31:28Z" duration="0.000430" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1057" name="RequiredTransition_IsLegal(CustomerArrival,ClosingEncounter)" fullname="Witch.Application.Tests.GamePhaseTransitionRulesTests.RequiredTransition_IsLegal(CustomerArrival,ClosingEncounter)" methodname="RequiredTransition_IsLegal" classname="Witch.Application.Tests.GamePhaseTransitionRulesTests" runstate="Runnable" seed="530142075" result="Passed" start-time="2026-11-17 11:31:28Z" end-time="2026-11-17 11:31:28Z" duration="0.000464" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1058" name="RequiredTransition_IsLegal(CustomerEncounter,CustomerArrival)" fullname="Witch.Application.Tests.GamePhaseTransitionRulesTests.RequiredTransition_IsLegal(CustomerEncounter,CustomerArrival)" methodname="RequiredTransition_IsLegal" classname="Witch.Application.Tests.GamePhaseTransitionRulesTests" runstate="Runnable" seed="87277820" result="Passed" start-time="2026-11-17 11:31:28Z" end-time="2026-11-17 11:31:28Z" duration="0.000179" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1059" name="RequiredTransition_IsLegal(CustomerEncounter,ClosingEncounter)" fullname="Witch.Application.Tests.GamePhaseTransitionRulesTests.RequiredTransition_IsLegal(CustomerEncounter,ClosingEncounter)" methodname="RequiredTransition_IsLegal" classname="Witch.Application.Tests.GamePhaseTransitionRulesTests" runstate="Runnable" seed="434215273" result="Passed" start-time="2026-11-17 11:31:28Z" end-time="2026-11-17 11:31:28Z" duration="0.000207" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1060" name="RequiredTransition_IsLegal(CustomerEncounter,RewindPending)" fullname="Witch.Application.Tests.GamePhaseTransitionRulesTests.RequiredTransition_IsLegal(CustomerEncounter,RewindPending)" methodname="RequiredTransition_IsLegal" classname="Witch.Application.Tests.GamePhaseTransitionRulesTests" runstate="Runnable" seed="1350752797" result="Passed" start-time="2026-11-17 11:31:28Z" end-time="2026-11-17 11:31:28Z" duration="0.000178" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1061" name="RequiredTransition_IsLegal(ClosingEncounter,ExpenseCheck)" fullname="Witch.Application.Tests.GamePhaseTransitionRulesTests.RequiredTransition_IsLegal(ClosingEncounter,ExpenseCheck)" methodname="RequiredTransition_IsLegal" classname="Witch.Application.Tests.GamePhaseTransitionRulesTests" runstate="Runnable" seed="1109996701" result="Passed" start-time="2026-11-17 11:31:28Z" end-time="2026-11-17 11:31:28Z" duration="0.000162" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1062" name="RequiredTransition_IsLegal(ClosingEncounter,RewindPending)" fullname="Witch.Application.Tests.GamePhaseTransitionRulesTests.RequiredTransition_IsLegal(ClosingEncounter,RewindPending)" methodname="RequiredTransition_IsLegal" classname="Witch.Application.Tests.GamePhaseTransitionRulesTests" runstate="Runnable" seed="1716225068" result="Passed" start-time="2026-11-17 11:31:28Z" end-time="2026-11-17 11:31:28Z" duration="0.000157" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1063" name="RequiredTransition_IsLegal(ExpenseCheck,DaySummary)" fullname="Witch.Application.Tests.GamePhaseTransitionRulesTests.RequiredTransition_IsLegal(ExpenseCheck,DaySummary)" methodname="RequiredTransition_IsLegal" classname="Witch.Application.Tests.GamePhaseTransitionRulesTests" runstate="Runnable" seed="50424769" result="Passed" start-time="2026-11-17 11:31:28Z" end-time="2026-11-17 11:31:28Z" duration="0.000142" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1064" name="RequiredTransition_IsLegal(ExpenseCheck,Victory)" fullname="Witch.Application.Tests.GamePhaseTransitionRulesTests.RequiredTransition_IsLegal(ExpenseCheck,Victory)" methodname="RequiredTransition_IsLegal" classname="Witch.Application.Tests.GamePhaseTransitionRulesTests" runstate="Runnable" seed="135949083" result="Passed" start-time="2026-11-17 11:31:28Z" end-time="2026-11-17 11:31:28Z" duration="0.000136" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1065" name="RequiredTransition_IsLegal(ExpenseCheck,GameOver)" fullname="Witch.Application.Tests.GamePhaseTransitionRulesTests.RequiredTransition_IsLegal(ExpenseCheck,GameOver)" methodname="RequiredTransition_IsLegal" classname="Witch.Application.Tests.GamePhaseTransitionRulesTests" runstate="Runnable" seed="333486795" result="Passed" start-time="2026-11-17 11:31:28Z" end-time="2026-11-17 11:31:28Z" duration="0.000138" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1066" name="RequiredTransition_IsLegal(RewindPending,RewindMinigame)" fullname="Witch.Application.Tests.GamePhaseTransitionRulesTests.RequiredTransition_IsLegal(RewindPending,RewindMinigame)" methodname="RequiredTransition_IsLegal" classname="Witch.Application.Tests.GamePhaseTransitionRulesTests" runstate="Runnable" seed="29168030" result="Passed" start-time="2026-11-17 11:31:28Z" end-time="2026-11-17 11:31:28Z" duration="0.000161" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1067" name="RequiredTransition_IsLegal(RewindMinigame,ShopPreparation)" fullname="Witch.Application.Tests.GamePhaseTransitionRulesTests.RequiredTransition_IsLegal(RewindMinigame,ShopPreparation)" methodname="RequiredTransition_IsLegal" classname="Witch.Application.Tests.GamePhaseTransitionRulesTests" runstate="Runnable" seed="77304623" result="Passed" start-time="2026-11-17 11:31:28Z" end-time="2026-11-17 11:31:28Z" duration="0.000155" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1068" name="RequiredTransition_IsLegal(DaySummary,ShopPreparation)" fullname="Witch.Application.Tests.GamePhaseTransitionRulesTests.RequiredTransition_IsLegal(DaySummary,ShopPreparation)" methodname="RequiredTransition_IsLegal" classname="Witch.Application.Tests.GamePhaseTransitionRulesTests" runstate="Runnable" seed="1958990363" result="Passed" start-time="2026-11-17 11:31:28Z" end-time="2026-11-17 11:31:28Z" duration="0.000143" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1069" name="RequiredTransition_IsLegal(GameOver,ShopPreparation)" fullname="Witch.Application.Tests.GamePhaseTransitionRulesTests.RequiredTransition_IsLegal(GameOver,ShopPreparation)" methodname="RequiredTransition_IsLegal" classname="Witch.Application.Tests.GamePhaseTransitionRulesTests" runstate="Runnable" seed="1404699188" result="Passed" start-time="2026-11-17 11:31:28Z" end-time="2026-11-17 11:31:28Z" duration="0.000142" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+              <test-suite type="ParameterizedMethod" id="1076" name="SkippedOrTerminalTransition_IsIllegal" fullname="Witch.Application.Tests.GamePhaseTransitionRulesTests.SkippedOrTerminalTransition_IsIllegal" classname="Witch.Application.Tests.GamePhaseTransitionRulesTests" runstate="Runnable" testcasecount="5" result="Passed" start-time="2026-11-17 11:31:28Z" end-time="2026-11-17 11:31:28Z" duration="0.082046" total="5" passed="5" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="1071" name="SkippedOrTerminalTransition_IsIllegal(ShopPreparation,ExpenseCheck)" fullname="Witch.Application.Tests.GamePhaseTransitionRulesTests.SkippedOrTerminalTransition_IsIllegal(ShopPreparation,ExpenseCheck)" methodname="SkippedOrTerminalTransition_IsIllegal" classname="Witch.Application.Tests.GamePhaseTransitionRulesTests" runstate="Runnable" seed="1250589960" result="Passed" start-time="2026-11-17 11:31:28Z" end-time="2026-11-17 11:31:28Z" duration="0.000780" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1072" name="SkippedOrTerminalTransition_IsIllegal(CustomerArrival,Victory)" fullname="Witch.Application.Tests.GamePhaseTransitionRulesTests.SkippedOrTerminalTransition_IsIllegal(CustomerArrival,Victory)" methodname="SkippedOrTerminalTransition_IsIllegal" classname="Witch.Application.Tests.GamePhaseTransitionRulesTests" runstate="Runnable" seed="32726654" result="Passed" start-time="2026-11-17 11:31:28Z" end-time="2026-11-17 11:31:28Z" duration="0.000261" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1073" name="SkippedOrTerminalTransition_IsIllegal(CustomerEncounter,ExpenseCheck)" fullname="Witch.Application.Tests.GamePhaseTransitionRulesTests.SkippedOrTerminalTransition_IsIllegal(CustomerEncounter,ExpenseCheck)" methodname="SkippedOrTerminalTransition_IsIllegal" classname="Witch.Application.Tests.GamePhaseTransitionRulesTests" runstate="Runnable" seed="319434231" result="Passed" start-time="2026-11-17 11:31:28Z" end-time="2026-11-17 11:31:28Z" duration="0.000230" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1074" name="SkippedOrTerminalTransition_IsIllegal(RewindPending,ShopPreparation)" fullname="Witch.Application.Tests.GamePhaseTransitionRulesTests.SkippedOrTerminalTransition_IsIllegal(RewindPending,ShopPreparation)" methodname="SkippedOrTerminalTransition_IsIllegal" classname="Witch.Application.Tests.GamePhaseTransitionRulesTests" runstate="Runnable" seed="2052166888" result="Passed" start-time="2026-11-17 11:31:28Z" end-time="2026-11-17 11:31:28Z" duration="0.000227" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1075" name="SkippedOrTerminalTransition_IsIllegal(Victory,ShopPreparation)" fullname="Witch.Application.Tests.GamePhaseTransitionRulesTests.SkippedOrTerminalTransition_IsIllegal(Victory,ShopPreparation)" methodname="SkippedOrTerminalTransition_IsIllegal" classname="Witch.Application.Tests.GamePhaseTransitionRulesTests" runstate="Runnable" seed="1001696696" result="Passed" start-time="2026-11-17 11:31:28Z" end-time="2026-11-17 11:31:28Z" duration="0.000410" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+            </test-suite>
+            <test-suite type="TestFixture" id="1077" name="LoadRunUseCaseTests" fullname="Witch.Application.Tests.LoadRunUseCaseTests" classname="Witch.Application.Tests.LoadRunUseCaseTests" runstate="Runnable" testcasecount="7" result="Passed" start-time="2026-11-17 11:31:28Z" end-time="2026-11-17 11:31:29Z" duration="0.952624" total="7" passed="7" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1084" name="Execute_WhenCancelled_PropagatesCancellationWithoutActivatingSession" fullname="Witch.Application.Tests.LoadRunUseCaseTests.Execute_WhenCancelled_PropagatesCancellationWithoutActivatingSession" methodname="Execute_WhenCancelled_PropagatesCancellationWithoutActivatingSession" classname="Witch.Application.Tests.LoadRunUseCaseTests" runstate="Runnable" seed="1601038294" result="Passed" start-time="2026-11-17 11:31:28Z" end-time="2026-11-17 11:31:28Z" duration="0.006541" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1083" name="Execute_WhenNoSaveExists_ReturnsTypedFailureWithoutLoadingScene" fullname="Witch.Application.Tests.LoadRunUseCaseTests.Execute_WhenNoSaveExists_ReturnsTypedFailureWithoutLoadingScene" methodname="Execute_WhenNoSaveExists_ReturnsTypedFailureWithoutLoadingScene" classname="Witch.Application.Tests.LoadRunUseCaseTests" runstate="Runnable" seed="2028620699" result="Passed" start-time="2026-11-17 11:31:28Z" end-time="2026-11-17 11:31:28Z" duration="0.195876" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1079" name="Execute_WhenSceneLoadFails_ClearsActiveSession" fullname="Witch.Application.Tests.LoadRunUseCaseTests.Execute_WhenSceneLoadFails_ClearsActiveSession" methodname="Execute_WhenSceneLoadFails_ClearsActiveSession" classname="Witch.Application.Tests.LoadRunUseCaseTests" runstate="Runnable" seed="625625858" result="Passed" start-time="2026-11-17 11:31:28Z" end-time="2026-11-17 11:31:28Z" duration="0.113940" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1082" name="Execute_WithCompletedRun_RestoresVictoryInShop" fullname="Witch.Application.Tests.LoadRunUseCaseTests.Execute_WithCompletedRun_RestoresVictoryInShop" methodname="Execute_WithCompletedRun_RestoresVictoryInShop" classname="Witch.Application.Tests.LoadRunUseCaseTests" runstate="Runnable" seed="5674133" result="Passed" start-time="2026-11-17 11:31:28Z" end-time="2026-11-17 11:31:28Z" duration="0.202608" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1078" name="Execute_WithLatestRun_ActivatesSessionAndRequestsShopScene" fullname="Witch.Application.Tests.LoadRunUseCaseTests.Execute_WithLatestRun_ActivatesSessionAndRequestsShopScene" methodname="Execute_WithLatestRun_ActivatesSessionAndRequestsShopScene" classname="Witch.Application.Tests.LoadRunUseCaseTests" runstate="Runnable" seed="8849607" result="Passed" start-time="2026-11-17 11:31:28Z" end-time="2026-11-17 11:31:28Z" duration="0.111389" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1081" name="Execute_WithPendingRewind_RoutesToRewindMinigame" fullname="Witch.Application.Tests.LoadRunUseCaseTests.Execute_WithPendingRewind_RoutesToRewindMinigame" methodname="Execute_WithPendingRewind_RoutesToRewindMinigame" classname="Witch.Application.Tests.LoadRunUseCaseTests" runstate="Runnable" seed="960185587" result="Passed" start-time="2026-11-17 11:31:28Z" end-time="2026-11-17 11:31:28Z" duration="0.202835" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1080" name="Execute_WithRunId_ForwardsStableRunIdToRepository" fullname="Witch.Application.Tests.LoadRunUseCaseTests.Execute_WithRunId_ForwardsStableRunIdToRepository" methodname="Execute_WithRunId_ForwardsStableRunIdToRepository" classname="Witch.Application.Tests.LoadRunUseCaseTests" runstate="Runnable" seed="2082625943" result="Passed" start-time="2026-11-17 11:31:28Z" end-time="2026-11-17 11:31:29Z" duration="0.109031" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1085" name="OpenShopUseCaseTests" fullname="Witch.Application.Tests.OpenShopUseCaseTests" classname="Witch.Application.Tests.OpenShopUseCaseTests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-11-17 11:31:29Z" end-time="2026-11-17 11:31:29Z" duration="0.105386" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1087" name="Execute_FromCustomerArrival_ReturnsErrorAndKeepsPhase" fullname="Witch.Application.Tests.OpenShopUseCaseTests.Execute_FromCustomerArrival_ReturnsErrorAndKeepsPhase" methodname="Execute_FromCustomerArrival_ReturnsErrorAndKeepsPhase" classname="Witch.Application.Tests.OpenShopUseCaseTests" runstate="Runnable" seed="1175661554" result="Passed" start-time="2026-11-17 11:31:29Z" end-time="2026-11-17 11:31:29Z" duration="0.001759" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1086" name="Execute_FromShopPreparation_StartsCustomerArrival" fullname="Witch.Application.Tests.OpenShopUseCaseTests.Execute_FromShopPreparation_StartsCustomerArrival" methodname="Execute_FromShopPreparation_StartsCustomerArrival" classname="Witch.Application.Tests.OpenShopUseCaseTests" runstate="Runnable" seed="1275306455" result="Passed" start-time="2026-11-17 11:31:29Z" end-time="2026-11-17 11:31:29Z" duration="0.000476" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1088" name="Execute_WithoutSession_ReturnsErrorWithoutPhase" fullname="Witch.Application.Tests.OpenShopUseCaseTests.Execute_WithoutSession_ReturnsErrorWithoutPhase" methodname="Execute_WithoutSession_ReturnsErrorWithoutPhase" classname="Witch.Application.Tests.OpenShopUseCaseTests" runstate="Runnable" seed="895563473" result="Passed" start-time="2026-11-17 11:31:29Z" end-time="2026-11-17 11:31:29Z" duration="0.000341" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1089" name="Failure_WithNoError_IsRejected" fullname="Witch.Application.Tests.OpenShopUseCaseTests.Failure_WithNoError_IsRejected" methodname="Failure_WithNoError_IsRejected" classname="Witch.Application.Tests.OpenShopUseCaseTests" runstate="Runnable" seed="1551532196" result="Passed" start-time="2026-11-17 11:31:29Z" end-time="2026-11-17 11:31:29Z" duration="0.001010" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1090" name="PotionPreparationAndServeUseCaseTests" fullname="Witch.Application.Tests.PotionPreparationAndServeUseCaseTests" classname="Witch.Application.Tests.PotionPreparationAndServeUseCaseTests" runstate="Runnable" testcasecount="5" result="Failed" site="Child" start-time="2026-11-17 11:31:29Z" end-time="2026-11-17 11:31:29Z" duration="0.311280" total="5" passed="4" failed="1" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <failure>
+                <message><![CDATA[One or more child tests had errors]]></message>
+              </failure>
+              <test-case id="1092" name="Brew_AnyDifferentPairPreparesPotion" fullname="Witch.Application.Tests.PotionPreparationAndServeUseCaseTests.Brew_AnyDifferentPairPreparesPotion" methodname="Brew_AnyDifferentPairPreparesPotion" classname="Witch.Application.Tests.PotionPreparationAndServeUseCaseTests" runstate="Runnable" seed="1136173997" result="Passed" start-time="2026-11-17 11:31:29Z" end-time="2026-11-17 11:31:29Z" duration="0.000933" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1091" name="GrindAddAndBrew_TwoDifferentHerbsPreparePotion" fullname="Witch.Application.Tests.PotionPreparationAndServeUseCaseTests.GrindAddAndBrew_TwoDifferentHerbsPreparePotion" methodname="GrindAddAndBrew_TwoDifferentHerbsPreparePotion" classname="Witch.Application.Tests.PotionPreparationAndServeUseCaseTests" runstate="Runnable" seed="1266029505" result="Passed" start-time="2026-11-17 11:31:29Z" end-time="2026-11-17 11:31:29Z" duration="0.000260" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1093" name="Serve_CorrectPotionCommitsOnceAndPaysTen" fullname="Witch.Application.Tests.PotionPreparationAndServeUseCaseTests.Serve_CorrectPotionCommitsOnceAndPaysTen" methodname="Serve_CorrectPotionCommitsOnceAndPaysTen" classname="Witch.Application.Tests.PotionPreparationAndServeUseCaseTests" runstate="Runnable" seed="1365428129" result="Passed" start-time="2026-11-17 11:31:29Z" end-time="2026-11-17 11:31:29Z" duration="0.000408" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1095" name="ServeAsync_WhenSuspicionWriteFails_DoesNotCommitOutcome" fullname="Witch.Application.Tests.PotionPreparationAndServeUseCaseTests.ServeAsync_WhenSuspicionWriteFails_DoesNotCommitOutcome" methodname="ServeAsync_WhenSuspicionWriteFails_DoesNotCommitOutcome" classname="Witch.Application.Tests.PotionPreparationAndServeUseCaseTests" runstate="Runnable" seed="152298592" result="Failed" start-time="2026-11-17 11:31:29Z" end-time="2026-11-17 11:31:29Z" duration="0.199554" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <failure>
+                  <message><![CDATA[  Expected: False
+  But was:  True
+]]></message>
+                  <stack-trace><![CDATA[at Witch.Application.Tests.PotionPreparationAndServeUseCaseTests.ServeAsync_WhenSuspicionWriteFails_DoesNotCommitOutcome () [0x000db] in /Users/lelaberliani/Documents/Academy/Witch-Game/Assets/Tests/EditMode/Application/PotionPreparationAndServeUseCaseTests.cs:100
+at UnityEngine.TestTools.TestRunner.TestTaskWrapper+<Execute>d__2.MoveNext () [0x00063] in ./Library/PackageCache/com.unity.test-framework@80f691d4262b/UnityEngine.TestRunner/TestRunner/TestTaskWrapper.cs:31
+at UnityEngine.TestTools.TestEnumerator+<Execute>d__8.MoveNext () [0x0003a] in ./Library/PackageCache/com.unity.test-framework@80f691d4262b/UnityEngine.TestRunner/NUnitExtensions/Attributes/TestEnumerator.cs:52
+]]></stack-trace>
+                </failure>
+              </test-case>
+              <test-case id="1094" name="ServeAsync_WrongPotionPersistsSuspicionBeforeCommit" fullname="Witch.Application.Tests.PotionPreparationAndServeUseCaseTests.ServeAsync_WrongPotionPersistsSuspicionBeforeCommit" methodname="ServeAsync_WrongPotionPersistsSuspicionBeforeCommit" classname="Witch.Application.Tests.PotionPreparationAndServeUseCaseTests" runstate="Runnable" seed="1277055593" result="Passed" start-time="2026-11-17 11:31:29Z" end-time="2026-11-17 11:31:29Z" duration="0.104895" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1096" name="RewindTransactionUseCaseTests" fullname="Witch.Application.Tests.RewindTransactionUseCaseTests" classname="Witch.Application.Tests.RewindTransactionUseCaseTests" runstate="Runnable" testcasecount="18" result="Failed" site="Child" start-time="2026-11-17 11:31:29Z" end-time="2026-11-17 11:31:31Z" duration="1.989668" total="18" passed="17" failed="1" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <failure>
+                <message><![CDATA[One or more child tests had errors]]></message>
+              </failure>
+              <test-case id="1114" name="AdvanceDay_ClearsHunterFarewell" fullname="Witch.Application.Tests.RewindTransactionUseCaseTests.AdvanceDay_ClearsHunterFarewell" methodname="AdvanceDay_ClearsHunterFarewell" classname="Witch.Application.Tests.RewindTransactionUseCaseTests" runstate="Runnable" seed="68614803" result="Passed" start-time="2026-11-17 11:31:29Z" end-time="2026-11-17 11:31:29Z" duration="0.000738" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1103" name="ApplyTutorialFlag_SetsFlagOnRunStateResumeAndDayStartSnapshotOnly" fullname="Witch.Application.Tests.RewindTransactionUseCaseTests.ApplyTutorialFlag_SetsFlagOnRunStateResumeAndDayStartSnapshotOnly" methodname="ApplyTutorialFlag_SetsFlagOnRunStateResumeAndDayStartSnapshotOnly" classname="Witch.Application.Tests.RewindTransactionUseCaseTests" runstate="Runnable" seed="1170063100" result="Passed" start-time="2026-11-17 11:31:29Z" end-time="2026-11-17 11:31:29Z" duration="0.001331" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1111" name="Complete_DuplicateRetry_DoesNotSetOrClearMarker" fullname="Witch.Application.Tests.RewindTransactionUseCaseTests.Complete_DuplicateRetry_DoesNotSetOrClearMarker" methodname="Complete_DuplicateRetry_DoesNotSetOrClearMarker" classname="Witch.Application.Tests.RewindTransactionUseCaseTests" runstate="Runnable" seed="1501368390" result="Passed" start-time="2026-11-17 11:31:29Z" end-time="2026-11-17 11:31:29Z" duration="0.109620" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-suite type="ParameterizedMethod" id="1110" name="Complete_FullPath_RecordsPreIncrementRewindCount" fullname="Witch.Application.Tests.RewindTransactionUseCaseTests.Complete_FullPath_RecordsPreIncrementRewindCount" classname="Witch.Application.Tests.RewindTransactionUseCaseTests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-11-17 11:31:29Z" end-time="2026-11-17 11:31:30Z" duration="0.725894" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="1106" name="Complete_FullPath_RecordsPreIncrementRewindCount(0)" fullname="Witch.Application.Tests.RewindTransactionUseCaseTests.Complete_FullPath_RecordsPreIncrementRewindCount(0)" methodname="Complete_FullPath_RecordsPreIncrementRewindCount" classname="Witch.Application.Tests.RewindTransactionUseCaseTests" runstate="Runnable" seed="1993722363" result="Passed" start-time="2026-11-17 11:31:29Z" end-time="2026-11-17 11:31:29Z" duration="0.105907" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1107" name="Complete_FullPath_RecordsPreIncrementRewindCount(2)" fullname="Witch.Application.Tests.RewindTransactionUseCaseTests.Complete_FullPath_RecordsPreIncrementRewindCount(2)" methodname="Complete_FullPath_RecordsPreIncrementRewindCount" classname="Witch.Application.Tests.RewindTransactionUseCaseTests" runstate="Runnable" seed="907398681" result="Passed" start-time="2026-11-17 11:31:29Z" end-time="2026-11-17 11:31:30Z" duration="0.205708" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1108" name="Complete_FullPath_RecordsPreIncrementRewindCount(4)" fullname="Witch.Application.Tests.RewindTransactionUseCaseTests.Complete_FullPath_RecordsPreIncrementRewindCount(4)" methodname="Complete_FullPath_RecordsPreIncrementRewindCount" classname="Witch.Application.Tests.RewindTransactionUseCaseTests" runstate="Runnable" seed="1470414730" result="Passed" start-time="2026-11-17 11:31:30Z" end-time="2026-11-17 11:31:30Z" duration="0.106044" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1109" name="Complete_FullPath_RecordsPreIncrementRewindCount(5)" fullname="Witch.Application.Tests.RewindTransactionUseCaseTests.Complete_FullPath_RecordsPreIncrementRewindCount(5)" methodname="Complete_FullPath_RecordsPreIncrementRewindCount" classname="Witch.Application.Tests.RewindTransactionUseCaseTests" runstate="Runnable" seed="1470878786" result="Passed" start-time="2026-11-17 11:31:30Z" end-time="2026-11-17 11:31:30Z" duration="0.205485" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+              <test-case id="1104" name="Complete_FullRewindPath_KeepsTutorialFlag" fullname="Witch.Application.Tests.RewindTransactionUseCaseTests.Complete_FullRewindPath_KeepsTutorialFlag" methodname="Complete_FullRewindPath_KeepsTutorialFlag" classname="Witch.Application.Tests.RewindTransactionUseCaseTests" runstate="Runnable" seed="402388004" result="Passed" start-time="2026-11-17 11:31:30Z" end-time="2026-11-17 11:31:30Z" duration="0.106833" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1105" name="Complete_InPlacePath_RecordsPreIncrementRewindCount" fullname="Witch.Application.Tests.RewindTransactionUseCaseTests.Complete_InPlacePath_RecordsPreIncrementRewindCount" methodname="Complete_InPlacePath_RecordsPreIncrementRewindCount" classname="Witch.Application.Tests.RewindTransactionUseCaseTests" runstate="Runnable" seed="885242383" result="Passed" start-time="2026-11-17 11:31:30Z" end-time="2026-11-17 11:31:30Z" duration="0.204608" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1100" name="Complete_RestoresSnapshotAndDuplicateDoesNotApplyTwice" fullname="Witch.Application.Tests.RewindTransactionUseCaseTests.Complete_RestoresSnapshotAndDuplicateDoesNotApplyTwice" methodname="Complete_RestoresSnapshotAndDuplicateDoesNotApplyTwice" classname="Witch.Application.Tests.RewindTransactionUseCaseTests" runstate="Runnable" seed="1319310269" result="Passed" start-time="2026-11-17 11:31:30Z" end-time="2026-11-17 11:31:30Z" duration="0.107363" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1101" name="Complete_SceneFailureFallsBackToMenuAndCanRetry" fullname="Witch.Application.Tests.RewindTransactionUseCaseTests.Complete_SceneFailureFallsBackToMenuAndCanRetry" methodname="Complete_SceneFailureFallsBackToMenuAndCanRetry" classname="Witch.Application.Tests.RewindTransactionUseCaseTests" runstate="Runnable" seed="1365781328" result="Passed" start-time="2026-11-17 11:31:30Z" end-time="2026-11-17 11:31:31Z" duration="0.203043" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1102" name="CompleteRewindInPlace_KeepsTutorialFlagEvenWhenResumeRunStateLacksIt" fullname="Witch.Application.Tests.RewindTransactionUseCaseTests.CompleteRewindInPlace_KeepsTutorialFlagEvenWhenResumeRunStateLacksIt" methodname="CompleteRewindInPlace_KeepsTutorialFlagEvenWhenResumeRunStateLacksIt" classname="Witch.Application.Tests.RewindTransactionUseCaseTests" runstate="Runnable" seed="506677192" result="Passed" start-time="2026-11-17 11:31:31Z" end-time="2026-11-17 11:31:31Z" duration="0.001746" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1097" name="Enter_PersistsPendingBeforeLoadingScene" fullname="Witch.Application.Tests.RewindTransactionUseCaseTests.Enter_PersistsPendingBeforeLoadingScene" methodname="Enter_PersistsPendingBeforeLoadingScene" classname="Witch.Application.Tests.RewindTransactionUseCaseTests" runstate="Runnable" seed="1216126934" result="Failed" start-time="2026-11-17 11:31:31Z" end-time="2026-11-17 11:31:31Z" duration="0.107769" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <failure>
+                  <message><![CDATA[  Expected: 3
+  But was:  8
+]]></message>
+                  <stack-trace><![CDATA[at Witch.Application.Tests.RewindTransactionUseCaseTests.Enter_PersistsPendingBeforeLoadingScene () [0x00154] in /Users/lelaberliani/Documents/Academy/Witch-Game/Assets/Tests/EditMode/Application/RewindTransactionUseCaseTests.cs:32
+at UnityEngine.TestTools.TestRunner.TestTaskWrapper+<Execute>d__2.MoveNext () [0x00063] in ./Library/PackageCache/com.unity.test-framework@80f691d4262b/UnityEngine.TestRunner/TestRunner/TestTaskWrapper.cs:31
+at UnityEngine.TestTools.TestEnumerator+<Execute>d__8.MoveNext () [0x0003a] in ./Library/PackageCache/com.unity.test-framework@80f691d4262b/UnityEngine.TestRunner/NUnitExtensions/Attributes/TestEnumerator.cs:52
+]]></stack-trace>
+                </failure>
+              </test-case>
+              <test-case id="1098" name="Enter_SaveFailureDoesNotRequestScene" fullname="Witch.Application.Tests.RewindTransactionUseCaseTests.Enter_SaveFailureDoesNotRequestScene" methodname="Enter_SaveFailureDoesNotRequestScene" classname="Witch.Application.Tests.RewindTransactionUseCaseTests" runstate="Runnable" seed="1559373679" result="Passed" start-time="2026-11-17 11:31:31Z" end-time="2026-11-17 11:31:31Z" duration="0.205365" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1099" name="Enter_SceneFailureFallsBackToMenuAndCanRetry" fullname="Witch.Application.Tests.RewindTransactionUseCaseTests.Enter_SceneFailureFallsBackToMenuAndCanRetry" methodname="Enter_SceneFailureFallsBackToMenuAndCanRetry" classname="Witch.Application.Tests.RewindTransactionUseCaseTests" runstate="Runnable" seed="444068619" result="Passed" start-time="2026-11-17 11:31:31Z" end-time="2026-11-17 11:31:31Z" duration="0.107354" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1115" name="EnterRewind_ClearsHunterFarewell" fullname="Witch.Application.Tests.RewindTransactionUseCaseTests.EnterRewind_ClearsHunterFarewell" methodname="EnterRewind_ClearsHunterFarewell" classname="Witch.Application.Tests.RewindTransactionUseCaseTests" runstate="Runnable" seed="182490300" result="Passed" start-time="2026-11-17 11:31:31Z" end-time="2026-11-17 11:31:31Z" duration="0.000434" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1113" name="RetryDay_ClearsHunterFarewell" fullname="Witch.Application.Tests.RewindTransactionUseCaseTests.RetryDay_ClearsHunterFarewell" methodname="RetryDay_ClearsHunterFarewell" classname="Witch.Application.Tests.RewindTransactionUseCaseTests" runstate="Runnable" seed="869922765" result="Passed" start-time="2026-11-17 11:31:31Z" end-time="2026-11-17 11:31:31Z" duration="0.000312" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1112" name="TryConsumeHunterFarewell_ReturnsValueOnceThenClears" fullname="Witch.Application.Tests.RewindTransactionUseCaseTests.TryConsumeHunterFarewell_ReturnsValueOnceThenClears" methodname="TryConsumeHunterFarewell_ReturnsValueOnceThenClears" classname="Witch.Application.Tests.RewindTransactionUseCaseTests" runstate="Runnable" seed="1266251372" result="Passed" start-time="2026-11-17 11:31:31Z" end-time="2026-11-17 11:31:31Z" duration="0.000290" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1116" name="StartNewGameUseCaseTests" fullname="Witch.Application.Tests.StartNewGameUseCaseTests" classname="Witch.Application.Tests.StartNewGameUseCaseTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-11-17 11:31:31Z" end-time="2026-11-17 11:31:31Z" duration="0.406487" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1117" name="Execute_SavesActivatesSessionAndRequestsShopScene" fullname="Witch.Application.Tests.StartNewGameUseCaseTests.Execute_SavesActivatesSessionAndRequestsShopScene" methodname="Execute_SavesActivatesSessionAndRequestsShopScene" classname="Witch.Application.Tests.StartNewGameUseCaseTests" runstate="Runnable" seed="1334593660" result="Passed" start-time="2026-11-17 11:31:31Z" end-time="2026-11-17 11:31:31Z" duration="0.106002" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1119" name="Execute_WhenCancelled_PropagatesCancellationWithoutActivatingSession" fullname="Witch.Application.Tests.StartNewGameUseCaseTests.Execute_WhenCancelled_PropagatesCancellationWithoutActivatingSession" methodname="Execute_WhenCancelled_PropagatesCancellationWithoutActivatingSession" classname="Witch.Application.Tests.StartNewGameUseCaseTests" runstate="Runnable" seed="441038938" result="Passed" start-time="2026-11-17 11:31:31Z" end-time="2026-11-17 11:31:31Z" duration="0.001251" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1118" name="Execute_WhenSaveFails_DoesNotActivateOrLoadScene" fullname="Witch.Application.Tests.StartNewGameUseCaseTests.Execute_WhenSaveFails_DoesNotActivateOrLoadScene" methodname="Execute_WhenSaveFails_DoesNotActivateOrLoadScene" classname="Witch.Application.Tests.StartNewGameUseCaseTests" runstate="Runnable" seed="1060896065" result="Passed" start-time="2026-11-17 11:31:31Z" end-time="2026-11-17 11:31:31Z" duration="0.200036" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1120" name="StartNewRunUseCaseTests" fullname="Witch.Application.Tests.StartNewRunUseCaseTests" classname="Witch.Application.Tests.StartNewRunUseCaseTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-11-17 11:31:31Z" end-time="2026-11-17 11:31:31Z" duration="0.008123" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1121" name="Execute_CreatesFirstDayAtShopPreparation" fullname="Witch.Application.Tests.StartNewRunUseCaseTests.Execute_CreatesFirstDayAtShopPreparation" methodname="Execute_CreatesFirstDayAtShopPreparation" classname="Witch.Application.Tests.StartNewRunUseCaseTests" runstate="Runnable" seed="1190090843" result="Passed" start-time="2026-11-17 11:31:31Z" end-time="2026-11-17 11:31:31Z" duration="0.000930" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1122" name="Execute_WithoutCommand_ReturnsTypedError" fullname="Witch.Application.Tests.StartNewRunUseCaseTests.Execute_WithoutCommand_ReturnsTypedError" methodname="Execute_WithoutCommand_ReturnsTypedError" classname="Witch.Application.Tests.StartNewRunUseCaseTests" runstate="Runnable" seed="1486276948" result="Passed" start-time="2026-11-17 11:31:31Z" end-time="2026-11-17 11:31:31Z" duration="0.000444" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1123" name="Success_WithoutSession_IsRejected" fullname="Witch.Application.Tests.StartNewRunUseCaseTests.Success_WithoutSession_IsRejected" methodname="Success_WithoutSession_IsRejected" classname="Witch.Application.Tests.StartNewRunUseCaseTests" runstate="Runnable" seed="2004503336" result="Passed" start-time="2026-11-17 11:31:31Z" end-time="2026-11-17 11:31:31Z" duration="0.001050" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+    <test-suite type="Assembly" id="1131" name="Witch.Bootstrap.Tests.dll" fullname="/Users/lelaberliani/Documents/Academy/Witch-Game/Library/ScriptAssemblies/Witch.Bootstrap.Tests.dll" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-11-17 11:31:31Z" end-time="2026-11-17 11:31:32Z" duration="0.304223" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="90183" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestSuite" id="1132" name="Witch" fullname="Witch" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-11-17 11:31:32Z" end-time="2026-11-17 11:31:32Z" duration="0.209293" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1133" name="Tests" fullname="Witch.Tests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-11-17 11:31:32Z" end-time="2026-11-17 11:31:32Z" duration="0.208971" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestSuite" id="1134" name="EditMode" fullname="Witch.Tests.EditMode" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-11-17 11:31:32Z" end-time="2026-11-17 11:31:32Z" duration="0.106907" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-suite type="TestSuite" id="1135" name="Bootstrap" fullname="Witch.Tests.EditMode.Bootstrap" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-11-17 11:31:32Z" end-time="2026-11-17 11:31:32Z" duration="0.106241" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-suite type="TestFixture" id="1128" name="WitchDebugStartupTests" fullname="Witch.Tests.EditMode.Bootstrap.WitchDebugStartupTests" classname="Witch.Tests.EditMode.Bootstrap.WitchDebugStartupTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-11-17 11:31:32Z" end-time="2026-11-17 11:31:32Z" duration="0.005444" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="1129" name="Defaults_AreMainMenuAndDay1" fullname="Witch.Tests.EditMode.Bootstrap.WitchDebugStartupTests.Defaults_AreMainMenuAndDay1" methodname="Defaults_AreMainMenuAndDay1" classname="Witch.Tests.EditMode.Bootstrap.WitchDebugStartupTests" runstate="Runnable" seed="1009511667" result="Passed" start-time="2026-11-17 11:31:32Z" end-time="2026-11-17 11:31:32Z" duration="0.000573" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1130" name="RuntimeStartPath_IgnoresOverride_InPlayerBuilds" fullname="Witch.Tests.EditMode.Bootstrap.WitchDebugStartupTests.RuntimeStartPath_IgnoresOverride_InPlayerBuilds" methodname="RuntimeStartPath_IgnoresOverride_InPlayerBuilds" classname="Witch.Tests.EditMode.Bootstrap.WitchDebugStartupTests" runstate="Runnable" seed="1182205218" result="Passed" start-time="2026-11-17 11:31:32Z" end-time="2026-11-17 11:31:32Z" duration="0.000233" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+    <test-suite type="Assembly" id="1190" name="Witch.Domain.Tests.dll" fullname="/Users/lelaberliani/Documents/Academy/Witch-Game/Library/ScriptAssemblies/Witch.Domain.Tests.dll" runstate="Runnable" testcasecount="42" result="Failed" site="Child" start-time="2026-11-17 11:31:32Z" end-time="2026-11-17 11:31:33Z" duration="0.857134" total="42" passed="36" failed="6" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="90183" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <failure>
+        <message><![CDATA[One or more child tests had errors]]></message>
+      </failure>
+      <test-suite type="TestSuite" id="1191" name="Witch" fullname="Witch" runstate="Runnable" testcasecount="42" result="Failed" site="Child" start-time="2026-11-17 11:31:32Z" end-time="2026-11-17 11:31:33Z" duration="0.756707" total="42" passed="36" failed="6" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <failure>
+          <message><![CDATA[One or more child tests had errors]]></message>
+        </failure>
+        <test-suite type="TestSuite" id="1192" name="Domain" fullname="Witch.Domain" runstate="Runnable" testcasecount="42" result="Failed" site="Child" start-time="2026-11-17 11:31:32Z" end-time="2026-11-17 11:31:33Z" duration="0.755252" total="42" passed="36" failed="6" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <failure>
+            <message><![CDATA[One or more child tests had errors]]></message>
+          </failure>
+          <test-suite type="TestSuite" id="1193" name="Tests" fullname="Witch.Domain.Tests" runstate="Runnable" testcasecount="42" result="Failed" site="Child" start-time="2026-11-17 11:31:32Z" end-time="2026-11-17 11:31:33Z" duration="0.653446" total="42" passed="36" failed="6" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <failure>
+              <message><![CDATA[One or more child tests had errors]]></message>
+            </failure>
+            <test-suite type="TestFixture" id="1136" name="DayRuleTests" fullname="Witch.Domain.Tests.DayRuleTests" classname="Witch.Domain.Tests.DayRuleTests" runstate="Runnable" testcasecount="11" result="Failed" site="Child" start-time="2026-11-17 11:31:32Z" end-time="2026-11-17 11:31:32Z" duration="0.110836" total="11" passed="7" failed="4" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <failure>
+                <message><![CDATA[One or more child tests had errors]]></message>
+              </failure>
+              <test-case id="1140" name="CompletionDay_WinsAfterPayingExpense" fullname="Witch.Domain.Tests.DayRuleTests.CompletionDay_WinsAfterPayingExpense" methodname="CompletionDay_WinsAfterPayingExpense" classname="Witch.Domain.Tests.DayRuleTests" runstate="Runnable" seed="2027552642" result="Passed" start-time="2026-11-17 11:31:32Z" end-time="2026-11-17 11:31:32Z" duration="0.000518" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1138" name="Expense_WhenAffordable_DeductsAndAdvancesDay" fullname="Witch.Domain.Tests.DayRuleTests.Expense_WhenAffordable_DeductsAndAdvancesDay" methodname="Expense_WhenAffordable_DeductsAndAdvancesDay" classname="Witch.Domain.Tests.DayRuleTests" runstate="Runnable" seed="1695880672" result="Passed" start-time="2026-11-17 11:31:32Z" end-time="2026-11-17 11:31:32Z" duration="0.000215" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1139" name="Expense_WhenUnaffordable_DeductsNothingAndEndsRun" fullname="Witch.Domain.Tests.DayRuleTests.Expense_WhenUnaffordable_DeductsNothingAndEndsRun" methodname="Expense_WhenUnaffordable_DeductsNothingAndEndsRun" classname="Witch.Domain.Tests.DayRuleTests" runstate="Runnable" seed="523350763" result="Passed" start-time="2026-11-17 11:31:32Z" end-time="2026-11-17 11:31:32Z" duration="0.000268" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1141" name="PlannedFullGameCompletionDayFourteen_RemainsConfigurable" fullname="Witch.Domain.Tests.DayRuleTests.PlannedFullGameCompletionDayFourteen_RemainsConfigurable" methodname="PlannedFullGameCompletionDayFourteen_RemainsConfigurable" classname="Witch.Domain.Tests.DayRuleTests" runstate="Runnable" seed="432830967" result="Passed" start-time="2026-11-17 11:31:32Z" end-time="2026-11-17 11:31:32Z" duration="0.000277" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-suite type="ParameterizedMethod" id="1146" name="RewindBoard_GrowsFromThreePairsAndCapsAtEight" fullname="Witch.Domain.Tests.DayRuleTests.RewindBoard_GrowsFromThreePairsAndCapsAtEight" classname="Witch.Domain.Tests.DayRuleTests" runstate="Runnable" testcasecount="4" result="Failed" site="Child" start-time="2026-11-17 11:31:32Z" end-time="2026-11-17 11:31:32Z" duration="0.004944" total="4" passed="0" failed="4" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <failure>
+                  <message><![CDATA[One or more child tests had errors]]></message>
+                </failure>
+                <test-case id="1142" name="RewindBoard_GrowsFromThreePairsAndCapsAtEight(0,3)" fullname="Witch.Domain.Tests.DayRuleTests.RewindBoard_GrowsFromThreePairsAndCapsAtEight(0,3)" methodname="RewindBoard_GrowsFromThreePairsAndCapsAtEight" classname="Witch.Domain.Tests.DayRuleTests" runstate="Runnable" seed="905085376" result="Failed" start-time="2026-11-17 11:31:32Z" end-time="2026-11-17 11:31:32Z" duration="0.000644" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <failure>
+                    <message><![CDATA[  Expected: 3
+  But was:  8
+]]></message>
+                    <stack-trace><![CDATA[at Witch.Domain.Tests.DayRuleTests.RewindBoard_GrowsFromThreePairsAndCapsAtEight (System.Int32 rewindCount, System.Int32 expectedPairs) [0x00000] in /Users/lelaberliani/Documents/Academy/Witch-Game/Assets/Tests/EditMode/Domain/DayRuleTests.cs:79
+]]></stack-trace>
+                  </failure>
+                </test-case>
+                <test-case id="1143" name="RewindBoard_GrowsFromThreePairsAndCapsAtEight(1,4)" fullname="Witch.Domain.Tests.DayRuleTests.RewindBoard_GrowsFromThreePairsAndCapsAtEight(1,4)" methodname="RewindBoard_GrowsFromThreePairsAndCapsAtEight" classname="Witch.Domain.Tests.DayRuleTests" runstate="Runnable" seed="1200184741" result="Failed" start-time="2026-11-17 11:31:32Z" end-time="2026-11-17 11:31:32Z" duration="0.000181" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <failure>
+                    <message><![CDATA[  Expected: 4
+  But was:  9
+]]></message>
+                    <stack-trace><![CDATA[at Witch.Domain.Tests.DayRuleTests.RewindBoard_GrowsFromThreePairsAndCapsAtEight (System.Int32 rewindCount, System.Int32 expectedPairs) [0x00000] in /Users/lelaberliani/Documents/Academy/Witch-Game/Assets/Tests/EditMode/Domain/DayRuleTests.cs:79
+]]></stack-trace>
+                  </failure>
+                </test-case>
+                <test-case id="1144" name="RewindBoard_GrowsFromThreePairsAndCapsAtEight(5,8)" fullname="Witch.Domain.Tests.DayRuleTests.RewindBoard_GrowsFromThreePairsAndCapsAtEight(5,8)" methodname="RewindBoard_GrowsFromThreePairsAndCapsAtEight" classname="Witch.Domain.Tests.DayRuleTests" runstate="Runnable" seed="2012448897" result="Failed" start-time="2026-11-17 11:31:32Z" end-time="2026-11-17 11:31:32Z" duration="0.000132" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <failure>
+                    <message><![CDATA[  Expected: 8
+  But was:  12
+]]></message>
+                    <stack-trace><![CDATA[at Witch.Domain.Tests.DayRuleTests.RewindBoard_GrowsFromThreePairsAndCapsAtEight (System.Int32 rewindCount, System.Int32 expectedPairs) [0x00000] in /Users/lelaberliani/Documents/Academy/Witch-Game/Assets/Tests/EditMode/Domain/DayRuleTests.cs:79
+]]></stack-trace>
+                  </failure>
+                </test-case>
+                <test-case id="1145" name="RewindBoard_GrowsFromThreePairsAndCapsAtEight(20,8)" fullname="Witch.Domain.Tests.DayRuleTests.RewindBoard_GrowsFromThreePairsAndCapsAtEight(20,8)" methodname="RewindBoard_GrowsFromThreePairsAndCapsAtEight" classname="Witch.Domain.Tests.DayRuleTests" runstate="Runnable" seed="1486280384" result="Failed" start-time="2026-11-17 11:31:32Z" end-time="2026-11-17 11:31:32Z" duration="0.000106" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <failure>
+                    <message><![CDATA[  Expected: 8
+  But was:  12
+]]></message>
+                    <stack-trace><![CDATA[at Witch.Domain.Tests.DayRuleTests.RewindBoard_GrowsFromThreePairsAndCapsAtEight (System.Int32 rewindCount, System.Int32 expectedPairs) [0x00000] in /Users/lelaberliani/Documents/Academy/Witch-Game/Assets/Tests/EditMode/Domain/DayRuleTests.cs:79
+]]></stack-trace>
+                  </failure>
+                </test-case>
+              </test-suite>
+              <test-case id="1148" name="RewindCompletion_KeepsTutorialFlagsFromFailedAttempt" fullname="Witch.Domain.Tests.DayRuleTests.RewindCompletion_KeepsTutorialFlagsFromFailedAttempt" methodname="RewindCompletion_KeepsTutorialFlagsFromFailedAttempt" classname="Witch.Domain.Tests.DayRuleTests" runstate="Runnable" seed="167518869" result="Passed" start-time="2026-11-17 11:31:32Z" end-time="2026-11-17 11:31:32Z" duration="0.000719" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1147" name="RewindCompletion_RestoresDayStartAndClearsSuspicionWithNewSeed" fullname="Witch.Domain.Tests.DayRuleTests.RewindCompletion_RestoresDayStartAndClearsSuspicionWithNewSeed" methodname="RewindCompletion_RestoresDayStartAndClearsSuspicionWithNewSeed" classname="Witch.Domain.Tests.DayRuleTests" runstate="Runnable" seed="1606533960" result="Passed" start-time="2026-11-17 11:31:32Z" end-time="2026-11-17 11:31:32Z" duration="0.000846" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1137" name="TimerAtZero_ClosesQueueButActiveEncounterCanFinish" fullname="Witch.Domain.Tests.DayRuleTests.TimerAtZero_ClosesQueueButActiveEncounterCanFinish" methodname="TimerAtZero_ClosesQueueButActiveEncounterCanFinish" classname="Witch.Domain.Tests.DayRuleTests" runstate="Runnable" seed="1952764599" result="Passed" start-time="2026-11-17 11:31:32Z" end-time="2026-11-17 11:31:32Z" duration="0.000226" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1149" name="DayRuntimeStateTests" fullname="Witch.Domain.Tests.DayRuntimeStateTests" classname="Witch.Domain.Tests.DayRuntimeStateTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-11-17 11:31:32Z" end-time="2026-11-17 11:31:32Z" duration="0.099940" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1151" name="DayAttemptState_CopiesRuntimeProgressWithoutChangingSnapshot" fullname="Witch.Domain.Tests.DayRuntimeStateTests.DayAttemptState_CopiesRuntimeProgressWithoutChangingSnapshot" methodname="DayAttemptState_CopiesRuntimeProgressWithoutChangingSnapshot" classname="Witch.Domain.Tests.DayRuntimeStateTests" runstate="Runnable" seed="897107213" result="Passed" start-time="2026-11-17 11:31:32Z" end-time="2026-11-17 11:31:32Z" duration="0.001732" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1150" name="DayStartSnapshot_KeepsStableBeginningOfDayData" fullname="Witch.Domain.Tests.DayRuntimeStateTests.DayStartSnapshot_KeepsStableBeginningOfDayData" methodname="DayStartSnapshot_KeepsStableBeginningOfDayData" classname="Witch.Domain.Tests.DayRuntimeStateTests" runstate="Runnable" seed="434282170" result="Passed" start-time="2026-11-17 11:31:32Z" end-time="2026-11-17 11:31:32Z" duration="0.000509" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1152" name="HerbPairTests" fullname="Witch.Domain.Tests.HerbPairTests" classname="Witch.Domain.Tests.HerbPairTests" runstate="Runnable" testcasecount="6" result="Passed" start-time="2026-11-17 11:31:32Z" end-time="2026-11-17 11:31:32Z" duration="0.108221" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1154" name="DifferentHerbs_AreNotEqual" fullname="Witch.Domain.Tests.HerbPairTests.DifferentHerbs_AreNotEqual" methodname="DifferentHerbs_AreNotEqual" classname="Witch.Domain.Tests.HerbPairTests" runstate="Runnable" seed="1477343402" result="Passed" start-time="2026-11-17 11:31:32Z" end-time="2026-11-17 11:31:32Z" duration="0.000432" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1155" name="DuplicateHerbs_AreRejected" fullname="Witch.Domain.Tests.HerbPairTests.DuplicateHerbs_AreRejected" methodname="DuplicateHerbs_AreRejected" classname="Witch.Domain.Tests.HerbPairTests" runstate="Runnable" seed="1490671694" result="Passed" start-time="2026-11-17 11:31:32Z" end-time="2026-11-17 11:31:32Z" duration="0.001257" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-suite type="ParameterizedMethod" id="1159" name="EmptyStableHerbId_IsRejected" fullname="Witch.Domain.Tests.HerbPairTests.EmptyStableHerbId_IsRejected" classname="Witch.Domain.Tests.HerbPairTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-11-17 11:31:32Z" end-time="2026-11-17 11:31:32Z" duration="0.100740" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="1156" name="EmptyStableHerbId_IsRejected(null)" fullname="Witch.Domain.Tests.HerbPairTests.EmptyStableHerbId_IsRejected(null)" methodname="EmptyStableHerbId_IsRejected" classname="Witch.Domain.Tests.HerbPairTests" runstate="Runnable" seed="1135728202" result="Passed" start-time="2026-11-17 11:31:32Z" end-time="2026-11-17 11:31:32Z" duration="0.000940" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1157" name="EmptyStableHerbId_IsRejected(&quot;&quot;)" fullname="Witch.Domain.Tests.HerbPairTests.EmptyStableHerbId_IsRejected(&quot;&quot;)" methodname="EmptyStableHerbId_IsRejected" classname="Witch.Domain.Tests.HerbPairTests" runstate="Runnable" seed="606386203" result="Passed" start-time="2026-11-17 11:31:32Z" end-time="2026-11-17 11:31:32Z" duration="0.000088" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1158" name="EmptyStableHerbId_IsRejected(&quot;   &quot;)" fullname="Witch.Domain.Tests.HerbPairTests.EmptyStableHerbId_IsRejected(&quot;   &quot;)" methodname="EmptyStableHerbId_IsRejected" classname="Witch.Domain.Tests.HerbPairTests" runstate="Runnable" seed="164691757" result="Passed" start-time="2026-11-17 11:31:32Z" end-time="2026-11-17 11:31:32Z" duration="0.000078" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+              <test-case id="1153" name="SameHerbsInDifferentOrder_AreEqual" fullname="Witch.Domain.Tests.HerbPairTests.SameHerbsInDifferentOrder_AreEqual" methodname="SameHerbsInDifferentOrder_AreEqual" classname="Witch.Domain.Tests.HerbPairTests" runstate="Runnable" seed="2086205334" result="Passed" start-time="2026-11-17 11:31:32Z" end-time="2026-11-17 11:31:32Z" duration="0.000271" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1160" name="OrderRequestTests" fullname="Witch.Domain.Tests.OrderRequestTests" classname="Witch.Domain.Tests.OrderRequestTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-11-17 11:31:32Z" end-time="2026-11-17 11:31:32Z" duration="0.003062" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1162" name="DifferentPair_IsWrongForCurrentOrder" fullname="Witch.Domain.Tests.OrderRequestTests.DifferentPair_IsWrongForCurrentOrder" methodname="DifferentPair_IsWrongForCurrentOrder" classname="Witch.Domain.Tests.OrderRequestTests" runstate="Runnable" seed="1759371976" result="Passed" start-time="2026-11-17 11:31:32Z" end-time="2026-11-17 11:31:32Z" duration="0.000262" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1161" name="ExactRequestedPair_IsCorrectRegardlessOfSelectionOrder" fullname="Witch.Domain.Tests.OrderRequestTests.ExactRequestedPair_IsCorrectRegardlessOfSelectionOrder" methodname="ExactRequestedPair_IsCorrectRegardlessOfSelectionOrder" classname="Witch.Domain.Tests.OrderRequestTests" runstate="Runnable" seed="1234704687" result="Passed" start-time="2026-11-17 11:31:32Z" end-time="2026-11-17 11:31:32Z" duration="0.000102" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1163" name="PotionDraftTests" fullname="Witch.Domain.Tests.PotionDraftTests" classname="Witch.Domain.Tests.PotionDraftTests" runstate="Runnable" testcasecount="6" result="Passed" start-time="2026-11-17 11:31:32Z" end-time="2026-11-17 11:31:32Z" duration="0.110386" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1166" name="DuplicateHerbTypes_AreRejected" fullname="Witch.Domain.Tests.PotionDraftTests.DuplicateHerbTypes_AreRejected" methodname="DuplicateHerbTypes_AreRejected" classname="Witch.Domain.Tests.PotionDraftTests" runstate="Runnable" seed="474343620" result="Passed" start-time="2026-11-17 11:31:32Z" end-time="2026-11-17 11:31:32Z" duration="0.001400" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1164" name="EmptyDraft_IsNotReadyToBrew" fullname="Witch.Domain.Tests.PotionDraftTests.EmptyDraft_IsNotReadyToBrew" methodname="EmptyDraft_IsNotReadyToBrew" classname="Witch.Domain.Tests.PotionDraftTests" runstate="Runnable" seed="1863309605" result="Passed" start-time="2026-11-17 11:31:32Z" end-time="2026-11-17 11:31:32Z" duration="0.000582" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-suite type="ParameterizedMethod" id="1170" name="Ingredient_WithEmptyStableId_IsRejected" fullname="Witch.Domain.Tests.PotionDraftTests.Ingredient_WithEmptyStableId_IsRejected" classname="Witch.Domain.Tests.PotionDraftTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-11-17 11:31:32Z" end-time="2026-11-17 11:31:32Z" duration="0.005819" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="1167" name="Ingredient_WithEmptyStableId_IsRejected(null)" fullname="Witch.Domain.Tests.PotionDraftTests.Ingredient_WithEmptyStableId_IsRejected(null)" methodname="Ingredient_WithEmptyStableId_IsRejected" classname="Witch.Domain.Tests.PotionDraftTests" runstate="Runnable" seed="1553531376" result="Passed" start-time="2026-11-17 11:31:32Z" end-time="2026-11-17 11:31:32Z" duration="0.000526" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1168" name="Ingredient_WithEmptyStableId_IsRejected(&quot;&quot;)" fullname="Witch.Domain.Tests.PotionDraftTests.Ingredient_WithEmptyStableId_IsRejected(&quot;&quot;)" methodname="Ingredient_WithEmptyStableId_IsRejected" classname="Witch.Domain.Tests.PotionDraftTests" runstate="Runnable" seed="1523824147" result="Passed" start-time="2026-11-17 11:31:32Z" end-time="2026-11-17 11:31:32Z" duration="0.000167" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1169" name="Ingredient_WithEmptyStableId_IsRejected(&quot;   &quot;)" fullname="Witch.Domain.Tests.PotionDraftTests.Ingredient_WithEmptyStableId_IsRejected(&quot;   &quot;)" methodname="Ingredient_WithEmptyStableId_IsRejected" classname="Witch.Domain.Tests.PotionDraftTests" runstate="Runnable" seed="1917426660" result="Passed" start-time="2026-11-17 11:31:32Z" end-time="2026-11-17 11:31:32Z" duration="0.000294" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+              <test-case id="1165" name="TwoDifferentGroundHerbs_AreReadyToBrew" fullname="Witch.Domain.Tests.PotionDraftTests.TwoDifferentGroundHerbs_AreReadyToBrew" methodname="TwoDifferentGroundHerbs_AreReadyToBrew" classname="Witch.Domain.Tests.PotionDraftTests" runstate="Runnable" seed="1143649722" result="Passed" start-time="2026-11-17 11:31:32Z" end-time="2026-11-17 11:31:32Z" duration="0.000350" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1171" name="PotionServiceRulesTests" fullname="Witch.Domain.Tests.PotionServiceRulesTests" classname="Witch.Domain.Tests.PotionServiceRulesTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-11-17 11:31:32Z" end-time="2026-11-17 11:31:32Z" duration="0.102553" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1174" name="AnyTwoDifferentHerbs_BrewPotionWithoutChangingRunState" fullname="Witch.Domain.Tests.PotionServiceRulesTests.AnyTwoDifferentHerbs_BrewPotionWithoutChangingRunState" methodname="AnyTwoDifferentHerbs_BrewPotionWithoutChangingRunState" classname="Witch.Domain.Tests.PotionServiceRulesTests" runstate="Runnable" seed="1664034060" result="Passed" start-time="2026-11-17 11:31:32Z" end-time="2026-11-17 11:31:32Z" duration="0.000946" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1172" name="CorrectPotion_PaysFixedAmountWithoutSuspicion" fullname="Witch.Domain.Tests.PotionServiceRulesTests.CorrectPotion_PaysFixedAmountWithoutSuspicion" methodname="CorrectPotion_PaysFixedAmountWithoutSuspicion" classname="Witch.Domain.Tests.PotionServiceRulesTests" runstate="Runnable" seed="2072092028" result="Passed" start-time="2026-11-17 11:31:32Z" end-time="2026-11-17 11:31:32Z" duration="0.000850" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1173" name="OtherPotion_PaysNothingAndAddsOneSuspicion" fullname="Witch.Domain.Tests.PotionServiceRulesTests.OtherPotion_PaysNothingAndAddsOneSuspicion" methodname="OtherPotion_PaysNothingAndAddsOneSuspicion" classname="Witch.Domain.Tests.PotionServiceRulesTests" runstate="Runnable" seed="1306014577" result="Passed" start-time="2026-11-17 11:31:32Z" end-time="2026-11-17 11:31:32Z" duration="0.000615" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1175" name="RewindBoardTests" fullname="Witch.Domain.Tests.RewindBoardTests" classname="Witch.Domain.Tests.RewindBoardTests" runstate="Runnable" testcasecount="2" result="Failed" site="Child" start-time="2026-11-17 11:31:32Z" end-time="2026-11-17 11:31:32Z" duration="0.005414" total="2" passed="0" failed="2" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <failure>
+                <message><![CDATA[One or more child tests had errors]]></message>
+              </failure>
+              <test-case id="1176" name="Create_SameSeedAndCountProducesSameBoard" fullname="Witch.Domain.Tests.RewindBoardTests.Create_SameSeedAndCountProducesSameBoard" methodname="Create_SameSeedAndCountProducesSameBoard" classname="Witch.Domain.Tests.RewindBoardTests" runstate="Runnable" seed="572010147" result="Failed" start-time="2026-11-17 11:31:32Z" end-time="2026-11-17 11:31:32Z" duration="0.000714" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <failure>
+                  <message><![CDATA[  Expected: 6
+  But was:  10
+]]></message>
+                  <stack-trace><![CDATA[at Witch.Domain.Tests.RewindBoardTests.Create_SameSeedAndCountProducesSameBoard () [0x00018] in /Users/lelaberliani/Documents/Academy/Witch-Game/Assets/Tests/EditMode/Domain/RewindBoardTests.cs:14
+]]></stack-trace>
+                </failure>
+              </test-case>
+              <test-case id="1177" name="Create_UsesAuthoredDifficultyRange" fullname="Witch.Domain.Tests.RewindBoardTests.Create_UsesAuthoredDifficultyRange" methodname="Create_UsesAuthoredDifficultyRange" classname="Witch.Domain.Tests.RewindBoardTests" runstate="Runnable" seed="1222313994" result="Failed" start-time="2026-11-17 11:31:32Z" end-time="2026-11-17 11:31:32Z" duration="0.000338" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <failure>
+                  <message><![CDATA[  Expected: 3
+  But was:  4
+]]></message>
+                  <stack-trace><![CDATA[at Witch.Domain.Tests.RewindBoardTests.Create_UsesAuthoredDifficultyRange () [0x00000] in /Users/lelaberliani/Documents/Academy/Witch-Game/Assets/Tests/EditMode/Domain/RewindBoardTests.cs:26
+]]></stack-trace>
+                </failure>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1178" name="RunStateTests" fullname="Witch.Domain.Tests.RunStateTests" classname="Witch.Domain.Tests.RunStateTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-11-17 11:31:32Z" end-time="2026-11-17 11:31:33Z" duration="0.102784" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1181" name="MarkCategoryServed_AccumulatesUniqueCategories" fullname="Witch.Domain.Tests.RunStateTests.MarkCategoryServed_AccumulatesUniqueCategories" methodname="MarkCategoryServed_AccumulatesUniqueCategories" classname="Witch.Domain.Tests.RunStateTests" runstate="Runnable" seed="1787506161" result="Passed" start-time="2026-11-17 11:31:33Z" end-time="2026-11-17 11:31:33Z" duration="0.000775" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1180" name="MarkOrderSeen_TracksUniquePoolAndResetsWhenOrderRepeats" fullname="Witch.Domain.Tests.RunStateTests.MarkOrderSeen_TracksUniquePoolAndResetsWhenOrderRepeats" methodname="MarkOrderSeen_TracksUniquePoolAndResetsWhenOrderRepeats" classname="Witch.Domain.Tests.RunStateTests" runstate="Runnable" seed="1248766624" result="Passed" start-time="2026-11-17 11:31:33Z" end-time="2026-11-17 11:31:33Z" duration="0.000286" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1179" name="NewRun_HasExpectedInitialState" fullname="Witch.Domain.Tests.RunStateTests.NewRun_HasExpectedInitialState" methodname="NewRun_HasExpectedInitialState" classname="Witch.Domain.Tests.RunStateTests" runstate="Runnable" seed="1373911325" result="Passed" start-time="2026-11-17 11:31:33Z" end-time="2026-11-17 11:31:33Z" duration="0.000794" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1182" name="WitchHunterStageRulesTests" fullname="Witch.Domain.Tests.WitchHunterStageRulesTests" classname="Witch.Domain.Tests.WitchHunterStageRulesTests" runstate="Runnable" testcasecount="7" result="Passed" start-time="2026-11-17 11:31:33Z" end-time="2026-11-17 11:31:33Z" duration="0.007232" total="7" passed="7" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1185" name="LastCompletedRewind_ResolvesLastStage" fullname="Witch.Domain.Tests.WitchHunterStageRulesTests.LastCompletedRewind_ResolvesLastStage" methodname="LastCompletedRewind_ResolvesLastStage" classname="Witch.Domain.Tests.WitchHunterStageRulesTests" runstate="Runnable" seed="210481320" result="Passed" start-time="2026-11-17 11:31:33Z" end-time="2026-11-17 11:31:33Z" duration="0.000249" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1189" name="NegativeCompletedRewinds_Throws" fullname="Witch.Domain.Tests.WitchHunterStageRulesTests.NegativeCompletedRewinds_Throws" methodname="NegativeCompletedRewinds_Throws" classname="Witch.Domain.Tests.WitchHunterStageRulesTests" runstate="Runnable" seed="1007914476" result="Passed" start-time="2026-11-17 11:31:33Z" end-time="2026-11-17 11:31:33Z" duration="0.001593" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1183" name="NoCompletedRewinds_ResolvesFirstStage" fullname="Witch.Domain.Tests.WitchHunterStageRulesTests.NoCompletedRewinds_ResolvesFirstStage" methodname="NoCompletedRewinds_ResolvesFirstStage" classname="Witch.Domain.Tests.WitchHunterStageRulesTests" runstate="Runnable" seed="1312616932" result="Passed" start-time="2026-11-17 11:31:33Z" end-time="2026-11-17 11:31:33Z" duration="0.000237" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1188" name="NonPositiveStageCount_Throws" fullname="Witch.Domain.Tests.WitchHunterStageRulesTests.NonPositiveStageCount_Throws" methodname="NonPositiveStageCount_Throws" classname="Witch.Domain.Tests.WitchHunterStageRulesTests" runstate="Runnable" seed="1865081969" result="Passed" start-time="2026-11-17 11:31:33Z" end-time="2026-11-17 11:31:33Z" duration="0.000498" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1184" name="OneCompletedRewind_ResolvesSecondStage" fullname="Witch.Domain.Tests.WitchHunterStageRulesTests.OneCompletedRewind_ResolvesSecondStage" methodname="OneCompletedRewind_ResolvesSecondStage" classname="Witch.Domain.Tests.WitchHunterStageRulesTests" runstate="Runnable" seed="1034464604" result="Passed" start-time="2026-11-17 11:31:33Z" end-time="2026-11-17 11:31:33Z" duration="0.000221" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1186" name="RewindsAboveLastStage_StayOnLastStage" fullname="Witch.Domain.Tests.WitchHunterStageRulesTests.RewindsAboveLastStage_StayOnLastStage" methodname="RewindsAboveLastStage_StayOnLastStage" classname="Witch.Domain.Tests.WitchHunterStageRulesTests" runstate="Runnable" seed="501252837" result="Passed" start-time="2026-11-17 11:31:33Z" end-time="2026-11-17 11:31:33Z" duration="0.000119" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1187" name="SingleStage_AlwaysResolvesZero" fullname="Witch.Domain.Tests.WitchHunterStageRulesTests.SingleStage_AlwaysResolvesZero" methodname="SingleStage_AlwaysResolvesZero" classname="Witch.Domain.Tests.WitchHunterStageRulesTests" runstate="Runnable" seed="993990782" result="Passed" start-time="2026-11-17 11:31:33Z" end-time="2026-11-17 11:31:33Z" duration="0.000095" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+    <test-suite type="Assembly" id="1237" name="Witch.Infrastructure.Tests.dll" fullname="/Users/lelaberliani/Documents/Academy/Witch-Game/Library/ScriptAssemblies/Witch.Infrastructure.Tests.dll" runstate="Runnable" testcasecount="39" result="Failed" site="Child" start-time="2026-11-17 11:31:33Z" end-time="2026-11-17 11:31:37Z" duration="4.883044" total="39" passed="37" failed="2" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="90183" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <failure>
+        <message><![CDATA[One or more child tests had errors]]></message>
+      </failure>
+      <test-suite type="TestSuite" id="1238" name="Witch" fullname="Witch" runstate="Runnable" testcasecount="39" result="Failed" site="Child" start-time="2026-11-17 11:31:33Z" end-time="2026-11-17 11:31:37Z" duration="4.788408" total="39" passed="37" failed="2" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <failure>
+          <message><![CDATA[One or more child tests had errors]]></message>
+        </failure>
+        <test-suite type="TestSuite" id="1239" name="Infrastructure" fullname="Witch.Infrastructure" runstate="Runnable" testcasecount="39" result="Failed" site="Child" start-time="2026-11-17 11:31:33Z" end-time="2026-11-17 11:31:37Z" duration="4.783507" total="39" passed="37" failed="2" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <failure>
+            <message><![CDATA[One or more child tests had errors]]></message>
+          </failure>
+          <test-suite type="TestSuite" id="1240" name="Tests" fullname="Witch.Infrastructure.Tests" runstate="Runnable" testcasecount="39" result="Failed" site="Child" start-time="2026-11-17 11:31:33Z" end-time="2026-11-17 11:31:37Z" duration="4.681547" total="39" passed="37" failed="2" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <failure>
+              <message><![CDATA[One or more child tests had errors]]></message>
+            </failure>
+            <test-suite type="TestFixture" id="1194" name="BuildSettingsTests" fullname="Witch.Infrastructure.Tests.BuildSettingsTests" classname="Witch.Infrastructure.Tests.BuildSettingsTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-11-17 11:31:33Z" end-time="2026-11-17 11:31:33Z" duration="0.104711" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1195" name="EnabledScenesMatchProductionOrderExactly" fullname="Witch.Infrastructure.Tests.BuildSettingsTests.EnabledScenesMatchProductionOrderExactly" methodname="EnabledScenesMatchProductionOrderExactly" classname="Witch.Infrastructure.Tests.BuildSettingsTests" runstate="Runnable" seed="1999146954" result="Passed" start-time="2026-11-17 11:31:33Z" end-time="2026-11-17 11:31:33Z" duration="0.001895" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1196" name="MacOSBuildProfileDoesNotShipDevelopmentSettings" fullname="Witch.Infrastructure.Tests.BuildSettingsTests.MacOSBuildProfileDoesNotShipDevelopmentSettings" methodname="MacOSBuildProfileDoesNotShipDevelopmentSettings" classname="Witch.Infrastructure.Tests.BuildSettingsTests" runstate="Runnable" seed="1333152700" result="Passed" start-time="2026-11-17 11:31:33Z" end-time="2026-11-17 11:31:33Z" duration="0.001422" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1197" name="GameContentAdapterTests" fullname="Witch.Infrastructure.Tests.GameContentAdapterTests" classname="Witch.Infrastructure.Tests.GameContentAdapterTests" runstate="Runnable" testcasecount="20" result="Failed" site="Child" start-time="2026-11-17 11:31:33Z" end-time="2026-11-17 11:31:33Z" duration="0.073592" total="20" passed="19" failed="1" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <failure>
+                <message><![CDATA[One or more child tests had errors]]></message>
+              </failure>
+              <test-case id="1198" name="Load_AuthoredFourteenDayContentIsValid" fullname="Witch.Infrastructure.Tests.GameContentAdapterTests.Load_AuthoredFourteenDayContentIsValid" methodname="Load_AuthoredFourteenDayContentIsValid" classname="Witch.Infrastructure.Tests.GameContentAdapterTests" runstate="Runnable" seed="1631438110" result="Passed" start-time="2026-11-17 11:31:33Z" end-time="2026-11-17 11:31:33Z" duration="0.056379" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1216" name="Load_MapsWitchHunterDialogueStages" fullname="Witch.Infrastructure.Tests.GameContentAdapterTests.Load_MapsWitchHunterDialogueStages" methodname="Load_MapsWitchHunterDialogueStages" classname="Witch.Infrastructure.Tests.GameContentAdapterTests" runstate="Runnable" seed="85250792" result="Passed" start-time="2026-11-17 11:31:33Z" end-time="2026-11-17 11:31:33Z" duration="0.001864" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1210" name="Load_OrderCustomerOverridesFallback" fullname="Witch.Infrastructure.Tests.GameContentAdapterTests.Load_OrderCustomerOverridesFallback" methodname="Load_OrderCustomerOverridesFallback" classname="Witch.Infrastructure.Tests.GameContentAdapterTests" runstate="Runnable" seed="265041017" result="Passed" start-time="2026-11-17 11:31:33Z" end-time="2026-11-17 11:31:33Z" duration="0.000669" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1201" name="Load_ValidFixtureMapsAllRuntimeInputs" fullname="Witch.Infrastructure.Tests.GameContentAdapterTests.Load_ValidFixtureMapsAllRuntimeInputs" methodname="Load_ValidFixtureMapsAllRuntimeInputs" classname="Witch.Infrastructure.Tests.GameContentAdapterTests" runstate="Runnable" seed="585223991" result="Passed" start-time="2026-11-17 11:31:33Z" end-time="2026-11-17 11:31:33Z" duration="0.000664" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1209" name="Load_WithoutCustomerDefinitionsUsesNervousVillagerFallback" fullname="Witch.Infrastructure.Tests.GameContentAdapterTests.Load_WithoutCustomerDefinitionsUsesNervousVillagerFallback" methodname="Load_WithoutCustomerDefinitionsUsesNervousVillagerFallback" classname="Witch.Infrastructure.Tests.GameContentAdapterTests" runstate="Runnable" seed="1692280561" result="Passed" start-time="2026-11-17 11:31:33Z" end-time="2026-11-17 11:31:33Z" duration="0.000410" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1199" name="OrderAvailability_FollowsUnlockedHerbs" fullname="Witch.Infrastructure.Tests.GameContentAdapterTests.OrderAvailability_FollowsUnlockedHerbs" methodname="OrderAvailability_FollowsUnlockedHerbs" classname="Witch.Infrastructure.Tests.GameContentAdapterTests" runstate="Runnable" seed="1989063330" result="Passed" start-time="2026-11-17 11:31:33Z" end-time="2026-11-17 11:31:33Z" duration="0.002429" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1200" name="OrderDifficulty_ComesFromDayDefinition" fullname="Witch.Infrastructure.Tests.GameContentAdapterTests.OrderDifficulty_ComesFromDayDefinition" methodname="OrderDifficulty_ComesFromDayDefinition" classname="Witch.Infrastructure.Tests.GameContentAdapterTests" runstate="Runnable" seed="57632955" result="Failed" start-time="2026-11-17 11:31:33Z" end-time="2026-11-17 11:31:33Z" duration="0.003217" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <failure>
+                  <message><![CDATA[  Expected is <Witch.Infrastructure.Content.OrderDifficulty[1]>, actual is <System.Collections.ObjectModel.ReadOnlyCollection`1[Witch.Infrastructure.Content.OrderDifficulty]> with 2 elements
+  Values differ at index [1]
+  Extra:    < Simple >]]></message>
+                  <stack-trace><![CDATA[at Witch.Infrastructure.Tests.GameContentAdapterTests.OrderDifficulty_ComesFromDayDefinition () [0x00066] in /Users/lelaberliani/Documents/Academy/Witch-Game/Assets/Tests/EditMode/Infrastructure/GameContentAdapterTests.cs:91
+]]></stack-trace>
+                </failure>
+              </test-case>
+              <test-case id="1208" name="Validate_DayWithTooFewAvailableOrdersReturnsError" fullname="Witch.Infrastructure.Tests.GameContentAdapterTests.Validate_DayWithTooFewAvailableOrdersReturnsError" methodname="Validate_DayWithTooFewAvailableOrdersReturnsError" classname="Witch.Infrastructure.Tests.GameContentAdapterTests" runstate="Runnable" seed="1286114375" result="Passed" start-time="2026-11-17 11:31:33Z" end-time="2026-11-17 11:31:33Z" duration="0.000342" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1207" name="Validate_LockedHerbReturnsError" fullname="Witch.Infrastructure.Tests.GameContentAdapterTests.Validate_LockedHerbReturnsError" methodname="Validate_LockedHerbReturnsError" classname="Witch.Infrastructure.Tests.GameContentAdapterTests" runstate="Runnable" seed="1697043837" result="Passed" start-time="2026-11-17 11:31:33Z" end-time="2026-11-17 11:31:33Z" duration="0.000233" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1202" name="Validate_MissingAndDuplicateStableIdsReturnsClearErrors" fullname="Witch.Infrastructure.Tests.GameContentAdapterTests.Validate_MissingAndDuplicateStableIdsReturnsClearErrors" methodname="Validate_MissingAndDuplicateStableIdsReturnsClearErrors" classname="Witch.Infrastructure.Tests.GameContentAdapterTests" runstate="Runnable" seed="583332499" result="Passed" start-time="2026-11-17 11:31:33Z" end-time="2026-11-17 11:31:33Z" duration="0.000288" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1205" name="Validate_MissingCategoryContentReturnsClearErrors" fullname="Witch.Infrastructure.Tests.GameContentAdapterTests.Validate_MissingCategoryContentReturnsClearErrors" methodname="Validate_MissingCategoryContentReturnsClearErrors" classname="Witch.Infrastructure.Tests.GameContentAdapterTests" runstate="Runnable" seed="1577501052" result="Passed" start-time="2026-11-17 11:31:33Z" end-time="2026-11-17 11:31:33Z" duration="0.000232" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1204" name="Validate_MissingHerbGuidebookContentReturnsClearErrors" fullname="Witch.Infrastructure.Tests.GameContentAdapterTests.Validate_MissingHerbGuidebookContentReturnsClearErrors" methodname="Validate_MissingHerbGuidebookContentReturnsClearErrors" classname="Witch.Infrastructure.Tests.GameContentAdapterTests" runstate="Runnable" seed="691057889" result="Passed" start-time="2026-11-17 11:31:33Z" end-time="2026-11-17 11:31:33Z" duration="0.000333" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1211" name="Validate_MissingWitchHunterDialogueReturnsError" fullname="Witch.Infrastructure.Tests.GameContentAdapterTests.Validate_MissingWitchHunterDialogueReturnsError" methodname="Validate_MissingWitchHunterDialogueReturnsError" classname="Witch.Infrastructure.Tests.GameContentAdapterTests" runstate="Runnable" seed="1430845710" result="Passed" start-time="2026-11-17 11:31:33Z" end-time="2026-11-17 11:31:33Z" duration="0.000259" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1206" name="Validate_MixedCategoryOrderReturnsError" fullname="Witch.Infrastructure.Tests.GameContentAdapterTests.Validate_MixedCategoryOrderReturnsError" methodname="Validate_MixedCategoryOrderReturnsError" classname="Witch.Infrastructure.Tests.GameContentAdapterTests" runstate="Runnable" seed="247538705" result="Passed" start-time="2026-11-17 11:31:33Z" end-time="2026-11-17 11:31:33Z" duration="0.000182" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1203" name="Validate_OrderWithoutSentencesReturnsClearError" fullname="Witch.Infrastructure.Tests.GameContentAdapterTests.Validate_OrderWithoutSentencesReturnsClearError" methodname="Validate_OrderWithoutSentencesReturnsClearError" classname="Witch.Infrastructure.Tests.GameContentAdapterTests" runstate="Runnable" seed="2037070064" result="Passed" start-time="2026-11-17 11:31:33Z" end-time="2026-11-17 11:31:33Z" duration="0.000185" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1217" name="Validate_SmallCardPoolReturnsError" fullname="Witch.Infrastructure.Tests.GameContentAdapterTests.Validate_SmallCardPoolReturnsError" methodname="Validate_SmallCardPoolReturnsError" classname="Witch.Infrastructure.Tests.GameContentAdapterTests" runstate="Runnable" seed="1371012313" result="Passed" start-time="2026-11-17 11:31:33Z" end-time="2026-11-17 11:31:33Z" duration="0.000175" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1214" name="Validate_WitchHunterBlankAccusationReturnsError" fullname="Witch.Infrastructure.Tests.GameContentAdapterTests.Validate_WitchHunterBlankAccusationReturnsError" methodname="Validate_WitchHunterBlankAccusationReturnsError" classname="Witch.Infrastructure.Tests.GameContentAdapterTests" runstate="Runnable" seed="1662804280" result="Passed" start-time="2026-11-17 11:31:33Z" end-time="2026-11-17 11:31:33Z" duration="0.000209" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1215" name="Validate_WitchHunterBlankSuccessLineReturnsError" fullname="Witch.Infrastructure.Tests.GameContentAdapterTests.Validate_WitchHunterBlankSuccessLineReturnsError" methodname="Validate_WitchHunterBlankSuccessLineReturnsError" classname="Witch.Infrastructure.Tests.GameContentAdapterTests" runstate="Runnable" seed="565113972" result="Passed" start-time="2026-11-17 11:31:33Z" end-time="2026-11-17 11:31:33Z" duration="0.000183" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1212" name="Validate_WitchHunterDialogueWithoutStagesReturnsError" fullname="Witch.Infrastructure.Tests.GameContentAdapterTests.Validate_WitchHunterDialogueWithoutStagesReturnsError" methodname="Validate_WitchHunterDialogueWithoutStagesReturnsError" classname="Witch.Infrastructure.Tests.GameContentAdapterTests" runstate="Runnable" seed="401753020" result="Passed" start-time="2026-11-17 11:31:33Z" end-time="2026-11-17 11:31:33Z" duration="0.000204" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1213" name="Validate_WitchHunterStageWithoutAccusationsReturnsError" fullname="Witch.Infrastructure.Tests.GameContentAdapterTests.Validate_WitchHunterStageWithoutAccusationsReturnsError" methodname="Validate_WitchHunterStageWithoutAccusationsReturnsError" classname="Witch.Infrastructure.Tests.GameContentAdapterTests" runstate="Runnable" seed="2128418370" result="Passed" start-time="2026-11-17 11:31:33Z" end-time="2026-11-17 11:31:33Z" duration="0.000207" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1218" name="NoOpGameCenterServiceTests" fullname="Witch.Infrastructure.Tests.NoOpGameCenterServiceTests" classname="Witch.Infrastructure.Tests.NoOpGameCenterServiceTests" runstate="Runnable" testcasecount="5" result="Passed" start-time="2026-11-17 11:31:33Z" end-time="2026-11-17 11:31:34Z" duration="0.642868" total="5" passed="5" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1220" name="InitializeAsync_ReturnsUnavailableFailure" fullname="Witch.Infrastructure.Tests.NoOpGameCenterServiceTests.InitializeAsync_ReturnsUnavailableFailure" methodname="InitializeAsync_ReturnsUnavailableFailure" classname="Witch.Infrastructure.Tests.NoOpGameCenterServiceTests" runstate="Runnable" seed="1881704036" result="Passed" start-time="2026-11-17 11:31:33Z" end-time="2026-11-17 11:31:33Z" duration="0.104119" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1219" name="IsAuthenticated_IsAlwaysFalse" fullname="Witch.Infrastructure.Tests.NoOpGameCenterServiceTests.IsAuthenticated_IsAlwaysFalse" methodname="IsAuthenticated_IsAlwaysFalse" classname="Witch.Infrastructure.Tests.NoOpGameCenterServiceTests" runstate="Runnable" seed="1598751980" result="Passed" start-time="2026-11-17 11:31:33Z" end-time="2026-11-17 11:31:33Z" duration="0.000181" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1223" name="ReportAchievementAsync_RejectsInvalidRequests" fullname="Witch.Infrastructure.Tests.NoOpGameCenterServiceTests.ReportAchievementAsync_RejectsInvalidRequests" methodname="ReportAchievementAsync_RejectsInvalidRequests" classname="Witch.Infrastructure.Tests.NoOpGameCenterServiceTests" runstate="Runnable" seed="701134342" result="Passed" start-time="2026-11-17 11:31:33Z" end-time="2026-11-17 11:31:33Z" duration="0.201316" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1221" name="ReportAchievementAsync_ReturnsUnavailableFailure" fullname="Witch.Infrastructure.Tests.NoOpGameCenterServiceTests.ReportAchievementAsync_ReturnsUnavailableFailure" methodname="ReportAchievementAsync_ReturnsUnavailableFailure" classname="Witch.Infrastructure.Tests.NoOpGameCenterServiceTests" runstate="Runnable" seed="883932049" result="Passed" start-time="2026-11-17 11:31:33Z" end-time="2026-11-17 11:31:33Z" duration="0.104260" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1222" name="ShowDashboardAsync_ReturnsUnavailableFailure" fullname="Witch.Infrastructure.Tests.NoOpGameCenterServiceTests.ShowDashboardAsync_ReturnsUnavailableFailure" methodname="ShowDashboardAsync_ReturnsUnavailableFailure" classname="Witch.Infrastructure.Tests.NoOpGameCenterServiceTests" runstate="Runnable" seed="1630546251" result="Passed" start-time="2026-11-17 11:31:33Z" end-time="2026-11-17 11:31:34Z" duration="0.201404" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1224" name="PersistenceAdapterTests" fullname="Witch.Infrastructure.Tests.PersistenceAdapterTests" classname="Witch.Infrastructure.Tests.PersistenceAdapterTests" runstate="Runnable" testcasecount="12" result="Failed" site="Child" start-time="2026-11-17 11:31:34Z" end-time="2026-11-17 11:31:37Z" duration="3.858887" total="12" passed="11" failed="1" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <failure>
+                <message><![CDATA[One or more child tests had errors]]></message>
+              </failure>
+              <test-case id="1236" name="DeterministicRandomSource_ReplaysSameSequence" fullname="Witch.Infrastructure.Tests.PersistenceAdapterTests.DeterministicRandomSource_ReplaysSameSequence" methodname="DeterministicRandomSource_ReplaysSameSequence" classname="Witch.Infrastructure.Tests.PersistenceAdapterTests" runstate="Runnable" seed="1246226756" result="Passed" start-time="2026-11-17 11:31:34Z" end-time="2026-11-17 11:31:34Z" duration="0.009231" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1225" name="InMemoryRepository_SnapshotAndAttemptContractsRoundTripIndependently" fullname="Witch.Infrastructure.Tests.PersistenceAdapterTests.InMemoryRepository_SnapshotAndAttemptContractsRoundTripIndependently" methodname="InMemoryRepository_SnapshotAndAttemptContractsRoundTripIndependently" classname="Witch.Infrastructure.Tests.PersistenceAdapterTests" runstate="Runnable" seed="9687594" result="Passed" start-time="2026-11-17 11:31:34Z" end-time="2026-11-17 11:31:34Z" duration="0.193699" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1232" name="JsonRepository_CorruptPrimaryRecoversPreviousCopy" fullname="Witch.Infrastructure.Tests.PersistenceAdapterTests.JsonRepository_CorruptPrimaryRecoversPreviousCopy" methodname="JsonRepository_CorruptPrimaryRecoversPreviousCopy" classname="Witch.Infrastructure.Tests.PersistenceAdapterTests" runstate="Runnable" seed="1906755653" result="Passed" start-time="2026-11-17 11:31:34Z" end-time="2026-11-17 11:31:34Z" duration="0.524306" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1233" name="JsonRepository_FailedReplaceKeepsPreviousValidPrimary" fullname="Witch.Infrastructure.Tests.PersistenceAdapterTests.JsonRepository_FailedReplaceKeepsPreviousValidPrimary" methodname="JsonRepository_FailedReplaceKeepsPreviousValidPrimary" classname="Witch.Infrastructure.Tests.PersistenceAdapterTests" runstate="Runnable" seed="866089141" result="Passed" start-time="2026-11-17 11:31:34Z" end-time="2026-11-17 11:31:35Z" duration="0.514876" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1228" name="JsonRepository_MigratesLegacyAloeHerbIdToBorage" fullname="Witch.Infrastructure.Tests.PersistenceAdapterTests.JsonRepository_MigratesLegacyAloeHerbIdToBorage" methodname="JsonRepository_MigratesLegacyAloeHerbIdToBorage" classname="Witch.Infrastructure.Tests.PersistenceAdapterTests" runstate="Runnable" seed="1607940862" result="Passed" start-time="2026-11-17 11:31:35Z" end-time="2026-11-17 11:31:35Z" duration="0.318748" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1229" name="JsonRepository_MigratesLegacyWarmCoolCategory" fullname="Witch.Infrastructure.Tests.PersistenceAdapterTests.JsonRepository_MigratesLegacyWarmCoolCategory" methodname="JsonRepository_MigratesLegacyWarmCoolCategory" classname="Witch.Infrastructure.Tests.PersistenceAdapterTests" runstate="Runnable" seed="539689906" result="Passed" start-time="2026-11-17 11:31:35Z" end-time="2026-11-17 11:31:35Z" duration="0.308570" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1231" name="JsonRepository_MissingAndUnsupportedDataReturnTypedErrors" fullname="Witch.Infrastructure.Tests.PersistenceAdapterTests.JsonRepository_MissingAndUnsupportedDataReturnTypedErrors" methodname="JsonRepository_MissingAndUnsupportedDataReturnTypedErrors" classname="Witch.Infrastructure.Tests.PersistenceAdapterTests" runstate="Runnable" seed="1372385225" result="Passed" start-time="2026-11-17 11:31:35Z" end-time="2026-11-17 11:31:36Z" duration="0.411636" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1227" name="JsonRepository_OldSaveWithoutNewDayCountersLoadsAsZero" fullname="Witch.Infrastructure.Tests.PersistenceAdapterTests.JsonRepository_OldSaveWithoutNewDayCountersLoadsAsZero" methodname="JsonRepository_OldSaveWithoutNewDayCountersLoadsAsZero" classname="Witch.Infrastructure.Tests.PersistenceAdapterTests" runstate="Runnable" seed="1329593315" result="Failed" start-time="2026-11-17 11:31:36Z" end-time="2026-11-17 11:31:36Z" duration="0.314936" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <failure>
+                  <message><![CDATA[  JSON parse error: Missing a name for object member.
+  Expected: True
+  But was:  False
+]]></message>
+                  <stack-trace><![CDATA[at Witch.Infrastructure.Tests.PersistenceAdapterTests.JsonRepository_OldSaveWithoutNewDayCountersLoadsAsZero () [0x00178] in /Users/lelaberliani/Documents/Academy/Witch-Game/Assets/Tests/EditMode/Infrastructure/PersistenceAdapterTests.cs:87
+at UnityEngine.TestTools.TestRunner.TestTaskWrapper+<Execute>d__2.MoveNext () [0x00063] in ./Library/PackageCache/com.unity.test-framework@80f691d4262b/UnityEngine.TestRunner/TestRunner/TestTaskWrapper.cs:31
+at UnityEngine.TestTools.TestEnumerator+<Execute>d__8.MoveNext () [0x0003a] in ./Library/PackageCache/com.unity.test-framework@80f691d4262b/UnityEngine.TestRunner/NUnitExtensions/Attributes/TestEnumerator.cs:52
+]]></stack-trace>
+                </failure>
+              </test-case>
+              <test-case id="1230" name="JsonRepository_RoundTripsCompletedRunFlag" fullname="Witch.Infrastructure.Tests.PersistenceAdapterTests.JsonRepository_RoundTripsCompletedRunFlag" methodname="JsonRepository_RoundTripsCompletedRunFlag" classname="Witch.Infrastructure.Tests.PersistenceAdapterTests" runstate="Runnable" seed="1415337554" result="Passed" start-time="2026-11-17 11:31:36Z" end-time="2026-11-17 11:31:37Z" duration="0.309507" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1226" name="JsonRepository_RoundTripsCurrentRunAndFlags" fullname="Witch.Infrastructure.Tests.PersistenceAdapterTests.JsonRepository_RoundTripsCurrentRunAndFlags" methodname="JsonRepository_RoundTripsCurrentRunAndFlags" classname="Witch.Infrastructure.Tests.PersistenceAdapterTests" runstate="Runnable" seed="444540473" result="Passed" start-time="2026-11-17 11:31:37Z" end-time="2026-11-17 11:31:37Z" duration="0.307712" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1235" name="QuitAtSuspicionTwoAndPendingRewindReloadSafelyThenRewindChangesSeed" fullname="Witch.Infrastructure.Tests.PersistenceAdapterTests.QuitAtSuspicionTwoAndPendingRewindReloadSafelyThenRewindChangesSeed" methodname="QuitAtSuspicionTwoAndPendingRewindReloadSafelyThenRewindChangesSeed" classname="Witch.Infrastructure.Tests.PersistenceAdapterTests" runstate="Runnable" seed="1897941775" result="Passed" start-time="2026-11-17 11:31:37Z" end-time="2026-11-17 11:31:37Z" duration="0.200356" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1234" name="SettingsUseSeparateFileFromRunSave" fullname="Witch.Infrastructure.Tests.PersistenceAdapterTests.SettingsUseSeparateFileFromRunSave" methodname="SettingsUseSeparateFileFromRunSave" classname="Witch.Infrastructure.Tests.PersistenceAdapterTests" runstate="Runnable" seed="339218814" result="Passed" start-time="2026-11-17 11:31:37Z" end-time="2026-11-17 11:31:37Z" duration="0.432165" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+    <test-suite type="Assembly" id="1257" name="Witch.Presentation.Tests.dll" fullname="/Users/lelaberliani/Documents/Academy/Witch-Game/Library/ScriptAssemblies/Witch.Presentation.Tests.dll" runstate="Runnable" testcasecount="13" result="Passed" start-time="2026-11-17 11:31:37Z" end-time="2026-11-17 11:31:38Z" duration="0.422983" total="13" passed="13" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="90183" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestSuite" id="1258" name="Witch" fullname="Witch" runstate="Runnable" testcasecount="13" result="Passed" start-time="2026-11-17 11:31:38Z" end-time="2026-11-17 11:31:38Z" duration="0.324546" total="13" passed="13" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1259" name="Presentation" fullname="Witch.Presentation" runstate="Runnable" testcasecount="13" result="Passed" start-time="2026-11-17 11:31:38Z" end-time="2026-11-17 11:31:38Z" duration="0.322807" total="13" passed="13" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestSuite" id="1260" name="Tests" fullname="Witch.Presentation.Tests" runstate="Runnable" testcasecount="13" result="Passed" start-time="2026-11-17 11:31:38Z" end-time="2026-11-17 11:31:38Z" duration="0.221586" total="13" passed="13" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-suite type="TestFixture" id="1241" name="CounterCoinsViewTests" fullname="Witch.Presentation.Tests.CounterCoinsViewTests" classname="Witch.Presentation.Tests.CounterCoinsViewTests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-11-17 11:31:38Z" end-time="2026-11-17 11:31:38Z" duration="0.107903" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1245" name="Add_IgnoresZeroOrNegativePayments" fullname="Witch.Presentation.Tests.CounterCoinsViewTests.Add_IgnoresZeroOrNegativePayments" methodname="Add_IgnoresZeroOrNegativePayments" classname="Witch.Presentation.Tests.CounterCoinsViewTests" runstate="Runnable" seed="1774804243" result="Passed" start-time="2026-11-17 11:31:38Z" end-time="2026-11-17 11:31:38Z" duration="0.001921" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1242" name="Add_ShowsCoinsAndStacksUncollectedPayments" fullname="Witch.Presentation.Tests.CounterCoinsViewTests.Add_ShowsCoinsAndStacksUncollectedPayments" methodname="Add_ShowsCoinsAndStacksUncollectedPayments" classname="Witch.Presentation.Tests.CounterCoinsViewTests" runstate="Runnable" seed="971396549" result="Passed" start-time="2026-11-17 11:31:38Z" end-time="2026-11-17 11:31:38Z" duration="0.000914" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1244" name="Clear_RemovesCoinsWithoutCollectedEvent" fullname="Witch.Presentation.Tests.CounterCoinsViewTests.Clear_RemovesCoinsWithoutCollectedEvent" methodname="Clear_RemovesCoinsWithoutCollectedEvent" classname="Witch.Presentation.Tests.CounterCoinsViewTests" runstate="Runnable" seed="476022719" result="Passed" start-time="2026-11-17 11:31:38Z" end-time="2026-11-17 11:31:38Z" duration="0.001045" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1243" name="Collect_HidesCoinsAndRaisesCollectedOnce" fullname="Witch.Presentation.Tests.CounterCoinsViewTests.Collect_HidesCoinsAndRaisesCollectedOnce" methodname="Collect_HidesCoinsAndRaisesCollectedOnce" classname="Witch.Presentation.Tests.CounterCoinsViewTests" runstate="Runnable" seed="886069434" result="Passed" start-time="2026-11-17 11:31:38Z" end-time="2026-11-17 11:31:38Z" duration="0.000506" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1246" name="PageFoldMathTests" fullname="Witch.Presentation.Tests.PageFoldMathTests" classname="Witch.Presentation.Tests.PageFoldMathTests" runstate="Runnable" testcasecount="5" result="Passed" start-time="2026-11-17 11:31:38Z" end-time="2026-11-17 11:31:38Z" duration="0.009022" total="5" passed="5" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1249" name="Backward_Landed_FlapCoversRightPage" fullname="Witch.Presentation.Tests.PageFoldMathTests.Backward_Landed_FlapCoversRightPage" methodname="Backward_Landed_FlapCoversRightPage" classname="Witch.Presentation.Tests.PageFoldMathTests" runstate="Runnable" seed="402486400" result="Passed" start-time="2026-11-17 11:31:38Z" end-time="2026-11-17 11:31:38Z" duration="0.000969" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1250" name="CornerPulledFarAway_StaysWithinOnePageWidthOfSpine" fullname="Witch.Presentation.Tests.PageFoldMathTests.CornerPulledFarAway_StaysWithinOnePageWidthOfSpine" methodname="CornerPulledFarAway_StaysWithinOnePageWidthOfSpine" classname="Witch.Presentation.Tests.PageFoldMathTests" runstate="Runnable" seed="1609273555" result="Passed" start-time="2026-11-17 11:31:38Z" end-time="2026-11-17 11:31:38Z" duration="0.000595" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1251" name="FoldBase_NeverCrossesSpine" fullname="Witch.Presentation.Tests.PageFoldMathTests.FoldBase_NeverCrossesSpine" methodname="FoldBase_NeverCrossesSpine" classname="Witch.Presentation.Tests.PageFoldMathTests" runstate="Runnable" seed="1823935799" result="Passed" start-time="2026-11-17 11:31:38Z" end-time="2026-11-17 11:31:38Z" duration="0.000269" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1247" name="Forward_AtRest_FoldSitsOnOuterEdge" fullname="Witch.Presentation.Tests.PageFoldMathTests.Forward_AtRest_FoldSitsOnOuterEdge" methodname="Forward_AtRest_FoldSitsOnOuterEdge" classname="Witch.Presentation.Tests.PageFoldMathTests" runstate="Runnable" seed="1383097302" result="Passed" start-time="2026-11-17 11:31:38Z" end-time="2026-11-17 11:31:38Z" duration="0.000193" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1248" name="Forward_Landed_FlapCoversLeftPage" fullname="Witch.Presentation.Tests.PageFoldMathTests.Forward_Landed_FlapCoversLeftPage" methodname="Forward_Landed_FlapCoversLeftPage" classname="Witch.Presentation.Tests.PageFoldMathTests" runstate="Runnable" seed="591354922" result="Passed" start-time="2026-11-17 11:31:38Z" end-time="2026-11-17 11:31:38Z" duration="0.000559" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1252" name="ShopServeFeedbackTests" fullname="Witch.Presentation.Tests.ShopServeFeedbackTests" classname="Witch.Presentation.Tests.ShopServeFeedbackTests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-11-17 11:31:38Z" end-time="2026-11-17 11:31:38Z" duration="0.099951" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1255" name="CorrectAndIncorrectPools_HaveFiveExpectedLines" fullname="Witch.Presentation.Tests.ShopServeFeedbackTests.CorrectAndIncorrectPools_HaveFiveExpectedLines" methodname="CorrectAndIncorrectPools_HaveFiveExpectedLines" classname="Witch.Presentation.Tests.ShopServeFeedbackTests" runstate="Runnable" seed="682903452" result="Passed" start-time="2026-11-17 11:31:38Z" end-time="2026-11-17 11:31:38Z" duration="0.000983" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1256" name="FeedbackLines_HaveFewerThanTenWords" fullname="Witch.Presentation.Tests.ShopServeFeedbackTests.FeedbackLines_HaveFewerThanTenWords" methodname="FeedbackLines_HaveFewerThanTenWords" classname="Witch.Presentation.Tests.ShopServeFeedbackTests" runstate="Runnable" seed="927730398" result="Passed" start-time="2026-11-17 11:31:38Z" end-time="2026-11-17 11:31:38Z" duration="0.001104" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1253" name="GetCorrectLine_ReturnsLineFromCorrectGroup" fullname="Witch.Presentation.Tests.ShopServeFeedbackTests.GetCorrectLine_ReturnsLineFromCorrectGroup" methodname="GetCorrectLine_ReturnsLineFromCorrectGroup" classname="Witch.Presentation.Tests.ShopServeFeedbackTests" runstate="Runnable" seed="2145375141" result="Passed" start-time="2026-11-17 11:31:38Z" end-time="2026-11-17 11:31:38Z" duration="0.000481" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1254" name="GetIncorrectLine_ReturnsLineFromIncorrectGroup" fullname="Witch.Presentation.Tests.ShopServeFeedbackTests.GetIncorrectLine_ReturnsLineFromIncorrectGroup" methodname="GetIncorrectLine_ReturnsLineFromIncorrectGroup" classname="Witch.Presentation.Tests.ShopServeFeedbackTests" runstate="Runnable" seed="1336975892" result="Passed" start-time="2026-11-17 11:31:38Z" end-time="2026-11-17 11:31:38Z" duration="0.000388" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[Saving results to: /Users/lelaberliani/Library/Application Support/Kuwa Kuwitch Studio/White Willow/TestResults.xml
+]]></output>
+              </test-case>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>
