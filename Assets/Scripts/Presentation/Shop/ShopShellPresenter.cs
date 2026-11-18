@@ -1282,6 +1282,12 @@ namespace Witch.Presentation.Shop
             if (pausePanel != null) pausePanel.SetActive(userPaused);
         }
 
+        private void OnPauseSettingsClicked()
+        {
+            audioService?.Play(GameAudioCueIds.UiClick);
+            settingsPanelPresenter?.Open();
+        }
+
         public void ConfigureRestart(RestartDayUseCase useCase)
         {
             restartDay = useCase ?? throw new ArgumentNullException(nameof(useCase));
@@ -1955,7 +1961,7 @@ namespace Witch.Presentation.Shop
             }
 
             if (pauseSettingsButton != null && settingsPanelPresenter != null)
-                pauseSettingsButton.onClick.AddListener(settingsPanelPresenter.Open);
+                pauseSettingsButton.onClick.AddListener(OnPauseSettingsClicked);
 
             if (settingsPanelPresenter != null)
             {
@@ -2631,7 +2637,7 @@ namespace Witch.Presentation.Shop
             }
         }
 
-        public async Task RestartDayAsync()
+        public async Task RestartDayAsync(bool playClickSound = true)
         {
             if (restartDay == null || ActiveSession == null)
             {
@@ -2650,7 +2656,10 @@ namespace Witch.Presentation.Shop
                 }
             }
 
-            audioService?.Play(GameAudioCueIds.UiClick);
+            if (playClickSound)
+            {
+                audioService?.Play(GameAudioCueIds.UiClick);
+            }
             ExpenseResolutionResult result = await restartDay.ExecuteAsync(
                 ActiveSession,
                 lifetimeCancellation?.Token ?? CancellationToken.None);
@@ -3147,24 +3156,26 @@ namespace Witch.Presentation.Shop
 
         private void OnConfirmationConfirmed()
         {
+            audioService?.Play(GameAudioCueIds.UiClick);
             confirmationPanel.SetActive(false);
 
             switch (pendingConfirmation)
             {
                 case ConfirmationAction.Restart:
                     pendingConfirmation = ConfirmationAction.None;
-                    RunUiAction(RestartDayAsync);
+                    RunUiAction(() => RestartDayAsync(playClickSound: false));
                     break;
 
                 case ConfirmationAction.Quit:
                     pendingConfirmation = ConfirmationAction.None;
-                    RunUiAction(() => ReturnToMainMenuAsync());
+                    RunUiAction(() => ReturnToMainMenuAsync(playClickSound: false));
                     break;
             }
         }
 
         private void OnRestartClicked()
         {
+            audioService?.Play(GameAudioCueIds.UiClick);
             pendingConfirmation = ConfirmationAction.Restart;
 
             confirmationTitle.text = "Restart";
@@ -3175,6 +3186,7 @@ namespace Witch.Presentation.Shop
 
         private void OnMainMenuClicked()
         {
+            audioService?.Play(GameAudioCueIds.UiClick);
             pendingConfirmation = ConfirmationAction.Quit;
 
             confirmationTitle.text = "Quit";
@@ -3185,6 +3197,7 @@ namespace Witch.Presentation.Shop
 
         private void CloseConfirmation()
         {
+            audioService?.Play(GameAudioCueIds.UiClick);
             pendingConfirmation = ConfirmationAction.None;
             confirmationPanel.SetActive(false);
         }
