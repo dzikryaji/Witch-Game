@@ -28,8 +28,7 @@ namespace Witch.Application.Flow
                     new[] { GamePhase.DaySummary, GamePhase.Victory, GamePhase.GameOver }
                 },
                 { GamePhase.MinigamePending, new[] { GamePhase.MinigameActive } },
-                // { GamePhase.MinigameActive, new[] { GamePhase.ShopPreparation } },
-                { GamePhase.MinigameActive, new[] { GamePhase.ShopPreparation, GamePhase.CustomerEncounter } },
+                { GamePhase.MinigameActive, new[] { GamePhase.CustomerArrival, GamePhase.ClosingEncounter } },
                 { GamePhase.DaySummary, new[] { GamePhase.ShopPreparation } },
                 { GamePhase.Victory, new GamePhase[0] },
                 { GamePhase.GameOver, new[] { GamePhase.ShopPreparation } }

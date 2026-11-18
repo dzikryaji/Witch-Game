@@ -13,8 +13,8 @@ All customers are Villagers. Hunters are an outside narrative threat triggered b
 - Warming and Cooling unlock on Day 1, Soothing on Day 3, Cleansing on Day 7, and Mending on Day 11.
 - Simple orders on Days 1–3; Simple and Mid on Days 4–5; Mid on Days 6–8; Mid and Hard on Days 9–11; Hard on Days 12–14.
 - Automatic bell/customer arrival, unlimited herbs, grind/pot/brew/discard/serve interactions, exact-pair checking, payment, and daily expense.
-- Wrong valid orders pay `0` and add suspicion. Suspicion `3` persists a pending minigame and opens the separate memory-card scene.
-- Guaranteed 3–8-pair Match Card board with deterministic reload, mismatch flip-back, suspicion reset, changed order seed, and same-customer resume when runtime state permits.
+- Wrong valid orders pay `0` and add suspicion. Suspicion `3` persists a pending minigame and opens the separate Match Card minigame scene.
+- Guaranteed 8-12-pair Match Card board with deterministic reload and mismatch flip-back. Winning resets only suspicion (a memory spell): money, daily counters, used and seen orders, unlocks, flags, and the remaining day timer stay as they were after the wrong service was committed. The wrong customer does not return; if time remains the next customer arrives after the hunter leaves, and if the queue is closed the shop continues to the progression panel after the hunter leaves. The persisted day-start snapshot and active-attempt metadata are saved for Continue/reload (Continue rebuilds the day from them and does not route back into the minigame).
 - Expense failure as the only game-over path, same-seed retry, and victory after paying Day 14 expense.
 - Persisted victory restoration and safe Main Menu fallback when Shop/Match Card minigame scene loading fails.
 - Centered `16:9` landscape gameplay/UI viewport with black pillarboxes on wider displays.

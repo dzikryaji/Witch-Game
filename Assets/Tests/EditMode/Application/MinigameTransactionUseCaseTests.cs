@@ -82,91 +82,203 @@ namespace Witch.Application.Tests
         }
 
         [Test]
-        public async Task Complete_RestoresSnapshotAndDuplicateDoesNotApplyTwice()
+        public async Task Complete_QueueOpen_AppliesLiveStateOnly_ResetsSuspicion_PreservesCommittedState_AndSetsArrivalPaused()
         {
-            GameSession session = CreatePendingMinigameSession(9);
+            GameSession session = CreatePendingMinigameSession(9, timerSeconds: 60);
+            (int money, int correct, int wrong, int wrongSummary, int coins, int serviceCount, int suspicionBefore, int winCountBefore, TimeSpan remaining, string[] usedOrders) before =
+                CapturePostWrongServiceState(session);
+            Assert.That(session.TimerState.QueueOpen, Is.True);
+
             var saves = new FakeSaveRepository();
             var scenes = new FakeSceneLoader();
-            await new EnterMinigameUseCase(saves, scenes, new FakeRandomSource { NextValue = 707 })
-                .ExecuteAsync(session);
-            var random = new FakeRandomSource { NextValue = 808 };
-            var complete = new CompleteMinigameUseCase(saves, scenes, random);
+            await new EnterMinigameUseCase(saves, scenes, new FakeRandomSource { NextValue = 707 }).ExecuteAsync(session);
+            var complete = new CompleteMinigameUseCase(saves, scenes, new FakeRandomSource { NextValue = 808 });
 
-            MinigameTransactionResult first = await complete.ExecuteAsync(session);
-            MinigameTransactionResult duplicate = await complete.ExecuteAsync(session);
+            MinigameTransactionResult result = await complete.ExecuteAsync(session);
 
-            Assert.That(first.Succeeded, Is.True, first.ErrorMessage);
-            Assert.That(duplicate.Succeeded, Is.True);
-            Assert.That(duplicate.AlreadyApplied, Is.True);
-            Assert.That(session.RunState.Money, Is.EqualTo(9));
-            Assert.That(session.RunState.Suspicion, Is.Zero);
-            Assert.That(session.RunState.MinigameWinCount, Is.EqualTo(1));
-            Assert.That(session.AttemptMetadata.ActiveOrderSeed, Is.EqualTo(808));
+            Assert.That(result.Succeeded, Is.True, result.ErrorMessage);
+            Assert.That(session.CurrentPhase, Is.EqualTo(GamePhase.CustomerArrival));
+            Assert.That(session.AttemptState.ActiveOrder, Is.Null);
+            Assert.That(session.AttemptState.ActiveCustomerId, Is.Null);
+            Assert.That(session.ServiceCommitted, Is.True);
+            Assert.That(session.TimerState.RemainingTime, Is.EqualTo(before.remaining));
+            Assert.That(session.TimerStopped, Is.False);
+            Assert.That(session.TimerPaused, Is.True);
+            Assert.That(session.RunState.Suspicion, Is.EqualTo(0));
+            Assert.That(session.RunState.MinigameWinCount, Is.EqualTo(before.winCountBefore + 1));
+            Assert.That(session.RunState.Money, Is.EqualTo(before.money));
+            Assert.That(session.AttemptMetadata.CorrectServiceCountToday, Is.EqualTo(before.correct));
+            Assert.That(session.AttemptMetadata.WrongServiceCountToday, Is.EqualTo(before.wrong));
+            Assert.That(session.AttemptMetadata.WrongOrdersForSummary, Is.EqualTo(before.wrongSummary));
+            Assert.That(session.AttemptMetadata.ServiceCountToday, Is.EqualTo(before.serviceCount));
+            Assert.That(session.AttemptMetadata.CoinsEarnedToday, Is.EqualTo(before.coins));
+            Assert.That(session.AttemptState.UsedOrderIds, Is.EqualTo(before.usedOrders));
+            Assert.That(session.RunState.SeenOrderIds, Is.EquivalentTo(before.usedOrders));
             Assert.That(session.AttemptMetadata.PendingMinigame, Is.False);
-            Assert.That(session.CurrentPhase, Is.EqualTo(GamePhase.CustomerEncounter));
-            Assert.That(saves.SaveCallCount, Is.EqualTo(2));
-            Assert.That(random.CallCount, Is.EqualTo(1));
+            Assert.That(session.AttemptMetadata.MinigameBoardSeed, Is.EqualTo(0));
+            Assert.That(session.AttemptMetadata.MinigamePlayedToday, Is.True);
         }
 
         [Test]
-        public async Task Complete_SceneFailureFallsBackToMenuAndCanRetry()
+        public async Task Complete_QueueClosed_AppliesLiveStateOnly_LeavesTimerStoppedAtZero_AndSetsClosingEncounter()
         {
-            GameSession session = CreatePendingMinigameSession(9);
+            GameSession session = CreatePendingMinigameSession(9, timerSeconds: 60);
+            ForceTimerRemaining(session, TimeSpan.Zero);
+            Assert.That(session.TimerState.RemainingTime, Is.EqualTo(TimeSpan.Zero));
+            Assert.That(session.TimerState.QueueOpen, Is.False);
+            (int money, int correct, int wrong, int wrongSummary, int coins, int serviceCount, int suspicionBefore, int winCountBefore, TimeSpan remaining, string[] usedOrders) before =
+                CapturePostWrongServiceState(session);
+
             var saves = new FakeSaveRepository();
             var scenes = new FakeSceneLoader();
-            await new EnterMinigameUseCase(saves, scenes, new FakeRandomSource { NextValue = 707 })
-                .ExecuteAsync(session);
+            await new EnterMinigameUseCase(saves, scenes, new FakeRandomSource { NextValue = 707 }).ExecuteAsync(session);
+            var complete = new CompleteMinigameUseCase(saves, scenes, new FakeRandomSource { NextValue = 808 });
+
+            MinigameTransactionResult result = await complete.ExecuteAsync(session);
+
+            Assert.That(result.Succeeded, Is.True, result.ErrorMessage);
+            Assert.That(session.CurrentPhase, Is.EqualTo(GamePhase.ClosingEncounter));
+            Assert.That(session.AttemptState.ActiveOrder, Is.Null);
+            Assert.That(session.TimerState.RemainingTime, Is.EqualTo(TimeSpan.Zero));
+            Assert.That(session.TimerState.QueueOpen, Is.False);
+            Assert.That(session.TimerStopped, Is.True);
+            Assert.That(session.TimerPaused, Is.False);
+            Assert.That(session.RunState.Suspicion, Is.EqualTo(0));
+            Assert.That(session.RunState.MinigameWinCount, Is.EqualTo(before.winCountBefore + 1));
+            Assert.That(session.RunState.Money, Is.EqualTo(before.money));
+            Assert.That(session.AttemptMetadata.CorrectServiceCountToday, Is.EqualTo(before.correct));
+            Assert.That(session.AttemptMetadata.WrongServiceCountToday, Is.EqualTo(before.wrong));
+            Assert.That(session.AttemptMetadata.WrongOrdersForSummary, Is.EqualTo(before.wrongSummary));
+            Assert.That(session.AttemptMetadata.ServiceCountToday, Is.EqualTo(before.serviceCount));
+            Assert.That(session.AttemptMetadata.CoinsEarnedToday, Is.EqualTo(before.coins));
+            Assert.That(session.AttemptMetadata.PendingMinigame, Is.False);
+            Assert.That(session.AttemptMetadata.MinigameBoardSeed, Is.EqualTo(0));
+            Assert.That(session.AttemptMetadata.MinigamePlayedToday, Is.True);
+        }
+
+        [Test]
+        public async Task Complete_PersistsSnapshotAsCompleteBuildsToday_MetadataFromSession_AndSaveReloadDoesNotRouteToMinigame()
+        {
+            GameSession session = CreatePendingMinigameSession(9, timerSeconds: 60);
+            var saves = new FakeSaveRepository();
+            var scenes = new FakeSceneLoader();
+            await new EnterMinigameUseCase(saves, scenes, new FakeRandomSource { NextValue = 707 }).ExecuteAsync(session);
+            int nextSeed = 808;
+            MatchCardOutcome expectedOutcome = MatchCardRules.Complete(session.DayStartSnapshot, session.RunState, nextSeed);
+
+            MinigameTransactionResult result = await new CompleteMinigameUseCase(saves, scenes, new FakeRandomSource { NextValue = nextSeed }).ExecuteAsync(session);
+
+            Assert.That(result.Succeeded, Is.True, result.ErrorMessage);
+            Assert.That(saves.SavedSnapshot.RunState.Money, Is.EqualTo(expectedOutcome.RestoredRunState.Money));
+            Assert.That(saves.SavedSnapshot.RunState.Suspicion, Is.EqualTo(0));
+            Assert.That(saves.SavedSnapshot.RunState.MinigameWinCount, Is.EqualTo(expectedOutcome.RestoredRunState.MinigameWinCount));
+            Assert.That(saves.SavedSnapshot.OrderSeed, Is.EqualTo(expectedOutcome.NextAttemptSeed));
+            Assert.That(saves.SavedSnapshot.RunState.SeenOrderIds, Is.EquivalentTo(session.RunState.SeenOrderIds));
+            Assert.That(saves.SavedAttemptMetadata.Suspicion, Is.EqualTo(0));
+            Assert.That(saves.SavedAttemptMetadata.MinigameWinCount, Is.EqualTo(session.RunState.MinigameWinCount));
+            Assert.That(saves.SavedAttemptMetadata.PendingMinigame, Is.False);
+            Assert.That(saves.SavedAttemptMetadata.MinigameBoardSeed, Is.EqualTo(0));
+            Assert.That(saves.SavedAttemptMetadata.MinigamePlayedToday, Is.True);
+            Assert.That(saves.SavedAttemptMetadata.CorrectServiceCountToday, Is.EqualTo(session.AttemptMetadata.CorrectServiceCountToday));
+            Assert.That(saves.SavedAttemptMetadata.WrongServiceCountToday, Is.EqualTo(session.AttemptMetadata.WrongServiceCountToday));
+            Assert.That(saves.SavedAttemptMetadata.WrongOrdersForSummary, Is.EqualTo(session.AttemptMetadata.WrongOrdersForSummary));
+            Assert.That(saves.SavedAttemptMetadata.ServiceCountToday, Is.EqualTo(session.AttemptMetadata.ServiceCountToday));
+            Assert.That(saves.SavedAttemptMetadata.CoinsEarnedToday, Is.EqualTo(session.AttemptMetadata.CoinsEarnedToday));
+
+            var loadRepo = new FakeSaveRepository
+            {
+                LatestLoadResult = LoadStateResult.Success(new GameSaveState(saves.SavedSnapshot, saves.SavedAttemptMetadata))
+            };
+            var loadScenes = new FakeSceneLoader();
+            LoadRunResult loaded = await new LoadRunUseCase(loadRepo, loadRepo, new GameSessionStore(), loadScenes)
+                .ExecuteAsync(LoadRunCommand.Latest());
+
+            Assert.That(loaded.Succeeded, Is.True, loaded.ErrorMessage);
+            Assert.That(loadScenes.LastRequestedScene, Is.EqualTo(SceneId.Shop));
+            Assert.That(loaded.Session.AttemptMetadata.PendingMinigame, Is.False);
+            Assert.That(loaded.Session.CurrentPhase, Is.EqualTo(GamePhase.ShopPreparation));
+        }
+
+        [Test]
+        public async Task Complete_DuplicateRetry_DoesNotApplyTwice_ReportsMemoryMenderOnce_AndKeepsFarewellConsumedState()
+        {
+            GameSession session = CreatePendingMinigameSession(9, timerSeconds: 60);
+            var saves = new FakeSaveRepository();
+            var scenes = new FakeSceneLoader();
+            var random = new FakeRandomSource { NextValue = 808 };
+            await new EnterMinigameUseCase(saves, scenes, new FakeRandomSource { NextValue = 707 }).ExecuteAsync(session);
+            var complete = new CompleteMinigameUseCase(saves, scenes, random);
+
+            MinigameTransactionResult first = await complete.ExecuteAsync(session);
+            Assert.That(first.Succeeded, Is.True, first.ErrorMessage);
+            int saveCalls = saves.SaveCallCount;
+            int randomCalls = random.CallCount;
+            int winCount = session.RunState.MinigameWinCount;
+            TimeSpan remaining = session.TimerState.RemainingTime;
+            Assert.That(session.TryConsumeHunterFarewell(out int recorded), Is.True);
+            Assert.That(recorded, Is.EqualTo(winCount - 1));
+
+            MinigameTransactionResult duplicate = await complete.ExecuteAsync(session);
+
+            Assert.That(duplicate.Succeeded, Is.True, duplicate.ErrorMessage);
+            Assert.That(duplicate.AlreadyApplied, Is.True);
+            Assert.That(saves.SaveCallCount, Is.EqualTo(saveCalls));
+            Assert.That(random.CallCount, Is.EqualTo(randomCalls));
+            Assert.That(session.RunState.MinigameWinCount, Is.EqualTo(winCount));
+            Assert.That(session.TimerState.RemainingTime, Is.EqualTo(remaining));
+            Assert.That(session.TryConsumeHunterFarewell(out _), Is.False);
+        }
+
+        [Test]
+        public async Task Complete_SceneFailureFallsBackToMenu_AndRetryLoadsShopWithoutReapplying()
+        {
+            GameSession session = CreatePendingMinigameSession(9, timerSeconds: 60);
+            var saves = new FakeSaveRepository();
+            var scenes = new FakeSceneLoader();
+            await new EnterMinigameUseCase(saves, scenes, new FakeRandomSource { NextValue = 707 }).ExecuteAsync(session);
             scenes.Results.Enqueue(SceneLoadResult.Failure(SceneLoadError.LoadFailed, "shop unavailable"));
             scenes.Results.Enqueue(SceneLoadResult.Success());
             var complete = new CompleteMinigameUseCase(saves, scenes, new FakeRandomSource { NextValue = 808 });
 
             MinigameTransactionResult failed = await complete.ExecuteAsync(session);
+            int money = session.RunState.Money;
+            int suspicion = session.RunState.Suspicion;
+            int winCount = session.RunState.MinigameWinCount;
+            int saveCalls = saves.SaveCallCount;
             MinigameTransactionResult retry = await complete.ExecuteAsync(session);
 
             Assert.That(failed.Error, Is.EqualTo(MinigameTransactionError.SceneLoadFailed));
             Assert.That(retry.Succeeded, Is.True, retry.ErrorMessage);
             Assert.That(retry.AlreadyApplied, Is.True);
-            Assert.That(session.CurrentPhase, Is.EqualTo(GamePhase.CustomerEncounter));
+            Assert.That(session.CurrentPhase == GamePhase.CustomerArrival || session.CurrentPhase == GamePhase.ClosingEncounter, Is.True);
+            Assert.That(session.RunState.Money, Is.EqualTo(money));
+            Assert.That(session.RunState.Suspicion, Is.EqualTo(suspicion));
+            Assert.That(session.RunState.MinigameWinCount, Is.EqualTo(winCount));
+            Assert.That(saves.SaveCallCount, Is.EqualTo(saveCalls));
             Assert.That(scenes.LoadCallCount, Is.EqualTo(4));
         }
 
         [Test]
-        public void CompleteMinigameInPlace_KeepsTutorialFlagEvenWhenResumeRunStateLacksIt()
+        public async Task Complete_MarksHunterFarewellWithWinCountBeforeThisOne()
         {
-            GameSession session = CreateInPlaceMinigameSessionWithFlagOnLiveStateButNotResume();
-            var restoredSnapshot = new DayStartSnapshot(
-                session.DayStartSnapshot.RunState.WithProgress(1, session.DayStartSnapshot.RunState.Money, 0, 1),
-                808,
-                session.DayStartSnapshot.TimerDuration,
-                session.DayStartSnapshot.ExpenseId,
-                session.DayStartSnapshot.ExpenseValue,
-                session.DayStartSnapshot.SaveVersion,
-                session.DayStartSnapshot.CapturedAtUtc);
-            var metadata = new ActiveAttemptMetadata(
-                session.RunState.RunId,
-                1,
-                0,
-                1,
-                false,
-                0,
-                808,
-                session.AttemptMetadata.WrongServiceCountToday,
-                session.AttemptMetadata.ServiceCountToday,
-                true,
-                0,
-                0,
-                0);
+            GameSession session = CreatePendingMinigameSession(9, timerSeconds: 60);
+            var saves = new FakeSaveRepository();
+            var scenes = new FakeSceneLoader();
+            await new EnterMinigameUseCase(saves, scenes, new FakeRandomSource { NextValue = 707 }).ExecuteAsync(session);
+            int before = session.RunState.MinigameWinCount;
 
-            session.CompleteMinigameInPlace(restoredSnapshot, metadata);
+            MinigameTransactionResult result = await new CompleteMinigameUseCase(saves, scenes, new FakeRandomSource { NextValue = 808 }).ExecuteAsync(session);
 
-            Assert.That(session.RunState.TutorialFlags.TryGetValue("shop.tutorial.day1.guided", out bool completed) && completed, Is.True);
-            Assert.That(session.CurrentPhase, Is.EqualTo(GamePhase.CustomerEncounter));
+            Assert.That(result.Succeeded, Is.True, result.ErrorMessage);
+            Assert.That(session.TryConsumeHunterFarewell(out int recorded), Is.True);
+            Assert.That(recorded, Is.EqualTo(before));
+            Assert.That(session.RunState.MinigameWinCount, Is.EqualTo(before + 1));
         }
 
         [Test]
-        public void ApplyTutorialFlag_SetsFlagOnRunStateResumeAndDayStartSnapshotOnly()
+        public void ApplyTutorialFlag_SetsFlagOnRunStateAndDayStartSnapshot()
         {
-            GameSession session = CreateInPlaceCapableSession();
+            GameSession session = CreateInProgressSession(60);
             RunState dayStartBefore = session.DayStartSnapshot.RunState;
             int money = dayStartBefore.Money;
             int suspicion = dayStartBefore.Suspicion;
@@ -179,161 +291,124 @@ namespace Witch.Application.Tests
             Assert.That(session.DayStartSnapshot.RunState.Money, Is.EqualTo(money));
             Assert.That(session.DayStartSnapshot.RunState.Suspicion, Is.EqualTo(suspicion));
             Assert.That(session.DayStartSnapshot.RunState.SeenOrderIds, Is.EqualTo(seenOrders));
-
-            var resumeField = typeof(GameSession).GetField("resumeRunState", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
-            var resume = (RunState)resumeField.GetValue(session);
-            Assert.That(resume, Is.Not.Null);
-            Assert.That(resume.TutorialFlags.TryGetValue("shop.tutorial.day1.guided", out bool resumeFlag) && resumeFlag, Is.True);
         }
 
         [Test]
-        public async Task Complete_FullMinigameResetPath_KeepsTutorialFlag()
+        public async Task Complete_KeepsTutorialFlagOnLiveStateAndPersistedSnapshot()
         {
-            GameSession session = CreatePendingMinigameSession(9);
+            GameSession session = CreatePendingMinigameSession(9, timerSeconds: 60);
             session.ApplyTutorialFlag("shop.tutorial.day1.guided", true);
             var saves = new FakeSaveRepository();
             var scenes = new FakeSceneLoader();
-            await new EnterMinigameUseCase(saves, scenes, new FakeRandomSource { NextValue = 707 })
-                .ExecuteAsync(session);
-            var complete = new CompleteMinigameUseCase(saves, scenes, new FakeRandomSource { NextValue = 808 });
+            await new EnterMinigameUseCase(saves, scenes, new FakeRandomSource { NextValue = 707 }).ExecuteAsync(session);
 
-            MinigameTransactionResult result = await complete.ExecuteAsync(session);
+            MinigameTransactionResult result = await new CompleteMinigameUseCase(saves, scenes, new FakeRandomSource { NextValue = 808 }).ExecuteAsync(session);
 
             Assert.That(result.Succeeded, Is.True, result.ErrorMessage);
-            Assert.That(session.RunState.TutorialFlags.TryGetValue("shop.tutorial.day1.guided", out bool completed) && completed, Is.True);
+            Assert.That(session.RunState.TutorialFlags.TryGetValue("shop.tutorial.day1.guided", out bool live) && live, Is.True);
             Assert.That(saves.SavedSnapshot.RunState.TutorialFlags.TryGetValue("shop.tutorial.day1.guided", out bool saved) && saved, Is.True);
         }
 
         [Test]
-        public async Task Complete_InPlacePath_RecordsPreIncrementMinigameWinCount()
+        public async Task Complete_DoesNotAffectMemoryMenderReportingStateOnDuplicateAlreadyApplied()
         {
-            GameSession session = CreatePendingMinigameSession(9);
+            GameSession session = CreatePendingMinigameSession(9, timerSeconds: 60);
             var saves = new FakeSaveRepository();
             var scenes = new FakeSceneLoader();
-            await new EnterMinigameUseCase(saves, scenes, new FakeRandomSource { NextValue = 707 })
-                .ExecuteAsync(session);
-
-            MinigameTransactionResult result = await new CompleteMinigameUseCase(
-                saves,
-                scenes,
-                new FakeRandomSource { NextValue = 808 }).ExecuteAsync(session);
-
-            Assert.That(result.Succeeded, Is.True, result.ErrorMessage);
-            Assert.That(session.CurrentPhase, Is.EqualTo(GamePhase.CustomerEncounter));
-            Assert.That(session.TryConsumeHunterFarewell(out int recordedMinigameWins) && recordedMinigameWins == 0, Is.True);
-        }
-
-        [TestCase(0)]
-        [TestCase(2)]
-        [TestCase(4)]
-        [TestCase(5)]
-        public async Task Complete_FullPath_RecordsPreIncrementMinigameWinCount(int completedMinigameWins)
-        {
-            GameSession session = CreatePendingMinigameSession(9);
-            var saves = new FakeSaveRepository();
-            var scenes = new FakeSceneLoader();
-            await new EnterMinigameUseCase(saves, scenes, new FakeRandomSource { NextValue = 707 })
-                .ExecuteAsync(session);
-            SetMinigameWinCount(session, completedMinigameWins);
-            ClearResumeSnapshot(session);
-
-            MinigameTransactionResult result = await new CompleteMinigameUseCase(
-                saves,
-                scenes,
-                new FakeRandomSource { NextValue = 808 }).ExecuteAsync(session);
-
-            Assert.That(result.Succeeded, Is.True, result.ErrorMessage);
-            Assert.That(session.CurrentPhase, Is.EqualTo(GamePhase.ShopPreparation));
-            Assert.That(session.RunState.MinigameWinCount, Is.EqualTo(completedMinigameWins + 1));
-            Assert.That(session.TryConsumeHunterFarewell(out int recordedMinigameWins), Is.True);
-            Assert.That(recordedMinigameWins, Is.EqualTo(completedMinigameWins));
-        }
-
-        [Test]
-        public async Task Complete_DuplicateRetry_DoesNotSetOrClearMarker()
-        {
-            GameSession session = CreatePendingMinigameSession(9);
-            var saves = new FakeSaveRepository();
-            var scenes = new FakeSceneLoader();
-            await new EnterMinigameUseCase(saves, scenes, new FakeRandomSource { NextValue = 707 })
-                .ExecuteAsync(session);
+            await new EnterMinigameUseCase(saves, scenes, new FakeRandomSource { NextValue = 707 }).ExecuteAsync(session);
             var complete = new CompleteMinigameUseCase(saves, scenes, new FakeRandomSource { NextValue = 808 });
             await complete.ExecuteAsync(session);
-
-            Assert.That(session.TryConsumeHunterFarewell(out _), Is.True);
-
             MinigameTransactionResult duplicate = await complete.ExecuteAsync(session);
-
             Assert.That(duplicate.AlreadyApplied, Is.True);
-            Assert.That(session.TryConsumeHunterFarewell(out _), Is.False);
         }
 
         [Test]
-        public void TryConsumeHunterFarewell_ReturnsValueOnceThenClears()
+        public async Task Lose_TimeUp_LeavesPendingStateSavedAndContinueReturnsToMinigame()
         {
-            GameSession session = CreateInPlaceCapableSession();
-            session.MarkHunterFarewell(3);
+            GameSession session = CreatePendingMinigameSession(9, timerSeconds: 60);
+            var saves = new FakeSaveRepository();
+            var scenes = new FakeSceneLoader();
+            var enter = new EnterMinigameUseCase(saves, scenes, new FakeRandomSource { NextValue = 707 });
 
-            Assert.That(session.TryConsumeHunterFarewell(out int first), Is.True);
-            Assert.That(first, Is.EqualTo(3));
-            Assert.That(session.TryConsumeHunterFarewell(out _), Is.False);
+            MinigameTransactionResult entered = await enter.ExecuteAsync(session);
+
+            Assert.That(entered.Succeeded, Is.True, entered.ErrorMessage);
+            Assert.That(session.CurrentPhase, Is.EqualTo(GamePhase.MinigameActive));
+            Assert.That(session.AttemptMetadata.PendingMinigame, Is.True);
+            Assert.That(session.AttemptMetadata.MinigameBoardSeed, Is.EqualTo(707));
+            Assert.That(session.RunState.Suspicion, Is.EqualTo(3));
+            Assert.That(session.RunState.MinigameWinCount, Is.EqualTo(0));
+            Assert.That(saves.SavedAttemptMetadata, Is.Not.Null);
+            Assert.That(saves.SavedAttemptMetadata.PendingMinigame, Is.True);
+            Assert.That(saves.SavedAttemptMetadata.MinigameBoardSeed, Is.EqualTo(707));
+
+            int suspicionBeforeLoss = session.RunState.Suspicion;
+            int winCountBeforeLoss = session.RunState.MinigameWinCount;
+            int moneyBeforeLoss = session.RunState.Money;
+            int boardSeedBeforeLoss = session.AttemptMetadata.MinigameBoardSeed;
+
+            // Losing the minigame (time up) is handled in presentation and does not apply any completion or state mutation.
+            Assert.That(session.AttemptMetadata.PendingMinigame, Is.True);
+            Assert.That(session.AttemptMetadata.MinigameBoardSeed, Is.EqualTo(boardSeedBeforeLoss));
+            Assert.That(session.RunState.Suspicion, Is.EqualTo(suspicionBeforeLoss));
+            Assert.That(session.RunState.MinigameWinCount, Is.EqualTo(winCountBeforeLoss));
+            Assert.That(session.RunState.Money, Is.EqualTo(moneyBeforeLoss));
+
+            DayStartSnapshot snapshotForLoad = saves.SavedSnapshot ?? session.DayStartSnapshot;
+            Assert.That(saves.SavedAttemptMetadata, Is.Not.Null);
+            var loadRepo = new FakeSaveRepository
+            {
+                LatestLoadResult = LoadStateResult.Success(new GameSaveState(snapshotForLoad, saves.SavedAttemptMetadata))
+            };
+            var loadScenes = new FakeSceneLoader();
+            LoadRunResult loaded = await new LoadRunUseCase(loadRepo, loadRepo, new GameSessionStore(), loadScenes)
+                .ExecuteAsync(LoadRunCommand.Latest());
+
+            Assert.That(loaded.Succeeded, Is.True, loaded.ErrorMessage);
+            Assert.That(loadScenes.LastRequestedScene, Is.EqualTo(SceneId.MatchCardMinigame));
+            Assert.That(loaded.Session.CurrentPhase, Is.EqualTo(GamePhase.MinigameActive));
+            Assert.That(loaded.Session.AttemptMetadata.PendingMinigame, Is.True);
+            Assert.That(loaded.Session.AttemptMetadata.MinigameBoardSeed, Is.EqualTo(707));
         }
 
-        [Test]
-        public void RetryDay_ClearsHunterFarewell()
+        private static void ForceTimerRemaining(GameSession session, TimeSpan remaining)
         {
-            GameSession session = CreateInPlaceCapableSession();
-            session.MarkHunterFarewell(1);
+            var timerStateType = session.TimerState.GetType();
+            object timerState = Activator.CreateInstance(timerStateType, remaining, false);
+            typeof(GameSession).GetProperty("TimerState", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+                ?.SetValue(session, timerState);
 
-            session.RetryDay(session.DayStartSnapshot, session.AttemptMetadata);
-
-            Assert.That(session.TryConsumeHunterFarewell(out _), Is.False);
+            var attemptStateType = session.AttemptState.GetType();
+            object attemptState = Activator.CreateInstance(
+                attemptStateType,
+                session.AttemptState.AttemptSeed,
+                remaining,
+                session.AttemptState.UsedOrderIds,
+                session.AttemptState.ActiveCustomerId,
+                session.AttemptState.ActiveOrder,
+                session.AttemptState.EarnedMoney,
+                session.AttemptState.PotionDraft,
+                session.AttemptState.PreparedPotion);
+            typeof(GameSession).GetProperty("AttemptState", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+                ?.SetValue(session, attemptState);
         }
 
-        [Test]
-        public void AdvanceDay_ClearsHunterFarewell()
+        private static (int Money, int Correct, int Wrong, int WrongSummary, int Coins, int ServiceCount, int Suspicion, int MinigameWinCount, TimeSpan Remaining, string[] UsedOrders) CapturePostWrongServiceState(GameSession session)
         {
-            GameSession session = CreateInPlaceCapableSession();
-            session.MarkHunterFarewell(1);
-
-            session.AdvanceDay(
-                session.DayStartSnapshot,
-                session.AttemptMetadata,
-                new DaySummaryData(0, 0, 0, 0, 0, 1));
-
-            Assert.That(session.TryConsumeHunterFarewell(out _), Is.False);
-        }
-
-        [Test]
-        public void EnterMinigame_ClearsHunterFarewell()
-        {
-            GameSession session = CreateInPlaceCapableSession();
-            session.MarkHunterFarewell(1);
-
-            session.EnterMinigame(session.AttemptMetadata);
-
-            Assert.That(session.TryConsumeHunterFarewell(out _), Is.False);
-        }
-
-        private static void SetMinigameWinCount(GameSession session, int minigameWinCount)
-        {
-            RunState runState = session.RunState.WithProgress(
-                session.RunState.CurrentDayNumber,
+            return (
                 session.RunState.Money,
+                session.AttemptMetadata.CorrectServiceCountToday,
+                session.AttemptMetadata.WrongServiceCountToday,
+                session.AttemptMetadata.WrongOrdersForSummary,
+                session.AttemptMetadata.CoinsEarnedToday,
+                session.AttemptMetadata.ServiceCountToday,
                 session.RunState.Suspicion,
-                minigameWinCount);
-            typeof(GameSession).GetProperty("RunState").SetValue(session, runState);
+                session.RunState.MinigameWinCount,
+                session.TimerState.RemainingTime,
+                new System.Collections.Generic.List<string>(session.AttemptState.UsedOrderIds).ToArray());
         }
 
-        private static void ClearResumeSnapshot(GameSession session)
-        {
-            typeof(GameSession)
-                .GetField("resumeRunState", BindingFlags.Instance | BindingFlags.NonPublic)
-                .SetValue(session, null);
-            Assert.That(session.CanResumeInPlace, Is.False);
-        }
-
-        private static GameSession CreatePendingMinigameSession(int startingMoney)
+        private static GameSession CreatePendingMinigameSession(int startingMoney, int timerSeconds = 240)
         {
             var rules = CreateRules();
             GameSession session = new StartNewRunUseCase().Execute(new StartNewRunCommand(
@@ -343,7 +418,7 @@ namespace Witch.Application.Tests
                 new[] { "herb.ginger", "herb.mint", "herb.sage" },
                 new[] { "guidebook.warm" },
                 101,
-                TimeSpan.FromMinutes(4),
+                TimeSpan.FromSeconds(timerSeconds),
                 "expense.day.1",
                 20,
                 1,
@@ -377,49 +452,21 @@ namespace Witch.Application.Tests
             return new PotionServiceRules(10);
         }
 
-        private static GameSession CreateInPlaceCapableSession()
+        private static GameSession CreateInProgressSession(int timerSeconds)
         {
-            var session = new StartNewRunUseCase().Execute(new StartNewRunCommand(
-                "run.inplace",
+            GameSession session = new StartNewRunUseCase().Execute(new StartNewRunCommand(
+                "run.progress",
                 0,
                 new[] { "category.warm" },
                 new[] { "herb.ginger", "herb.mint" },
                 new[] { "guidebook.warm" },
                 101,
-                TimeSpan.FromMinutes(4),
+                TimeSpan.FromSeconds(timerSeconds),
                 "expense.day.1",
                 20,
                 1,
                 DateTimeOffset.UtcNow)).Session;
             new OpenShopUseCase().Execute(session);
-            new AdmitCustomerUseCase(new FakeClock()).Execute(
-                session,
-                new AdmitCustomerCommand(
-                    "customer.1",
-                    new OrderRequest("order.1", new HerbPair("herb.ginger", "herb.mint"))));
-            Assert.That(session.CanResumeInPlace, Is.True);
-            return session;
-        }
-
-        private static GameSession CreateInPlaceMinigameSessionWithFlagOnLiveStateButNotResume()
-        {
-            GameSession session = CreateInPlaceCapableSession();
-            var flags = BindingFlags.Instance | BindingFlags.NonPublic;
-            var resumeField = typeof(GameSession).GetField("resumeRunState", flags);
-            RunState resumeWithoutFlag = (RunState)resumeField.GetValue(session);
-            typeof(GameSession).GetProperty("RunState").SetValue(session, session.RunState.WithTutorialFlag("shop.tutorial.day1.guided", true));
-            typeof(GameSession).GetProperty("DayStartSnapshot").SetValue(session, new DayStartSnapshot(
-                session.DayStartSnapshot.RunState.WithTutorialFlag("shop.tutorial.day1.guided", true),
-                session.DayStartSnapshot.OrderSeed,
-                session.DayStartSnapshot.TimerDuration,
-                session.DayStartSnapshot.ExpenseId,
-                session.DayStartSnapshot.ExpenseValue,
-                session.DayStartSnapshot.SaveVersion,
-                session.DayStartSnapshot.CapturedAtUtc));
-            resumeField.SetValue(session, resumeWithoutFlag);
-            Assert.That(session.CanResumeInPlace, Is.True);
-            Assert.That(session.RunState.TutorialFlags.TryGetValue("shop.tutorial.day1.guided", out bool live) && live, Is.True);
-            Assert.That(resumeWithoutFlag.TutorialFlags.TryGetValue("shop.tutorial.day1.guided", out bool resume) && resume, Is.False);
             return session;
         }
     }

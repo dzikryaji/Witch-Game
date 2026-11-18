@@ -26,6 +26,9 @@ namespace Witch.Infrastructure.Audio
         private readonly Dictionary<string, float> lastPlayedAt = new Dictionary<string, float>(StringComparer.Ordinal);
         private string currentMusic;
         private GameSettingsState settings = GameSettingsState.Default;
+        private Coroutine musicFadeRoutine;
+        private float musicFadeStartUnscaledTime;
+        private const float MusicFadeInSeconds = 5f;
 
         public string CurrentMusicCue => currentMusic;
         public bool HasAuthoredChannels => music != null && sfx != null && ambience != null && ui != null;
@@ -113,10 +116,19 @@ namespace Witch.Infrastructure.Audio
                 return MissingCue(cueId);
             }
 
+            StopMusicFade();
             currentMusic = cueId;
             music.clip = clip;
             music.loop = cueId != GameAudioCueIds.GameOverMusic && cueId != GameAudioCueIds.VictoryMusic;
+            float targetVolume = TargetMusicVolume();
+            bool fadeIn = string.Equals(cueId, GameAudioCueIds.ShopMusic, StringComparison.Ordinal);
+            music.volume = fadeIn ? 0f : targetVolume;
             music.Play();
+            if (fadeIn)
+            {
+                musicFadeStartUnscaledTime = Time.unscaledTime;
+                musicFadeRoutine = StartCoroutine(FadeMusicTo(targetVolume, MusicFadeInSeconds));
+            }
             SyncShopAmbience(cueId);
             return ServiceResult.Success();
         }
@@ -146,6 +158,7 @@ namespace Witch.Infrastructure.Audio
 
         public void StopMusic()
         {
+            StopMusicFade();
             music.Stop();
             currentMusic = null;
         }
@@ -160,10 +173,53 @@ namespace Witch.Infrastructure.Audio
         {
             settings = value ?? GameSettingsState.Default;
             if (music == null) return;
-            music.volume = settings.MasterVolume * settings.MusicVolume * 0.3f;
+            if (musicFadeRoutine == null)
+            {
+                music.volume = TargetMusicVolume();
+            }
             sfx.volume = settings.MasterVolume * settings.SoundVolume * 0.75f;
             ambience.volume = settings.MasterVolume * settings.SoundVolume * 0.1f;
             ui.volume = settings.MasterVolume * settings.SoundVolume * 0.55f;
+        }
+
+        private float TargetMusicVolume()
+        {
+            return settings.MasterVolume * settings.MusicVolume * 0.3f;
+        }
+
+        private System.Collections.IEnumerator FadeMusicTo(float targetVolume, float durationSeconds)
+        {
+            float startVolume = 0f;
+            float elapsed = 0f;
+            while (elapsed < durationSeconds)
+            {
+                elapsed = Time.unscaledTime - musicFadeStartUnscaledTime;
+                float t = durationSeconds <= 0f ? 1f : Mathf.Clamp01(elapsed / durationSeconds);
+                if (music != null)
+                {
+                    music.volume = Mathf.Lerp(startVolume, targetVolume, t);
+                }
+                if (t >= 1f)
+                {
+                    break;
+                }
+                yield return null;
+            }
+
+            if (music != null)
+            {
+                music.volume = targetVolume;
+            }
+            musicFadeRoutine = null;
+        }
+
+        private void StopMusicFade()
+        {
+            if (musicFadeRoutine != null)
+            {
+                StopCoroutine(musicFadeRoutine);
+                musicFadeRoutine = null;
+            }
         }
 
         private bool TryGetClip(string cueId, out AudioClip clip)

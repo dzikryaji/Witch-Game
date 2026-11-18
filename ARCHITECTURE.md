@@ -84,7 +84,11 @@ Timer runs during customer/order, guidebook, and preparation. Pause freezes it. 
 
 ### Match Card minigame
 
-Suspicion `3` is persisted as pending before scene navigation. The Match Card minigame reconstructs a deterministic content-configured symbol board from saved metadata. There is no timer or failure. Mismatches flip back after the selected accessibility delay. Completion resets suspicion, increments minigame win count, changes order seed, and clears the workbench. When runtime encounter state remains available, Shop resumes the triggering customer with pre-service money and remaining time; otherwise it restores the day-start snapshot and full timer.
+Suspicion `3` is persisted as pending before scene navigation. The Match Card minigame reconstructs a deterministic content-configured symbol board from saved metadata. Mismatches flip back after the selected accessibility delay.
+
+Winning the minigame resets only suspicion (a memory spell). The live session keeps the post-wrong-service committed state: money, coins earned today, correct/wrong/service counts, used and seen orders, unlocks, tutorial and narrative flags, and the remaining day timer. The wrong customer does not return and no active encounter remains. After the hunter leaves, the phase becomes `CustomerArrival` when the queue is still open (timer remains paused until the existing farewell gate releases it, then the next customer can arrive) or `ClosingEncounter` when the queue is closed (timer remains stopped at zero and the existing closing/expense continuation runs to the progression panel).
+
+Completion persists before applying the session: the saved day-start snapshot is built as `MatchCardRules.Complete` builds it today (day-start run state with suspicion 0, minigame win count incremented, and seen orders/tutorial flags merged from the failed attempt), while saved active-attempt metadata keeps the session's current day counters/active order seed and sets suspicion 0, minigame win count incremented, pending minigame false, board seed 0, and minigame played today true. `LoadRunUseCase`/Continue behavior is unchanged (it rebuilds from snapshot + metadata and does not route back to the minigame when pending is false).
 
 ### Expense and progression
 

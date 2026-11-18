@@ -1,12 +1,14 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
+using UnityEngine.UI;
 using Witch.Application.Flow;
 using Witch.Application.Ports;
 using Witch.Domain;
@@ -23,11 +25,19 @@ namespace Witch.Bootstrap.PlayModeTests
     public sealed class MinigameVerticalSlicePlayModeTests
     {
         [UnityTest]
-        public IEnumerator ThirdWrongOrderEntersBoardAndAllMatchesResetSameDay()
+        public IEnumerator ThirdWrongOrderEntersBoardAndWinAppliesMemorySpellOnly()
         {
             MinigameHarness harness = CreatePendingHarness();
             Assert.That(harness.Session.CurrentPhase, Is.EqualTo(GamePhase.MinigamePending));
             Assert.That(harness.Session.RunState.Suspicion, Is.EqualTo(3));
+
+            int moneyBefore = harness.Session.RunState.Money;
+            int coinsEarnedBefore = harness.Session.AttemptMetadata.CoinsEarnedToday;
+            int correctBefore = harness.Session.AttemptMetadata.CorrectServiceCountToday;
+            int wrongBefore = harness.Session.AttemptMetadata.WrongServiceCountToday;
+            int wrongSummaryBefore = harness.Session.AttemptMetadata.WrongOrdersForSummary;
+            int serviceCountBefore = harness.Session.AttemptMetadata.ServiceCountToday;
+            TimeSpan remainingBefore = harness.Session.TimerState.RemainingTime;
 
             var enter = new EnterMinigameUseCase(
                 harness.Repository,
@@ -63,13 +73,29 @@ namespace Witch.Bootstrap.PlayModeTests
             }
 
             Assert.That(presenter.IsComplete, Is.True);
-            Assert.That(SceneManager.GetActiveScene().name, Is.EqualTo("Shop"));
-            Assert.That(harness.Session.CurrentPhase, Is.EqualTo(GamePhase.ShopPreparation));
-            Assert.That(harness.Session.RunState.Money, Is.EqualTo(9));
+
+            Button winContinue = GetPrivateField<Button>(presenter, "winContinueButton");
+            Assert.That(winContinue, Is.Not.Null, "Win continue button is required after completing the Match Card board.");
+            yield return WaitForCondition(() => winContinue.gameObject.activeInHierarchy && winContinue.interactable, 5f,
+                "Timed out waiting for win continue button.");
+            winContinue.onClick.Invoke();
+            yield return WaitForScene("Shop", 10f);
+            yield return WaitForCondition(() => !harness.Session.AttemptMetadata.PendingMinigame, 5f,
+                "Timed out waiting for minigame completion to apply.");
+
+            Assert.That(harness.Session.CurrentPhase == GamePhase.CustomerArrival || harness.Session.CurrentPhase == GamePhase.ClosingEncounter, Is.True);
+            Assert.That(harness.Session.AttemptState.ActiveOrder, Is.Null);
             Assert.That(harness.Session.RunState.Suspicion, Is.Zero);
             Assert.That(harness.Session.RunState.MinigameWinCount, Is.EqualTo(1));
-            Assert.That(harness.Session.TimerState.RemainingTime, Is.EqualTo(TimeSpan.FromSeconds(60)));
-            Assert.That(harness.Session.AttemptMetadata.ActiveOrderSeed, Is.EqualTo(808));
+            Assert.That(harness.Session.RunState.Money, Is.EqualTo(moneyBefore));
+            Assert.That(harness.Session.AttemptMetadata.CoinsEarnedToday, Is.EqualTo(coinsEarnedBefore));
+            Assert.That(harness.Session.AttemptMetadata.CorrectServiceCountToday, Is.EqualTo(correctBefore));
+            Assert.That(harness.Session.AttemptMetadata.WrongServiceCountToday, Is.EqualTo(wrongBefore));
+            Assert.That(harness.Session.AttemptMetadata.WrongOrdersForSummary, Is.EqualTo(wrongSummaryBefore));
+            Assert.That(harness.Session.AttemptMetadata.ServiceCountToday, Is.EqualTo(serviceCountBefore));
+            Assert.That(harness.Session.AttemptMetadata.PendingMinigame, Is.False);
+            Assert.That(harness.Session.AttemptMetadata.MinigamePlayedToday, Is.True);
+            Assert.That(harness.Session.TimerState.RemainingTime, Is.EqualTo(remainingBefore));
             Assert.That(MatchCardBoard.Create(909, harness.Session.RunState.MinigameWinCount).PairCount, Is.EqualTo(9));
         }
 
@@ -189,6 +215,34 @@ namespace Witch.Bootstrap.PlayModeTests
             }
 
             Assert.That(task.IsFaulted, Is.False, task.Exception?.ToString());
+        }
+
+        private static IEnumerator WaitForCondition(Func<bool> condition, float timeoutSeconds, string message)
+        {
+            float timeout = Time.realtimeSinceStartup + timeoutSeconds;
+            while (!condition() && Time.realtimeSinceStartup < timeout)
+            {
+                yield return null;
+            }
+
+            Assert.That(condition(), Is.True, message);
+        }
+
+        private static IEnumerator WaitForScene(string sceneName, float timeoutSeconds)
+        {
+            float timeout = Time.realtimeSinceStartup + timeoutSeconds;
+            while (SceneManager.GetActiveScene().name != sceneName && Time.realtimeSinceStartup < timeout)
+            {
+                yield return null;
+            }
+
+            Assert.That(SceneManager.GetActiveScene().name, Is.EqualTo(sceneName), "Timed out waiting for scene " + sceneName + ".");
+        }
+
+        private static T GetPrivateField<T>(object target, string fieldName) where T : class
+        {
+            FieldInfo field = target.GetType().GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic);
+            return field != null ? field.GetValue(target) as T : null;
         }
 
         private sealed class MinigameHarness
