@@ -171,11 +171,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Witch.Bootstrap::Witch.Bootstrap.GameCompositionRoot
   contentCatalog: {fileID: 11400000, guid: 10000000000000000000000000000015, type: 2}
   randomSeed: 20261024
-  startupScene: 0
-  developmentStartingMoney: 0
-  developmentRewindCount: 0
-  developmentOrderSeed: 20261024
-  developmentBoardSeed: 20261025
   targetFrameRate: 60
 --- !u!114 &1003
 MonoBehaviour:
@@ -209,7 +204,7 @@ MonoBehaviour:
   - cueId: SFX_PAGE_FLIP
     clip: {fileID: 8300000, guid: ab071e0ad1f14435bfbcb35b161249c4, type: 3}
   - cueId: SFX_GRINDER
-    clip: {fileID: 8300000, guid: 9f3ec6a30e20494a9ed68c25cc084c57, type: 3}
+    clip: {fileID: 8300000, guid: 7c1d01d11fd5348e6b1e422f0248495a, type: 3}
   - cueId: SFX_HERB_PLUCK
     clip: {fileID: 8300000, guid: f6001bf6c5dd4d3db78b8cdab9887aca, type: 3}
   - cueId: SFX_BREW_SUCCESS
