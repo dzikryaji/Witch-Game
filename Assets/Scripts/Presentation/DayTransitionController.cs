@@ -332,8 +332,8 @@ namespace Witch.Presentation
 
             Text dayLabel = CreateText(rootGo.transform, "Day Label", "DAY", font, 60, TextAnchor.MiddleRight,
                 new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(-49f, 0f), new Vector2(139.8227f, 128f));
-            Text dayNumber = CreateText(rootGo.transform, "Day Number", "1", font, 80, TextAnchor.MiddleLeft,
-                new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(86.28966f, 8f), new Vector2(86f, 128f));
+            Text dayNumber = CreateText(rootGo.transform, "Day Number", "1", font, 60, TextAnchor.MiddleLeft,
+                new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(86.28966f, 0f), new Vector2(86f, 128f));
 
             var controller = rootGo.GetComponent<DayTransitionController>();
             controller.Configure(canvasGroup, image, dayLabel, dayNumber, 0.45f, 1.0f);
