@@ -15,11 +15,11 @@ MonoBehaviour:
   stableId: order.hard.m11
   difficulty: 3
   orderBubbles:
-  - Hi there.
-  - A cart crushed my hand, leaving aching bones and scratches.
-  - Bring the wide, hairy leaf with a strong root.
-  - Add the thick, golden resin.
-  - The scratches are shallow, and I have no fever.
+  - Hello. I need help with my injuries.
+  - I broke a bone in my leg.
+  - A fresh wound on my arm keeps bleeding.
+  - The bleeding has been difficult to control.
+  - I have poor circulation. Nothing that encourages dangerous blood clots, please.
   firstHerbId: herb.comfrey
-  secondHerbId: herb.pineResin
+  secondHerbId: herb.yarrow
   customer: {fileID: 11400000, guid: 7a06e32b0a26b416c9f59776c3880e92, type: 2}
