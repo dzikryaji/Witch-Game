@@ -50,11 +50,8 @@ namespace Witch.Presentation.MainMenu
         private bool viewBound;
         private Toggle fontOnToggle;
         private Toggle fontOffToggle;
-        private bool syncingFontToggles;
         private bool hasSavedProgress;
-        private bool progressCheckComplete;
         private GameSettingsState pendingSettings;
-        private bool isEditingSettings;
 
         public bool IsInitialized { get; private set; }
         public bool IsBusy { get; private set; }
@@ -279,11 +276,6 @@ namespace Witch.Presentation.MainMenu
                     ?? GameSettingsState.Default;
 
                 RestoreSettingsControls(pendingSettings);
-                isEditingSettings = true;
-            }
-            else
-            {
-                isEditingSettings = false;
             }
 
             audioService?.Play(GameAudioCueIds.UiClick);
@@ -291,23 +283,15 @@ namespace Witch.Presentation.MainMenu
 
         private void ApplyFontToggleState(bool useAppleChanceryFont)
         {
-            syncingFontToggles = true;
-            try
+            // ToggleGroup.allowSwitchOff is false in scene: turn target on (never set Font On false directly).
+            if (useAppleChanceryFont)
             {
-                // ToggleGroup.allowSwitchOff is false in scene: turn target on (never set Font On false directly).
-                if (useAppleChanceryFont)
-                {
-                    if (fontOnToggle != null) fontOnToggle.SetIsOnWithoutNotify(true);
-                }
-                else
-                {
-                    if (fontOffToggle != null) fontOffToggle.SetIsOnWithoutNotify(true);
-                    else if (fontOnToggle != null) fontOnToggle.SetIsOnWithoutNotify(false);
-                }
+                if (fontOnToggle != null) fontOnToggle.SetIsOnWithoutNotify(true);
             }
-            finally
+            else
             {
-                syncingFontToggles = false;
+                if (fontOffToggle != null) fontOffToggle.SetIsOnWithoutNotify(true);
+                else if (fontOnToggle != null) fontOnToggle.SetIsOnWithoutNotify(false);
             }
         }
 
@@ -385,7 +369,6 @@ namespace Witch.Presentation.MainMenu
 
         //     bool resolved = ResolveFontPreference();
         //     bool saved = (settingsService.Current ?? LoadedSettings ?? GameSettingsState.Default).UseAppleChanceryFont;
-        //     Debug.Log($"[FontDebug] MainMenuPresenter.OnFontToggleChanged toggleIsOn={fontOnToggle?.isOn} resolved={resolved} saved={saved}");
         //     if (resolved == saved) return;
 
         //     RunUiAction(SaveFontPreferenceAsync);
@@ -401,10 +384,8 @@ namespace Witch.Presentation.MainMenu
         //         current.SoundVolume,
         //         current.ReducedMismatchDelay,
         //         resolved);
-        //     Debug.Log($"[FontDebug] MainMenuPresenter.SaveFontPreferenceAsync saving UseAppleChanceryFont={resolved}");
 
         //     SaveStateResult result = await settingsService.SaveAsync(value);
-        //     Debug.Log($"[FontDebug] MainMenuPresenter.SaveFontPreferenceAsync saveSucceeded={result.Succeeded} saved={value.UseAppleChanceryFont}");
         //     if (result.Succeeded)
         //     {
         //         LoadedSettings = value;
@@ -613,7 +594,6 @@ namespace Witch.Presentation.MainMenu
             }
 
             LoadedSettings = settingsService.Current;
-            Debug.Log($"[FontDebug] MainMenuPresenter.LoadSettingsOrDefaultsAsync LoadedSettings.UseAppleChanceryFont={LoadedSettings.UseAppleChanceryFont}");
             audioService?.ApplySettings(LoadedSettings);
             masterSlider.SetValueWithoutNotify(LoadedSettings.SoundVolume);
             musicSlider.SetValueWithoutNotify(LoadedSettings.MusicVolume);
@@ -626,7 +606,6 @@ namespace Witch.Presentation.MainMenu
         private async Task RefreshContinueButtonAsync()
         {
             hasSavedProgress = false;
-            progressCheckComplete = false;
 
             // Hide Continue until we know whether a save exists.
             continueButton.gameObject.SetActive(false);
@@ -651,8 +630,6 @@ namespace Witch.Presentation.MainMenu
             }
             finally
             {
-                progressCheckComplete = true;
-
                 if (continueButton != null)
                     continueButton.gameObject.SetActive(hasSavedProgress);
 
@@ -697,7 +674,6 @@ namespace Witch.Presentation.MainMenu
                 RestoreSettingsControls(pendingSettings);
             }
 
-            isEditingSettings = false;
             settingsPanel.SetActive(false);
             settingsOverlay.SetActive(false);
         }

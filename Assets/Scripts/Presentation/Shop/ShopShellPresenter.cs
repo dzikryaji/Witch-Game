@@ -250,7 +250,6 @@ namespace Witch.Presentation.Shop
             audioService = audio;
             settings = currentSettings ?? GameSettingsState.Default;
             audioService?.ApplySettings(settings);
-            Debug.Log($"[FontDebug] ShopShellPresenter.ConfigurePolish UseAppleChanceryFont={settings.UseAppleChanceryFont}");
             hudView?.ApplyOrderBubbleFontPreference(settings.UseAppleChanceryFont);
         }
 

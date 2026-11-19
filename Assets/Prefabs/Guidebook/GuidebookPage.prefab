@@ -808,8 +808,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Herbs that bring heat down and calm the blood.
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 21f15680315cd46ccae36f9456648039, type: 2}
-  m_sharedMaterial: {fileID: 391316112061102943, guid: 21f15680315cd46ccae36f9456648039, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 29b1de8a4a80345c3a52f318346dfb82, type: 2}
+  m_sharedMaterial: {fileID: -2475112330522740036, guid: 29b1de8a4a80345c3a52f318346dfb82, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1141,8 +1141,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: A twisted, tough root with a strong flavor. It calms a sore stomach, treats serious nausea, and helps restore a lost appetite.
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 21f15680315cd46ccae36f9456648039, type: 2}
-  m_sharedMaterial: {fileID: 391316112061102943, guid: 21f15680315cd46ccae36f9456648039, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 29b1de8a4a80345c3a52f318346dfb82, type: 2}
+  m_sharedMaterial: {fileID: -2475112330522740036, guid: 29b1de8a4a80345c3a52f318346dfb82, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -2163,8 +2163,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Description
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 21f15680315cd46ccae36f9456648039, type: 2}
-  m_sharedMaterial: {fileID: 391316112061102943, guid: 21f15680315cd46ccae36f9456648039, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 29b1de8a4a80345c3a52f318346dfb82, type: 2}
+  m_sharedMaterial: {fileID: -2475112330522740036, guid: 29b1de8a4a80345c3a52f318346dfb82, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -2322,8 +2322,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 21f15680315cd46ccae36f9456648039, type: 2}
-  m_sharedMaterial: {fileID: 391316112061102943, guid: 21f15680315cd46ccae36f9456648039, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 29b1de8a4a80345c3a52f318346dfb82, type: 2}
+  m_sharedMaterial: {fileID: -2475112330522740036, guid: 29b1de8a4a80345c3a52f318346dfb82, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -3023,8 +3023,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Herbs that bring heat back to the body.
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 21f15680315cd46ccae36f9456648039, type: 2}
-  m_sharedMaterial: {fileID: 391316112061102943, guid: 21f15680315cd46ccae36f9456648039, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 29b1de8a4a80345c3a52f318346dfb82, type: 2}
+  m_sharedMaterial: {fileID: -2475112330522740036, guid: 29b1de8a4a80345c3a52f318346dfb82, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -4064,8 +4064,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Description
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 21f15680315cd46ccae36f9456648039, type: 2}
-  m_sharedMaterial: {fileID: 391316112061102943, guid: 21f15680315cd46ccae36f9456648039, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 29b1de8a4a80345c3a52f318346dfb82, type: 2}
+  m_sharedMaterial: {fileID: -2475112330522740036, guid: 29b1de8a4a80345c3a52f318346dfb82, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -4678,8 +4678,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Description
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 21f15680315cd46ccae36f9456648039, type: 2}
-  m_sharedMaterial: {fileID: 391316112061102943, guid: 21f15680315cd46ccae36f9456648039, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 29b1de8a4a80345c3a52f318346dfb82, type: 2}
+  m_sharedMaterial: {fileID: -2475112330522740036, guid: 29b1de8a4a80345c3a52f318346dfb82, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -5061,8 +5061,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Herbs that quiet the nerves and settle the mind.
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 21f15680315cd46ccae36f9456648039, type: 2}
-  m_sharedMaterial: {fileID: 391316112061102943, guid: 21f15680315cd46ccae36f9456648039, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 29b1de8a4a80345c3a52f318346dfb82, type: 2}
+  m_sharedMaterial: {fileID: -2475112330522740036, guid: 29b1de8a4a80345c3a52f318346dfb82, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -5354,8 +5354,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 1 / 11
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 21f15680315cd46ccae36f9456648039, type: 2}
-  m_sharedMaterial: {fileID: 391316112061102943, guid: 21f15680315cd46ccae36f9456648039, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 29b1de8a4a80345c3a52f318346dfb82, type: 2}
+  m_sharedMaterial: {fileID: -2475112330522740036, guid: 29b1de8a4a80345c3a52f318346dfb82, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -5652,8 +5652,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Ginger can dangerously reduce blood clotting. It can be deadly for people with open wounds or bleeding internal ulcers.
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 21f15680315cd46ccae36f9456648039, type: 2}
-  m_sharedMaterial: {fileID: 391316112061102943, guid: 21f15680315cd46ccae36f9456648039, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 29b1de8a4a80345c3a52f318346dfb82, type: 2}
+  m_sharedMaterial: {fileID: -2475112330522740036, guid: 29b1de8a4a80345c3a52f318346dfb82, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []

@@ -50,7 +50,6 @@ namespace Witch.Infrastructure.Persistence
                         reducedMismatchDelay = settings.ReducedMismatchDelay,
                         useAppleChanceryFont = settings.UseAppleChanceryFont
                     }, true);
-                    Debug.Log($"[FontDebug] JsonSettingsRepository.Save useAppleChanceryFont={settings.UseAppleChanceryFont} path={primaryPath} json={json}");
                     fileStore.WriteAtomically(primaryPath, previousPath, json);
                     return SaveStateResult.Success();
                 }
@@ -93,7 +92,6 @@ namespace Witch.Infrastructure.Persistence
                 float masterVolume = dto.schemaVersion > 0 ? dto.masterVolume : 1f;
                 bool reducedDelay = dto.schemaVersion > 0 ? dto.reducedMismatchDelay : dto.reducedMotion;
                 bool useAppleChanceryFont = dto.schemaVersion >= 2 ? dto.useAppleChanceryFont : true;
-                Debug.Log($"[FontDebug] JsonSettingsRepository.Read path={path} schema={dto.schemaVersion} useAppleChanceryFont={useAppleChanceryFont} json={json}");
                 return SettingsLoadResult.Success(
                     new GameSettingsState(masterVolume, dto.musicVolume, dto.soundVolume, reducedDelay, useAppleChanceryFont));
             }

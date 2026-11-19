@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: cdf5ed56015d64d18a729967509e3214
+guid: b2ef9239f32af4e3a8f54b67ded0c79d
 TrueTypeFontImporter:
   externalObjects: {}
   serializedVersion: 4
@@ -9,7 +9,7 @@ TrueTypeFontImporter:
   characterPadding: 1
   includeFontData: 1
   fontNames:
-  - Hoefler Text
+  - Charm
   fallbackFontReferences: []
   customCharacters: 
   fontRenderingMode: 0

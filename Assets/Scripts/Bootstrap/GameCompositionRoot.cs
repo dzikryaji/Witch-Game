@@ -26,6 +26,7 @@ namespace Witch.Bootstrap
     public sealed class GameCompositionRoot : MonoBehaviour
     {
         [SerializeField] private GameContentCatalogDefinition contentCatalog;
+        [SerializeField] private Font dayTransitionFont;
         [SerializeField] private int randomSeed = 20261024;
         [Header("Performance")]
         [SerializeField, Min(30)] private int targetFrameRate = 60;
@@ -313,7 +314,7 @@ namespace Witch.Bootstrap
             }
             if (existing == null)
             {
-                existing = DayTransitionController.CreateRuntime(transform);
+                existing = DayTransitionController.CreateRuntime(transform, dayTransitionFont);
             }
             else
             {
