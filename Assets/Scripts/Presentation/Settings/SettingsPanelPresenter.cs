@@ -10,7 +10,8 @@ namespace Witch.Presentation.Settings
         [SerializeField] private GameObject panel;
         [SerializeField] private Slider soundSlider;     // SoundVolume (sound effects)
         [SerializeField] private Slider musicSlider;     // MusicVolume
-        [SerializeField] private Button saveButton;      // the back arrow / save button
+        [SerializeField] private Button saveButton;
+        [SerializeField] private Button backButton;
         [SerializeField] private Text errorText;         // optional
         [SerializeField] private GameObject overlay;     // the dim background behind the settings panel
 
@@ -33,6 +34,7 @@ namespace Witch.Presentation.Settings
                 soundSlider.onValueChanged.AddListener(_ => Preview(true));
                 musicSlider.onValueChanged.AddListener(_ => Preview(false));
                 saveButton.onClick.AddListener(OnSaveClicked);
+                backButton.onClick.AddListener(Cancel);
                 bound = true;
             }
 
