@@ -26,6 +26,12 @@ namespace Witch.Presentation.MainMenu
         [SerializeField] private Text errorText;
         [SerializeField] private GameObject settingsOverlay;
         [SerializeField] private StoryIntroView storyIntro;
+        [SerializeField] private VerticalLayoutGroup buttonsLayout;
+
+        [Header("New Game Confirmation")]
+        [SerializeField] private GameObject newGameConfirmationPanel;
+        [SerializeField] private Button confirmNewGameButton;
+        [SerializeField] private Button cancelNewGameButton;
 
         private IStartNewGameUseCase startNewGame;
         private ILoadRunUseCase loadRun;
@@ -39,6 +45,8 @@ namespace Witch.Presentation.MainMenu
         private Toggle fontOnToggle;
         private Toggle fontOffToggle;
         private bool syncingFontToggles;
+        private bool hasSavedProgress;
+        private bool progressCheckComplete;
 
         public bool IsInitialized { get; private set; }
         public bool IsBusy { get; private set; }
@@ -55,7 +63,10 @@ namespace Witch.Presentation.MainMenu
             && reducedDelayToggle != null
             && applySettingsButton != null
             && settingsOverlay != null
-            && errorText != null;
+            && errorText != null
+            && newGameConfirmationPanel != null
+            && confirmNewGameButton != null
+            && cancelNewGameButton != null;
 
         public void Initialize(
             IStartNewGameUseCase startNewGameUseCase,
@@ -132,6 +143,7 @@ namespace Witch.Presentation.MainMenu
             //     panelRect.localScale = Vector3.one;
             // }
             IsInitialized = true;
+            _ = RefreshContinueButtonAsync();
             LastErrorMessage = null;
             RenderError();
             settingsPanel.SetActive(false);
@@ -299,6 +311,8 @@ namespace Witch.Presentation.MainMenu
             BindFontToggle();
             newGameButton.onClick.AddListener(OnNewGameClicked);
             continueButton.onClick.AddListener(OnContinueClicked);
+            confirmNewGameButton.onClick.AddListener(OnConfirmNewGameClicked);
+            cancelNewGameButton.onClick.AddListener(OnCancelNewGameClicked);
             settingsButton.onClick.AddListener(ToggleSettings);
             quitButton.onClick.AddListener(OnQuitClicked);
             applySettingsButton.onClick.AddListener(OnApplySettingsClicked);
@@ -371,7 +385,30 @@ namespace Witch.Presentation.MainMenu
         private void OnNewGameClicked()
         {
             audioService?.Play(GameAudioCueIds.UiClick);
+
+            if (hasSavedProgress)
+            {
+                newGameConfirmationPanel.SetActive(true);
+                return;
+            }
+
             RunUiAction(NewGameWithStoryAsync);
+        }
+
+        private void OnConfirmNewGameClicked()
+        {
+            audioService?.Play(GameAudioCueIds.UiClick);
+
+            newGameConfirmationPanel.SetActive(false);
+
+            RunUiAction(NewGameWithStoryAsync);
+        }
+
+        private void OnCancelNewGameClicked()
+        {
+            audioService?.Play(GameAudioCueIds.UiClick);
+
+            newGameConfirmationPanel.SetActive(false);
         }
 
         private async Task<bool> NewGameWithStoryAsync()
@@ -525,6 +562,43 @@ namespace Witch.Presentation.MainMenu
             ApplyFontToggleState(LoadedSettings.UseAppleChanceryFont);
         }
 
+        private async Task RefreshContinueButtonAsync()
+        {
+            hasSavedProgress = false;
+            progressCheckComplete = false;
+
+            // Hide Continue until we know whether a save exists.
+            continueButton.gameObject.SetActive(false);
+
+            try
+            {
+                if (snapshotRepository == null || attemptRepository == null)
+                    return;
+
+                var snapshotResult =
+                    await snapshotRepository.LoadLatestDayStartSnapshotAsync();
+
+                var attemptResult =
+                    await attemptRepository.LoadLatestActiveAttemptMetadataAsync();
+
+                hasSavedProgress =
+                    snapshotResult != null &&
+                    snapshotResult.Succeeded &&
+                    attemptResult != null &&
+                    attemptResult.Succeeded &&
+                    !snapshotResult.Snapshot.RunState.RunCompleted;
+            }
+            finally
+            {
+                progressCheckComplete = true;
+
+                if (continueButton != null)
+                    continueButton.gameObject.SetActive(hasSavedProgress);
+
+                UpdateButtonSpacing();
+            }
+        }
+
         private void SetBusy(bool busy, Button source)
         {
             IsBusy = busy;
@@ -544,6 +618,13 @@ namespace Witch.Presentation.MainMenu
             if (errorText == null) return;
             errorText.text = LastErrorMessage ?? string.Empty;
             errorText.gameObject.SetActive(!string.IsNullOrWhiteSpace(LastErrorMessage));
+        }
+
+        private void UpdateButtonSpacing()
+        {
+            if (buttonsLayout == null) return;
+
+            buttonsLayout.spacing = hasSavedProgress ? 15f : 35f;
         }
     }
 }
