@@ -301,7 +301,7 @@ namespace Witch.Presentation
             catch (Exception ex) { Debug.LogException(ex); }
         }
 
-        public static DayTransitionController CreateRuntime(Transform parent)
+        public static DayTransitionController CreateRuntime(Transform parent, Font font)
         {
             var rootGo = new GameObject("Day Transition", typeof(RectTransform), typeof(Canvas), typeof(GraphicRaycaster), typeof(CanvasGroup), typeof(Image), typeof(DayTransitionController));
             rootGo.layer = 5;
@@ -330,8 +330,6 @@ namespace Witch.Presentation
             rect.offsetMin = Vector2.zero;
             rect.offsetMax = Vector2.zero;
 
-            Font font = ResolveTransitionFont();
-
             Text dayLabel = CreateText(rootGo.transform, "Day Label", "DAY", font, 60, TextAnchor.MiddleRight,
                 new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(-49f, 0f), new Vector2(139.8227f, 128f));
             Text dayNumber = CreateText(rootGo.transform, "Day Number", "1", font, 80, TextAnchor.MiddleLeft,
@@ -341,22 +339,6 @@ namespace Witch.Presentation
             controller.Configure(canvasGroup, image, dayLabel, dayNumber, 0.45f, 1.0f);
             rootGo.SetActive(false);
             return controller;
-        }
-
-        private static Font ResolveTransitionFont()
-        {
-            try
-            {
-                Font osFont = Font.CreateDynamicFontFromOSFont(new[] { "Apple Chancery", "AppleChancery" }, 80);
-                if (osFont != null) return osFont;
-            }
-            catch
-            {
-            }
-
-            Font fallback = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-            if (fallback == null) fallback = Resources.GetBuiltinResource<Font>("Arial.ttf");
-            return fallback;
         }
 
         private static Text CreateText(Transform parent, string name, string content, Font font, int fontSize, TextAnchor alignment,
