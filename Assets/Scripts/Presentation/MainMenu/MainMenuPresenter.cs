@@ -34,6 +34,11 @@ namespace Witch.Presentation.MainMenu
         [SerializeField] private Button confirmNewGameButton;
         [SerializeField] private Button cancelNewGameButton;
 
+        [Header("Quit Confirmation")]
+        [SerializeField] private GameObject quitConfirmationPanel;
+        [SerializeField] private Button confirmQuitButton;
+        [SerializeField] private Button cancelQuitButton;
+
         private IStartNewGameUseCase startNewGame;
         private ILoadRunUseCase loadRun;
         private IGameSettingsService settingsService;
@@ -70,7 +75,10 @@ namespace Witch.Presentation.MainMenu
             && newGameConfirmationPanel != null
             && confirmNewGameButton != null
             && cancelNewGameButton != null
-            && backSettingsButton != null;
+            && backSettingsButton != null
+            && quitConfirmationPanel != null
+            && confirmQuitButton != null
+            && cancelQuitButton != null;
 
         public void Initialize(
             IStartNewGameUseCase startNewGameUseCase,
@@ -337,6 +345,8 @@ namespace Witch.Presentation.MainMenu
             continueButton.onClick.AddListener(OnContinueClicked);
             confirmNewGameButton.onClick.AddListener(OnConfirmNewGameClicked);
             cancelNewGameButton.onClick.AddListener(OnCancelNewGameClicked);
+            confirmQuitButton.onClick.AddListener(OnConfirmQuitClicked);
+            cancelQuitButton.onClick.AddListener(OnCancelQuitClicked);
             settingsButton.onClick.AddListener(ToggleSettings);
             quitButton.onClick.AddListener(OnQuitClicked);
             applySettingsButton.onClick.AddListener(OnApplySettingsClicked);
@@ -507,7 +517,27 @@ namespace Witch.Presentation.MainMenu
         private void OnQuitClicked()
         {
             audioService?.Play(GameAudioCueIds.UiClick);
+
+            settingsOverlay.SetActive(true);
+            quitConfirmationPanel.SetActive(true);
+        }
+
+        private void OnConfirmQuitClicked()
+        {
+            audioService?.Play(GameAudioCueIds.UiClick);
+
+            quitConfirmationPanel.SetActive(false);
+            settingsOverlay.SetActive(false);
+
             Quit();
+        }
+
+        private void OnCancelQuitClicked()
+        {
+            audioService?.Play(GameAudioCueIds.UiClick);
+
+            quitConfirmationPanel.SetActive(false);
+            settingsOverlay.SetActive(false);
         }
 
         private void OnApplySettingsClicked() => RunUiAction(ApplySettingsAsync);
