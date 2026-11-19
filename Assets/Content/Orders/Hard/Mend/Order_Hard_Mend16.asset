@@ -15,11 +15,11 @@ MonoBehaviour:
   stableId: order.hard.m16
   difficulty: 3
   orderBubbles:
-  - Hi there.
-  - A crate broke my foot and scratched my hand.
-  - Bring the wide, hairy leaf with a strong root.
-  - Add the thick, golden resin.
-  - The scratches are shallow, and I have no fever.
-  firstHerbId: herb.comfrey
-  secondHerbId: herb.pineResin
+  - Hello. I hope you can help me.
+  - My wrist joint keeps moving painfully.
+  - A dark bruise has spread across my arm.
+  - I'd like the joint supported and bruise faded.
+  - I have a deep puncture wound. Nothing that seals skin quickly, please.
+  firstHerbId: herb.yarrow
+  secondHerbId: herb.arnicaFlower
   customer: {fileID: 11400000, guid: 12795f040a17d43ce94d717cf5b31324, type: 2}
