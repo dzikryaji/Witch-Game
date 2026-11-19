@@ -15,11 +15,11 @@ MonoBehaviour:
   stableId: order.hard.m08
   difficulty: 3
   orderBubbles:
-  - Hello hello.
-  - A climbing fall fractured my wrist and bruised my back.
-  - Bring the wide, hairy leaf with a strong root.
-  - Add the feathery leaves with flat white flowers.
-  - My heartbeat remains strong, without puncture wounds.
-  firstHerbId: herb.comfrey
-  secondHerbId: herb.yarrow
+  - Greetings. I've come because my wounds won't heal.
+  - A small scratch refuses to close.
+  - A large open wound keeps bleeding heavily.
+  - I need the scratch sealed and bleeding stopped.
+  - I have asthma. Nothing that restricts my breathing, please.
+  firstHerbId: herb.pineResin
+  secondHerbId: herb.plantainLeaf
   customer: {fileID: 11400000, guid: 7a06e32b0a26b416c9f59776c3880e92, type: 2}

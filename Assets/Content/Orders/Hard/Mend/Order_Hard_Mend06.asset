@@ -15,10 +15,11 @@ MonoBehaviour:
   stableId: order.hard.m06
   difficulty: 3
   orderBubbles:
-  - Greetings. Crushed fingers left bones aching and one joint unstable.
-  - Bring the bright yellow flower.
-  - Add the wide, hairy leaf with a strong root.
-  - My lungs remain strong, without puncture wounds.
+  - Greetings. I need help with a couple of injuries.
+  - My knee joint keeps moving painfully.
+  - A dark bruise covers my thigh.
+  - I want my joint supported and bruise faded.
+  - I have a high fever. Nothing that traps heat, please.
   firstHerbId: herb.arnicaFlower
-  secondHerbId: herb.comfrey
+  secondHerbId: herb.yarrow
   customer: {fileID: 11400000, guid: b00255ad8c02b4e98960925f8af4e92b, type: 2}
