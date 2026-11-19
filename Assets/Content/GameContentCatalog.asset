@@ -359,7 +359,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 662c4671efc254617914794ff4835bce, type: 2}
   - {fileID: 11400000, guid: 954abe4611ffc408a83a86f8786a660c, type: 2}
   - {fileID: 11400000, guid: f8bd29618a62d416481728f91058c078, type: 2}
-  rewindCards:
+  matchCardDefinitions:
   - {fileID: 11400000, guid: 1000000000000000000000000000000b, type: 2}
   - {fileID: 11400000, guid: 1000000000000000000000000000000c, type: 2}
   - {fileID: 11400000, guid: 1000000000000000000000000000000d, type: 2}
@@ -372,7 +372,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 9701db9f8686c40389270be6e16b0833, type: 2}
   - {fileID: 11400000, guid: ef60154e48a664a5cb0b890d5b56651b, type: 2}
   - {fileID: 11400000, guid: 14365acd2124b4ab9b76e402425fb370, type: 2}
-  rewindDifficulty: {fileID: 11400000, guid: 10000000000000000000000000000013, type: 2}
+  matchCardDifficulty: {fileID: 11400000, guid: 10000000000000000000000000000013, type: 2}
   witchHunterDialogue: {fileID: 11400000, guid: 3394ecada708d44d88144b1b45736b8a, type: 2}
   startingMoney: 0
   correctOrderPayment: 10

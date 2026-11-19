@@ -13,15 +13,15 @@ All customers are Villagers. Hunters are an outside narrative threat triggered b
 - Warming and Cooling unlock on Day 1, Soothing on Day 3, Cleansing on Day 7, and Mending on Day 11.
 - Simple orders on Days 1–3; Simple and Mid on Days 4–5; Mid on Days 6–8; Mid and Hard on Days 9–11; Hard on Days 12–14.
 - Automatic bell/customer arrival, unlimited herbs, grind/pot/brew/discard/serve interactions, exact-pair checking, payment, and daily expense.
-- Wrong valid orders pay `0` and add suspicion. Suspicion `3` persists a pending rewind and opens the separate memory-card scene.
-- Guaranteed 3–8-pair rewind board with deterministic reload, mismatch flip-back, suspicion reset, changed order seed, and same-customer resume when runtime state permits.
+- Wrong valid orders pay `0` and add suspicion. Suspicion `3` persists a pending minigame and opens the separate Match Card minigame scene.
+- Guaranteed 8-12-pair Match Card board with deterministic reload and mismatch flip-back. Winning resets only suspicion (a memory spell): money, daily counters, used and seen orders, unlocks, flags, and the remaining day timer stay as they were after the wrong service was committed. The wrong customer does not return; if time remains the next customer arrives after the hunter leaves, and if the queue is closed the shop continues to the progression panel after the hunter leaves. The persisted day-start snapshot and active-attempt metadata are saved for Continue/reload (Continue rebuilds the day from them and does not route back into the minigame).
 - Expense failure as the only game-over path, same-seed retry, and victory after paying Day 14 expense.
-- Persisted victory restoration and safe Main Menu fallback when Shop/Rewind scene loading fails.
+- Persisted victory restoration and safe Main Menu fallback when Shop/Match Card minigame scene loading fails.
 - Centered `16:9` landscape gameplay/UI viewport with black pillarboxes on wider displays.
 - Dark-comedy Day 1 tutorial, keyboard navigation, pause behavior, readable symbolic cards, reduced mismatch-delay setting, and persistent master/music/SFX settings.
 - Four authored Audio Mixer groups—Music, SFX, Ambience, UI—with copyright-safe original placeholder cues and Bootstrap validation for missing clips. CC0 replacement recommendations and rules live in the prototype design document.
 - Atomic JSON current-run save with recovery copy and a separate settings file.
-- Editor-authored Main Menu, Shop, and Rewind hierarchies with reusable herb/card prefabs. Presentation scripts handle behavior and state display instead of constructing the interface.
+- Editor-authored Main Menu, Shop, and Match Card minigame hierarchies with reusable herb/card prefabs. Presentation scripts handle behavior and state display instead of constructing the interface.
 
 ## Architecture
 
@@ -40,7 +40,7 @@ Production uses exactly four enabled scenes:
 1. `Assets/Scenes/Bootstrap.unity`
 2. `Assets/Scenes/MainMenu.unity`
 3. `Assets/Scenes/Shop.unity`
-4. `Assets/Scenes/RewindMinigame.unity`
+4. `Assets/Scenes/MatchCardMinigame.unity`
 
 See [ARCHITECTURE.md](ARCHITECTURE.md) for the implementation map, [Production Constraints and Timeline](../Witch%20Vaults/Production%20Constraints%20and%20Timeline.md) for platform and performance targets, and [Current Game Specification](../Witch%20Vaults/Current%20Game%20Specification.md) for implemented rules. [Simple Orders](../Witch%20Vaults/Simple%20Orders.md) and [Mid Orders](../Witch%20Vaults/Mid%20Orders.md) are the authored order sources. [Newspaper Plan](../Witch%20Vaults/Newspaper%20Plan.md) is retained as inactive reference only.
 

@@ -5,6 +5,6 @@ namespace Witch.Application.Ports
         Bootstrap,
         MainMenu,
         Shop,
-        RewindMinigame
+        MatchCardMinigame
     }
 }

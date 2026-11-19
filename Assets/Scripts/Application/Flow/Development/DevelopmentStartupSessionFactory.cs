@@ -8,10 +8,10 @@ namespace Witch.Application.Flow
 {
     public static class DevelopmentStartupSessionFactory
     {
-        public static GameSession CreatePendingRewind(
+        public static GameSession CreatePendingMinigame(
             NewRunSetup setup,
             int startingMoney,
-            int rewindCount,
+            int minigameWinCount,
             int orderSeed,
             int boardSeed,
             DateTimeOffset capturedAtUtc)
@@ -22,11 +22,11 @@ namespace Witch.Application.Flow
             }
 
             var runState = new RunState(
-                "development-rewind",
+                "development-minigame",
                 RunState.FirstDay,
                 startingMoney,
-                RunState.RewindSuspicionThreshold,
-                rewindCount,
+                RunState.MinigameSuspicionThreshold,
+                minigameWinCount,
                 setup.UnlockedCategoryIds,
                 setup.UnlockedHerbIds,
                 setup.UnlockedGuidebookEntryIds,
@@ -45,8 +45,8 @@ namespace Witch.Application.Flow
             var metadata = new ActiveAttemptMetadata(
                 runState.RunId,
                 runState.CurrentDayNumber,
-                RunState.RewindSuspicionThreshold,
-                rewindCount,
+                RunState.MinigameSuspicionThreshold,
+                minigameWinCount,
                 true,
                 boardSeed,
                 orderSeed,
@@ -54,7 +54,7 @@ namespace Witch.Application.Flow
                 0,
                 true);
 
-            return new GameSession(snapshot, metadata, GamePhase.RewindMinigame);
+            return new GameSession(snapshot, metadata, GamePhase.MinigameActive);
         }
 
         /// <summary>

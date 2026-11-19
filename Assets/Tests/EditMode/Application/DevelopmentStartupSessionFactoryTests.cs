@@ -10,7 +10,7 @@ namespace Witch.Application.Tests
     public sealed class DevelopmentStartupSessionFactoryTests
     {
         [Test]
-        public void PendingRewindDefaultsCreateImmediatelyPlayableBoardState()
+        public void PendingMinigameDefaultsCreateImmediatelyPlayableBoardState()
         {
             var setup = new NewRunSetup(
                 0,
@@ -22,7 +22,7 @@ namespace Witch.Application.Tests
                 20,
                 1);
 
-            GameSession session = DevelopmentStartupSessionFactory.CreatePendingRewind(
+            GameSession session = DevelopmentStartupSessionFactory.CreatePendingMinigame(
                 setup,
                 7,
                 2,
@@ -30,14 +30,14 @@ namespace Witch.Application.Tests
                 202,
                 new DateTimeOffset(2026, 10, 26, 0, 0, 0, TimeSpan.Zero));
 
-            Assert.That(session.CurrentPhase, Is.EqualTo(GamePhase.RewindMinigame));
+            Assert.That(session.CurrentPhase, Is.EqualTo(GamePhase.MinigameActive));
             Assert.That(session.RunState.Money, Is.EqualTo(7));
-            Assert.That(session.RunState.Suspicion, Is.EqualTo(RunState.RewindSuspicionThreshold));
-            Assert.That(session.RunState.RewindCount, Is.EqualTo(2));
-            Assert.That(session.AttemptMetadata.PendingRewind, Is.True);
+            Assert.That(session.RunState.Suspicion, Is.EqualTo(RunState.MinigameSuspicionThreshold));
+            Assert.That(session.RunState.MinigameWinCount, Is.EqualTo(2));
+            Assert.That(session.AttemptMetadata.PendingMinigame, Is.True);
             Assert.That(session.AttemptMetadata.ActiveOrderSeed, Is.EqualTo(101));
             Assert.That(session.AttemptMetadata.MinigameBoardSeed, Is.EqualTo(202));
-            Assert.That(RewindBoard.Create(202, 2).PairCount, Is.EqualTo(6));
+            Assert.That(MatchCardBoard.Create(202, 2).PairCount, Is.EqualTo(10));
         }
     }
 }

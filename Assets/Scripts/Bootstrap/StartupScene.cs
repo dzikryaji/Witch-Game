@@ -4,6 +4,6 @@ namespace Witch.Bootstrap
     {
         MainMenu = 0,
         Shop = 1,
-        RewindMinigame = 2
+        MatchCardMinigame = 2
     }
 }

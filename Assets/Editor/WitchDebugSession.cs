@@ -15,7 +15,7 @@ namespace Witch.Editor
         public const int MaxDay = 14;
         public const int DefaultDay = 1;
         public const string DefaultStartScene = "MainMenu";
-        public const string StartSceneRewind = "RewindMinigame";
+        public const string StartSceneMinigame = "MatchCardMinigame";
         public const string StartSceneShop = "Shop";
 
         private const string StartSceneKey = "Witch.Debug.StartScene";
@@ -72,9 +72,9 @@ namespace Witch.Editor
                 return StartSceneShop;
             }
 
-            if (string.Equals(value, StartSceneRewind, System.StringComparison.Ordinal))
+            if (string.Equals(value, StartSceneMinigame, System.StringComparison.Ordinal))
             {
-                return StartSceneRewind;
+                return StartSceneMinigame;
             }
 
             return DefaultStartScene;

@@ -27,7 +27,11 @@ namespace Witch.Bootstrap.PlayModeTests
             SetField(service, "sfx", sfx);
             SetField(service, "ambience", ambience);
             SetField(service, "ui", ui);
-            SetCue(service, GameAudioCueIds.ShopMusic, clip);
+            SetCues(service, new[]
+            {
+                (GameAudioCueIds.ShopMusic, clip),
+                (GameAudioCueIds.ShopAmbience, clip)
+            });
             root.SetActive(true);
             service.ApplySettings(new GameSettingsState(1f, 1f, 1f, false));
 
@@ -44,14 +48,17 @@ namespace Witch.Bootstrap.PlayModeTests
             UnityEngine.Object.Destroy(clip);
         }
 
-        private static void SetCue(UnityAudioService service, string cueId, AudioClip clip)
+        private static void SetCues(UnityAudioService service, (string cueId, AudioClip clip)[] entries)
         {
             Type cueType = typeof(UnityAudioService).GetNestedType("Cue", BindingFlags.NonPublic);
-            object cue = Activator.CreateInstance(cueType);
-            cueType.GetField("cueId").SetValue(cue, cueId);
-            cueType.GetField("clip").SetValue(cue, clip);
-            Array cues = Array.CreateInstance(cueType, 1);
-            cues.SetValue(cue, 0);
+            Array cues = Array.CreateInstance(cueType, entries.Length);
+            for (int i = 0; i < entries.Length; i++)
+            {
+                object cue = Activator.CreateInstance(cueType);
+                cueType.GetField("cueId").SetValue(cue, entries[i].cueId);
+                cueType.GetField("clip").SetValue(cue, entries[i].clip);
+                cues.SetValue(cue, i);
+            }
             SetField(service, "cues", cues);
         }
 

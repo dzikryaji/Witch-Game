@@ -113,7 +113,7 @@ namespace Witch.Presentation.Shop
         private PotionPreparationUseCase preparation;
         private ServePotionUseCase servePotion;
         private UpdateShopTimerUseCase updateTimer;
-        private EnterRewindUseCase enterRewind;
+        private EnterMinigameUseCase enterMinigame;
         private ResolveExpenseUseCase resolveExpense;
         private RetryDayUseCase retryDay;
         private RestartDayUseCase restartDay;
@@ -128,7 +128,6 @@ namespace Witch.Presentation.Shop
         private DayTransitionController dayTransition;
         private bool waitingForTransitionRelease;
         private bool pendingStartAfterReveal;
-        private bool pendingStartIsResume;
         private bool farewellPlaying;
         private bool viewBound;
         private CancellationTokenSource lifetimeCancellation;
@@ -189,7 +188,7 @@ namespace Witch.Presentation.Shop
         public bool MinigameIntroVisible => minigameIntroPopup != null && minigameIntroPopup.IsVisible;
         public bool UnlockAnnouncementVisible => herbUnlockAnnouncement != null && herbUnlockAnnouncement.IsShowing;
         private bool userPaused;
-        // User-initiated Shop pause freezes gameplay/presentation; system timer freezes (guided tutorial, rewind staging, transitions) do not.
+        // User-initiated Shop pause freezes gameplay/presentation; system timer freezes (guided tutorial, minigame staging, transitions) do not.
         private bool IsGameplayPaused => userPaused;
         private bool? lastKnownQueueOpen;
         public bool HasAuthoredView => hudView != null
@@ -307,7 +306,7 @@ namespace Witch.Presentation.Shop
             PotionPreparationUseCase preparationUseCase,
             ServePotionUseCase servePotionUseCase,
             UpdateShopTimerUseCase updateTimerUseCase,
-            EnterRewindUseCase enterRewindUseCase,
+            EnterMinigameUseCase enterMinigameUseCase,
             ShopPresentationSetup presentationSetup)
         {
             Initialize(store);
@@ -316,7 +315,7 @@ namespace Witch.Presentation.Shop
             preparation = preparationUseCase ?? throw new ArgumentNullException(nameof(preparationUseCase));
             servePotion = servePotionUseCase ?? throw new ArgumentNullException(nameof(servePotionUseCase));
             updateTimer = updateTimerUseCase ?? throw new ArgumentNullException(nameof(updateTimerUseCase));
-            enterRewind = enterRewindUseCase;
+            enterMinigame = enterMinigameUseCase;
             setup = presentationSetup ?? throw new ArgumentNullException(nameof(presentationSetup));
             encounterDeck = new ShopEncounterDeck(
                 setup.Encounters,
@@ -362,26 +361,20 @@ namespace Witch.Presentation.Shop
             {
                 bool deferStart = dayTransition != null && dayTransition.HasPendingShopReveal;
                 pendingStartAfterReveal = false;
-                pendingStartIsResume = false;
                 if (deferStart)
                 {
                     hudView.ResetDayCycleToMorning();
                     hudView.ClearCustomer();
                     pendingStartAfterReveal = true;
-                    pendingStartIsResume = IsResumingEncounter();
                     if (setTimerPaused != null)
                     {
                         setTimerPaused.Execute(ActiveSession, true);
                         waitingForTransitionRelease = true;
                     }
                 }
-                else if (IsResumingEncounter())
-                {
-                    StartEncounterPresentation(resume: true);
-                }
                 else
                 {
-                    StartEncounterPresentation(resume: false);
+                    StartEncounterPresentation();
                 }
 
                 Render();
@@ -401,12 +394,12 @@ namespace Witch.Presentation.Shop
             {
                 try
                 {
-                    if ((ActiveSession.CurrentPhase == Witch.Domain.GamePhase.RewindPending
-                            || (ActiveSession.CurrentPhase == Witch.Domain.GamePhase.RewindMinigame
-                                && ActiveSession.AttemptMetadata.PendingRewind))
-                        && enterRewind != null)
+                    if ((ActiveSession.CurrentPhase == Witch.Domain.GamePhase.MinigamePending
+                            || (ActiveSession.CurrentPhase == Witch.Domain.GamePhase.MinigameActive
+                                && ActiveSession.AttemptMetadata.PendingMinigame))
+                        && enterMinigame != null)
                     {
-                        ResumePendingRewind();
+                        ResumePendingMinigame();
                     }
                 }
                 catch (Exception ex)
@@ -879,6 +872,12 @@ namespace Witch.Presentation.Shop
                 heldHeaderMoney = Math.Max(0, ActiveSession.RunState.Money - PendingCounterCoins);
             }
 
+            bool ownsAction = !actionInProgress;
+            if (ownsAction)
+            {
+                actionInProgress = true;
+            }
+
             try
             {
                 return await ServeCoreAsync();
@@ -886,6 +885,10 @@ namespace Witch.Presentation.Shop
             finally
             {
                 heldHeaderMoney = null;
+                if (ownsAction)
+                {
+                    actionInProgress = false;
+                }
             }
         }
 
@@ -940,10 +943,10 @@ namespace Witch.Presentation.Shop
                 if (cancellationToken.IsCancellationRequested) return result;
             }
 
-            if (ActiveSession.CurrentPhase == Witch.Domain.GamePhase.RewindPending
-                && enterRewind != null)
+            if (ActiveSession.CurrentPhase == Witch.Domain.GamePhase.MinigamePending
+                && enterMinigame != null)
             {
-                await EnterPendingRewindAsync(cancellationToken);
+                await EnterPendingMinigameAsync(cancellationToken);
             }
             else if (ActiveSession.CurrentPhase == Witch.Domain.GamePhase.CustomerArrival
                 || ActiveSession.CurrentPhase == Witch.Domain.GamePhase.ClosingEncounter)
@@ -1022,6 +1025,8 @@ namespace Witch.Presentation.Shop
         {
             try
             {
+                // Allow ClosingEncounter to be observed/rendered for at least one frame before auto-resolving.
+                await Awaitable.NextFrameAsync();
                 CancellationToken cancellationToken = lifetimeCancellation?.Token ?? CancellationToken.None;
                 ExpenseResolutionResult result = await resolveExpense.ExecuteAsync(ActiveSession, cancellationToken);
                 if (!result.Succeeded)
@@ -1275,6 +1280,12 @@ namespace Witch.Presentation.Shop
         private void OnSettingsClosed()
         {
             if (pausePanel != null) pausePanel.SetActive(userPaused);
+        }
+
+        private void OnPauseSettingsClicked()
+        {
+            audioService?.Play(GameAudioCueIds.UiClick);
+            settingsPanelPresenter?.Open();
         }
 
         public void ConfigureRestart(RestartDayUseCase useCase)
@@ -1816,10 +1827,9 @@ namespace Witch.Presentation.Shop
             }
         }
 
-        private async Task EnterPendingRewindAsync(CancellationToken cancellationToken)
+        private async Task EnterPendingMinigameAsync(CancellationToken cancellationToken)
         {
             ClearCounterCoins();
-            SetStatus("KNOCK. KNOCK. Hunters suspect poisoning. Cast the memory spell before they enter; the day will rewind.");
             audioService?.PlayMusic(GameAudioCueIds.WitchHunterMusic);
 
             // Freeze the clock before the Hunter speaks, so reading the accusation never costs shop time.
@@ -1829,7 +1839,7 @@ namespace Witch.Presentation.Shop
                 ?? throw new InvalidOperationException("Witch Hunter customer data is missing from Shop setup.");
             hudView.SetCustomer(
                 witchHunter.DisplayName,
-                ResolveHunterAccusations(ActiveSession.RunState.RewindCount),
+                ResolveHunterAccusations(ActiveSession.RunState.MinigameWinCount),
                 witchHunter.Illustration);
             await hudView.EntranceComplete;
             if (cancellationToken.IsCancellationRequested) return;
@@ -1841,7 +1851,7 @@ namespace Witch.Presentation.Shop
             minigameIntroPopup.Show();
         }
 
-        private IReadOnlyList<string> ResolveHunterAccusations(int completedRewinds)
+        private IReadOnlyList<string> ResolveHunterAccusations(int completedMinigameWins)
         {
             WitchHunterDialogueViewData dialogue = setup?.WitchHunterDialogue;
             if (dialogue == null || dialogue.StageCount < 1)
@@ -1857,37 +1867,36 @@ namespace Witch.Presentation.Shop
             }
 
             return dialogue.GetAccusations(
-                WitchHunterStageRules.ResolveStageIndex(completedRewinds, dialogue.StageCount));
+                WitchHunterStageRules.ResolveStageIndex(completedMinigameWins, dialogue.StageCount));
         }
 
-        private async Task StartRewindAsync(CancellationToken cancellationToken)
+        private async Task StartMinigameAsync(CancellationToken cancellationToken)
         {
             await Task.Yield();
             cancellationToken.ThrowIfCancellationRequested();
 
-            RewindTransactionResult rewind;
+            MinigameTransactionResult minigameResult;
             try
             {
-                rewind = await enterRewind.ExecuteAsync(ActiveSession, cancellationToken);
+                minigameResult = await enterMinigame.ExecuteAsync(ActiveSession, cancellationToken);
             }
             catch (OperationCanceledException) { throw; }
             catch (Exception exception)
             {
                 Debug.LogException(exception, this);
-                if (MinigameIntroVisible) minigameIntroPopup.Show("Rewind could not start. Please try again.");
+                if (MinigameIntroVisible) minigameIntroPopup.Show("Match Card spell could not start. Please try again.");
                 return;
             }
 
-            if (rewind.Succeeded) return;
+            if (minigameResult.Succeeded) return;
 
-            string error = "Rewind could not start. " + rewind.ErrorMessage;
+            string error = "Match Card spell could not start. " + minigameResult.ErrorMessage;
             if (MinigameIntroVisible)
             {
                 minigameIntroPopup.Show(error); // keeps the popup and re-enables the button
                 return;
             }
 
-            SetStatus(error + " Try again by serving or reloading the run.");
             audioService?.PlayMusic(GameAudioCueIds.ShopMusic);
         }
 
@@ -1901,11 +1910,11 @@ namespace Witch.Presentation.Shop
             }
 
             minigameIntroPopup.SetInteractable(false);
-            RunUiAction(() => StartRewindAsync(lifetimeCancellation?.Token ?? CancellationToken.None));
+            RunUiAction(() => StartMinigameAsync(lifetimeCancellation?.Token ?? CancellationToken.None));
         }
 
-        private void ResumePendingRewind() => RunUiAction(
-            () => EnterPendingRewindAsync(lifetimeCancellation?.Token ?? CancellationToken.None));
+        private void ResumePendingMinigame() => RunUiAction(
+            () => EnterPendingMinigameAsync(lifetimeCancellation?.Token ?? CancellationToken.None));
 
         private ShopEncounterViewData FindNextEncounter()
         {
@@ -1952,7 +1961,7 @@ namespace Witch.Presentation.Shop
             }
 
             if (pauseSettingsButton != null && settingsPanelPresenter != null)
-                pauseSettingsButton.onClick.AddListener(settingsPanelPresenter.Open);
+                pauseSettingsButton.onClick.AddListener(OnPauseSettingsClicked);
 
             if (settingsPanelPresenter != null)
             {
@@ -2628,7 +2637,7 @@ namespace Witch.Presentation.Shop
             }
         }
 
-        public async Task RestartDayAsync()
+        public async Task RestartDayAsync(bool playClickSound = true)
         {
             if (restartDay == null || ActiveSession == null)
             {
@@ -2647,7 +2656,10 @@ namespace Witch.Presentation.Shop
                 }
             }
 
-            audioService?.Play(GameAudioCueIds.UiClick);
+            if (playClickSound)
+            {
+                audioService?.Play(GameAudioCueIds.UiClick);
+            }
             ExpenseResolutionResult result = await restartDay.ExecuteAsync(
                 ActiveSession,
                 lifetimeCancellation?.Token ?? CancellationToken.None);
@@ -2829,7 +2841,7 @@ namespace Witch.Presentation.Shop
             Render();
         }
 
-        // Leaving the shop (Main Menu, Rewind): the money is already saved, so just tidy the counter.
+        // Leaving the shop (Main Menu, Match Card minigame): the money is already saved, so just tidy the counter.
         private void ClearCounterCoins()
         {
             if (counterCoins != null && counterCoins.HasCoins) counterCoins.Clear();
@@ -2890,39 +2902,26 @@ namespace Witch.Presentation.Shop
             return index >= 0 && index < guidebookPages.Count ? guidebookPages[index] : null;
         }
 
-        private bool IsResumingEncounter() =>
-            ActiveSession.CurrentPhase == Witch.Domain.GamePhase.CustomerEncounter
-            && ActiveSession.AttemptState.ActiveOrder != null;
-
-        private void StartEncounterPresentation(bool resume)
+        private void StartEncounterPresentation()
         {
-            if (ActiveSession != null && ActiveSession.TryConsumeHunterFarewell(out int completedRewinds))
+            if (ActiveSession != null && ActiveSession.TryConsumeHunterFarewell(out int completedMinigameWins))
             {
-                RunUiAction(() => PlayHunterFarewellAsync(completedRewinds, resume));
+                RunUiAction(() => PlayHunterFarewellAsync(completedMinigameWins));
                 return;
             }
 
-            StartEncounterOrResume(resume);
-        }
-
-        private void StartEncounterOrResume(bool resume)
-        {
-            if (!resume)
+            if (ActiveSession != null
+                && ActiveSession.CurrentPhase == GamePhase.ClosingEncounter
+                && ActiveSession.AttemptState.ActiveOrder == null)
             {
-                BeginArrival();
+                ContinueAfterHunterLeft();
                 return;
             }
 
-            ResumeEncounter(unpauseTimer: true);
-            if (ShouldRunGuidedTutorial()
-                && ActiveSession != null
-                && ActiveSession.CurrentPhase == Witch.Domain.GamePhase.CustomerEncounter)
-            {
-                TryStartGuidedTutorialForCurrentEncounter();
-            }
+            BeginArrival();
         }
 
-        private async Task PlayHunterFarewellAsync(int completedRewinds, bool resume)
+        private async Task PlayHunterFarewellAsync(int completedMinigameWins)
         {
             CancellationToken cancellationToken = lifetimeCancellation?.Token ?? CancellationToken.None;
             farewellPlaying = true;
@@ -2933,7 +2932,7 @@ namespace Witch.Presentation.Shop
                 if (witchHunter != null && dialogue != null && dialogue.StageCount > 0)
                 {
                     int stageIndex = WitchHunterStageRules.ResolveStageIndex(
-                        completedRewinds,
+                        completedMinigameWins,
                         dialogue.StageCount);
 
                     // Hunter was in the shop during the minigame: restore him immediately with the
@@ -2963,35 +2962,50 @@ namespace Witch.Presentation.Shop
                 farewellPlaying = false;
                 if (!cancelled)
                 {
-                    // Restore the resumed encounter while the timer stays frozen, then unpause once after the hunter fully left.
-                    StartEncounterOrResumeAfterHunterLeft(resume);
+                    ContinueAfterHunterLeft();
                     Render();
-                    TryUnpauseShopTimerAfterHunterLeft(hunterLeft);
+                    if (hunterLeft
+                        && ActiveSession != null
+                        && !ActiveSession.TimerStopped
+                        && ActiveSession.TimerState.RemainingTime > TimeSpan.Zero)
+                    {
+                        TryUnpauseShopTimerAfterHunterLeft(true);
+                    }
                 }
             }
         }
 
-        private void StartEncounterOrResumeAfterHunterLeft(bool resume)
+        private void ContinueAfterHunterLeft()
         {
-            if (!resume)
+            if (ActiveSession == null)
+            {
+                return;
+            }
+
+            if (ActiveSession.CurrentPhase == GamePhase.ClosingEncounter
+                && ActiveSession.AttemptState.ActiveOrder == null)
+            {
+                ResetAutoResolveExpenseState();
+                TryAutoResolveExpense();
+                return;
+            }
+
+            if (ActiveSession.CurrentPhase == GamePhase.CustomerArrival
+                && ActiveSession.AttemptState.ActiveOrder == null)
             {
                 BeginArrival();
                 return;
             }
 
-            ResumeEncounter(unpauseTimer: false);
-            if (ShouldRunGuidedTutorial()
-                && ActiveSession != null
-                && ActiveSession.CurrentPhase == Witch.Domain.GamePhase.CustomerEncounter)
-            {
-                TryStartGuidedTutorialForCurrentEncounter();
-            }
+            BeginArrival();
         }
 
         private bool CanUnpauseShopTimerNow()
         {
             return setTimerPaused != null
                 && ActiveSession != null
+                && !ActiveSession.TimerStopped
+                && ActiveSession.TimerState.RemainingTime > TimeSpan.Zero
                 && !farewellPlaying
                 && !waitingForTransitionRelease
                 && !(guidedTutorialActive && guidedTutorialTimerFrozen)
@@ -3011,31 +3025,6 @@ namespace Witch.Presentation.Shop
             {
                 Debug.LogException(exception, this);
             }
-        }
-
-        private void ResumeEncounter() => ResumeEncounter(unpauseTimer: true);
-
-        private void ResumeEncounter(bool unpauseTimer)
-        {
-            ResetAutoResolveExpenseState();
-            string orderId = ActiveSession.AttemptState.ActiveOrder.OrderId;
-            ShopEncounterViewData encounter = setup.Encounters
-                .FirstOrDefault(e => e.Order != null && e.Order.OrderId == orderId);
-
-            Debug.Log($"[Resume] order={orderId} found={encounter != null}");
-            if (encounter != null)
-            {
-                hudView.SetCustomer(
-                    encounter.CustomerName,
-                    encounter.OrderBubbles,
-                    encounter.CustomerIllustration);
-            }
-
-            if (unpauseTimer && !farewellPlaying && !guidedTutorialTimerFrozen && !waitingForTransitionRelease)
-            {
-                setTimerPaused?.Execute(ActiveSession, false); // clock continues from the remaining time
-            }
-            SetStatus("The spell worked. Time is back. Serve the order again.");
         }
 
         private void HandleDayTransitionReveal()
@@ -3061,7 +3050,7 @@ namespace Witch.Presentation.Shop
                     setTimerPaused.Execute(ActiveSession, true);
                     waitingForTransitionRelease = true;
                 }
-                if (pendingStartAfterReveal && !pendingStartIsResume)
+                if (pendingStartAfterReveal)
                 {
                     PrepareGuidedTutorialForReveal();
                 }
@@ -3139,7 +3128,7 @@ namespace Witch.Presentation.Shop
                     return;
                 }
 
-                if (pendingStartAfterReveal && !pendingStartIsResume
+                if (pendingStartAfterReveal
                     && TryGetUnannouncedUnlock(out string unlockedCategoryId))
                 {
                     _ = AnnounceUnlockThenReleaseAsync(unlockedCategoryId);
@@ -3148,9 +3137,8 @@ namespace Witch.Presentation.Shop
 
                 if (pendingStartAfterReveal)
                 {
-                    StartEncounterPresentation(pendingStartIsResume);
+                    StartEncounterPresentation();
                     pendingStartAfterReveal = false;
-                    pendingStartIsResume = false;
                     Render();
                 }
 
@@ -3168,24 +3156,26 @@ namespace Witch.Presentation.Shop
 
         private void OnConfirmationConfirmed()
         {
+            audioService?.Play(GameAudioCueIds.UiClick);
             confirmationPanel.SetActive(false);
 
             switch (pendingConfirmation)
             {
                 case ConfirmationAction.Restart:
                     pendingConfirmation = ConfirmationAction.None;
-                    RunUiAction(RestartDayAsync);
+                    RunUiAction(() => RestartDayAsync(playClickSound: false));
                     break;
 
                 case ConfirmationAction.Quit:
                     pendingConfirmation = ConfirmationAction.None;
-                    RunUiAction(() => ReturnToMainMenuAsync());
+                    RunUiAction(() => ReturnToMainMenuAsync(playClickSound: false));
                     break;
             }
         }
 
         private void OnRestartClicked()
         {
+            audioService?.Play(GameAudioCueIds.UiClick);
             pendingConfirmation = ConfirmationAction.Restart;
 
             confirmationTitle.text = "Restart";
@@ -3196,6 +3186,7 @@ namespace Witch.Presentation.Shop
 
         private void OnMainMenuClicked()
         {
+            audioService?.Play(GameAudioCueIds.UiClick);
             pendingConfirmation = ConfirmationAction.Quit;
 
             confirmationTitle.text = "Quit";
@@ -3206,6 +3197,7 @@ namespace Witch.Presentation.Shop
 
         private void CloseConfirmation()
         {
+            audioService?.Play(GameAudioCueIds.UiClick);
             pendingConfirmation = ConfirmationAction.None;
             confirmationPanel.SetActive(false);
         }

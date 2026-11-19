@@ -1,0 +1,282 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
+using NUnit.Framework;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.TestTools;
+using UnityEngine.UI;
+using Witch.Application.Flow;
+using Witch.Application.Ports;
+using Witch.Domain;
+using Witch.Domain.Orders;
+using Witch.Domain.Potions;
+using Witch.Domain.Progression;
+using Witch.Infrastructure.Persistence;
+using Witch.Infrastructure.Scenes;
+using Witch.Presentation.MatchCard;
+using Object = UnityEngine.Object;
+
+namespace Witch.Bootstrap.PlayModeTests
+{
+    public sealed class MinigameVerticalSlicePlayModeTests
+    {
+        [UnityTest]
+        public IEnumerator ThirdWrongOrderEntersBoardAndWinAppliesMemorySpellOnly()
+        {
+            MinigameHarness harness = CreatePendingHarness();
+            Assert.That(harness.Session.CurrentPhase, Is.EqualTo(GamePhase.MinigamePending));
+            Assert.That(harness.Session.RunState.Suspicion, Is.EqualTo(3));
+
+            int moneyBefore = harness.Session.RunState.Money;
+            int coinsEarnedBefore = harness.Session.AttemptMetadata.CoinsEarnedToday;
+            int correctBefore = harness.Session.AttemptMetadata.CorrectServiceCountToday;
+            int wrongBefore = harness.Session.AttemptMetadata.WrongServiceCountToday;
+            int wrongSummaryBefore = harness.Session.AttemptMetadata.WrongOrdersForSummary;
+            int serviceCountBefore = harness.Session.AttemptMetadata.ServiceCountToday;
+            TimeSpan remainingBefore = harness.Session.TimerState.RemainingTime;
+
+            var enter = new EnterMinigameUseCase(
+                harness.Repository,
+                new UnitySceneLoader(),
+                new FixedRandom(707));
+            Task<MinigameTransactionResult> enterTask = enter.ExecuteAsync(harness.Session);
+            yield return WaitFor(enterTask);
+            Assert.That(enterTask.Result.Succeeded, Is.True, enterTask.Result.ErrorMessage);
+            Assert.That(SceneManager.GetActiveScene().name, Is.EqualTo("MatchCardMinigame"));
+            Assert.That(harness.Session.AttemptMetadata.PendingMinigame, Is.True);
+
+            MatchCardShellPresenter presenter = Object.FindAnyObjectByType<MatchCardShellPresenter>();
+            presenter.Initialize(
+                harness.Store,
+                new CompleteMinigameUseCase(
+                    harness.Repository,
+                    new UnitySceneLoader(),
+                    new FixedRandom(808)));
+            Assert.That(presenter.Board.PairCount, Is.EqualTo(8));
+            Assert.That(GameObject.Find("Guidebook"), Is.Null);
+
+            FindMismatch(presenter.Board, out int mismatchA, out int mismatchB);
+            yield return WaitFor(presenter.FlipCardAsync(mismatchA));
+            yield return WaitFor(presenter.FlipCardAsync(mismatchB));
+            Assert.That(presenter.IsCardVisible(mismatchA), Is.False);
+            Assert.That(presenter.IsCardVisible(mismatchB), Is.False);
+
+            Dictionary<int, List<int>> pairs = GroupPairs(presenter.Board);
+            foreach (List<int> pair in pairs.Values)
+            {
+                yield return WaitFor(presenter.FlipCardAsync(pair[0]));
+                yield return WaitFor(presenter.FlipCardAsync(pair[1]));
+            }
+
+            Assert.That(presenter.IsComplete, Is.True);
+
+            Button winContinue = GetPrivateField<Button>(presenter, "winContinueButton");
+            Assert.That(winContinue, Is.Not.Null, "Win continue button is required after completing the Match Card board.");
+            yield return WaitForCondition(() => winContinue.gameObject.activeInHierarchy && winContinue.interactable, 5f,
+                "Timed out waiting for win continue button.");
+            winContinue.onClick.Invoke();
+            yield return WaitForScene("Shop", 10f);
+            yield return WaitForCondition(() => !harness.Session.AttemptMetadata.PendingMinigame, 5f,
+                "Timed out waiting for minigame completion to apply.");
+
+            Assert.That(harness.Session.CurrentPhase == GamePhase.CustomerArrival || harness.Session.CurrentPhase == GamePhase.ClosingEncounter, Is.True);
+            Assert.That(harness.Session.AttemptState.ActiveOrder, Is.Null);
+            Assert.That(harness.Session.RunState.Suspicion, Is.Zero);
+            Assert.That(harness.Session.RunState.MinigameWinCount, Is.EqualTo(1));
+            Assert.That(harness.Session.RunState.Money, Is.EqualTo(moneyBefore));
+            Assert.That(harness.Session.AttemptMetadata.CoinsEarnedToday, Is.EqualTo(coinsEarnedBefore));
+            Assert.That(harness.Session.AttemptMetadata.CorrectServiceCountToday, Is.EqualTo(correctBefore));
+            Assert.That(harness.Session.AttemptMetadata.WrongServiceCountToday, Is.EqualTo(wrongBefore));
+            Assert.That(harness.Session.AttemptMetadata.WrongOrdersForSummary, Is.EqualTo(wrongSummaryBefore));
+            Assert.That(harness.Session.AttemptMetadata.ServiceCountToday, Is.EqualTo(serviceCountBefore));
+            Assert.That(harness.Session.AttemptMetadata.PendingMinigame, Is.False);
+            Assert.That(harness.Session.AttemptMetadata.MinigamePlayedToday, Is.True);
+            Assert.That(harness.Session.TimerState.RemainingTime, Is.EqualTo(remainingBefore));
+            Assert.That(MatchCardBoard.Create(909, harness.Session.RunState.MinigameWinCount).PairCount, Is.EqualTo(9));
+        }
+
+        [UnityTest]
+        public IEnumerator PendingMinigameReloadReturnsToSameBoardDifficulty()
+        {
+            MinigameHarness harness = CreatePendingHarness();
+            var fakeScene = new RecordingSceneLoader();
+            var enter = new EnterMinigameUseCase(harness.Repository, fakeScene, new FixedRandom(515));
+            Task<MinigameTransactionResult> enterTask = enter.ExecuteAsync(harness.Session);
+            yield return WaitFor(enterTask);
+            int expectedSeed = harness.Session.AttemptMetadata.MinigameBoardSeed;
+            harness.Store.Clear();
+
+            var load = new LoadRunUseCase(
+                harness.Repository,
+                harness.Repository,
+                harness.Store,
+                new UnitySceneLoader());
+            Task<LoadRunResult> loadTask = load.ExecuteAsync(LoadRunCommand.Latest());
+            yield return WaitFor(loadTask);
+
+            Assert.That(loadTask.Result.Succeeded, Is.True, loadTask.Result.ErrorMessage);
+            Assert.That(SceneManager.GetActiveScene().name, Is.EqualTo("MatchCardMinigame"));
+            Assert.That(loadTask.Result.Session.CurrentPhase, Is.EqualTo(GamePhase.MinigameActive));
+            Assert.That(loadTask.Result.Session.AttemptMetadata.MinigameBoardSeed, Is.EqualTo(expectedSeed));
+            Assert.That(
+                MatchCardBoard.Create(expectedSeed, loadTask.Result.Session.AttemptMetadata.MinigameWinCount).PairCount,
+                Is.EqualTo(8));
+        }
+
+        private static MinigameHarness CreatePendingHarness()
+        {
+            var repository = new InMemoryRunRepository();
+            var store = new GameSessionStore();
+            var clock = new FixedClock();
+            var setup = new NewRunSetup(
+                9,
+                new[] { "category.test" },
+                new[] { "herb.ginger", "herb.mint", "herb.sage" },
+                new[] { "guide.test" },
+                TimeSpan.FromSeconds(60),
+                "expense.day.1",
+                20,
+                1);
+            StartNewGameResult start = new StartNewGameUseCase(
+                new StartNewRunUseCase(),
+                setup,
+                repository,
+                store,
+                new RecordingSceneLoader(),
+                clock,
+                new FixedRandom(101)).ExecuteAsync(new StartNewGameCommand("minigame-playmode")).Result;
+            Assert.That(start.Succeeded, Is.True, start.ErrorMessage);
+
+            var rules = new PotionServiceRules(10);
+            var open = new OpenShopUseCase();
+            var admit = new AdmitCustomerUseCase(clock);
+            var prepare = new PotionPreparationUseCase(rules);
+            var serve = new ServePotionUseCase(rules, repository);
+            open.Execute(start.Session);
+
+            for (int index = 0; index < 3; index++)
+            {
+                AdmitCustomerResult arrival = admit.Execute(
+                    start.Session,
+                    new AdmitCustomerCommand(
+                        "customer." + index,
+                        new OrderRequest("order." + index, new HerbPair("herb.ginger", "herb.mint"))));
+                Assert.That(arrival.Succeeded, Is.True, arrival.ErrorMessage);
+                prepare.Grind(start.Session, "herb.mint", "herb.sage");
+                prepare.AddToPot(start.Session);
+                prepare.Brew(start.Session);
+                ServePotionResult result = serve.ExecuteAsync(start.Session).Result;
+                Assert.That(result.Succeeded, Is.True, result.ErrorMessage);
+            }
+
+            return new MinigameHarness(repository, store, start.Session);
+        }
+
+        private static Dictionary<int, List<int>> GroupPairs(MatchCardBoard board)
+        {
+            var result = new Dictionary<int, List<int>>();
+            for (int index = 0; index < board.Cards.Count; index++)
+            {
+                if (!result.TryGetValue(board.Cards[index], out List<int> values))
+                {
+                    values = new List<int>();
+                    result.Add(board.Cards[index], values);
+                }
+
+                values.Add(index);
+            }
+
+            return result;
+        }
+
+        private static void FindMismatch(MatchCardBoard board, out int first, out int second)
+        {
+            first = 0;
+            for (second = 1; second < board.Cards.Count; second++)
+            {
+                if (board.Cards[first] != board.Cards[second])
+                {
+                    return;
+                }
+            }
+
+            Assert.Fail("Board did not contain a mismatch.");
+        }
+
+        private static IEnumerator WaitFor(Task task)
+        {
+            while (!task.IsCompleted)
+            {
+                yield return null;
+            }
+
+            Assert.That(task.IsFaulted, Is.False, task.Exception?.ToString());
+        }
+
+        private static IEnumerator WaitForCondition(Func<bool> condition, float timeoutSeconds, string message)
+        {
+            float timeout = Time.realtimeSinceStartup + timeoutSeconds;
+            while (!condition() && Time.realtimeSinceStartup < timeout)
+            {
+                yield return null;
+            }
+
+            Assert.That(condition(), Is.True, message);
+        }
+
+        private static IEnumerator WaitForScene(string sceneName, float timeoutSeconds)
+        {
+            float timeout = Time.realtimeSinceStartup + timeoutSeconds;
+            while (SceneManager.GetActiveScene().name != sceneName && Time.realtimeSinceStartup < timeout)
+            {
+                yield return null;
+            }
+
+            Assert.That(SceneManager.GetActiveScene().name, Is.EqualTo(sceneName), "Timed out waiting for scene " + sceneName + ".");
+        }
+
+        private static T GetPrivateField<T>(object target, string fieldName) where T : class
+        {
+            FieldInfo field = target.GetType().GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic);
+            return field != null ? field.GetValue(target) as T : null;
+        }
+
+        private sealed class MinigameHarness
+        {
+            public MinigameHarness(InMemoryRunRepository repository, IGameSessionStore store, GameSession session)
+            {
+                Repository = repository;
+                Store = store;
+                Session = session;
+            }
+
+            public InMemoryRunRepository Repository { get; }
+            public IGameSessionStore Store { get; }
+            public GameSession Session { get; }
+        }
+
+        private sealed class FixedClock : IClock
+        {
+            public DateTimeOffset UtcNow => new DateTimeOffset(2026, 10, 24, 0, 0, 0, TimeSpan.Zero);
+        }
+
+        private sealed class FixedRandom : IRandomSource
+        {
+            private readonly int value;
+            public FixedRandom(int value) => this.value = value;
+            public int NextInt(int minimumInclusive, int maximumExclusive) => value;
+        }
+
+        private sealed class RecordingSceneLoader : ISceneLoader
+        {
+            public Task<SceneLoadResult> LoadAsync(SceneId sceneId, CancellationToken cancellationToken = default)
+            {
+                return Task.FromResult(SceneLoadResult.Success());
+            }
+        }
+    }
+}

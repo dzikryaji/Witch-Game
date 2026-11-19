@@ -12,7 +12,7 @@ using Witch.Bootstrap;
 using Witch.Infrastructure.Persistence;
 using Witch.Infrastructure.Scenes;
 using Witch.Presentation.MainMenu;
-using Witch.Presentation.Rewind;
+using Witch.Presentation.MatchCard;
 using Witch.Presentation.Shop;
 using Object = UnityEngine.Object;
 
@@ -40,7 +40,7 @@ namespace Witch.Bootstrap.PlayModeTests
                 "Assets/Scenes/Bootstrap.unity",
                 "Assets/Scenes/MainMenu.unity",
                 "Assets/Scenes/Shop.unity",
-                "Assets/Scenes/RewindMinigame.unity"
+                "Assets/Scenes/MatchCardMinigame.unity"
             };
 
             // Unity Test Runner appends its own temporary scene in Play Mode.
@@ -135,15 +135,15 @@ namespace Witch.Bootstrap.PlayModeTests
             Assert.That(continueTask.Result, Is.True, menu.LastErrorMessage);
             Assert.That(SceneManager.GetActiveScene().name, Is.EqualTo("Shop"));
 
-            yield return LoadScene("RewindMinigame");
-            RewindShellPresenter rewind = Object.FindAnyObjectByType<RewindShellPresenter>();
-            Assert.That(rewind, Is.Not.Null);
-            Assert.That(rewind.HasAuthoredView, Is.True);
+            yield return LoadScene("MatchCardMinigame");
+            MatchCardShellPresenter matchCardPresenter = Object.FindAnyObjectByType<MatchCardShellPresenter>();
+            Assert.That(matchCardPresenter, Is.Not.Null);
+            Assert.That(matchCardPresenter.HasAuthoredView, Is.True);
             Assert.That(Object.FindAnyObjectByType<Camera>(), Is.Not.Null);
-            Assert.That(GameObject.Find("Rewind Canvas"), Is.Not.Null);
-            rewind.Initialize(sessionStore);
-            Assert.That(rewind.IsInitialized, Is.True);
-            Assert.That(rewind.ActiveSession, Is.Not.Null);
+            Assert.That(GameObject.Find("MatchCard Canvas"), Is.Not.Null);
+            matchCardPresenter.Initialize(sessionStore);
+            Assert.That(matchCardPresenter.IsInitialized, Is.True);
+            Assert.That(matchCardPresenter.ActiveSession, Is.Not.Null);
             AssertNoMissingScripts(SceneManager.GetActiveScene());
 
         }

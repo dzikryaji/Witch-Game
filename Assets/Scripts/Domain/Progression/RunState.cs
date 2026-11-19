@@ -9,7 +9,7 @@ namespace Witch.Domain.Progression
     public sealed class RunState
     {
         public const int FirstDay = 1;
-        public const int RewindSuspicionThreshold = 3;
+        public const int MinigameSuspicionThreshold = 3;
         public const string RunCompletedFlagId = "run.completed";
 
         private readonly ReadOnlyCollection<string> unlockedCategoryIds;
@@ -25,7 +25,7 @@ namespace Witch.Domain.Progression
             int currentDayNumber,
             int money,
             int suspicion,
-            int rewindCount,
+            int minigameWinCount,
             IReadOnlyList<string> unlockedCategoryIds = null,
             IReadOnlyList<string> unlockedHerbIds = null,
             IReadOnlyList<string> unlockedGuidebookEntryIds = null,
@@ -49,21 +49,21 @@ namespace Witch.Domain.Progression
                 throw new ArgumentOutOfRangeException(nameof(money));
             }
 
-            if (suspicion < 0 || suspicion > RewindSuspicionThreshold)
+            if (suspicion < 0 || suspicion > MinigameSuspicionThreshold)
             {
                 throw new ArgumentOutOfRangeException(nameof(suspicion));
             }
 
-            if (rewindCount < 0)
+            if (minigameWinCount < 0)
             {
-                throw new ArgumentOutOfRangeException(nameof(rewindCount));
+                throw new ArgumentOutOfRangeException(nameof(minigameWinCount));
             }
 
             RunId = runId;
             CurrentDayNumber = currentDayNumber;
             Money = money;
             Suspicion = suspicion;
-            RewindCount = rewindCount;
+            MinigameWinCount = minigameWinCount;
             this.unlockedCategoryIds = CopyIds(unlockedCategoryIds, nameof(unlockedCategoryIds));
             this.unlockedHerbIds = CopyIds(unlockedHerbIds, nameof(unlockedHerbIds));
             this.unlockedGuidebookEntryIds = CopyIds(
@@ -85,7 +85,7 @@ namespace Witch.Domain.Progression
 
         public int Suspicion { get; }
 
-        public int RewindCount { get; }
+        public int MinigameWinCount { get; }
 
         public IReadOnlyList<string> UnlockedCategoryIds => unlockedCategoryIds;
 
@@ -106,21 +106,21 @@ namespace Witch.Domain.Progression
 
         public RunState WithEconomy(int money, int suspicion)
         {
-            return WithProgress(CurrentDayNumber, money, suspicion, RewindCount);
+            return WithProgress(CurrentDayNumber, money, suspicion, MinigameWinCount);
         }
 
         public RunState WithProgress(
             int currentDayNumber,
             int money,
             int suspicion,
-            int rewindCount)
+            int minigameWinCount)
         {
             return new RunState(
                 RunId,
                 currentDayNumber,
                 money,
                 suspicion,
-                rewindCount,
+                minigameWinCount,
                 UnlockedCategoryIds,
                 UnlockedHerbIds,
                 UnlockedGuidebookEntryIds,
@@ -141,7 +141,7 @@ namespace Witch.Domain.Progression
                 CurrentDayNumber,
                 Money,
                 Suspicion,
-                RewindCount,
+                MinigameWinCount,
                 UnlockedCategoryIds,
                 UnlockedHerbIds,
                 UnlockedGuidebookEntryIds,
@@ -165,7 +165,7 @@ namespace Witch.Domain.Progression
                 CurrentDayNumber,
                 Money,
                 Suspicion,
-                RewindCount,
+                MinigameWinCount,
                 UnlockedCategoryIds,
                 UnlockedHerbIds,
                 UnlockedGuidebookEntryIds,
@@ -182,7 +182,7 @@ namespace Witch.Domain.Progression
                 CurrentDayNumber,
                 Money,
                 Suspicion,
-                RewindCount,
+                MinigameWinCount,
                 UnlockedCategoryIds,
                 UnlockedHerbIds,
                 UnlockedGuidebookEntryIds,
@@ -216,7 +216,7 @@ namespace Witch.Domain.Progression
                 CurrentDayNumber,
                 Money,
                 Suspicion,
-                RewindCount,
+                MinigameWinCount,
                 UnlockedCategoryIds,
                 UnlockedHerbIds,
                 UnlockedGuidebookEntryIds,
@@ -268,7 +268,7 @@ namespace Witch.Domain.Progression
                 CurrentDayNumber,
                 Money,
                 Suspicion,
-                RewindCount,
+                MinigameWinCount,
                 UnlockedCategoryIds,
                 UnlockedHerbIds,
                 UnlockedGuidebookEntryIds,
@@ -292,7 +292,7 @@ namespace Witch.Domain.Progression
                 CurrentDayNumber,
                 Money,
                 Suspicion,
-                RewindCount,
+                MinigameWinCount,
                 UnlockedCategoryIds,
                 UnlockedHerbIds,
                 UnlockedGuidebookEntryIds,

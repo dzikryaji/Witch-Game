@@ -22,7 +22,7 @@ namespace Witch.Application.Flow
                     runState.RunId,
                     runState.CurrentDayNumber,
                     runState.Suspicion,
-                    runState.RewindCount,
+                    runState.MinigameWinCount,
                     false,
                     0,
                     1),
@@ -50,7 +50,7 @@ namespace Witch.Application.Flow
                 attemptMetadata.DayNumber,
                 dayStartSnapshot.RunState.Money,
                 attemptMetadata.Suspicion,
-                attemptMetadata.RewindCount);
+                attemptMetadata.MinigameWinCount);
             AttemptState = new DayAttemptState(
                 attemptMetadata.ActiveOrderSeed,
                 dayStartSnapshot.TimerDuration,
@@ -89,47 +89,37 @@ namespace Witch.Application.Flow
 
         public bool ServiceCommitted { get; private set; }
 
-        internal bool RewindCompletionApplied { get; private set; }
+        internal bool MinigameCompletionApplied { get; private set; }
 
         public DaySummaryData LastDaySummary { get; private set; }
 
-        private RunState resumeRunState;   // run state as it was before the last customer was served
-        private int resumeCorrectServiceCountToday;
-        private int resumeWrongServiceCountToday;
-        private int resumeServiceCountToday;
-        private int resumeCoinsEarnedToday;
-        private int resumeWrongOrdersForSummary;
 
-        public bool CanResumeInPlace =>
-            resumeRunState != null
-            && AttemptState.ActiveOrder != null
-            && TimerState.RemainingTime > TimeSpan.Zero;
 
         private DateTimeOffset? lastTimerSampleUtc;
-        private int? pendingHunterFarewellRewindCount;
+        private int? pendingHunterFarewellMinigameWinCount;
 
         public GamePhase CurrentPhase { get; private set; }
 
-        internal void MarkHunterFarewell(int completedRewindsBeforeThisOne)
+        internal void MarkHunterFarewell(int completedMinigameWinsBeforeThisOne)
         {
-            if (completedRewindsBeforeThisOne < 0)
+            if (completedMinigameWinsBeforeThisOne < 0)
             {
-                throw new ArgumentOutOfRangeException(nameof(completedRewindsBeforeThisOne));
+                throw new ArgumentOutOfRangeException(nameof(completedMinigameWinsBeforeThisOne));
             }
 
-            pendingHunterFarewellRewindCount = completedRewindsBeforeThisOne;
+            pendingHunterFarewellMinigameWinCount = completedMinigameWinsBeforeThisOne;
         }
 
-        public bool TryConsumeHunterFarewell(out int completedRewindsBeforeThisOne)
+        public bool TryConsumeHunterFarewell(out int completedMinigameWinsBeforeThisOne)
         {
-            if (!pendingHunterFarewellRewindCount.HasValue)
+            if (!pendingHunterFarewellMinigameWinCount.HasValue)
             {
-                completedRewindsBeforeThisOne = 0;
+                completedMinigameWinsBeforeThisOne = 0;
                 return false;
             }
 
-            completedRewindsBeforeThisOne = pendingHunterFarewellRewindCount.Value;
-            pendingHunterFarewellRewindCount = null;
+            completedMinigameWinsBeforeThisOne = pendingHunterFarewellMinigameWinCount.Value;
+            pendingHunterFarewellMinigameWinCount = null;
             return true;
         }
 
@@ -165,12 +155,6 @@ namespace Witch.Application.Flow
             ClearWorkbench();
 
             RunState = RunState.MarkOrderSeen(order.OrderId);
-            resumeRunState = RunState;
-            resumeCorrectServiceCountToday = AttemptMetadata.CorrectServiceCountToday;
-            resumeWrongServiceCountToday = AttemptMetadata.WrongServiceCountToday;
-            resumeServiceCountToday = AttemptMetadata.ServiceCountToday;
-            resumeCoinsEarnedToday = AttemptMetadata.CoinsEarnedToday;
-            resumeWrongOrdersForSummary = AttemptMetadata.WrongOrdersForSummary;
 
             var usedOrderIds = new System.Collections.Generic.List<string>(AttemptState.UsedOrderIds);
             usedOrderIds.Add(order.OrderId);
@@ -182,8 +166,8 @@ namespace Witch.Application.Flow
                 customerId,
                 order,
                 AttemptState.EarnedMoney,
-                AttemptState.PotionDraft,
-                AttemptState.PreparedPotion);
+                new PotionDraft(),
+                null);
             TimerState = new ShopTimerState(TimerState.RemainingTime, true);
         }
 
@@ -321,8 +305,8 @@ namespace Witch.Application.Flow
                 RunState.RunId,
                 RunState.CurrentDayNumber,
                 RunState.Suspicion,
-                RunState.RewindCount,
-                AttemptMetadata.PendingRewind,
+                RunState.MinigameWinCount,
+                AttemptMetadata.PendingMinigame,
                 AttemptMetadata.MinigameBoardSeed,
                 AttemptMetadata.ActiveOrderSeed,
                 wrongValid
@@ -341,8 +325,8 @@ namespace Witch.Application.Flow
             ClearWorkbench();
             TimerState = new ShopTimerState(TimerState.RemainingTime, false);
 
-            GamePhase next = RunState.Suspicion >= RunState.RewindSuspicionThreshold
-                ? GamePhase.RewindPending
+            GamePhase next = RunState.Suspicion >= RunState.MinigameSuspicionThreshold
+                ? GamePhase.MinigamePending
                 : TimerState.QueueOpen
                     ? GamePhase.CustomerArrival
                     : GamePhase.ClosingEncounter;
@@ -354,65 +338,60 @@ namespace Witch.Application.Flow
             RunState = RunState.MarkCategoryServed(categoryId);
         }
 
-        internal void EnterRewind(ActiveAttemptMetadata attemptMetadata)
+        internal void EnterMinigame(ActiveAttemptMetadata attemptMetadata)
         {
             AttemptMetadata = attemptMetadata ?? throw new ArgumentNullException(nameof(attemptMetadata));
-            RewindCompletionApplied = false;
-            pendingHunterFarewellRewindCount = null;
+            MinigameCompletionApplied = false;
+            pendingHunterFarewellMinigameWinCount = null;
             TimerStopped = true;
             TimerPaused = false;
             TimerState = new ShopTimerState(TimerState.RemainingTime, false);
-            TryTransition(GamePhase.RewindMinigame);
+            TryTransition(GamePhase.MinigameActive);
         }
 
-        internal void CompleteRewind(
-    DayStartSnapshot dayStartSnapshot,
-    ActiveAttemptMetadata attemptMetadata)
-        {
-            ReplaceAttempt(dayStartSnapshot, attemptMetadata);
-            RewindCompletionApplied = true;
-            TryTransition(GamePhase.ShopPreparation);
-        }
-
-        internal void CompleteRewindInPlace(
-            DayStartSnapshot dayStartSnapshot,
+        internal void CompleteMinigameAfterWin(
+            DayStartSnapshot persistedSnapshot,
             ActiveAttemptMetadata attemptMetadata)
         {
-            RunState failedAttemptRunState = RunState;
-            DayStartSnapshot = dayStartSnapshot ?? throw new ArgumentNullException(nameof(dayStartSnapshot));
+            RunState failedAttemptRunState = RunState ?? throw new InvalidOperationException("Run state is required.");
+            DayStartSnapshot = persistedSnapshot ?? throw new ArgumentNullException(nameof(persistedSnapshot));
             AttemptMetadata = attemptMetadata ?? throw new ArgumentNullException(nameof(attemptMetadata));
-            // Money and per-day new counters roll back to the pre-service snapshot.
-            // WrongServiceCountToday/ServiceCountToday carry forward as provided (Clean Ledger depends on them).
-            AttemptMetadata = new ActiveAttemptMetadata(
-                AttemptMetadata.RunId,
-                AttemptMetadata.DayNumber,
-                AttemptMetadata.Suspicion,
-                AttemptMetadata.RewindCount,
-                AttemptMetadata.PendingRewind,
-                AttemptMetadata.MinigameBoardSeed,
-                AttemptMetadata.ActiveOrderSeed,
-                AttemptMetadata.WrongServiceCountToday,
-                AttemptMetadata.ServiceCountToday,
-                AttemptMetadata.MinigamePlayedToday,
-                resumeCorrectServiceCountToday,
-                resumeCoinsEarnedToday,
-                resumeWrongOrdersForSummary);
-            RunState baseResumeRunState = resumeRunState ?? failedAttemptRunState;
-            RunState = baseResumeRunState.WithProgress(
-                attemptMetadata.DayNumber,
-                baseResumeRunState.Money,
-                AttemptMetadata.Suspicion,       // reset by the use case
-                AttemptMetadata.RewindCount)     // incremented once by the use case
-                .WithTutorialFlagsFrom(failedAttemptRunState);
+
+            // Live state after win: post-wrong-service committed state with only suspicion reset and win count incremented.
+            RunState = failedAttemptRunState.WithProgress(
+                failedAttemptRunState.CurrentDayNumber,
+                failedAttemptRunState.Money,
+                0,
+                failedAttemptRunState.MinigameWinCount + 1);
 
             ClearWorkbench();
-            ServiceCommitted = false;            // the same customer can be served again
-            RewindCompletionApplied = true;
+            TimeSpan remaining = TimerState.RemainingTime;
+            AttemptState = new DayAttemptState(
+                attemptMetadata.ActiveOrderSeed,
+                remaining,
+                AttemptState.UsedOrderIds,
+                null,
+                null,
+                AttemptState.EarnedMoney,
+                new PotionDraft(),
+                null);
 
-            TimerStopped = false;
-            TimerPaused = true;                  // frozen until the Shop scene un-pauses it
-            TimerState = new ShopTimerState(TimerState.RemainingTime, true);
-            TryTransition(GamePhase.CustomerEncounter);
+            TimerState = new ShopTimerState(remaining, false);
+            if (remaining > TimeSpan.Zero)
+            {
+                TimerStopped = false;
+                TimerPaused = true;
+            }
+            else
+            {
+                TimerStopped = true;
+                TimerPaused = false;
+            }
+
+            MinigameCompletionApplied = true;
+            pendingHunterFarewellMinigameWinCount = null;
+            GamePhase nextPhase = TimerState.QueueOpen ? GamePhase.CustomerArrival : GamePhase.ClosingEncounter;
+            TryTransition(nextPhase);
         }
 
         internal void BeginExpenseCheck()
@@ -436,7 +415,7 @@ namespace Witch.Application.Flow
             DayStartSnapshot = dayStartSnapshot ?? throw new ArgumentNullException(nameof(dayStartSnapshot));
             AttemptMetadata = attemptMetadata ?? throw new ArgumentNullException(nameof(attemptMetadata));
             RunState = dayStartSnapshot.RunState;
-            pendingHunterFarewellRewindCount = null;
+            pendingHunterFarewellMinigameWinCount = null;
             TryTransition(GamePhase.Victory);
         }
 
@@ -451,14 +430,14 @@ namespace Witch.Application.Flow
             DaySummaryData summary)
         {
             ReplaceAttempt(dayStartSnapshot, attemptMetadata);
-            pendingHunterFarewellRewindCount = null;
+            pendingHunterFarewellMinigameWinCount = null;
             LastDaySummary = summary;
             TryTransition(GamePhase.DaySummary);
         }
 
         internal void ContinueFromDaySummary()
         {
-            pendingHunterFarewellRewindCount = null;
+            pendingHunterFarewellMinigameWinCount = null;
             LastDaySummary = null;
             TryTransition(GamePhase.ShopPreparation);
         }
@@ -466,10 +445,6 @@ namespace Witch.Application.Flow
         public void ApplyTutorialFlag(string flagId, bool value)
         {
             RunState = RunState.WithTutorialFlag(flagId, value);
-            if (resumeRunState != null)
-            {
-                resumeRunState = resumeRunState.WithTutorialFlag(flagId, value);
-            }
 
             DayStartSnapshot = new DayStartSnapshot(
                 DayStartSnapshot.RunState.WithTutorialFlag(flagId, value),
@@ -486,7 +461,7 @@ namespace Witch.Application.Flow
             ActiveAttemptMetadata attemptMetadata)
         {
             ReplaceAttempt(dayStartSnapshot, attemptMetadata);
-            pendingHunterFarewellRewindCount = null;
+            pendingHunterFarewellMinigameWinCount = null;
             TryTransition(GamePhase.ShopPreparation);
         }
 
@@ -508,11 +483,11 @@ namespace Witch.Application.Flow
                 attemptMetadata.DayNumber,
                 dayStartSnapshot.RunState.Money,
                 attemptMetadata.Suspicion,
-                attemptMetadata.RewindCount);
+                attemptMetadata.MinigameWinCount);
             AttemptState = new DayAttemptState(
                 attemptMetadata.ActiveOrderSeed,
                 dayStartSnapshot.TimerDuration,
-                null,
+                Array.Empty<string>(),
                 null,
                 null,
                 0,
@@ -524,13 +499,7 @@ namespace Witch.Application.Flow
             TimerPaused = false;
             TimerStopped = false;
             ServiceCommitted = false;
-            RewindCompletionApplied = false;
-            resumeRunState = null;
-            resumeCorrectServiceCountToday = 0;
-            resumeWrongServiceCountToday = 0;
-            resumeServiceCountToday = 0;
-            resumeCoinsEarnedToday = 0;
-            resumeWrongOrdersForSummary = 0;
+            MinigameCompletionApplied = false;
             ClearWorkbench();
         }
 

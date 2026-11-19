@@ -1,0 +1,65 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8cd729b84e9534c7dac3bfff94f98ea9, type: 3}
+  m_Name: MatchCardSymbolLibrary
+  m_EditorClassIdentifier: Witch.Presentation::Witch.Presentation.MatchCard.MatchCardSymbolLibrary
+  entries:
+  - symbolKey: borage
+    sprite: {fileID: 21300000, guid: b488e6e0c16d44d10b0a755bf897600e, type: 3}
+  - symbolKey: chamomile
+    sprite: {fileID: 21300000, guid: a3ec0b9537a7b4c8992950fc43c72999, type: 3}
+  - symbolKey: cinnamon
+    sprite: {fileID: 21300000, guid: 6eb0ab9a22b3645a5b7eb7a3eb9e9740, type: 3}
+  - symbolKey: clove
+    sprite: {fileID: 21300000, guid: 030816f0481c2421da9c238ddea97882, type: 3}
+  - symbolKey: elderflower
+    sprite: {fileID: 21300000, guid: 1f019f9a9bd704ebba38dcead8280f37, type: 3}
+  - symbolKey: mustard seed
+    sprite: {fileID: 21300000, guid: 45873bfb146be4a2b88d2398d4c79d51, type: 3}
+  - symbolKey: ginger
+    sprite: {fileID: 21300000, guid: 8e99e7a21ed5f4ab6b18b66291d4bfaa, type: 3}
+  - symbolKey: peppermint
+    sprite: {fileID: 21300000, guid: 28bed1a70c196401d92b13eee99db344, type: 3}
+  - symbolKey: henbane
+    sprite: {fileID: 21300000, guid: 221509c6c0e4243748b52233179c156f, type: 3}
+  - symbolKey: valerian
+    sprite: {fileID: 21300000, guid: 031883b51c5ba457dab1ef1195ac874b, type: 3}
+  - symbolKey: white willow
+    sprite: {fileID: 21300000, guid: d5ff986d21570498ebab790890d95c24, type: 3}
+  - symbolKey: cayenne pepper
+    sprite: {fileID: 21300000, guid: 4c15413e161cf4f7f9bed882491537e5, type: 3}
+  - symbolKey: passion flower
+    sprite: {fileID: 21300000, guid: 5ff7b0dcb997d48fd8a1b2f789a85e71, type: 3}
+  - symbolKey: belladonna berry
+    sprite: {fileID: 21300000, guid: ac72302f565aa47e4baa287e25652a39, type: 3}
+  - symbolKey: dandelion
+    sprite: {fileID: 21300000, guid: ef58713d56d3949c1b4d17a4fcaacd78, type: 3}
+  - symbolKey: 'lavender '
+    sprite: {fileID: 21300000, guid: 183222e9234f64bba8f767210ce09714, type: 3}
+  - symbolKey: arnica flower
+    sprite: {fileID: 21300000, guid: 282014d2dafb945fda4de1bd98e0dd93, type: 3}
+  - symbolKey: black hellebore
+    sprite: {fileID: 21300000, guid: c9cf7ea3cdaf5460f92484c869fc07cc, type: 3}
+  - symbolKey: burdock root
+    sprite: {fileID: 21300000, guid: ac0e6813fd7f74694a2975f8d6ce5e4a, type: 3}
+  - symbolKey: comfrey
+    sprite: {fileID: 21300000, guid: 712af834898fd47cdb160bd72378077c, type: 3}
+  - symbolKey: fennel
+    sprite: {fileID: 21300000, guid: 15a8d43d645e44cc0a5433a50df51bd7, type: 3}
+  - symbolKey: pine resin
+    sprite: {fileID: 21300000, guid: 7c42e7549e227400da29d48aaff35b95, type: 3}
+  - symbolKey: plantain leaf
+    sprite: {fileID: 21300000, guid: 143524257f1c24a5d93f06328f79e3d8, type: 3}
+  - symbolKey: senna leaf
+    sprite: {fileID: 21300000, guid: d0582e8116e034c58997419d55a973a2, type: 3}
+  - symbolKey: yarrow
+    sprite: {fileID: 21300000, guid: 5a644e0269e7948398284e4b796ff207, type: 3}

@@ -449,9 +449,9 @@ namespace Witch.Presentation.MainMenu
                             return await NewGameWithStoryAsync();
                         }
 
-                        bool pendingRewind = attemptResult.Metadata.PendingRewind;
-                        bool thresholdReached = attemptResult.Metadata.Suspicion >= RunState.RewindSuspicionThreshold;
-                        coverShop = !(pendingRewind);
+                        bool pendingMinigame = attemptResult.Metadata.PendingMinigame;
+                        bool thresholdReached = attemptResult.Metadata.Suspicion >= RunState.MinigameSuspicionThreshold;
+                        coverShop = !(pendingMinigame);
                         day = snapshotResult.Snapshot.RunState.CurrentDayNumber;
                         if (day < 1) day = 1;
                     }

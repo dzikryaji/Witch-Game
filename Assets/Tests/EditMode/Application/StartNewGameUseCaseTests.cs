@@ -23,8 +23,8 @@ namespace Witch.Application.Tests
             Assert.That(repository.SavedGame.DayStartSnapshot, Is.SameAs(result.Session.DayStartSnapshot));
             Assert.That(repository.SavedGame.AttemptMetadata, Is.SameAs(result.Session.AttemptMetadata));
             Assert.That(repository.SavedGame.AttemptMetadata.Suspicion, Is.Zero);
-            Assert.That(repository.SavedGame.AttemptMetadata.RewindCount, Is.Zero);
-            Assert.That(repository.SavedGame.AttemptMetadata.PendingRewind, Is.False);
+            Assert.That(repository.SavedGame.AttemptMetadata.MinigameWinCount, Is.Zero);
+            Assert.That(repository.SavedGame.AttemptMetadata.PendingMinigame, Is.False);
             Assert.That(sessionStore.ActiveSession, Is.SameAs(result.Session));
             Assert.That(sceneLoader.LastRequestedScene, Is.EqualTo(SceneId.Shop));
         }

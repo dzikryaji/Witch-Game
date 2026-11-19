@@ -1,0 +1,71 @@
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+
+namespace Witch.Domain.Progression
+{
+    public sealed class MatchCardBoard
+    {
+        private readonly ReadOnlyCollection<int> cards;
+
+        private MatchCardBoard(int seed, int pairCount, IList<int> cards)
+        {
+            Seed = seed;
+            PairCount = pairCount;
+            this.cards = new List<int>(cards).AsReadOnly();
+        }
+
+        public int Seed { get; }
+
+        public int PairCount { get; }
+
+        public IReadOnlyList<int> Cards => cards;
+
+        public static MatchCardBoard Create(int seed, int minigameWinCount)
+        {
+            return Create(
+                seed,
+                minigameWinCount,
+                MatchCardRules.StartingPairCount,
+                MatchCardRules.MaximumPairCount);
+        }
+
+        public static MatchCardBoard Create(
+            int seed,
+            int minigameWinCount,
+            int startingPairCount,
+            int maximumPairCount)
+        {
+            if (minigameWinCount < 0) throw new ArgumentOutOfRangeException(nameof(minigameWinCount));
+            if (startingPairCount < 1) throw new ArgumentOutOfRangeException(nameof(startingPairCount));
+            if (maximumPairCount < startingPairCount) throw new ArgumentOutOfRangeException(nameof(maximumPairCount));
+
+            int pairCount = MatchCardRules.GetPairCount(minigameWinCount, startingPairCount, maximumPairCount);
+            var shuffled = new List<int>(pairCount * 2);
+            for (int pair = 0; pair < pairCount; pair++)
+            {
+                shuffled.Add(pair);
+                shuffled.Add(pair);
+            }
+
+            uint state = unchecked((uint)seed);
+            if (state == 0)
+            {
+                state = 0x9E3779B9u;
+            }
+
+            for (int index = shuffled.Count - 1; index > 0; index--)
+            {
+                state ^= state << 13;
+                state ^= state >> 17;
+                state ^= state << 5;
+                int swapIndex = (int)(state % (uint)(index + 1));
+                int value = shuffled[index];
+                shuffled[index] = shuffled[swapIndex];
+                shuffled[swapIndex] = value;
+            }
+
+            return new MatchCardBoard(seed, pairCount, shuffled);
+        }
+    }
+}

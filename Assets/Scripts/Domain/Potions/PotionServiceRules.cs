@@ -45,9 +45,9 @@ namespace Witch.Domain.Potions
                 throw new ArgumentNullException(nameof(servedPotion));
             }
 
-            if (runState.Suspicion >= RunState.RewindSuspicionThreshold)
+            if (runState.Suspicion >= RunState.MinigameSuspicionThreshold)
             {
-                throw new InvalidOperationException("Service cannot continue while rewind is pending.");
+                throw new InvalidOperationException("Service cannot continue while minigame is pending.");
             }
 
             if (order.IsCorrect(servedPotion))

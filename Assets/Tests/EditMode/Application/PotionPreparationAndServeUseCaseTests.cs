@@ -82,7 +82,7 @@ namespace Witch.Application.Tests
         }
 
         [Test]
-        public async Task ServeAsync_WhenSuspicionWriteFails_DoesNotCommitOutcome()
+        public async Task ServeAsync_WhenSuspicionWriteFails_CommitsOutcomeAndDoesNotFailGameplay()
         {
             GameSession session = CreateEncounterSession();
             var rules = CreateRules();
@@ -97,10 +97,10 @@ namespace Witch.Application.Tests
 
             ServePotionResult result = await new ServePotionUseCase(rules, repository).ExecuteAsync(session);
 
-            Assert.That(result.Succeeded, Is.False);
-            Assert.That(session.RunState.Suspicion, Is.Zero);
-            Assert.That(session.ServiceCommitted, Is.False);
-            Assert.That(session.CurrentPhase, Is.EqualTo(GamePhase.CustomerEncounter));
+            Assert.That(result.Succeeded, Is.True, result.ErrorMessage);
+            Assert.That(session.RunState.Suspicion, Is.EqualTo(1));
+            Assert.That(session.ServiceCommitted, Is.True);
+            Assert.That(session.CurrentPhase, Is.EqualTo(GamePhase.CustomerArrival));
         }
 
         private static PotionServiceRules CreateRules()

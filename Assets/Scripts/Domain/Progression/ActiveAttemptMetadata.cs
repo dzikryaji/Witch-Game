@@ -9,8 +9,8 @@ namespace Witch.Domain.Progression
             string runId,
             int dayNumber,
             int suspicion,
-            int rewindCount,
-            bool pendingRewind,
+            int minigameWinCount,
+            bool pendingMinigame,
             int minigameBoardSeed,
             int activeOrderSeed,
             int wrongServiceCountToday = 0,
@@ -30,14 +30,14 @@ namespace Witch.Domain.Progression
                 throw new ArgumentOutOfRangeException(nameof(dayNumber));
             }
 
-            if (suspicion < 0 || suspicion > RunState.RewindSuspicionThreshold)
+            if (suspicion < 0 || suspicion > RunState.MinigameSuspicionThreshold)
             {
                 throw new ArgumentOutOfRangeException(nameof(suspicion));
             }
 
-            if (rewindCount < 0)
+            if (minigameWinCount < 0)
             {
-                throw new ArgumentOutOfRangeException(nameof(rewindCount));
+                throw new ArgumentOutOfRangeException(nameof(minigameWinCount));
             }
 
             if (wrongServiceCountToday < 0)
@@ -65,16 +65,16 @@ namespace Witch.Domain.Progression
                 throw new ArgumentOutOfRangeException(nameof(wrongOrdersForSummary));
             }
 
-            if (pendingRewind && suspicion != RunState.RewindSuspicionThreshold)
+            if (pendingMinigame && suspicion != RunState.MinigameSuspicionThreshold)
             {
-                throw new ArgumentException("Pending rewind requires suspicion at the threshold.", nameof(suspicion));
+                throw new ArgumentException("Pending minigame requires suspicion at the threshold.", nameof(suspicion));
             }
 
             RunId = runId;
             DayNumber = dayNumber;
             Suspicion = suspicion;
-            RewindCount = rewindCount;
-            PendingRewind = pendingRewind;
+            MinigameWinCount = minigameWinCount;
+            PendingMinigame = pendingMinigame;
             MinigameBoardSeed = minigameBoardSeed;
             ActiveOrderSeed = activeOrderSeed;
             WrongServiceCountToday = wrongServiceCountToday;
@@ -91,9 +91,9 @@ namespace Witch.Domain.Progression
 
         public int Suspicion { get; }
 
-        public int RewindCount { get; }
+        public int MinigameWinCount { get; }
 
-        public bool PendingRewind { get; }
+        public bool PendingMinigame { get; }
 
         public int MinigameBoardSeed { get; }
 

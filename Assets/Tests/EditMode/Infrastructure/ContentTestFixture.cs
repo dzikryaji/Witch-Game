@@ -30,7 +30,7 @@ namespace Witch.Infrastructure.Tests
                 "category.warm",
                 "Warming",
                 "Herbs that bring heat back to the body.");
-            RewindDifficultyDefinition difficulty = DefinitionFactory.Difficulty("rewind.difficulty.default", 3, 3);
+            MatchCardDifficultyDefinition difficulty = DefinitionFactory.Difficulty("matchcard.difficulty.default", 3, 3);
             WitchHunterDialogueDefinition dialogue = DefinitionFactory.Dialogue(
                 new[]
                 {
@@ -51,9 +51,9 @@ namespace Witch.Infrastructure.Tests
                 new[] { category },
                 new[]
                 {
-                    DefinitionFactory.Card("rewind.card.moon", "moon"),
-                    DefinitionFactory.Card("rewind.card.star", "star"),
-                    DefinitionFactory.Card("rewind.card.eye", "eye")
+                    DefinitionFactory.Card("matchcard.card.moon", "moon"),
+                    DefinitionFactory.Card("matchcard.card.star", "star"),
+                    DefinitionFactory.Card("matchcard.card.eye", "eye")
                 },
                 difficulty,
                 witchHunterDialogueDefinition: dialogue);
@@ -113,16 +113,16 @@ namespace Witch.Infrastructure.Tests
             return value;
         }
 
-        public static RewindCardDefinition Card(string id, string symbol)
+        public static MatchCardDefinition Card(string id, string symbol)
         {
-            var value = ScriptableObject.CreateInstance<RewindCardDefinition>();
+            var value = ScriptableObject.CreateInstance<MatchCardDefinition>();
             value.Configure(id, symbol);
             return value;
         }
 
-        public static RewindDifficultyDefinition Difficulty(string id, int start, int maximum)
+        public static MatchCardDifficultyDefinition Difficulty(string id, int start, int maximum)
         {
-            var value = ScriptableObject.CreateInstance<RewindDifficultyDefinition>();
+            var value = ScriptableObject.CreateInstance<MatchCardDifficultyDefinition>();
             value.Configure(id, start, maximum);
             return value;
         }

@@ -13,7 +13,7 @@ namespace Witch.Tests.EditMode.Bootstrap
             Assert.That(WitchDebugRuntime.NormalizeStartScene(null), Is.EqualTo("MainMenu"));
             Assert.That(WitchDebugRuntime.NormalizeStartScene("Bogus"), Is.EqualTo("MainMenu"));
             Assert.That(WitchDebugRuntime.NormalizeStartScene("Shop"), Is.EqualTo("Shop"));
-            Assert.That(WitchDebugRuntime.NormalizeStartScene("RewindMinigame"), Is.EqualTo("RewindMinigame"));
+            Assert.That(WitchDebugRuntime.NormalizeStartScene("MatchCardMinigame"), Is.EqualTo("MatchCardMinigame"));
             Assert.That(WitchDebugRuntime.ClampDay(0), Is.EqualTo(1));
             Assert.That(WitchDebugRuntime.ClampDay(15), Is.EqualTo(14));
             Assert.That(WitchDebugRuntime.ClampDay(5), Is.EqualTo(5));
