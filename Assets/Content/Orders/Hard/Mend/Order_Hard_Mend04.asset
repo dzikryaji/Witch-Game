@@ -15,11 +15,11 @@ MonoBehaviour:
   stableId: order.hard.m04
   difficulty: 3
   orderBubbles:
-  - Good day.
-  - A branch fractured my shoulder and scratched my arm.
-  - Bring the wide, hairy leaf with a strong root.
-  - Add the thick, golden resin.
-  - The scratches are shallow, and I have no fever.
+  - Hello. I've come looking for healing herbs.
+  - I fractured my leg during a terrible fall.
+  - A large wound on my arm bleeds heavily.
+  - The bleeding just won't seem to stop.
+  - I have a high fever. Nothing that traps heat, please.
   firstHerbId: herb.comfrey
-  secondHerbId: herb.pineResin
+  secondHerbId: herb.plantainLeaf
   customer: {fileID: 11400000, guid: 4678338d721f2462d8a1979c0e069692, type: 2}

@@ -15,10 +15,11 @@ MonoBehaviour:
   stableId: order.hard.m20
   difficulty: 3
   orderBubbles:
-  - Excuse me. My wrist buckles, and my palm bleeds heavily.
-  - Bring the bright yellow flower.
-  - Add the thick, flat weed.
-  - My lungs and circulation remain strong.
+  - Hello there. I've had a painful accident.
+  - My knee joint feels unstable.
+  - A large open wound on my arm bleeds heavily.
+  - I need joint support and bleeding stopped.
+  - I have a deep puncture wound. Nothing that seals skin quickly, please.
   firstHerbId: herb.arnicaFlower
   secondHerbId: herb.plantainLeaf
   customer: {fileID: 11400000, guid: b00255ad8c02b4e98960925f8af4e92b, type: 2}

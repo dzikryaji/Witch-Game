@@ -15,10 +15,11 @@ MonoBehaviour:
   stableId: order.hard.m14
   difficulty: 3
   orderBubbles:
-  - Hi. A thorn remains buried, and my palm bleeds heavily.
-  - Bring the thick, golden resin.
-  - Add the thick, flat weed.
-  - I have no fever or circulation problems.
-  firstHerbId: herb.pineResin
+  - Hello there. I need help with a serious injury.
+  - My ribs are fractured.
+  - A large wound on my arm bleeds heavily.
+  - I need my bones mended and bleeding stopped.
+  - I have a weak heart. Nothing that lowers blood pressure, please.
+  firstHerbId: herb.comfrey
   secondHerbId: herb.plantainLeaf
   customer: {fileID: 11400000, guid: 12795f040a17d43ce94d717cf5b31324, type: 2}
