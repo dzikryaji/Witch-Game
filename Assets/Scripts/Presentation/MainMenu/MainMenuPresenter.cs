@@ -414,6 +414,7 @@ namespace Witch.Presentation.MainMenu
 
             if (hasSavedProgress)
             {
+                settingsOverlay.SetActive(true);
                 newGameConfirmationPanel.SetActive(true);
                 return;
             }
@@ -426,6 +427,7 @@ namespace Witch.Presentation.MainMenu
             audioService?.Play(GameAudioCueIds.UiClick);
 
             newGameConfirmationPanel.SetActive(false);
+            settingsOverlay.SetActive(false);
 
             RunUiAction(NewGameWithStoryAsync);
         }
@@ -435,6 +437,7 @@ namespace Witch.Presentation.MainMenu
             audioService?.Play(GameAudioCueIds.UiClick);
 
             newGameConfirmationPanel.SetActive(false);
+            settingsOverlay.SetActive(false);
         }
 
         private async Task<bool> NewGameWithStoryAsync()
