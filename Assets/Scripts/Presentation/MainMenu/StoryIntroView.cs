@@ -32,6 +32,9 @@ namespace Witch.Presentation.MainMenu
         [SerializeField, Min(0f)] private float baseSeconds = 2f;
         [SerializeField, Min(0f)] private float secondsPerWord = 0.3f;
         [SerializeField, Min(0f)] private float minimumSeconds = 4f;
+        [SerializeField, Min(1f)] private float charactersPerSecond = 40f;
+        [SerializeField, Min(0f)] private float sentencePause = 0.25f;
+        [SerializeField, Min(0f)] private float commaPause = 0.12f;
 
         private CanvasGroup panelGroup;
         private TaskCompletionSource<bool> finished;
@@ -40,6 +43,8 @@ namespace Witch.Presentation.MainMenu
         private bool transitioning;
         private bool listenersBound;
         private float pageTimer;
+        private Coroutine typingRoutine;
+        private bool typing;
 
         public bool IsPlaying => finished != null;
 
@@ -86,6 +91,8 @@ namespace Witch.Presentation.MainMenu
         {
             routine = null;
             transitioning = false;
+            typingRoutine = null;
+            typing = false;
             if (finished != null)
             {
                 TaskCompletionSource<bool> signal = finished;
@@ -96,7 +103,7 @@ namespace Witch.Presentation.MainMenu
 
         private void Update()
         {
-            if (!autoAdvance || finished == null || transitioning) return;
+            if (!autoAdvance || finished == null || transitioning || typing) return;
 
             pageTimer += Time.unscaledDeltaTime;
             if (pageTimer >= PageSeconds(pageIndex)) OnNextClicked();
@@ -123,6 +130,12 @@ namespace Witch.Presentation.MainMenu
         private void OnNextClicked()
         {
             if (finished == null || transitioning) return;
+
+            if (typing)
+            {
+                FinishTyping();
+                return;
+            }
 
             if (pageIndex >= pages.Length - 1)
             {
@@ -166,11 +179,84 @@ namespace Witch.Presentation.MainMenu
         {
             StoryPage page = pages[index];
             pageTimer = 0f;
-            if (narrationText != null) narrationText.text = page.narration;
+            if (narrationText != null)
+            {
+                narrationText.text = page.narration;
+                StartTyping();
+            }
             if (illustrationImage != null)
             {
                 illustrationImage.sprite = page.illustration;
                 illustrationImage.enabled = page.illustration != null;
+            }
+        }
+
+        private void StartTyping()
+        {
+            StopTyping();
+            if (narrationText == null || !isActiveAndEnabled) return;
+            narrationText.maxVisibleCharacters = 0;
+            typingRoutine = StartCoroutine(TypeNarration());
+        }
+
+        private void StopTyping()
+        {
+            if (typingRoutine != null) StopCoroutine(typingRoutine);
+            typingRoutine = null;
+            typing = false;
+        }
+
+        private void FinishTyping()
+        {
+            StopTyping();
+            if (narrationText != null) narrationText.maxVisibleCharacters = int.MaxValue;
+            pageTimer = 0f;
+        }
+
+        private IEnumerator TypeNarration()
+        {
+            typing = true;
+            narrationText.ForceMeshUpdate();
+            TMP_TextInfo info = narrationText.textInfo;
+            int total = info.characterCount;
+            float secondsPerCharacter = 1f / Mathf.Max(1f, charactersPerSecond);
+            float elapsed = 0f;
+            float nextRevealAt = 0f;
+            int shown = 0;
+
+            while (shown < total)
+            {
+                elapsed += Time.unscaledDeltaTime;
+                while (shown < total && elapsed >= nextRevealAt)
+                {
+                    nextRevealAt += secondsPerCharacter + PunctuationPause(info.characterInfo[shown].character);
+                    shown++;
+                }
+
+                narrationText.maxVisibleCharacters = shown;
+                yield return null;
+            }
+
+            typingRoutine = null;
+            typing = false;
+            narrationText.maxVisibleCharacters = int.MaxValue;
+            pageTimer = 0f;
+        }
+
+        private float PunctuationPause(char character)
+        {
+            switch (character)
+            {
+                case '.':
+                case '!':
+                case '?':
+                    return sentencePause;
+                case ',':
+                case ';':
+                case ':':
+                    return commaPause;
+                default:
+                    return 0f;
             }
         }
 

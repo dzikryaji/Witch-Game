@@ -67,5 +67,5 @@
         "*.sln": "*.csproj",
         "*.slnx": "*.csproj"
     },
-    "dotnet.defaultSolution": "Witch Game.slnx"
+    "dotnet.defaultSolution": "Witch-Game.slnx"
 }
