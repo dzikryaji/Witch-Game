@@ -170,6 +170,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Witch.Bootstrap::Witch.Bootstrap.GameCompositionRoot
   contentCatalog: {fileID: 11400000, guid: 10000000000000000000000000000015, type: 2}
+  dayTransitionFont: {fileID: 12800000, guid: b2ef9239f32af4e3a8f54b67ded0c79d, type: 3}
   randomSeed: 20261024
   targetFrameRate: 60
 --- !u!114 &1003

@@ -15,10 +15,11 @@ MonoBehaviour:
   stableId: order.hard.m03
   difficulty: 3
   orderBubbles:
-  - Greetings. My ankle buckles, and bruises spread across my leg.
-  - Bring the bright yellow flower.
-  - Add the feathery leaves with flat white flowers.
-  - My lungs and heartbeat remain strong.
+  - Greetings. Could you help me recover?
+  - I have a painful surface wound on my arm.
+  - My shoulder muscles are badly strained.
+  - Moving my arm has become quite difficult.
+  - I have a weak heart. Nothing that lowers blood pressure, please.
   firstHerbId: herb.arnicaFlower
-  secondHerbId: herb.yarrow
+  secondHerbId: herb.comfrey
   customer: {fileID: 11400000, guid: 3965e9fdac9e6466c91a76e9ffa93d8b, type: 2}

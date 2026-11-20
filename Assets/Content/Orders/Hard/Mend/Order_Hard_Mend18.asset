@@ -15,11 +15,11 @@ MonoBehaviour:
   stableId: order.hard.m18
   difficulty: 3
   orderBubbles:
-  - Hello there.
-  - A horse fractured my toe and badly strained muscles.
-  - Bring the bright yellow flower.
-  - Add the wide, hairy leaf with a strong root.
-  - My lungs remain strong, without puncture wounds.
+  - Greetings! Could you help me with these injuries?
+  - A thorn is stuck deep inside my hand.
+  - My shoulder muscles are painfully strained.
+  - I need the thorn removed and muscles supported.
+  - I have a deep puncture wound. Nothing that seals skin quickly, please.
   firstHerbId: herb.arnicaFlower
-  secondHerbId: herb.comfrey
+  secondHerbId: herb.pineResin
   customer: {fileID: 11400000, guid: 7a06e32b0a26b416c9f59776c3880e92, type: 2}

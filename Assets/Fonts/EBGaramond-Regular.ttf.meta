@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: d8d992533265a49d49453f742e2c4b1e
+guid: 23e59afb4cc4d4b919edb5ff97f24e1f
 TrueTypeFontImporter:
   externalObjects: {}
   serializedVersion: 4
@@ -9,7 +9,7 @@ TrueTypeFontImporter:
   characterPadding: 1
   includeFontData: 1
   fontNames:
-  - Apple Chancery
+  - EB Garamond
   fallbackFontReferences: []
   customCharacters: 
   fontRenderingMode: 0

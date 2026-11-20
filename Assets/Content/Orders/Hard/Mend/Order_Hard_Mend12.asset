@@ -15,10 +15,11 @@ MonoBehaviour:
   stableId: order.hard.m12
   difficulty: 3
   orderBubbles:
-  - Hi. My palm bleeds heavily, and my ankle keeps buckling.
-  - Bring the thick, flat weed.
-  - Add the bright yellow flower.
-  - My circulation and lungs remain strong.
-  firstHerbId: herb.plantainLeaf
-  secondHerbId: herb.arnicaFlower
+  - Greetings. I need help with my injured hand.
+  - The skin on my palm is badly scraped.
+  - A thorn is stuck deep inside my finger.
+  - I need the wound healed and thorn removed.
+  - I have asthma. Nothing that restricts my breathing, please.
+  firstHerbId: herb.comfrey
+  secondHerbId: herb.pineResin
   customer: {fileID: 11400000, guid: 3965e9fdac9e6466c91a76e9ffa93d8b, type: 2}

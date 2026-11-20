@@ -254,7 +254,6 @@ namespace Witch.Presentation.Shop
             audioService = audio;
             settings = currentSettings ?? GameSettingsState.Default;
             audioService?.ApplySettings(settings);
-            Debug.Log($"[FontDebug] ShopShellPresenter.ConfigurePolish UseAppleChanceryFont={settings.UseAppleChanceryFont}");
             hudView?.ApplyOrderBubbleFontPreference(settings.UseAppleChanceryFont);
         }
 
@@ -2474,6 +2473,12 @@ namespace Witch.Presentation.Shop
                 && !focusingSuspicion
                 && (showSummary || showGameOver || showClosingError);
             progressionPanel.SetActive(visible);
+
+            if (pauseOverlay != null)
+            {
+                pauseOverlay.SetActive(visible || userPaused || MinigameIntroVisible);
+            }
+
             if (!visible)
             {
                 return;
@@ -2540,6 +2545,8 @@ namespace Witch.Presentation.Shop
             {
                 return;
             }
+
+            audioService?.Play(GameAudioCueIds.UiClick);
 
             if (ActiveSession.CurrentPhase == Witch.Domain.GamePhase.Victory)
             {

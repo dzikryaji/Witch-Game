@@ -15,11 +15,11 @@ MonoBehaviour:
   stableId: order.hard.m01
   difficulty: 3
   orderBubbles:
-  - Hello hello.
-  - A fall broke my leg and opened a shallow cut.
-  - Bring the wide, hairy leaf with a strong root.
-  - Add the feathery leaves with flat white flowers.
-  - My heartbeat remains strong.
+  - Hello. I hope you can help me.
+  - I fractured my arm, and my hand keeps bleeding.
+  - The cut refuses to stop bleeding.
+  - I also have a deep splinter in my foot.
+  - I have a high fever. Nothing that traps heat, please.
   firstHerbId: herb.comfrey
   secondHerbId: herb.yarrow
   customer: {fileID: 11400000, guid: 7a06e32b0a26b416c9f59776c3880e92, type: 2}

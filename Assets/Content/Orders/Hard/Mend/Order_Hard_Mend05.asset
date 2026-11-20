@@ -15,10 +15,11 @@ MonoBehaviour:
   stableId: order.hard.m05
   difficulty: 3
   orderBubbles:
-  - Hi. My leg bleeds heavily, and my knee is bruised.
-  - Bring the thick, flat weed.
-  - Add the feathery leaves with flat white flowers.
-  - My circulation and heartbeat remain strong.
-  firstHerbId: herb.plantainLeaf
+  - Hello. I could really use your help.
+  - A dark bruise has spread across my leg.
+  - A splinter is stuck deep inside my finger.
+  - I've tried removing it, but it won't come out.
+  - I have a deep puncture wound. Nothing that seals skin quickly, please.
+  firstHerbId: herb.pineResin
   secondHerbId: herb.yarrow
   customer: {fileID: 11400000, guid: 12795f040a17d43ce94d717cf5b31324, type: 2}
