@@ -15,21 +15,30 @@ namespace Witch.Presentation.Shop
             string customerName,
             Sprite customerIllustration,
             OrderRequest order,
-            IReadOnlyList<string> orderBubbles)
+            IReadOnlyList<string> orderBubbles,
+            string difficultyId = null,
+            int difficultyRank = int.MaxValue,
+            string categoryId = null)
         {
             CustomerId = customerId;
             CustomerName = customerName;
             CustomerIllustration = customerIllustration;
             Order = order ?? throw new ArgumentNullException(nameof(order));
             OrderBubbles = orderBubbles ?? throw new ArgumentNullException(nameof(orderBubbles));
+            DifficultyId = difficultyId;
+            DifficultyRank = difficultyRank;
+            CategoryId = categoryId;
         }
 
         public ShopEncounterViewData(
             string customerId,
             string customerName,
             OrderRequest order,
-            IReadOnlyList<string> orderBubbles)
-            : this(customerId, customerName, null, order, orderBubbles) { }
+            IReadOnlyList<string> orderBubbles,
+            string difficultyId = null,
+            int difficultyRank = int.MaxValue,
+            string categoryId = null)
+            : this(customerId, customerName, null, order, orderBubbles, difficultyId, difficultyRank, categoryId) { }
 
         public ShopEncounterViewData(string customerId, string customerName, OrderRequest order, string orderBubble)
             : this(customerId, customerName, order, new[] { orderBubble ?? string.Empty }) { }
@@ -39,6 +48,9 @@ namespace Witch.Presentation.Shop
         public Sprite CustomerIllustration { get; }
         public OrderRequest Order { get; }
         public IReadOnlyList<string> OrderBubbles { get; }
+        public string DifficultyId { get; }
+        public int DifficultyRank { get; }
+        public string CategoryId { get; }
     }
 
     public sealed class ShopCustomerViewData
@@ -258,7 +270,7 @@ namespace Witch.Presentation.Shop
             : this(
                 new[] { new ShopEncounterViewData(customerId, customerName, order, orderBubble) },
                 herbs,
-                "GUIDEBOOK\n\nGinger: knotted warming root\nMint: cool green leaves\n\nThe shop clock keeps moving while you read.")
+                "GUIDEBOOK\n\nGinger: knotted warming root\nPeppermint: cool green leaves\n\nThe shop clock keeps moving while you read.")
         {
         }
 
@@ -274,7 +286,9 @@ namespace Witch.Presentation.Shop
             string introductionOrderId = null,
             bool oneTimeIntroduction = false,
             IReadOnlyList<string> introductionCategoryOrderIds = null,
-            string guidedTutorialOrderId = null)
+            string guidedTutorialOrderId = null,
+            OrderSelectionState selection = null,
+            IReadOnlyList<int> dayDifficultyRanks = null)
             : this(
                 encounters,
                 herbs,
@@ -291,7 +305,10 @@ namespace Witch.Presentation.Shop
                 oneTimeIntroduction,
                 introductionCategoryOrderIds,
                 null,
-                guidedTutorialOrderId)
+                guidedTutorialOrderId,
+                null,
+                selection,
+                dayDifficultyRanks)
         {
         }
 
@@ -309,7 +326,9 @@ namespace Witch.Presentation.Shop
             IReadOnlyList<string> introductionCategoryOrderIds = null,
             ShopCustomerViewData witchHunter = null,
             string guidedTutorialOrderId = null,
-            WitchHunterDialogueViewData witchHunterDialogue = null)
+            WitchHunterDialogueViewData witchHunterDialogue = null,
+            OrderSelectionState selection = null,
+            IReadOnlyList<int> dayDifficultyRanks = null)
         {
             Encounters = encounters ?? throw new ArgumentNullException(nameof(encounters));
             if (Encounters.Count == 0) throw new ArgumentException("At least one encounter is required.", nameof(encounters));
@@ -326,6 +345,8 @@ namespace Witch.Presentation.Shop
             IntroductionCategoryOrderIds = introductionCategoryOrderIds ?? Array.Empty<string>();
             WitchHunter = witchHunter;
             WitchHunterDialogue = witchHunterDialogue;
+            Selection = selection ?? new OrderSelectionState();
+            DayDifficultyRanks = dayDifficultyRanks ?? Array.Empty<int>();
         }
 
         public IReadOnlyList<ShopEncounterViewData> Encounters { get; }
@@ -346,5 +367,7 @@ namespace Witch.Presentation.Shop
         public IReadOnlyList<string> IntroductionCategoryOrderIds { get; }
         public ShopCustomerViewData WitchHunter { get; }
         public WitchHunterDialogueViewData WitchHunterDialogue { get; }
+        public OrderSelectionState Selection { get; }
+        public IReadOnlyList<int> DayDifficultyRanks { get; }
     }
 }

@@ -3,6 +3,8 @@
     "rootNamespace": "Witch.Tests.EditMode.Bootstrap",
     "references": [
         "Witch.Bootstrap",
+        "Witch.Presentation",
+        "Witch.Infrastructure",
         "Witch.Application",
         "Witch.Domain"
     ],

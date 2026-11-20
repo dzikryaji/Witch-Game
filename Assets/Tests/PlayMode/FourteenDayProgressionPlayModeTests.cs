@@ -30,7 +30,7 @@ namespace Witch.Bootstrap.PlayModeTests
             ShopShellPresenter presenter = InitializeDay(harness);
             harness.Clock.Advance(presenter.ActiveSession.TimerState.RemainingTime + TimeSpan.FromSeconds(1));
             harness.UpdateTimer.Execute(presenter.ActiveSession);
-            PreparePair(presenter, "herb.ginger", "herb.mint");
+            PreparePair(presenter, "herb.ginger", "herb.peppermint");
             Task<ServePotionResult> serve = presenter.ServeAsync();
             yield return WaitFor(serve);
             Assert.That(presenter.ActiveSession.CurrentPhase, Is.EqualTo(GamePhase.ClosingEncounter));
@@ -52,7 +52,7 @@ namespace Witch.Bootstrap.PlayModeTests
                 ShopShellPresenter presenter = InitializeDay(harness);
                 harness.Clock.Advance(presenter.ActiveSession.TimerState.RemainingTime + TimeSpan.FromSeconds(1));
                 harness.UpdateTimer.Execute(presenter.ActiveSession);
-                PreparePair(presenter, "herb.ginger", "herb.mint");
+                PreparePair(presenter, "herb.ginger", "herb.peppermint");
                 Task<ServePotionResult> serve = presenter.ServeAsync();
                 yield return WaitFor(serve);
                 Assert.That(presenter.ActiveSession.CurrentPhase, Is.EqualTo(GamePhase.ClosingEncounter));
@@ -82,7 +82,7 @@ namespace Witch.Bootstrap.PlayModeTests
             ShopShellPresenter presenter = InitializeDay(harness);
             harness.Clock.Advance(TimeSpan.FromSeconds(2));
             harness.UpdateTimer.Execute(presenter.ActiveSession);
-            PreparePair(presenter, "herb.mint", "herb.sage");
+            PreparePair(presenter, "herb.peppermint", "herb.sage");
             Task<ServePotionResult> serve = presenter.ServeAsync();
             yield return WaitFor(serve);
 
@@ -105,7 +105,7 @@ namespace Witch.Bootstrap.PlayModeTests
             var runSetup = new NewRunSetup(
                 0,
                 new[] { "category.test" },
-                new[] { "herb.ginger", "herb.mint", "herb.sage" },
+                new[] { "herb.ginger", "herb.peppermint", "herb.sage" },
                 new[] { "guide.test" },
                 TimeSpan.FromSeconds(1),
                 "expense.day.1",
@@ -150,12 +150,12 @@ namespace Witch.Bootstrap.PlayModeTests
                 new ShopPresentationSetup(
                     "customer.test",
                     "Rent-Fearing Villager",
-                    new OrderRequest("order.correct", new HerbPair("herb.ginger", "herb.mint")),
-                    "Ginger and mint, before the landlord develops object permanence.",
+                    new OrderRequest("order.correct", new HerbPair("herb.ginger", "herb.peppermint")),
+                    "Ginger and peppermint, before the landlord develops object permanence.",
                     new[]
                     {
                         new ShopHerbViewData("herb.ginger", "Ginger"),
-                        new ShopHerbViewData("herb.mint", "Mint"),
+                        new ShopHerbViewData("herb.peppermint", "Peppermint"),
                         new ShopHerbViewData("herb.sage", "Sage")
                     }));
             presenter.ConfigureProgression(

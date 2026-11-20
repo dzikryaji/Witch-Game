@@ -124,7 +124,7 @@ namespace Witch.Infrastructure.Tests
         {
             GameContentCatalogDefinition catalog = ContentTestFixture.CreateValidCatalog();
             catalog.Herbs[0].Configure("", "Ginger", "category.warm");
-            catalog.Herbs[1].Configure("", "Mint", "category.warm");
+            catalog.Herbs[1].Configure("", "Peppermint", "category.warm");
 
             ContentValidationReport report = new GameContentValidator().Validate(catalog);
 
@@ -141,7 +141,7 @@ namespace Witch.Infrastructure.Tests
                 "order.direct",
                 Array.Empty<string>(),
                 "herb.ginger",
-                "herb.mint");
+                "herb.peppermint");
 
             ContentValidationReport report = new GameContentValidator().Validate(catalog);
 
@@ -180,7 +180,7 @@ namespace Witch.Infrastructure.Tests
         public void Validate_MixedCategoryOrderReturnsError()
         {
             GameContentCatalogDefinition catalog = ContentTestFixture.CreateValidCatalog();
-            catalog.Herbs[1].Configure("herb.mint", "Mint", "category.cool");
+            catalog.Herbs[1].Configure("herb.peppermint", "Peppermint", "category.cool");
 
             ContentValidationReport report = new GameContentValidator().Validate(catalog);
 
@@ -200,6 +200,27 @@ namespace Witch.Infrastructure.Tests
             ContentValidationReport report = new GameContentValidator().Validate(catalog);
 
             Assert.That(report.Errors.Any(error => error.Contains("unknown ID 'herb.sage'")), Is.True);
+        }
+
+        [Test]
+        public void Validate_MissingCodeReferencedHerbReturnsClearError()
+        {
+            GameContentCatalogDefinition catalog = ContentTestFixture.CreateValidCatalog();
+            catalog.Configure(
+                catalog.Herbs.Where(herb => herb.StableId != "herb.peppermint").ToArray(),
+                catalog.Orders,
+                catalog.Customers,
+                catalog.Days,
+                catalog.HerbCategories,
+                catalog.MatchCards,
+                catalog.MatchCardDifficulty,
+                witchHunterDialogueDefinition: catalog.WitchHunterDialogue);
+
+            ContentValidationReport report = new GameContentValidator().Validate(catalog);
+
+            Assert.That(
+                report.Errors.Any(error => error == "Production code references unknown herb ID 'herb.peppermint'."),
+                Is.True);
         }
 
         [Test]
@@ -246,9 +267,9 @@ namespace Witch.Infrastructure.Tests
             CustomerDefinition customer = DefinitionFactory.Customer("customer.assigned", "Assigned Villager");
             catalog.Orders[0].Configure(
                 "order.direct",
-                new[] { "Bring ginger and mint." },
+                new[] { "Bring ginger and peppermint." },
                 "herb.ginger",
-                "herb.mint",
+                "herb.peppermint",
                 customerDefinition: customer);
             catalog.Configure(
                 catalog.Herbs.ToArray(),

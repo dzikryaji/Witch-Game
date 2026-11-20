@@ -1,4 +1,5 @@
 using System;
+using Witch.Domain.Orders;
 
 namespace Witch.Domain.Progression
 {
@@ -18,7 +19,8 @@ namespace Witch.Domain.Progression
             bool minigamePlayedToday = false,
             int correctServiceCountToday = 0,
             int coinsEarnedToday = 0,
-            int wrongOrdersForSummary = 0)
+            int wrongOrdersForSummary = 0,
+            OrderSelectionState selection = null)
         {
             if (string.IsNullOrWhiteSpace(runId))
             {
@@ -83,6 +85,7 @@ namespace Witch.Domain.Progression
             CorrectServiceCountToday = correctServiceCountToday;
             CoinsEarnedToday = coinsEarnedToday;
             WrongOrdersForSummary = wrongOrdersForSummary;
+            Selection = selection ?? new OrderSelectionState();
         }
 
         public string RunId { get; }
@@ -110,5 +113,26 @@ namespace Witch.Domain.Progression
         public int CoinsEarnedToday { get; }
 
         public int WrongOrdersForSummary { get; }
+
+        public OrderSelectionState Selection { get; }
+
+        public ActiveAttemptMetadata WithSelection(OrderSelectionState selection)
+        {
+            return new ActiveAttemptMetadata(
+                RunId,
+                DayNumber,
+                Suspicion,
+                MinigameWinCount,
+                PendingMinigame,
+                MinigameBoardSeed,
+                ActiveOrderSeed,
+                WrongServiceCountToday,
+                ServiceCountToday,
+                MinigamePlayedToday,
+                CorrectServiceCountToday,
+                CoinsEarnedToday,
+                WrongOrdersForSummary,
+                selection);
+        }
     }
 }

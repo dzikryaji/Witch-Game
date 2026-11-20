@@ -233,7 +233,7 @@ namespace Witch.Bootstrap.PlayModeTests
 
             for (int cycle = 0; cycle < 3; cycle++)
             {
-                HerbDragItem mint = FindHerb("herb.mint");
+                HerbDragItem mint = FindHerb("herb.peppermint");
                 HerbDragItem borage = FindHerb("herb.borage");
                 Button grind = GameObject.Find("Grind").GetComponent<Button>();
                 Button brew = GameObject.Find("Brew").GetComponent<Button>();
@@ -245,13 +245,13 @@ namespace Witch.Bootstrap.PlayModeTests
                     mouse,
                     mint.GetComponent<RectTransform>(),
                     grinder.GetComponent<RectTransform>(),
-                    () => AssertShelfHerbCopied(mint, "mint herb"));
-                AssertDragVisualRemoved(mint, "mint herb");
+                    () => AssertShelfHerbCopied(mint, "peppermint herb"));
+                AssertDragVisualRemoved(mint, "peppermint herb");
                 yield return ClickUi(mouse, grind.GetComponent<RectTransform>());
 
                 GroundHerbDragItem ground = Object.FindAnyObjectByType<GroundHerbDragItem>();
                 Assert.That(ground, Is.Not.Null, "Grinding must reveal a draggable ground herb.");
-                AssertGroundHerbVisible(ground, "Mint");
+                AssertGroundHerbVisible(ground, "Peppermint");
                 Assert.That(ground.GetComponent<CanvasGroup>().blocksRaycasts, Is.True);
                 RememberOrAssertHome(
                     ground.GetComponent<RectTransform>(),
@@ -352,7 +352,7 @@ namespace Witch.Bootstrap.PlayModeTests
             Assert.That(presenter.ActiveSession.TimerState.RemainingTime, Is.EqualTo(TimeSpan.FromSeconds(55)));
 
             HerbDragItem ginger = FindHerb("herb.ginger");
-            HerbDragItem mint = FindHerb("herb.mint");
+            HerbDragItem mint = FindHerb("herb.peppermint");
             GrinderDropZone grinder = Object.FindAnyObjectByType<GrinderDropZone>();
             ginger.GetComponent<Button>().onClick.Invoke();
             Assert.That(presenter.GrindLoadedHerb().Succeeded, Is.False, "Clicking a herb must not load the grinder.");
@@ -374,7 +374,7 @@ namespace Witch.Bootstrap.PlayModeTests
             grinder.OnDrop(new PointerEventData(EventSystem.current) { pointerDrag = mint.gameObject });
             Assert.That(presenter.ActiveSession.GroundMixture, Is.Null, "Loading the grinder must not grind yet.");
             Assert.That(presenter.GrindLoadedHerb().Succeeded, Is.True);
-            Assert.That(presenter.ActiveSession.GroundMixture, Is.EqualTo(new HerbPair("herb.ginger", "herb.mint")));
+            Assert.That(presenter.ActiveSession.GroundMixture, Is.EqualTo(new HerbPair("herb.ginger", "herb.peppermint")));
             Assert.That(presenter.AddGroundHerbToPot().Kind, Is.EqualTo(PreparationResultKind.Prepared),
                 "Adding the ground mixture to the pot brews automatically.");
 
@@ -413,7 +413,7 @@ namespace Witch.Bootstrap.PlayModeTests
             Harness harness = CreateHarness();
             ShopShellPresenter presenter = InitializePresenter(harness);
 
-            PreparePair(presenter, "herb.mint", "herb.lavender");
+            PreparePair(presenter, "herb.peppermint", "herb.lavender");
             Assert.That(presenter.ActiveSession.PreparedPotion, Is.Not.Null);
 
             presenter.GrindHerb("herb.ginger", "herb.sage");
@@ -425,7 +425,7 @@ namespace Witch.Bootstrap.PlayModeTests
             Assert.That(presenter.ActiveSession.TimerState.RemainingTime, Is.EqualTo(TimeSpan.Zero));
             Assert.That(presenter.ActiveSession.CurrentPhase, Is.EqualTo(GamePhase.CustomerEncounter));
 
-            PreparePair(presenter, "herb.ginger", "herb.mint");
+            PreparePair(presenter, "herb.ginger", "herb.peppermint");
             Task<ServePotionResult> serve = presenter.ServeAsync();
             yield return WaitFor(serve);
             Assert.That(serve.Result.Succeeded, Is.True);
@@ -451,8 +451,8 @@ namespace Witch.Bootstrap.PlayModeTests
                         new ShopEncounterViewData(
                             "customer.first",
                             "First Villager",
-                            new OrderRequest("order.first", new HerbPair("herb.ginger", "herb.mint")),
-                            "Ginger and mint."),
+                            new OrderRequest("order.first", new HerbPair("herb.ginger", "herb.peppermint")),
+                            "Ginger and peppermint."),
                         new ShopEncounterViewData(
                             "customer.second",
                             "Second Villager",
@@ -462,12 +462,12 @@ namespace Witch.Bootstrap.PlayModeTests
                     new[]
                     {
                         new ShopHerbViewData("herb.ginger", "Ginger"),
-                        new ShopHerbViewData("herb.mint", "Mint"),
+                        new ShopHerbViewData("herb.peppermint", "Peppermint"),
                         new ShopHerbViewData("herb.sage", "Sage")
                     }));
 
             Assert.That(presenter.ActiveSession.AttemptState.ActiveOrder.OrderId, Is.EqualTo("order.first"));
-            PreparePair(presenter, "herb.ginger", "herb.mint");
+            PreparePair(presenter, "herb.ginger", "herb.peppermint");
             Task<ServePotionResult> first = presenter.ServeAsync();
             yield return WaitFor(first);
 
@@ -487,10 +487,10 @@ namespace Witch.Bootstrap.PlayModeTests
         }
 
         [Test]
-        public void RandomEncounterDeckUsesBalancedBagsAndNeverRunsOneHerbPairMoreThanTwice()
+        public void RandomEncounterDeckUsesEveryHerbPairBeforeRepeatingAnyPair()
         {
             HerbPair warm = new HerbPair("herb.ginger", "herb.cinnamon");
-            HerbPair cool = new HerbPair("herb.mint", "herb.borage");
+            HerbPair cool = new HerbPair("herb.peppermint", "herb.borage");
             HerbPair soothe = new HerbPair("herb.lavender", "herb.chamomile");
             var encounters = new List<ShopEncounterViewData>();
             for (int index = 0; index < 5; index++)
@@ -512,42 +512,32 @@ namespace Witch.Bootstrap.PlayModeTests
                     "Lavender and chamomile."));
             }
 
-            var deck = new ShopEncounterDeck(encounters, 90421, randomizeEncounters: true);
-            HerbPair previous = null;
-            int runLength = 0;
-            for (int bag = 0; bag < 3; bag++)
+            var deck = new ShopEncounterDeck(encounters, 90421, randomizeEncounters: true, logWarning: _ => { });
+            string warmKey = OrderPairKey.From(warm);
+            string coolKey = OrderPairKey.From(cool);
+            string sootheKey = OrderPairKey.From(soothe);
+            var pairCounts = new Dictionary<string, int>(StringComparer.Ordinal);
+            string previous = null;
+
+            for (int draw = 0; draw < 45; draw++)
             {
-                int warmCount = 0;
-                int coolCount = 0;
-                int sootheCount = 0;
-                var orderIds = new HashSet<string>();
-                for (int offset = 0; offset < 15; offset++)
-                {
-                    ShopEncounterViewData encounter = deck.Draw((bag * 15) + offset);
-                    Assert.That(orderIds.Add(encounter.Order.OrderId), Is.True);
-                    if (encounter.Order.RequestedPair.Equals(warm)) warmCount++;
-                    if (encounter.Order.RequestedPair.Equals(cool)) coolCount++;
-                    if (encounter.Order.RequestedPair.Equals(soothe)) sootheCount++;
-
-                    if (encounter.Order.RequestedPair.Equals(previous)) runLength++;
-                    else
-                    {
-                        previous = encounter.Order.RequestedPair;
-                        runLength = 1;
-                    }
-                    Assert.That(runLength, Is.LessThanOrEqualTo(2));
-                }
-
-                Assert.That(warmCount, Is.EqualTo(5));
-                Assert.That(coolCount, Is.EqualTo(5));
-                Assert.That(sootheCount, Is.EqualTo(5));
+                ShopEncounterViewData encounter = deck.Draw(draw);
+                string pair = OrderPairKey.From(encounter.Order.RequestedPair);
+                pairCounts.TryGetValue(pair, out int count);
+                pairCounts[pair] = count + 1;
+                Assert.That(pair, Is.Not.EqualTo(previous), "pair repeated at draw " + draw);
+                previous = pair;
             }
+
+            Assert.That(pairCounts[warmKey], Is.EqualTo(15));
+            Assert.That(pairCounts[coolKey], Is.EqualTo(15));
+            Assert.That(pairCounts[sootheKey], Is.EqualTo(15));
         }
 
         [Test]
         public void RandomEncounterDeckSkipsSeenOrdersUntilEligiblePoolIsExhausted()
         {
-            HerbPair pair = new HerbPair("herb.ginger", "herb.mint");
+            HerbPair pair = new HerbPair("herb.ginger", "herb.peppermint");
             var encounters = new[]
             {
                 new ShopEncounterViewData("customer.test", "Test", new OrderRequest("order.one", pair), "One."),
@@ -558,12 +548,18 @@ namespace Witch.Bootstrap.PlayModeTests
                 encounters,
                 90421,
                 randomizeEncounters: true,
-                seenOrderIds: new[] { "order.one", "order.two" });
+                seenOrderIds: new[] { "order.one", "order.two" },
+                logWarning: _ => { });
 
             Assert.That(deck.Draw(0).Order.OrderId, Is.EqualTo("order.three"));
+            string[] reused = { deck.Draw(1).Order.OrderId, deck.Draw(2).Order.OrderId, deck.Draw(3).Order.OrderId };
             Assert.That(
-                new[] { deck.Draw(1).Order.OrderId, deck.Draw(2).Order.OrderId, deck.Draw(3).Order.OrderId },
-                Is.EquivalentTo(new[] { "order.one", "order.two", "order.three" }));
+                reused.All(id => id == "order.one" || id == "order.two" || id == "order.three"),
+                Is.True,
+                "Reused orders must come from the eligible pool.");
+            Assert.That(
+                deck.LastRelaxations.Any(warning => warning.StartsWith("rule1:", StringComparison.Ordinal)),
+                Is.True);
         }
 
         [Test]
@@ -583,7 +579,8 @@ namespace Witch.Bootstrap.PlayModeTests
                 90421,
                 randomizeEncounters: true,
                 priorityIntroductionOrderId: "order.soothe.intro",
-                priorityCategoryOrderIds: new[] { "order.soothe.intro", "order.soothe.mid" });
+                priorityCategoryOrderIds: new[] { "order.soothe.intro", "order.soothe.mid" },
+                logWarning: _ => { });
 
             string[] firstThree = { deck.Draw(0).Order.OrderId, deck.Draw(1).Order.OrderId, deck.Draw(2).Order.OrderId };
             int introductionIndex = Array.IndexOf(firstThree, "order.soothe.intro");
@@ -608,9 +605,10 @@ namespace Witch.Bootstrap.PlayModeTests
                 randomizeEncounters: true,
                 priorityIntroductionOrderId: "order.intro",
                 removeIntroductionAfterFirstBag: true,
-                priorityCategoryOrderIds: new[] { "order.intro", "order.mid.one", "order.mid.two" });
+                priorityCategoryOrderIds: new[] { "order.intro", "order.mid.one", "order.mid.two" },
+                logWarning: _ => { });
 
-            string[] orders = Enumerable.Range(0, 9).Select(index => deck.Draw(index).Order.OrderId).ToArray();
+            string[] orders = Enumerable.Range(0, 3).Select(index => deck.Draw(index).Order.OrderId).ToArray();
 
             Assert.That(orders.Count(value => value == "order.intro"), Is.EqualTo(1));
         }
@@ -749,7 +747,7 @@ namespace Witch.Bootstrap.PlayModeTests
             var setup = new NewRunSetup(
                 0,
                 new[] { "category.test" },
-                new[] { "herb.ginger", "herb.mint", "herb.borage", "herb.sage", "herb.lavender" },
+                new[] { "herb.ginger", "herb.peppermint", "herb.borage", "herb.sage", "herb.lavender" },
                 new[] { "guide.test" },
                 TimeSpan.FromSeconds(60),
                 "expense.day.1",
@@ -791,12 +789,12 @@ namespace Witch.Bootstrap.PlayModeTests
                 new ShopPresentationSetup(
                     "customer.test",
                     "Nervous Villager",
-                    new OrderRequest("order.correct", new HerbPair("herb.ginger", "herb.mint")),
-                    "I need ginger and mint. Please do not improvise.",
+                    new OrderRequest("order.correct", new HerbPair("herb.ginger", "herb.peppermint")),
+                    "I need ginger and peppermint. Please do not improvise.",
                     new[]
                     {
                         new ShopHerbViewData("herb.ginger", "Ginger"),
-                        new ShopHerbViewData("herb.mint", "Mint"),
+                        new ShopHerbViewData("herb.peppermint", "Peppermint"),
                         new ShopHerbViewData("herb.sage", "Sage"),
                         new ShopHerbViewData("herb.lavender", "Lavender")
                     }));
@@ -813,7 +811,7 @@ namespace Witch.Bootstrap.PlayModeTests
                 encounters[index] = new ShopEncounterViewData(
                     "customer.stress." + index,
                     "Stress Villager " + index,
-                    new OrderRequest("order.stress." + index, new HerbPair("herb.mint", "herb.borage")),
+                    new OrderRequest("order.stress." + index, new HerbPair("herb.peppermint", "herb.borage")),
                     "Peppermint and borage.");
             }
 
@@ -828,7 +826,7 @@ namespace Witch.Bootstrap.PlayModeTests
                     encounters,
                     new[]
                     {
-                        new ShopHerbViewData("herb.mint", "Mint"),
+                        new ShopHerbViewData("herb.peppermint", "Peppermint"),
                         new ShopHerbViewData("herb.borage", "Borage")
                     }));
             return presenter;

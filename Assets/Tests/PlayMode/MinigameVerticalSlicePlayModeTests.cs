@@ -135,7 +135,7 @@ namespace Witch.Bootstrap.PlayModeTests
             var setup = new NewRunSetup(
                 9,
                 new[] { "category.test" },
-                new[] { "herb.ginger", "herb.mint", "herb.sage" },
+                new[] { "herb.ginger", "herb.peppermint", "herb.sage" },
                 new[] { "guide.test" },
                 TimeSpan.FromSeconds(60),
                 "expense.day.1",
@@ -164,9 +164,9 @@ namespace Witch.Bootstrap.PlayModeTests
                     start.Session,
                     new AdmitCustomerCommand(
                         "customer." + index,
-                        new OrderRequest("order." + index, new HerbPair("herb.ginger", "herb.mint"))));
+                        new OrderRequest("order." + index, new HerbPair("herb.ginger", "herb.peppermint"))));
                 Assert.That(arrival.Succeeded, Is.True, arrival.ErrorMessage);
-                prepare.Grind(start.Session, "herb.mint", "herb.sage");
+                prepare.Grind(start.Session, "herb.peppermint", "herb.sage");
                 prepare.AddToPot(start.Session);
                 prepare.Brew(start.Session);
                 ServePotionResult result = serve.ExecuteAsync(start.Session).Result;

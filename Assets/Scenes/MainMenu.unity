@@ -212,7 +212,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &75409942
 RectTransform:
   m_ObjectHideFlags: 0
@@ -256,32 +256,35 @@ MonoBehaviour:
   pages:
   - narration: "Everyone in the village know \nmy shop."
     illustration: {fileID: 21300000, guid: 8bbb23686c5bb4ca587d8ac2e89efeb5, type: 3}
-    displaySeconds: 0
+    displaySeconds: 3
   - narration: "Fevers, cramps, bad coughs... \nThey bring me their troubles,  \nand I brew the cure."
     illustration: {fileID: 21300000, guid: 8bbb23686c5bb4ca587d8ac2e89efeb5, type: 3}
-    displaySeconds: 0
+    displaySeconds: 3
   - narration: "I only have ordinary herbs, \nthe kind any herbalist grows. \nNothing strange. \nNothing anyone could point at....."
     illustration: {fileID: 21300000, guid: 7940db01bbb30430aa083a0e0cb2c965, type: 3}
-    displaySeconds: 0
+    displaySeconds: 3
   - narration: "But when I brew, \nsomething happens that no herbalist can explain.\nMy potions cure a sickness almost at once."
     illustration: {fileID: 21300000, guid: 6cf8d34a4e8d94dba8c0ecaf9cd6e87b, type: 3}
-    displaySeconds: 0
+    displaySeconds: 3
   - narration: "Then the witch hunter came.\nHe watches and can be suspicious.\nI keep the shop open like usual,\nbut making sure I\u2019m not getting caught."
     illustration: {fileID: 21300000, guid: 66e2359754a2a424f8419a483b77bcf2, type: 3}
-    displaySeconds: 0
+    displaySeconds: 3
   - narration: 'I need to survive for at least 14 days
 
       and save enough money,
 
-      so I can go back to my village'
+      so I can move to another village'
     illustration: {fileID: 21300000, guid: b88f7d3fa1f104154bc5508fa0167b01, type: 3}
-    displaySeconds: 0
+    displaySeconds: 3
   panelFadeDuration: 0.4
   pageFadeDuration: 0.5
   autoAdvance: 1
   baseSeconds: 2
   secondsPerWord: 0.3
   minimumSeconds: 4
+  charactersPerSecond: 15
+  sentencePause: 0.25
+  commaPause: 0.12
 --- !u!225 &75409944
 CanvasGroup:
   m_ObjectHideFlags: 0

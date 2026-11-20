@@ -21,7 +21,7 @@ namespace Witch.Domain.Tests
             var draft = new PotionDraft(new[]
             {
                 new PotIngredient("herb.ginger"),
-                new PotIngredient("herb.mint")
+                new PotIngredient("herb.peppermint")
             });
 
             Assert.That(draft.IsReadyToBrew, Is.True);

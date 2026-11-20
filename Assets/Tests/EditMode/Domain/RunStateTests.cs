@@ -16,7 +16,7 @@ namespace Witch.Domain.Tests
                 suspicion: 0,
                 minigameWinCount: 0,
                 unlockedCategoryIds: new[] { "category.warm" },
-                unlockedHerbIds: new[] { "herb.ginger", "herb.mint" },
+                unlockedHerbIds: new[] { "herb.ginger", "herb.peppermint" },
                 unlockedGuidebookEntryIds: new[] { "guidebook.warm" },
                 tutorialFlags: new Dictionary<string, bool> { { "tutorial.arrival", false } },
                 narrativeFlags: new Dictionary<string, bool> { { "narrative.intro", true } });
@@ -27,7 +27,7 @@ namespace Witch.Domain.Tests
             Assert.That(run.Suspicion, Is.Zero);
             Assert.That(run.MinigameWinCount, Is.Zero);
             Assert.That(run.UnlockedCategoryIds, Is.EqualTo(new[] { "category.warm" }));
-            Assert.That(run.UnlockedHerbIds, Is.EqualTo(new[] { "herb.ginger", "herb.mint" }));
+            Assert.That(run.UnlockedHerbIds, Is.EqualTo(new[] { "herb.ginger", "herb.peppermint" }));
             Assert.That(run.UnlockedGuidebookEntryIds, Is.EqualTo(new[] { "guidebook.warm" }));
             Assert.That(run.TutorialFlags["tutorial.arrival"], Is.False);
             Assert.That(run.NarrativeFlags["narrative.intro"], Is.True);

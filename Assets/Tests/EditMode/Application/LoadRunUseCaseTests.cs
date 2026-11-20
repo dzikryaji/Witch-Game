@@ -154,7 +154,7 @@ namespace Witch.Application.Tests
                 pendingMinigame ? RunState.MinigameSuspicionThreshold : 0,
                 pendingMinigame ? 1 : 0,
                 new[] { "category.warm" },
-                new[] { "herb.ginger", "herb.mint" },
+                new[] { "herb.ginger", "herb.peppermint" },
                 new[] { "guidebook.warm" });
             RunState snapshotState = runState.WithProgress(
                 1,

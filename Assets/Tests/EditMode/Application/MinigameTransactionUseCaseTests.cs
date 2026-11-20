@@ -120,6 +120,49 @@ namespace Witch.Application.Tests
         }
 
         [Test]
+        public async Task Complete_DoesNotDrawAnOrderOrChangeOrderSelection()
+        {
+            GameSession session = CreatePendingMinigameSession(9, timerSeconds: 60);
+            OrderSelectionState selectionBefore = session.AttemptMetadata.Selection;
+            int usedCountBefore = session.AttemptState.UsedOrderIds.Count;
+            int orderSeedBefore = session.DayStartSnapshot.OrderSeed;
+            int activeSeedBefore = session.AttemptMetadata.ActiveOrderSeed;
+            var saves = new FakeSaveRepository();
+            var scenes = new FakeSceneLoader();
+            await new EnterMinigameUseCase(saves, scenes, new FakeRandomSource { NextValue = 707 }).ExecuteAsync(session);
+
+            MinigameTransactionResult result = await new CompleteMinigameUseCase(
+                saves,
+                scenes,
+                new FakeRandomSource { NextValue = 808 }).ExecuteAsync(session);
+
+            Assert.That(result.Succeeded, Is.True, result.ErrorMessage);
+            Assert.That(session.AttemptState.UsedOrderIds.Count, Is.EqualTo(usedCountBefore));
+            Assert.That(session.DayStartSnapshot.OrderSeed, Is.EqualTo(orderSeedBefore));
+            Assert.That(session.AttemptMetadata.ActiveOrderSeed, Is.EqualTo(activeSeedBefore));
+            Assert.That(session.AttemptMetadata.Selection.UsedOrderIds, Is.EqualTo(selectionBefore.UsedOrderIds));
+            Assert.That(session.AttemptMetadata.Selection.GivenPairKeys, Is.EqualTo(selectionBefore.GivenPairKeys));
+            Assert.That(saves.SavedAttemptMetadata.Selection.UsedOrderIds, Is.EqualTo(selectionBefore.UsedOrderIds));
+            Assert.That(saves.SavedAttemptMetadata.Selection.GivenPairKeys, Is.EqualTo(selectionBefore.GivenPairKeys));
+        }
+
+        [Test]
+        public void HunterFarewell_DoesNotConsumeAnOrderOrChangeSelection()
+        {
+            GameSession session = CreatePendingMinigameSession(9);
+            OrderSelectionState selectionBefore = session.AttemptMetadata.Selection;
+            int usedCountBefore = session.AttemptState.UsedOrderIds.Count;
+
+            session.MarkHunterFarewell(2);
+
+            Assert.That(session.TryConsumeHunterFarewell(out int completedWins), Is.True);
+            Assert.That(completedWins, Is.EqualTo(2));
+            Assert.That(session.AttemptState.UsedOrderIds.Count, Is.EqualTo(usedCountBefore));
+            Assert.That(session.AttemptMetadata.Selection.UsedOrderIds, Is.EqualTo(selectionBefore.UsedOrderIds));
+            Assert.That(session.AttemptMetadata.Selection.GivenPairKeys, Is.EqualTo(selectionBefore.GivenPairKeys));
+        }
+
+        [Test]
         public async Task Complete_QueueClosed_AppliesLiveStateOnly_LeavesTimerStoppedAtZero_AndSetsClosingEncounter()
         {
             GameSession session = CreatePendingMinigameSession(9, timerSeconds: 60);
@@ -157,16 +200,18 @@ namespace Witch.Application.Tests
         }
 
         [Test]
-        public async Task Complete_PersistsSnapshotAsCompleteBuildsToday_MetadataFromSession_AndSaveReloadDoesNotRouteToMinigame()
+        public async Task Complete_PersistsSnapshotAsCompleteBuildsToday_KeepsOrderSeed_AndSaveReloadDoesNotRouteToMinigame()
         {
             GameSession session = CreatePendingMinigameSession(9, timerSeconds: 60);
             var saves = new FakeSaveRepository();
             var scenes = new FakeSceneLoader();
             await new EnterMinigameUseCase(saves, scenes, new FakeRandomSource { NextValue = 707 }).ExecuteAsync(session);
-            int nextSeed = 808;
-            MatchCardOutcome expectedOutcome = MatchCardRules.Complete(session.DayStartSnapshot, session.RunState, nextSeed);
+            MatchCardOutcome expectedOutcome = MatchCardRules.Complete(
+                session.DayStartSnapshot,
+                session.RunState,
+                session.DayStartSnapshot.OrderSeed);
 
-            MinigameTransactionResult result = await new CompleteMinigameUseCase(saves, scenes, new FakeRandomSource { NextValue = nextSeed }).ExecuteAsync(session);
+            MinigameTransactionResult result = await new CompleteMinigameUseCase(saves, scenes, new FakeRandomSource { NextValue = 808 }).ExecuteAsync(session);
 
             Assert.That(result.Succeeded, Is.True, result.ErrorMessage);
             Assert.That(saves.SavedSnapshot.RunState.Money, Is.EqualTo(expectedOutcome.RestoredRunState.Money));
@@ -415,7 +460,7 @@ namespace Witch.Application.Tests
                 "run.minigame",
                 startingMoney,
                 new[] { "category.warm" },
-                new[] { "herb.ginger", "herb.mint", "herb.sage" },
+                new[] { "herb.ginger", "herb.peppermint", "herb.sage" },
                 new[] { "guidebook.warm" },
                 101,
                 TimeSpan.FromSeconds(timerSeconds),
@@ -436,8 +481,8 @@ namespace Witch.Application.Tests
                         "customer." + index,
                         new OrderRequest(
                             "order." + index,
-                            new HerbPair("herb.ginger", "herb.mint"))));
-                prepare.Grind(session, "herb.mint", "herb.sage");
+                            new HerbPair("herb.ginger", "herb.peppermint"))));
+                prepare.Grind(session, "herb.peppermint", "herb.sage");
                 prepare.AddToPot(session);
                 prepare.Brew(session);
                 serve.Execute(session);
@@ -458,7 +503,7 @@ namespace Witch.Application.Tests
                 "run.progress",
                 0,
                 new[] { "category.warm" },
-                new[] { "herb.ginger", "herb.mint" },
+                new[] { "herb.ginger", "herb.peppermint" },
                 new[] { "guidebook.warm" },
                 101,
                 TimeSpan.FromSeconds(timerSeconds),

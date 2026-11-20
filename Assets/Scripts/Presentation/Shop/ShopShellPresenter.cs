@@ -13,6 +13,7 @@ using Witch.Domain.Potions;
 using Witch.Domain.Progression;
 using Witch.Presentation;
 using Witch.Presentation.Credits;
+using Witch.Presentation.MainMenu;
 
 namespace Witch.Presentation.Shop
 {
@@ -82,6 +83,7 @@ namespace Witch.Presentation.Shop
         [SerializeField] private Button continueButton;
         [SerializeField] private GameObject creditsPanel;
         [SerializeField] private Witch.Presentation.Credits.CreditsRoll creditsRoll;
+        [SerializeField] private StoryIntroView epilogueView;
         [SerializeField] private GameObject pausePanel;
         [SerializeField] private Button resumeButton;
         [SerializeField] private Button mainMenuButton;
@@ -136,6 +138,8 @@ namespace Witch.Presentation.Shop
         private bool autoResolveExpenseAttempted;
         private bool creditsActive;
         private bool creditsExitStarted;
+        private bool epiloguePlaying;
+        private const float EpilogueFadeOutSeconds = 1.2f;
         private int? heldHeaderMoney;
         private readonly HashSet<string> announcedUnlocks = new HashSet<string>(StringComparer.Ordinal);
         private string autoResolveExpenseError;
@@ -323,7 +327,11 @@ namespace Witch.Presentation.Shop
                 setup.SeenOrderIds,
                 setup.IntroductionOrderId,
                 setup.OneTimeIntroduction,
-                setup.IntroductionCategoryOrderIds);
+                setup.IntroductionCategoryOrderIds,
+                setup.Selection,
+                setup.DayDifficultyRanks,
+                setup.GuidedTutorialEnabled,
+                setup.DayNumber);
             guidedTutorialOrderId = setup.GuidedTutorialOrderId;
             guidedTutorialActive = false;
             guidedTutorialSeenMarked = ActiveSession != null
@@ -338,6 +346,7 @@ namespace Witch.Presentation.Shop
             ValidateGuidedTutorialMasksIfEnabled();
             progressionPanel.SetActive(false);
             pausePanel.SetActive(false);
+            if (guidebookPanel != null) guidebookPanel.SetActive(false);
             tutorialPanel.SetActive(false);
             stationAnimationPlaying = false;
             brewAnimationPlaying = false;
@@ -483,7 +492,7 @@ namespace Witch.Presentation.Shop
 
         private void HandlePauseAction(InputAction.CallbackContext context)
         {
-            if (creditsActive) return;
+            if (creditsActive || epiloguePlaying) return;
             if (settingsPanelPresenter != null && settingsPanelPresenter.IsOpen)
             {
                 settingsPanelPresenter.Cancel();
@@ -499,7 +508,7 @@ namespace Witch.Presentation.Shop
 
         private void HandleGuidebookAction(InputAction.CallbackContext context)
         {
-            if (creditsActive) return;
+            if (creditsActive || epiloguePlaying) return;
             if (!IsInitialized || MinigameIntroVisible) return;
             if (guidedTutorialActive)
             {
@@ -1481,6 +1490,26 @@ namespace Witch.Presentation.Shop
             lifetimeCancellation = null;
         }
 
+        private async void PersistAttemptMetadata()
+        {
+            if (saveRepository == null || ActiveSession == null) return;
+            try
+            {
+                SaveStateResult save = await saveRepository.SaveRunStateAsync(
+                    ActiveSession.DayStartSnapshot,
+                    ActiveSession.AttemptMetadata,
+                    lifetimeCancellation?.Token ?? CancellationToken.None);
+                if (!save.Succeeded)
+                {
+                    Debug.LogWarning("Failed to persist order selection: " + save.ErrorMessage, this);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogWarning("Failed to persist order selection: " + ex.Message, this);
+            }
+        }
+
         private async void MarkGuidedTutorialSeen()
         {
             if (ActiveSession == null || guidedTutorialSeenMarked) return;
@@ -1653,11 +1682,11 @@ namespace Witch.Presentation.Shop
                 case ShopGuidedTutorialStep.ReadOrder:
                     return "Read the customer's order bubbles. Continue when you are ready.";
                 case ShopGuidedTutorialStep.OpenGuidebook:
-                    return "Open the guidebook to check Ginger and Mustard Seed.";
+                    return "Click the Book of Herbology to open the guidebook.";
                 case ShopGuidedTutorialStep.NavigateToMustardSeed:
-                    return "Turn to the spread that shows Mustard Seed.";
+                    return "Find Mustard Seed: pick a category on the Contents page or use the Next arrow.";
                 case ShopGuidedTutorialStep.CloseGuidebook:
-                    return "Press the close button to close the guidebook and return to the counter.";
+                    return "Click anywhere outside the book to close the guidebook.";
                 case ShopGuidedTutorialStep.LoadHerbs:
                     return "Drag Ginger and Mustard Seed into the grinder.";
                 case ShopGuidedTutorialStep.Grind:
@@ -1784,15 +1813,7 @@ namespace Witch.Presentation.Shop
 
             if (ActiveSession.CurrentPhase == Witch.Domain.GamePhase.CustomerArrival)
             {
-                ShopEncounterViewData encounter = null;
-                if (ShouldRunGuidedTutorial() && ActiveSession.AttemptState.UsedOrderIds.Count == 0)
-                {
-                    encounter = FindGuidedTutorialEncounter() ?? FindNextEncounter();
-                }
-                else
-                {
-                    encounter = FindNextEncounter();
-                }
+                ShopEncounterViewData encounter = FindNextEncounter();
                 if (encounter == null)
                 {
                     SetStatus("No more authored customers today. The clock continues to closing.");
@@ -1808,6 +1829,7 @@ namespace Witch.Presentation.Shop
                         : "DING! " + encounter.CustomerName + " enters the shop."
                     : arrival.ErrorMessage);
                 if (arrival.Succeeded) audioService?.Play(GameAudioCueIds.CustomerBell);
+                if (arrival.Succeeded) PersistAttemptMetadata();
                 if (arrival.Succeeded)
                 {
                     hudView.SetCustomer(
@@ -1918,7 +1940,11 @@ namespace Witch.Presentation.Shop
         private ShopEncounterViewData FindNextEncounter()
         {
             if (!ActiveSession.TimerState.QueueOpen || encounterDeck == null) return null;
-            return encounterDeck.Draw(ActiveSession.AttemptState.UsedOrderIds.Count);
+            ShopEncounterViewData encounter = encounterDeck.Draw(
+                ActiveSession.AttemptState.UsedOrderIds.Count,
+                ActiveSession.AttemptMetadata.Selection);
+            ActiveSession.SetOrderSelectionState(encounterDeck.CurrentState);
+            return encounter;
         }
 
 
@@ -2000,6 +2026,8 @@ namespace Witch.Presentation.Shop
             }
             creditsActive = false;
             creditsExitStarted = false;
+            epiloguePlaying = false;
+            if (epilogueView != null) epilogueView.Hide();
             guidebookLeftPage.BindPageLinks(GoToGuidebookPage);
             guidebookRightPage.BindPageLinks(GoToGuidebookPage);
             pauseButton.onClick.AddListener(TogglePause);
@@ -2032,7 +2060,7 @@ namespace Witch.Presentation.Shop
             Button button = backdrop.GetComponent<Button>();
             if (button == null) return;
             button.onClick.RemoveAllListeners();
-            button.enabled = false;
+            button.onClick.AddListener(CloseGuidebook);
         }
 
         private void ConfigureHerbButtons()
@@ -2433,6 +2461,12 @@ namespace Witch.Presentation.Shop
                 return;
             }
 
+            if (epiloguePlaying)
+            {
+                if (progressionPanel != null) progressionPanel.SetActive(false);
+                return;
+            }
+
             if (progressionPanel == null || resolveExpense == null)
             {
                 return;
@@ -2537,7 +2571,7 @@ namespace Witch.Presentation.Shop
 
             if (ActiveSession.CurrentPhase == Witch.Domain.GamePhase.Victory)
             {
-                StartCredits();
+                PlayEpilogueThenCredits();
                 return;
             }
 
@@ -2548,6 +2582,71 @@ namespace Witch.Presentation.Shop
             }
 
             RunUiAction(ContinueNextDayAsync);
+        }
+
+        private async void PlayEpilogueThenCredits()
+        {
+            if (creditsActive || epiloguePlaying) return;
+            if (epilogueView == null)
+            {
+                StartCredits();
+                return;
+            }
+
+            epiloguePlaying = true;
+            audioService?.Play(GameAudioCueIds.Congratulations);
+            if (progressionPanel != null) progressionPanel.SetActive(false);
+            if (pausePanel != null) pausePanel.SetActive(false);
+            if (pauseOverlay != null) pauseOverlay.SetActive(false);
+            epilogueView.transform.SetAsLastSibling();
+            try
+            {
+                await epilogueView.PlayAsync();
+            }
+            catch (Exception exception)
+            {
+                Debug.LogException(exception, this);
+            }
+
+            if (this == null) return;
+            epiloguePlaying = false;
+            StartCredits();
+            if (!creditsActive)
+            {
+                epilogueView.Hide();
+                return;
+            }
+
+            epilogueView.transform.SetAsLastSibling();
+            try
+            {
+                await FadeOutEpilogueAsync();
+            }
+            catch (Exception exception)
+            {
+                Debug.LogException(exception, this);
+                if (this != null) epilogueView.Hide();
+            }
+        }
+
+        private async Task FadeOutEpilogueAsync()
+        {
+            CanvasGroup group = epilogueView.GetComponent<CanvasGroup>();
+            if (group != null && epilogueView.gameObject.activeInHierarchy)
+            {
+                float start = group.alpha;
+                float elapsed = 0f;
+                while (elapsed < EpilogueFadeOutSeconds)
+                {
+                    await Task.Yield();
+                    if (this == null || group == null) return;
+                    elapsed += Mathf.Min(Time.unscaledDeltaTime, 1f / 30f);
+                    group.alpha = Mathf.Lerp(start, 0f, Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(elapsed / EpilogueFadeOutSeconds)));
+                }
+            }
+
+            epilogueView.Hide();
+            if (group != null) group.alpha = 1f;
         }
 
         private void StartCredits()

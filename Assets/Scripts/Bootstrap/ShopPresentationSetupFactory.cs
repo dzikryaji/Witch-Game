@@ -2,13 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Witch.Application.Flow;
+using Witch.Domain.Orders;
 using Witch.Infrastructure.Content;
 using Witch.Presentation.Shop;
 
 namespace Witch.Bootstrap
 {
     /// <summary>Maps runtime content and session state into data consumed by the authored Shop view.</summary>
-    internal sealed class ShopPresentationSetupFactory
+    public sealed class ShopPresentationSetupFactory
     {
         private const string WitchHunterCustomerId = "customer.witchHunter";
         private readonly GameRuntimeContent content;
@@ -36,7 +37,11 @@ namespace Witch.Bootstrap
                     && day.OrderDifficulties.Contains(order.Difficulty))
                 .OrderBy(order => order.Request.OrderId, StringComparer.Ordinal)
                 .ToList();
-            string introductionOrderId = null;
+
+            OrderSelectionState selection = session.AttemptMetadata.Selection;
+            string introductionOrderId = selection.ScheduledIntroOrderIds.FirstOrDefault();
+            string pendingIntroId = selection.PendingIntroOrderId;
+            if (string.IsNullOrWhiteSpace(introductionOrderId)) introductionOrderId = pendingIntroId;
             string introductionCategoryId = null;
             if (day.DayNumber > 1 && day.UnlockedCategoryIds.Count > 0)
             {
@@ -48,31 +53,41 @@ namespace Witch.Bootstrap
                     .ToList();
                 if (candidates.Count > 0)
                 {
-                    OrderContent introduction = candidates[PositiveModulo(session.DayStartSnapshot.OrderSeed, candidates.Count)];
-                    introductionOrderId = introduction.Request.OrderId;
-                    if (availableOrders.All(value => value.Request.OrderId != introductionOrderId))
+                    if (string.IsNullOrWhiteSpace(introductionOrderId)
+                        && string.IsNullOrWhiteSpace(pendingIntroId)
+                        && selection.ScheduledIntroOrderIds.Count == 0)
                     {
-                        availableOrders.Add(introduction);
+                        OrderContent introduction = candidates[
+                            PositiveModulo(session.DayStartSnapshot.OrderSeed, candidates.Count)];
+                        introductionOrderId = introduction.Request.OrderId;
+                        int introSlot = new System.Random(
+                            unchecked(session.DayStartSnapshot.OrderSeed ^ 7717)).Next(1, 4);
+                        selection = selection.WithSchedule(
+                            new[] { introductionOrderId }, null, introSlot);
+                        session.SetOrderSelectionState(selection);
+                    }
+                    if (!availableOrders.Any(order => order.Request.OrderId == introductionOrderId)
+                        && content.OrdersById.TryGetValue(introductionOrderId, out OrderContent introOrder))
+                    {
+                        availableOrders.Add(introOrder);
                     }
                 }
             }
-            var encounters = new List<ShopEncounterViewData>();
-            for (int offset = 0; offset < availableOrders.Count; offset++)
-            {
-                OrderContent order = availableOrders[offset];
-                CustomerContent customer = order.Customer;
-                encounters.Add(new ShopEncounterViewData(
-                    customer.StableId,
-                    customer.DisplayName,
-                    customer.Illustration,
-                    order.Request,
-                    order.OrderBubbles));
-            }
+
+            var encounters = availableOrders
+                .OrderBy(order => order.Request.OrderId, StringComparer.Ordinal)
+                .Select(order => CreateEncounter(order))
+                .ToList();
 
             var herbs = new List<ShopHerbViewData>();
             foreach (string herbId in session.RunState.UnlockedHerbIds)
             {
-                HerbContent herb = content.HerbsById[herbId];
+                if (!content.HerbsById.TryGetValue(herbId, out HerbContent herb))
+                {
+                    throw new InvalidOperationException(
+                        "Unlocked herb '" + herbId + "' from session run state was not found in the herb catalog.");
+                }
+
                 herbs.Add(new ShopHerbViewData(herb.StableId, herb.DisplayName, herb.HerbIllustration));
             }
 
@@ -81,30 +96,26 @@ namespace Witch.Bootstrap
             const string guidedTutorialOrderId = "order.tutorial.w01";
             bool guidedTutorialEligible = session.RunState.CurrentDayNumber == 1
                 && !(session.RunState.TutorialFlags.TryGetValue(ShopTutorialFlags.Day1GuidedCompleted, out bool completed) && completed);
-            // In-memory guard to avoid re-triggering within same session lifetime edge cases.
             if (guidedTutorialEligible)
             {
                 tutorialShownRunIds.Add(session.RunState.RunId);
             }
 
-            if (guidedTutorialEligible && encounters.All(e => e.Order.OrderId != guidedTutorialOrderId))
+            if (guidedTutorialEligible && encounters.All(e => e.Order.OrderId != guidedTutorialOrderId)
+                && content.OrdersById.TryGetValue(guidedTutorialOrderId, out OrderContent tutorialOrder))
             {
-                // Ensure the fixed tutorial order is available when eligible.
-                if (content.OrdersById.TryGetValue(guidedTutorialOrderId, out OrderContent tutorialOrder))
-                {
-                    CustomerContent tutorialCustomer = tutorialOrder.Customer;
-                    encounters.Insert(0, new ShopEncounterViewData(
-                        tutorialCustomer.StableId,
-                        tutorialCustomer.DisplayName,
-                        tutorialCustomer.Illustration,
-                        tutorialOrder.Request,
-                        tutorialOrder.OrderBubbles));
-                }
-                else
-                {
-                    guidedTutorialEligible = false;
-                }
+                encounters.Insert(0, CreateEncounter(tutorialOrder));
             }
+            else if (guidedTutorialEligible && !content.OrdersById.ContainsKey(guidedTutorialOrderId))
+            {
+                guidedTutorialEligible = false;
+            }
+
+            int[] dayDifficultyRanks = day.OrderDifficulties
+                .Select(difficulty => (int)difficulty)
+                .Distinct()
+                .OrderBy(rank => rank)
+                .ToArray();
 
             return new ShopPresentationSetup(
                 encounters,
@@ -129,7 +140,23 @@ namespace Witch.Bootstrap
                     witchHunter.DisplayName,
                     witchHunter.Illustration),
                 guidedTutorialOrderId: guidedTutorialEligible ? guidedTutorialOrderId : null,
-                witchHunterDialogue: CreateWitchHunterDialogue());
+                witchHunterDialogue: CreateWitchHunterDialogue(),
+                selection: session.AttemptMetadata.Selection,
+                dayDifficultyRanks: dayDifficultyRanks);
+        }
+
+        private ShopEncounterViewData CreateEncounter(OrderContent order)
+        {
+            string categoryId = CategoryForOrder(order);
+            return new ShopEncounterViewData(
+                order.Customer.StableId,
+                order.Customer.DisplayName,
+                order.Customer.Illustration,
+                order.Request,
+                order.OrderBubbles,
+                order.Difficulty.ToString(),
+                (int)order.Difficulty,
+                categoryId);
         }
 
         private WitchHunterDialogueViewData CreateWitchHunterDialogue()
@@ -148,8 +175,17 @@ namespace Witch.Bootstrap
 
         private bool OrderUsesCategory(OrderContent order, string categoryId)
         {
-            HerbContent herb = content.HerbsById[order.Request.RequestedPair.FirstHerbId];
-            return string.Equals(herb.CategoryId, categoryId, StringComparison.Ordinal);
+            return string.Equals(
+                CategoryForOrder(order),
+                categoryId,
+                StringComparison.Ordinal);
+        }
+
+        private string CategoryForOrder(OrderContent order)
+        {
+            string first = content.HerbsById[order.Request.RequestedPair.FirstHerbId].CategoryId;
+            string second = content.HerbsById[order.Request.RequestedPair.SecondHerbId].CategoryId;
+            return string.Equals(first, second, StringComparison.Ordinal) ? first : first + "|" + second;
         }
 
         /// <summary>Contents page first (unlocked categories, in unlock order), then one page per unlocked herb.</summary>

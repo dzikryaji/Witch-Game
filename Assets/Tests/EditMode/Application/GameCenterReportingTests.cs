@@ -244,7 +244,7 @@ namespace Witch.Application.Tests
             var herbCategories = new Dictionary<string, string>(StringComparer.Ordinal)
             {
                 { "herb.ginger", "category.warm" },
-                { "herb.mint", "category.cool" },
+                { "herb.peppermint", "category.cool" },
             };
             var serve = new ServePotionUseCase(
                 new PotionServiceRules(20),
@@ -252,7 +252,7 @@ namespace Witch.Application.Tests
                 gameCenter,
                 herbCategories);
 
-            ServeCorrectPotion(session, clock, serve, "herb.ginger", "herb.mint");
+            ServeCorrectPotion(session, clock, serve, "herb.ginger", "herb.peppermint");
 
             Assert.That(gameCenter.Reports, Has.Count.EqualTo(1));
             Assert.That(gameCenter.Reports[0].Id, Is.EqualTo(GameCenterAchievementIds.FirstRemedy));
@@ -268,7 +268,7 @@ namespace Witch.Application.Tests
             var herbCategories = new Dictionary<string, string>(StringComparer.Ordinal)
             {
                 { "herb.ginger", "category.warm" },
-                { "herb.mint", "category.cool" },
+                { "herb.peppermint", "category.cool" },
             };
             var serve = new ServePotionUseCase(
                 new PotionServiceRules(20),
@@ -276,8 +276,8 @@ namespace Witch.Application.Tests
                 gameCenter,
                 herbCategories);
 
-            ServeCorrectPotion(session, clock, serve, "herb.ginger", "herb.mint");
-            ServeCorrectPotion(session, clock, serve, "herb.ginger", "herb.mint");
+            ServeCorrectPotion(session, clock, serve, "herb.ginger", "herb.peppermint");
+            ServeCorrectPotion(session, clock, serve, "herb.ginger", "herb.peppermint");
 
             Assert.That(gameCenter.Reports.Count(r => r.Id == GameCenterAchievementIds.FirstRemedy), Is.EqualTo(1));
         }
@@ -290,7 +290,7 @@ namespace Witch.Application.Tests
             var herbCategories = new Dictionary<string, string>(StringComparer.Ordinal)
             {
                 { "herb.ginger", "category.warm" },
-                { "herb.mint", "category.cool" },
+                { "herb.peppermint", "category.cool" },
                 { "herb.sage", "category.soothe" },
                 { "herb.borage", "category.cleanse" },
                 { "herb.thyme", "category.mend" },
@@ -305,8 +305,8 @@ namespace Witch.Application.Tests
             var resolve = CreateResolve(new ExpenseRules(10), gameCenter);
             var serves = new[]
             {
-                ("herb.ginger", "herb.mint"),      // ginger -> warm
-                ("herb.mint", "herb.sage"),        // mint -> cool
+                ("herb.ginger", "herb.peppermint"),      // ginger -> warm
+                ("herb.peppermint", "herb.sage"),        // peppermint -> cool
                 ("herb.sage", "herb.thyme"),       // sage -> soothe
                 ("herb.borage", "herb.thyme"),     // borage -> cleanse
                 ("herb.thyme", "herb.wild-garlic") // thyme -> mend
@@ -340,7 +340,7 @@ namespace Witch.Application.Tests
             var herbCategories = new Dictionary<string, string>(StringComparer.Ordinal)
             {
                 { "herb.ginger", "category.warm" },
-                { "herb.mint", "category.cool" },
+                { "herb.peppermint", "category.cool" },
                 { "herb.sage", "category.soothe" },
             };
             var serve = new ServePotionUseCase(
@@ -349,7 +349,7 @@ namespace Witch.Application.Tests
                 gameCenter,
                 herbCategories);
 
-            ServeCorrectPotion(session, clock, serve, "herb.ginger", "herb.mint");
+            ServeCorrectPotion(session, clock, serve, "herb.ginger", "herb.peppermint");
 
             // FirstRemedy IS reported on first correct serve; FiveArts is not
             Assert.That(gameCenter.Reports.Count(r => r.Id == GameCenterAchievementIds.FirstRemedy), Is.EqualTo(1));
@@ -424,11 +424,11 @@ namespace Witch.Application.Tests
                 session,
                 new AdmitCustomerCommand(
                     "customer.test",
-                    new OrderRequest("order.test", new HerbPair("herb.ginger", "herb.mint"))));
+                    new OrderRequest("order.test", new HerbPair("herb.ginger", "herb.peppermint"))));
             clock.UtcNow = clock.UtcNow.Add(session.TimerState.RemainingTime).Add(TimeSpan.FromSeconds(1));
             new UpdateShopTimerUseCase(clock).Execute(session);
             var prepare = new PotionPreparationUseCase(new PotionServiceRules(20));
-            prepare.Grind(session, "herb.ginger", "herb.mint");
+            prepare.Grind(session, "herb.ginger", "herb.peppermint");
             prepare.AddToPot(session);
             prepare.Brew(session);
 
@@ -523,7 +523,7 @@ namespace Witch.Application.Tests
                 "run.minigame",
                 101,
                 new[] { "category.warm" },
-                new[] { "herb.ginger", "herb.mint", "herb.sage" },
+                new[] { "herb.ginger", "herb.peppermint", "herb.sage" },
                 new[] { "guidebook.warm" },
                 101,
                 TimeSpan.FromMinutes(4),
@@ -543,8 +543,8 @@ namespace Witch.Application.Tests
                     session,
                     new AdmitCustomerCommand(
                         "customer." + index,
-                        new OrderRequest("order." + index, new HerbPair("herb.ginger", "herb.mint"))));
-                prepare.Grind(session, "herb.mint", "herb.sage");
+                        new OrderRequest("order." + index, new HerbPair("herb.ginger", "herb.peppermint"))));
+                prepare.Grind(session, "herb.peppermint", "herb.sage");
                 prepare.AddToPot(session);
                 prepare.Brew(session);
                 serve.Execute(session);
@@ -597,7 +597,7 @@ namespace Witch.Application.Tests
                 "run.game-center",
                 startingMoney,
                 new[] { "category.warm" },
-                new[] { "herb.ginger", "herb.mint", "herb.sage" },
+                new[] { "herb.ginger", "herb.peppermint", "herb.sage" },
                 new[] { "guidebook.warm" },
                 100,
                 TimeSpan.FromSeconds(1),
@@ -638,11 +638,11 @@ namespace Witch.Application.Tests
                     "customer.day." + day,
                     new OrderRequest(
                         "order.day." + day,
-                        new HerbPair("herb.ginger", "herb.mint"))));
+                        new HerbPair("herb.ginger", "herb.peppermint"))));
             clock.UtcNow = clock.UtcNow.Add(session.TimerState.RemainingTime).Add(TimeSpan.FromSeconds(1));
             new UpdateShopTimerUseCase(clock).Execute(session);
             var prepare = new PotionPreparationUseCase(rules);
-            prepare.Grind(session, correct ? "herb.ginger" : "herb.mint", correct ? "herb.mint" : "herb.sage");
+            prepare.Grind(session, correct ? "herb.ginger" : "herb.peppermint", correct ? "herb.peppermint" : "herb.sage");
             prepare.AddToPot(session);
             prepare.Brew(session);
             new ServePotionUseCase(rules).Execute(session);
