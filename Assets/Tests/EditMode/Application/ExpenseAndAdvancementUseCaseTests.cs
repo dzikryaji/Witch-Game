@@ -212,7 +212,7 @@ namespace Witch.Application.Tests
                 "run.three-days",
                 0,
                 new[] { "category.warm" },
-                new[] { "herb.ginger", "herb.mint", "herb.sage" },
+                new[] { "herb.ginger", "herb.peppermint", "herb.sage" },
                 new[] { "guidebook.warm" },
                 100,
                 TimeSpan.FromSeconds(1),
@@ -246,11 +246,11 @@ namespace Witch.Application.Tests
                     "customer.day." + day,
                     new OrderRequest(
                         "order.day." + day,
-                        new HerbPair("herb.ginger", "herb.mint"))));
+                        new HerbPair("herb.ginger", "herb.peppermint"))));
             clock.UtcNow = clock.UtcNow.Add(session.TimerState.RemainingTime).Add(TimeSpan.FromSeconds(1));
             new UpdateShopTimerUseCase(clock).Execute(session);
             var prepare = new PotionPreparationUseCase(rules);
-            prepare.Grind(session, correct ? "herb.ginger" : "herb.mint", correct ? "herb.mint" : "herb.sage");
+            prepare.Grind(session, correct ? "herb.ginger" : "herb.peppermint", correct ? "herb.peppermint" : "herb.sage");
             prepare.AddToPot(session);
             prepare.Brew(session);
             new ServePotionUseCase(rules).Execute(session);

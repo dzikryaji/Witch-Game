@@ -110,7 +110,8 @@ namespace Witch.Application.Flow
                     session.AttemptMetadata.MinigamePlayedToday,
                     session.AttemptMetadata.CorrectServiceCountToday + (outcome.Kind == ServiceOutcomeKind.Correct ? 1 : 0),
                     session.AttemptMetadata.CoinsEarnedToday + outcome.Payment,
-                    session.AttemptMetadata.WrongOrdersForSummary + (wrongValid ? 1 : 0));
+                    session.AttemptMetadata.WrongOrdersForSummary + (wrongValid ? 1 : 0),
+                    session.AttemptMetadata.Selection);
                 SaveStateResult save = await attemptRepository.SaveActiveAttemptMetadataAsync(
                     metadata,
                     cancellationToken);

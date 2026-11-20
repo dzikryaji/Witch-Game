@@ -54,7 +54,7 @@ namespace Witch.Application.Flow
             AttemptState = new DayAttemptState(
                 attemptMetadata.ActiveOrderSeed,
                 dayStartSnapshot.TimerDuration,
-                null,
+                attemptMetadata.Selection.UsedOrderIds,
                 null,
                 null,
                 0,
@@ -158,6 +158,8 @@ namespace Witch.Application.Flow
 
             var usedOrderIds = new System.Collections.Generic.List<string>(AttemptState.UsedOrderIds);
             usedOrderIds.Add(order.OrderId);
+            AttemptMetadata = AttemptMetadata.WithSelection(
+                AttemptMetadata.Selection.WithAdmittedOrder(order.OrderId, order.RequestedPair));
 
             AttemptState = new DayAttemptState(
                 AttemptState.AttemptSeed,
@@ -169,6 +171,17 @@ namespace Witch.Application.Flow
                 new PotionDraft(),
                 null);
             TimerState = new ShopTimerState(TimerState.RemainingTime, true);
+        }
+
+        public void SetOrderSelectionState(OrderSelectionState selection)
+        {
+            if (selection == null) throw new ArgumentNullException(nameof(selection));
+            AttemptMetadata = AttemptMetadata.WithSelection(selection);
+        }
+
+        internal void ClearPairCycle()
+        {
+            AttemptMetadata = AttemptMetadata.WithSelection(AttemptMetadata.Selection.WithPairCycleCleared());
         }
 
         internal void RefreshTimer(DateTimeOffset nowUtc)
@@ -320,7 +333,8 @@ namespace Witch.Application.Flow
                 AttemptMetadata.CoinsEarnedToday + outcome.Payment,
                 wrongValid
                     ? AttemptMetadata.WrongOrdersForSummary + 1
-                    : AttemptMetadata.WrongOrdersForSummary);
+                    : AttemptMetadata.WrongOrdersForSummary,
+                AttemptMetadata.Selection);
             ServiceCommitted = true;
             ClearWorkbench();
             TimerState = new ShopTimerState(TimerState.RemainingTime, false);
@@ -453,7 +467,8 @@ namespace Witch.Application.Flow
                 DayStartSnapshot.ExpenseId,
                 DayStartSnapshot.ExpenseValue,
                 DayStartSnapshot.SaveVersion,
-                DayStartSnapshot.CapturedAtUtc);
+                DayStartSnapshot.CapturedAtUtc,
+                DayStartSnapshot.Selection);
         }
 
         internal void RetryDay(
@@ -487,7 +502,7 @@ namespace Witch.Application.Flow
             AttemptState = new DayAttemptState(
                 attemptMetadata.ActiveOrderSeed,
                 dayStartSnapshot.TimerDuration,
-                Array.Empty<string>(),
+                attemptMetadata.Selection.UsedOrderIds,
                 null,
                 null,
                 0,

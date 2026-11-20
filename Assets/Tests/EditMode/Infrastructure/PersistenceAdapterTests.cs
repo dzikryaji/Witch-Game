@@ -98,7 +98,7 @@ namespace Witch.Infrastructure.Tests
             GameSaveState save = CreateSave("run.legacy-aloe", suspicion: 0, seed: 222);
             await repository.SaveRunStateAsync(save.DayStartSnapshot, save.AttemptMetadata);
             string path = Path.Combine(temporaryDirectory, JsonRunRepository.CurrentRunFileName);
-            File.WriteAllText(path, File.ReadAllText(path).Replace("herb.mint", "herb.aloe"));
+            File.WriteAllText(path, File.ReadAllText(path).Replace("herb.peppermint", "herb.aloe"));
 
             LoadStateResult load = await repository.LoadLatestAsync();
 
@@ -215,7 +215,7 @@ namespace Witch.Infrastructure.Tests
         }
 
         [Test]
-        public async Task QuitAtSuspicionTwoAndPendingMinigameReloadSafelyThenMinigameChangesSeed()
+        public async Task QuitAtSuspicionTwoAndPendingMinigameReloadSafelyThenMinigameKeepsOrderSeed()
         {
             var repository = new InMemoryRunRepository();
             GameSession session = CreateSession();
@@ -251,7 +251,7 @@ namespace Witch.Infrastructure.Tests
 
             Assert.That(resumed.RunState.Suspicion, Is.Zero);
             Assert.That(resumed.RunState.MinigameWinCount, Is.EqualTo(1));
-            Assert.That(resumed.AttemptMetadata.ActiveOrderSeed, Is.EqualTo(999));
+            Assert.That(resumed.AttemptMetadata.ActiveOrderSeed, Is.EqualTo(777));
         }
 
         [Test]
@@ -292,9 +292,9 @@ namespace Witch.Infrastructure.Tests
                 session,
                 new AdmitCustomerCommand(
                     "customer." + index,
-                    new OrderRequest("order." + index, new HerbPair("herb.ginger", "herb.mint"))));
+                    new OrderRequest("order." + index, new HerbPair("herb.ginger", "herb.peppermint"))));
             var preparation = new PotionPreparationUseCase(rules);
-            preparation.Grind(session, "herb.mint", "herb.sage");
+            preparation.Grind(session, "herb.peppermint", "herb.sage");
             preparation.AddToPot(session);
             preparation.Brew(session);
             ServePotionResult result = await new ServePotionUseCase(rules, repository).ExecuteAsync(session);
@@ -307,7 +307,7 @@ namespace Witch.Infrastructure.Tests
                 "run.quit",
                 0,
                 new[] { "category.warm" },
-                new[] { "herb.ginger", "herb.mint", "herb.sage" },
+                new[] { "herb.ginger", "herb.peppermint", "herb.sage" },
                 new[] { "guidebook.warm" },
                 777,
                 TimeSpan.FromMinutes(4),
@@ -331,7 +331,7 @@ namespace Witch.Infrastructure.Tests
                 0,
                 0,
                 new[] { "category.warm" },
-                new[] { "herb.ginger", "herb.mint" },
+                new[] { "herb.ginger", "herb.peppermint" },
                 new[] { "guidebook.warm" },
                 new Dictionary<string, bool> { { "tutorial.intro", true } },
                 seenOrderIds: new[] { "order.seen" });

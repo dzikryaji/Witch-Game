@@ -11,7 +11,6 @@ namespace Witch.Application.Flow
     {
         private readonly IRunStateTransactionRepository saveRepository;
         private readonly ISceneLoader sceneLoader;
-        private readonly IRandomSource randomSource;
         private readonly IGameCenterService gameCenter;
         private bool memoryMenderReported;
 
@@ -23,7 +22,7 @@ namespace Witch.Application.Flow
         {
             this.saveRepository = saveRepository ?? throw new ArgumentNullException(nameof(saveRepository));
             this.sceneLoader = sceneLoader ?? throw new ArgumentNullException(nameof(sceneLoader));
-            this.randomSource = randomSource ?? throw new ArgumentNullException(nameof(randomSource));
+            if (randomSource == null) throw new ArgumentNullException(nameof(randomSource));
             this.gameCenter = gameCenter;
             this.memoryMenderReported = false;
         }
@@ -59,12 +58,7 @@ namespace Witch.Application.Flow
                 return MinigameTransactionResult.Failure(MinigameTransactionError.InvalidPhase, "No active minigame can complete.");
             }
 
-            int nextSeed = randomSource.NextInt(1, int.MaxValue);
-            if (nextSeed == session.DayStartSnapshot.OrderSeed)
-            {
-                nextSeed = nextSeed == int.MaxValue - 1 ? 1 : nextSeed + 1;
-            }
-
+            int nextSeed = session.DayStartSnapshot.OrderSeed;
             int completedMinigameWinsBeforeThisOne = session.RunState.MinigameWinCount;
             MatchCardOutcome outcome = MatchCardRules.Complete(
                 session.DayStartSnapshot,
@@ -77,11 +71,12 @@ namespace Witch.Application.Flow
                 session.DayStartSnapshot.ExpenseId,
                 session.DayStartSnapshot.ExpenseValue,
                 session.DayStartSnapshot.SaveVersion,
-                session.DayStartSnapshot.CapturedAtUtc);
+                session.DayStartSnapshot.CapturedAtUtc,
+                session.DayStartSnapshot.Selection);
 
             // Persisted metadata: session metadata with only suspicion reset, win count incremented,
             // pending/board seed cleared, and MinigamePlayedToday kept true. Day counters unchanged.
-            // Active order seed handling kept as today (next attempt seed from completion).
+            // Order selection is unchanged by the minigame win.
             ActiveAttemptMetadata metadata = new ActiveAttemptMetadata(
                 session.AttemptMetadata.RunId,
                 session.AttemptMetadata.DayNumber,
@@ -95,7 +90,8 @@ namespace Witch.Application.Flow
                 true,
                 session.AttemptMetadata.CorrectServiceCountToday,
                 session.AttemptMetadata.CoinsEarnedToday,
-                session.AttemptMetadata.WrongOrdersForSummary);
+                session.AttemptMetadata.WrongOrdersForSummary,
+                session.AttemptMetadata.Selection);
 
             SaveStateResult save = await saveRepository.SaveRunStateAsync(
                 persistedSnapshot,

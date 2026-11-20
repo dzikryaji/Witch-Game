@@ -6,6 +6,13 @@ namespace Witch.Infrastructure.Content
 {
     public sealed class GameContentValidator
     {
+        private static readonly string[] CodeReferencedHerbIds =
+        {
+            "herb.ginger",
+            "herb.mustardSeed",
+            "herb.peppermint"
+        };
+
         public ContentValidationReport Validate(GameContentCatalogDefinition catalog)
         {
             var errors = new List<string>();
@@ -48,6 +55,7 @@ namespace Witch.Infrastructure.Content
             }
 
             var herbIds = IdSet(catalog.Herbs);
+            ValidateCodeReferencedHerbs(herbIds, errors);
             var customerIds = IdSet(catalog.Customers);
             var categoryIds = IdSet(catalog.HerbCategories);
             var herbsById = catalog.Herbs
@@ -369,6 +377,19 @@ namespace Witch.Infrastructure.Content
             foreach (string id in references)
             {
                 ValidateReference(id, knownIds, label, errors);
+            }
+        }
+
+        private static void ValidateCodeReferencedHerbs(
+            ISet<string> herbIds,
+            ICollection<string> errors)
+        {
+            foreach (string herbId in CodeReferencedHerbIds)
+            {
+                if (!herbIds.Contains(herbId))
+                {
+                    errors.Add("Production code references unknown herb ID '" + herbId + "'.");
+                }
             }
         }
 

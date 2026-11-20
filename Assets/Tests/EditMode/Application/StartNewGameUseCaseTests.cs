@@ -76,7 +76,7 @@ namespace Witch.Application.Tests
                 new NewRunSetup(
                     0,
                     new[] { "category.warm" },
-                    new[] { "herb.ginger", "herb.mint" },
+                    new[] { "herb.ginger", "herb.peppermint" },
                     new[] { "guidebook.warm" },
                     firstDayTimerDuration: TimeSpan.FromMinutes(4),
                     firstDayExpenseId: "expense.day.1",

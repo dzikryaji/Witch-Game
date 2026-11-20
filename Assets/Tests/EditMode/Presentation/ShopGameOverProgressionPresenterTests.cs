@@ -75,7 +75,7 @@ namespace Witch.Presentation.Tests
                     "run.gameover.panel",
                     7,
                     new[] { "category.warm" },
-                    new[] { "herb.ginger", "herb.mint", "herb.sage" },
+                    new[] { "herb.ginger", "herb.peppermint", "herb.sage" },
                     new[] { "guidebook.warm" },
                     100,
                     TimeSpan.FromSeconds(1),

@@ -1,8 +1,10 @@
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Witch.Application.Ports;
 using Witch.Domain;
+using Witch.Domain.Orders;
 using Witch.Domain.Progression;
 
 namespace Witch.Application.Flow
@@ -89,7 +91,8 @@ namespace Witch.Application.Flow
                     session.DayStartSnapshot.ExpenseId,
                     session.DayStartSnapshot.ExpenseValue,
                     session.DayStartSnapshot.SaveVersion,
-                    clock.UtcNow);
+                    clock.UtcNow,
+                    session.DayStartSnapshot.Selection);
                 var completedMetadata = new ActiveAttemptMetadata(
                     completedRun.RunId,
                     completedRun.CurrentDayNumber,
@@ -97,7 +100,8 @@ namespace Witch.Application.Flow
                     completedRun.MinigameWinCount,
                     false,
                     0,
-                    session.AttemptMetadata.ActiveOrderSeed);
+                    session.AttemptMetadata.ActiveOrderSeed,
+                    selection: session.AttemptMetadata.Selection);
                 SaveStateResult completedSave = await saveRepository.SaveRunStateAsync(
                     completedSnapshot,
                     completedMetadata,
@@ -129,6 +133,21 @@ namespace Witch.Application.Flow
             RunState nextRunState = setup.ApplyUnlocks(outcome.UpdatedRunState);
             int nextDay = nextRunState.CurrentDayNumber;
             int nextSeed = randomSource.NextInt(1, int.MaxValue);
+            OrderSelectionState previousSelection = session.AttemptMetadata.Selection;
+            string pendingIntroId = previousSelection.PendingIntroOrderId;
+            if (string.IsNullOrWhiteSpace(pendingIntroId))
+            {
+                pendingIntroId = previousSelection.ScheduledIntroOrderIds
+                    .FirstOrDefault(id => !previousSelection.UsedOrderIds.Any(
+                        used => string.Equals(used, id, StringComparison.Ordinal)));
+            }
+            var nextSelection = new OrderSelectionState(
+                new string[0],
+                previousSelection.GivenPairKeys,
+                new string[0],
+                pendingIntroId,
+                0,
+                previousSelection.LastPairKey);
             var snapshot = new DayStartSnapshot(
                 nextRunState,
                 nextSeed,
@@ -136,7 +155,8 @@ namespace Witch.Application.Flow
                 setup.GetExpenseId(nextDay),
                 setup.GetExpenseValue(nextDay),
                 setup.SaveVersion,
-                clock.UtcNow);
+                clock.UtcNow,
+                nextSelection);
             var metadata = new ActiveAttemptMetadata(
                 nextRunState.RunId,
                 nextDay,
@@ -147,7 +167,8 @@ namespace Witch.Application.Flow
                 nextSeed,
                 0,
                 0,
-                false);
+                false,
+                selection: nextSelection);
             SaveStateResult save = await saveRepository.SaveRunStateAsync(
                 snapshot,
                 metadata,

@@ -9,8 +9,8 @@ namespace Witch.Domain.Tests
         [Test]
         public void SameHerbsInDifferentOrder_AreEqual()
         {
-            var first = new HerbPair("herb.ginger", "herb.mint");
-            var reversed = new HerbPair("herb.mint", "herb.ginger");
+            var first = new HerbPair("herb.ginger", "herb.peppermint");
+            var reversed = new HerbPair("herb.peppermint", "herb.ginger");
 
             Assert.That(reversed, Is.EqualTo(first));
             Assert.That(reversed.GetHashCode(), Is.EqualTo(first.GetHashCode()));
@@ -19,7 +19,7 @@ namespace Witch.Domain.Tests
         [Test]
         public void DifferentHerbs_AreNotEqual()
         {
-            var first = new HerbPair("herb.ginger", "herb.mint");
+            var first = new HerbPair("herb.ginger", "herb.peppermint");
             var other = new HerbPair("herb.ginger", "herb.sage");
 
             Assert.That(other, Is.Not.EqualTo(first));
@@ -39,7 +39,7 @@ namespace Witch.Domain.Tests
         public void EmptyStableHerbId_IsRejected(string herbId)
         {
             Assert.That(
-                () => new HerbPair(herbId, "herb.mint"),
+                () => new HerbPair(herbId, "herb.peppermint"),
                 Throws.TypeOf<ArgumentException>());
         }
     }

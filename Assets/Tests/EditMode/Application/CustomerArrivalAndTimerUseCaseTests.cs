@@ -17,7 +17,7 @@ namespace Witch.Application.Tests
             var useCase = new AdmitCustomerUseCase(clock);
             var command = new AdmitCustomerCommand(
                 "customer.villager.one",
-                new OrderRequest("order.one", new HerbPair("herb.ginger", "herb.mint")));
+                new OrderRequest("order.one", new HerbPair("herb.ginger", "herb.peppermint")));
 
             AdmitCustomerResult first = useCase.Execute(session, command);
             DateTimeOffset firstStart = session.TimerStartedAtUtc.Value;
@@ -92,7 +92,7 @@ namespace Witch.Application.Tests
             AdmitFirstCustomer(session, clock);
             var rules = new PotionServiceRules(10);
             var preparation = new PotionPreparationUseCase(rules);
-            preparation.Grind(session, "herb.ginger", "herb.mint");
+            preparation.Grind(session, "herb.ginger", "herb.peppermint");
             preparation.AddToPot(session);
             preparation.Brew(session);
             new ServePotionUseCase(rules).Execute(session);
@@ -112,7 +112,7 @@ namespace Witch.Application.Tests
                 session,
                 new AdmitCustomerCommand(
                     "customer.villager.one",
-                    new OrderRequest("order.one", new HerbPair("herb.ginger", "herb.mint"))));
+                    new OrderRequest("order.one", new HerbPair("herb.ginger", "herb.peppermint"))));
         }
 
         private static GameSession CreateOpenSession()
@@ -122,7 +122,7 @@ namespace Witch.Application.Tests
                 "run.test",
                 0,
                 new[] { "category.warm" },
-                new[] { "herb.ginger", "herb.mint" },
+                new[] { "herb.ginger", "herb.peppermint" },
                 new[] { "guidebook.warm" },
                 1234,
                 TimeSpan.FromMinutes(4),

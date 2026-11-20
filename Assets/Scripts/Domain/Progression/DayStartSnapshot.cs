@@ -1,4 +1,5 @@
 using System;
+using Witch.Domain.Orders;
 
 namespace Witch.Domain.Progression
 {
@@ -12,7 +13,8 @@ namespace Witch.Domain.Progression
             string expenseId,
             int expenseValue,
             int saveVersion,
-            DateTimeOffset capturedAtUtc)
+            DateTimeOffset capturedAtUtc,
+            OrderSelectionState selection = null)
         {
             if (timerDuration <= TimeSpan.Zero)
             {
@@ -41,6 +43,7 @@ namespace Witch.Domain.Progression
             ExpenseValue = expenseValue;
             SaveVersion = saveVersion;
             CapturedAtUtc = capturedAtUtc.ToUniversalTime();
+            Selection = selection ?? new OrderSelectionState();
         }
 
         public RunState RunState { get; }
@@ -56,5 +59,7 @@ namespace Witch.Domain.Progression
         public int SaveVersion { get; }
 
         public DateTimeOffset CapturedAtUtc { get; }
+
+        public OrderSelectionState Selection { get; }
     }
 }

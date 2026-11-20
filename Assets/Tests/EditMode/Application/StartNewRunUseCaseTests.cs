@@ -52,7 +52,7 @@ namespace Witch.Application.Tests
                 "run.test",
                 0,
                 new[] { "category.warm" },
-                new[] { "herb.ginger", "herb.mint" },
+                new[] { "herb.ginger", "herb.peppermint" },
                 new[] { "guidebook.warm" },
                 firstDayOrderSeed: 1234,
                 firstDayTimerDuration: TimeSpan.FromMinutes(4),

@@ -8,10 +8,10 @@ namespace Witch.Domain.Tests
     public sealed class PotionServiceRulesTests
     {
         private static readonly PreparedPotion CorrectPotion = new PreparedPotion(
-            new HerbPair("herb.ginger", "herb.mint"));
+            new HerbPair("herb.ginger", "herb.peppermint"));
 
         private static readonly PreparedPotion OtherPotion = new PreparedPotion(
-            new HerbPair("herb.mint", "herb.sage"));
+            new HerbPair("herb.peppermint", "herb.sage"));
 
         [Test]
         public void CorrectPotion_PaysFixedAmountWithoutSuspicion()
@@ -69,7 +69,7 @@ namespace Witch.Domain.Tests
                 0,
                 0,
                 new[] { "category.warm" },
-                new[] { "herb.ginger", "herb.mint", "herb.sage" },
+                new[] { "herb.ginger", "herb.peppermint", "herb.sage" },
                 new[] { "guidebook.warm" });
         }
     }

@@ -3,6 +3,7 @@
     "rootNamespace": "Witch.Presentation.Tests",
     "references": [
         "Witch.Presentation",
+        "Witch.Infrastructure",
         "Witch.Application",
         "Witch.Domain"
     ],

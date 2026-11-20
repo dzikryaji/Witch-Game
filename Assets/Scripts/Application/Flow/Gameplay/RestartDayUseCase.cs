@@ -48,7 +48,8 @@ namespace Witch.Application.Flow
                 session.DayStartSnapshot.ExpenseId,
                 session.DayStartSnapshot.ExpenseValue,
                 session.DayStartSnapshot.SaveVersion,
-                session.DayStartSnapshot.CapturedAtUtc);
+                session.DayStartSnapshot.CapturedAtUtc,
+                session.DayStartSnapshot.Selection);
 
             // Daily counters start from zero again. 'default' fits whatever type each counter uses.
             var metadata = new ActiveAttemptMetadata(
@@ -64,7 +65,8 @@ namespace Witch.Application.Flow
                 default,
                 0,
                 0,
-                0);
+                0,
+                session.DayStartSnapshot.Selection);
 
             SaveStateResult save = await saveRepository.SaveRunStateAsync(snapshot, metadata, cancellationToken);
             if (!save.Succeeded)
