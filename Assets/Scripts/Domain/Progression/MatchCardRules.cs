@@ -53,11 +53,6 @@ namespace Witch.Domain.Progression
                 throw new InvalidOperationException("Minigame completes only at the suspicion threshold.");
             }
 
-            if (nextAttemptSeed == dayStartSnapshot.OrderSeed)
-            {
-                throw new ArgumentException("A completed minigame requires a new attempt seed.", nameof(nextAttemptSeed));
-            }
-
             RunState restored = dayStartSnapshot.RunState.WithProgress(
                 dayStartSnapshot.RunState.CurrentDayNumber,
                 dayStartSnapshot.RunState.Money,

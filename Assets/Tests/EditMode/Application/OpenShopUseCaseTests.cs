@@ -64,7 +64,7 @@ namespace Witch.Application.Tests
                 "run.test",
                 0,
                 new[] { "category.warm" },
-                new[] { "herb.ginger", "herb.mint" },
+                new[] { "herb.ginger", "herb.peppermint" },
                 new[] { "guidebook.warm" },
                 1234,
                 TimeSpan.FromMinutes(4),

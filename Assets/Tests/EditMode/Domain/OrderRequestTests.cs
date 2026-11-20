@@ -11,9 +11,9 @@ namespace Witch.Domain.Tests
         {
             var order = new OrderRequest(
                 "order.fever.direct",
-                new HerbPair("herb.ginger", "herb.mint"));
+                new HerbPair("herb.ginger", "herb.peppermint"));
             var servedPotion = new PreparedPotion(
-                new HerbPair("herb.mint", "herb.ginger"));
+                new HerbPair("herb.peppermint", "herb.ginger"));
 
             Assert.That(order.IsCorrect(servedPotion), Is.True);
         }
@@ -23,9 +23,9 @@ namespace Witch.Domain.Tests
         {
             var order = new OrderRequest(
                 "order.fever.direct",
-                new HerbPair("herb.ginger", "herb.mint"));
+                new HerbPair("herb.ginger", "herb.peppermint"));
             var otherPotion = new PreparedPotion(
-                new HerbPair("herb.mint", "herb.sage"));
+                new HerbPair("herb.peppermint", "herb.sage"));
 
             Assert.That(order.IsCorrect(otherPotion), Is.False);
         }

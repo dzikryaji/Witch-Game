@@ -48,7 +48,8 @@ namespace Witch.Application.Flow
                 session.DayStartSnapshot.ExpenseId,
                 session.DayStartSnapshot.ExpenseValue,
                 session.DayStartSnapshot.SaveVersion,
-                session.DayStartSnapshot.CapturedAtUtc);
+                session.DayStartSnapshot.CapturedAtUtc,
+                session.DayStartSnapshot.Selection);
             var metadata = new ActiveAttemptMetadata(
                 retryState.RunId,
                 retryState.CurrentDayNumber,
@@ -62,7 +63,8 @@ namespace Witch.Application.Flow
                 session.AttemptMetadata.MinigamePlayedToday,
                 0,
                 0,
-                0);
+                0,
+                session.DayStartSnapshot.Selection);
             SaveStateResult save = await saveRepository.SaveRunStateAsync(
                 snapshot,
                 metadata,

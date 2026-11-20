@@ -347,7 +347,7 @@ namespace Witch.Application.Tests
                         session,
                         new AdmitCustomerCommand(
                             "cx" + guard,
-                            new OrderRequest("ox" + guard, new HerbPair("herb.ginger", "herb.mint"))));
+                            new OrderRequest("ox" + guard, new HerbPair("herb.ginger", "herb.peppermint"))));
                     Assert.That(admitted.Succeeded, Is.True, admitted.ErrorMessage);
                 }
                 if (session.CurrentPhase != GamePhase.CustomerEncounter || session.ServiceCommitted)
@@ -355,7 +355,7 @@ namespace Witch.Application.Tests
                     break;
                 }
                 var prep = new PotionPreparationUseCase(rules);
-                prep.Grind(session, "herb.mint", "herb.sage");
+                prep.Grind(session, "herb.peppermint", "herb.sage");
                 prep.AddToPot(session);
                 prep.Brew(session);
                 new ServePotionUseCase(rules).Execute(session);
@@ -373,11 +373,11 @@ namespace Witch.Application.Tests
                 AdmitCustomerUseCase admit = new AdmitCustomerUseCase(clock);
                 AdmitCustomerResult admitted = admit.Execute(
                     session,
-                    new AdmitCustomerCommand(customerId, new OrderRequest(orderId, new HerbPair("herb.ginger", "herb.mint"))));
+                    new AdmitCustomerCommand(customerId, new OrderRequest(orderId, new HerbPair("herb.ginger", "herb.peppermint"))));
                 Assert.That(admitted.Succeeded, Is.True, admitted.ErrorMessage);
             }
             var prep = new PotionPreparationUseCase(rules);
-            prep.Grind(session, correct ? "herb.ginger" : "herb.mint", correct ? "herb.mint" : "herb.sage");
+            prep.Grind(session, correct ? "herb.ginger" : "herb.peppermint", correct ? "herb.peppermint" : "herb.sage");
             prep.AddToPot(session);
             prep.Brew(session);
             new ServePotionUseCase(rules).Execute(session);
@@ -395,10 +395,10 @@ namespace Witch.Application.Tests
                     session,
                     new AdmitCustomerCommand(
                         "customer." + index,
-                        new OrderRequest("order." + index, new HerbPair("herb.ginger", "herb.mint"))));
+                        new OrderRequest("order." + index, new HerbPair("herb.ginger", "herb.peppermint"))));
             }
             var prep = new PotionPreparationUseCase(rules);
-            prep.Grind(session, correct ? "herb.ginger" : "herb.mint", correct ? "herb.mint" : "herb.sage");
+            prep.Grind(session, correct ? "herb.ginger" : "herb.peppermint", correct ? "herb.peppermint" : "herb.sage");
             prep.AddToPot(session);
             prep.Brew(session);
             new ServePotionUseCase(rules).Execute(session);
@@ -428,7 +428,7 @@ namespace Witch.Application.Tests
                 "run.summary",
                 startingMoney,
                 new[] { "category.warm" },
-                new[] { "herb.ginger", "herb.mint", "herb.sage" },
+                new[] { "herb.ginger", "herb.peppermint", "herb.sage" },
                 new[] { "guidebook.warm" },
                 100,
                 TimeSpan.FromSeconds(timerSeconds),

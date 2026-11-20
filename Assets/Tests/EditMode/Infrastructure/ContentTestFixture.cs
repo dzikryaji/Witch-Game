@@ -8,10 +8,11 @@ namespace Witch.Infrastructure.Tests
         public static GameContentCatalogDefinition CreateValidCatalog()
         {
             HerbDefinition ginger = DefinitionFactory.Herb("herb.ginger", "Ginger", "category.warm");
-            HerbDefinition mint = DefinitionFactory.Herb("herb.mint", "Mint", "category.warm");
+            HerbDefinition mustardSeed = DefinitionFactory.Herb("herb.mustardSeed", "Mustard Seed", "category.warm");
+            HerbDefinition mint = DefinitionFactory.Herb("herb.peppermint", "Peppermint", "category.warm");
             OrderDefinition direct = DefinitionFactory.Order(
                 "order.direct",
-                "Bring ginger and mint.",
+                "Bring ginger and peppermint.",
                 ginger.StableId,
                 mint.StableId);
             OrderDefinition visual = DefinitionFactory.Order(
@@ -44,7 +45,7 @@ namespace Witch.Infrastructure.Tests
                 });
             var catalog = ScriptableObject.CreateInstance<GameContentCatalogDefinition>();
             catalog.Configure(
-                new[] { ginger, mint },
+                new[] { ginger, mustardSeed, mint },
                 new[] { direct, visual },
                 new[] { customer },
                 new[] { day },

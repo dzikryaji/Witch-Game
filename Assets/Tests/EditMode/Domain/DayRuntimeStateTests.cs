@@ -39,7 +39,7 @@ namespace Witch.Domain.Tests
             var usedOrderIds = new List<string> { "order.first" };
             var activeOrder = new OrderRequest(
                 "order.second",
-                new HerbPair("herb.ginger", "herb.mint"));
+                new HerbPair("herb.ginger", "herb.peppermint"));
             var snapshot = new DayStartSnapshot(
                 CreateRunState(),
                 1234,
@@ -77,7 +77,7 @@ namespace Witch.Domain.Tests
                 0,
                 0,
                 new[] { "category.warm" },
-                new[] { "herb.ginger", "herb.mint" },
+                new[] { "herb.ginger", "herb.peppermint" },
                 new[] { "guidebook.warm" });
         }
     }

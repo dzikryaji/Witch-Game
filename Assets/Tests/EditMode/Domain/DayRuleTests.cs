@@ -141,7 +141,7 @@ namespace Witch.Domain.Tests
                 0,
                 0,
                 new[] { "category.warm" },
-                new[] { "herb.ginger", "herb.mint" },
+                new[] { "herb.ginger", "herb.peppermint" },
                 new[] { "guidebook.warm" });
         }
     }

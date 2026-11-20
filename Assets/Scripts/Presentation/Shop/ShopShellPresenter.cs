@@ -327,7 +327,11 @@ namespace Witch.Presentation.Shop
                 setup.SeenOrderIds,
                 setup.IntroductionOrderId,
                 setup.OneTimeIntroduction,
-                setup.IntroductionCategoryOrderIds);
+                setup.IntroductionCategoryOrderIds,
+                setup.Selection,
+                setup.DayDifficultyRanks,
+                setup.GuidedTutorialEnabled,
+                setup.DayNumber);
             guidedTutorialOrderId = setup.GuidedTutorialOrderId;
             guidedTutorialActive = false;
             guidedTutorialSeenMarked = ActiveSession != null
@@ -1486,6 +1490,26 @@ namespace Witch.Presentation.Shop
             lifetimeCancellation = null;
         }
 
+        private async void PersistAttemptMetadata()
+        {
+            if (saveRepository == null || ActiveSession == null) return;
+            try
+            {
+                SaveStateResult save = await saveRepository.SaveRunStateAsync(
+                    ActiveSession.DayStartSnapshot,
+                    ActiveSession.AttemptMetadata,
+                    lifetimeCancellation?.Token ?? CancellationToken.None);
+                if (!save.Succeeded)
+                {
+                    Debug.LogWarning("Failed to persist order selection: " + save.ErrorMessage, this);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogWarning("Failed to persist order selection: " + ex.Message, this);
+            }
+        }
+
         private async void MarkGuidedTutorialSeen()
         {
             if (ActiveSession == null || guidedTutorialSeenMarked) return;
@@ -1789,15 +1813,7 @@ namespace Witch.Presentation.Shop
 
             if (ActiveSession.CurrentPhase == Witch.Domain.GamePhase.CustomerArrival)
             {
-                ShopEncounterViewData encounter = null;
-                if (ShouldRunGuidedTutorial() && ActiveSession.AttemptState.UsedOrderIds.Count == 0)
-                {
-                    encounter = FindGuidedTutorialEncounter() ?? FindNextEncounter();
-                }
-                else
-                {
-                    encounter = FindNextEncounter();
-                }
+                ShopEncounterViewData encounter = FindNextEncounter();
                 if (encounter == null)
                 {
                     SetStatus("No more authored customers today. The clock continues to closing.");
@@ -1813,6 +1829,7 @@ namespace Witch.Presentation.Shop
                         : "DING! " + encounter.CustomerName + " enters the shop."
                     : arrival.ErrorMessage);
                 if (arrival.Succeeded) audioService?.Play(GameAudioCueIds.CustomerBell);
+                if (arrival.Succeeded) PersistAttemptMetadata();
                 if (arrival.Succeeded)
                 {
                     hudView.SetCustomer(
@@ -1923,7 +1940,11 @@ namespace Witch.Presentation.Shop
         private ShopEncounterViewData FindNextEncounter()
         {
             if (!ActiveSession.TimerState.QueueOpen || encounterDeck == null) return null;
-            return encounterDeck.Draw(ActiveSession.AttemptState.UsedOrderIds.Count);
+            ShopEncounterViewData encounter = encounterDeck.Draw(
+                ActiveSession.AttemptState.UsedOrderIds.Count,
+                ActiveSession.AttemptMetadata.Selection);
+            ActiveSession.SetOrderSelectionState(encounterDeck.CurrentState);
+            return encounter;
         }
 
 

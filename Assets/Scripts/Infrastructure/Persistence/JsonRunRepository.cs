@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 using Witch.Application.Ports;
+using Witch.Domain.Orders;
 using Witch.Domain.Progression;
 
 namespace Witch.Infrastructure.Persistence
@@ -242,6 +243,18 @@ namespace Witch.Infrastructure.Persistence
         public int expenseValue;
         public int saveVersion;
         public string capturedAtUtc;
+        public OrderSelectionDto selection;
+    }
+
+    [Serializable]
+    internal sealed class OrderSelectionDto
+    {
+        public string[] usedOrderIds;
+        public string[] givenPairKeys;
+        public string[] scheduledIntroOrderIds;
+        public string pendingIntroOrderId;
+        public int introSlot;
+        public string lastPairKey;
     }
 
     [Serializable]
@@ -277,6 +290,7 @@ namespace Witch.Infrastructure.Persistence
         public int correctServiceCountToday;
         public int coinsEarnedToday;
         public int wrongOrdersForSummary;
+        public OrderSelectionDto selection;
     }
 
     [Serializable]
@@ -301,7 +315,8 @@ namespace Witch.Infrastructure.Persistence
                     expenseId = snapshot.ExpenseId,
                     expenseValue = snapshot.ExpenseValue,
                     saveVersion = snapshot.SaveVersion,
-                    capturedAtUtc = snapshot.CapturedAtUtc.ToString("O", CultureInfo.InvariantCulture)
+                    capturedAtUtc = snapshot.CapturedAtUtc.ToString("O", CultureInfo.InvariantCulture),
+                    selection = ToSelectionDto(snapshot.Selection)
                 },
                 attempt = new ActiveAttemptMetadataDto
                 {
@@ -317,7 +332,8 @@ namespace Witch.Infrastructure.Persistence
                     minigamePlayedToday = metadata.MinigamePlayedToday,
                     correctServiceCountToday = metadata.CorrectServiceCountToday,
                     coinsEarnedToday = metadata.CoinsEarnedToday,
-                    wrongOrdersForSummary = metadata.WrongOrdersForSummary
+                    wrongOrdersForSummary = metadata.WrongOrdersForSummary,
+                    selection = ToSelectionDto(metadata.Selection)
                 }
             };
         }
@@ -359,7 +375,8 @@ namespace Witch.Infrastructure.Persistence
                 DateTimeOffset.Parse(
                     envelope.snapshot.capturedAtUtc,
                     CultureInfo.InvariantCulture,
-                    DateTimeStyles.RoundtripKind));
+                    DateTimeStyles.RoundtripKind),
+                FromSelectionDto(envelope.snapshot.selection));
             // Old saves without the new fields load with 0 (JsonUtility default).
             var metadata = new ActiveAttemptMetadata(
                 envelope.attempt.runId,
@@ -374,7 +391,8 @@ namespace Witch.Infrastructure.Persistence
                 envelope.attempt.minigamePlayedToday,
                 envelope.attempt.correctServiceCountToday,
                 envelope.attempt.coinsEarnedToday,
-                envelope.attempt.wrongOrdersForSummary);
+                envelope.attempt.wrongOrdersForSummary,
+                FromSelectionDto(envelope.attempt.selection));
             return new GameSaveState(snapshot, metadata);
         }
 
@@ -395,6 +413,31 @@ namespace Witch.Infrastructure.Persistence
                 tutorialFlags = ToFlags(state.TutorialFlags),
                 narrativeFlags = ToFlags(state.NarrativeFlags)
             };
+        }
+
+        private static OrderSelectionDto ToSelectionDto(OrderSelectionState selection)
+        {
+            return new OrderSelectionDto
+            {
+                usedOrderIds = Copy(selection.UsedOrderIds),
+                givenPairKeys = Copy(selection.GivenPairKeys),
+                scheduledIntroOrderIds = Copy(selection.ScheduledIntroOrderIds),
+                pendingIntroOrderId = selection.PendingIntroOrderId,
+                introSlot = selection.IntroSlot,
+                lastPairKey = selection.LastPairKey
+            };
+        }
+
+        private static OrderSelectionState FromSelectionDto(OrderSelectionDto dto)
+        {
+            if (dto == null) return new OrderSelectionState();
+            return new OrderSelectionState(
+                dto.usedOrderIds ?? new string[0],
+                dto.givenPairKeys ?? new string[0],
+                dto.scheduledIntroOrderIds ?? new string[0],
+                dto.pendingIntroOrderId,
+                dto.introSlot,
+                dto.lastPairKey);
         }
 
         private static string[] Copy(IReadOnlyList<string> values)
