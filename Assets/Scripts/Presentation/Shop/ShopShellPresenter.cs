@@ -339,6 +339,7 @@ namespace Witch.Presentation.Shop
             ValidateGuidedTutorialMasksIfEnabled();
             progressionPanel.SetActive(false);
             pausePanel.SetActive(false);
+            if (guidebookPanel != null) guidebookPanel.SetActive(false);
             tutorialPanel.SetActive(false);
             stationAnimationPlaying = false;
             brewAnimationPlaying = false;
@@ -1654,11 +1655,11 @@ namespace Witch.Presentation.Shop
                 case ShopGuidedTutorialStep.ReadOrder:
                     return "Read the customer's order bubbles. Continue when you are ready.";
                 case ShopGuidedTutorialStep.OpenGuidebook:
-                    return "Open the guidebook to check Ginger and Mustard Seed.";
+                    return "Click the Book of Herbology to open the guidebook.";
                 case ShopGuidedTutorialStep.NavigateToMustardSeed:
-                    return "Turn to the spread that shows Mustard Seed.";
+                    return "Find Mustard Seed: pick a category on the Contents page or use the Next arrow.";
                 case ShopGuidedTutorialStep.CloseGuidebook:
-                    return "Press the close button to close the guidebook and return to the counter.";
+                    return "Click anywhere outside the book to close the guidebook.";
                 case ShopGuidedTutorialStep.LoadHerbs:
                     return "Drag Ginger and Mustard Seed into the grinder.";
                 case ShopGuidedTutorialStep.Grind:
@@ -2033,7 +2034,7 @@ namespace Witch.Presentation.Shop
             Button button = backdrop.GetComponent<Button>();
             if (button == null) return;
             button.onClick.RemoveAllListeners();
-            button.enabled = false;
+            button.onClick.AddListener(CloseGuidebook);
         }
 
         private void ConfigureHerbButtons()
