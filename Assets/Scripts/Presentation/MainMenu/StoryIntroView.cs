@@ -35,6 +35,7 @@ namespace Witch.Presentation.MainMenu
         [SerializeField, Min(1f)] private float charactersPerSecond = 40f;
         [SerializeField, Min(0f)] private float sentencePause = 0.25f;
         [SerializeField, Min(0f)] private float commaPause = 0.12f;
+        [SerializeField] private bool typeNarration = true;
 
         private CanvasGroup panelGroup;
         private TaskCompletionSource<bool> finished;
@@ -182,7 +183,8 @@ namespace Witch.Presentation.MainMenu
             if (narrationText != null)
             {
                 narrationText.text = page.narration;
-                StartTyping();
+                if (typeNarration) StartTyping();
+                else FinishTyping();
             }
             if (illustrationImage != null)
             {
@@ -286,10 +288,12 @@ namespace Witch.Presentation.MainMenu
             if (group == null) yield break;
 
             float elapsed = 0f;
+            group.alpha = from;
+            yield return null;
             while (elapsed < duration)
             {
-                elapsed += Time.unscaledDeltaTime;
-                group.alpha = Mathf.Lerp(from, to, Mathf.Clamp01(elapsed / duration));
+                elapsed += Mathf.Min(Time.unscaledDeltaTime, 1f / 30f);
+                group.alpha = Mathf.Lerp(from, to, Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(elapsed / duration)));
                 yield return null;
             }
 

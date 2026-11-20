@@ -17,6 +17,7 @@ namespace Witch.Application.Ports
         public const string Grind = "SFX_GRINDER";
         public const string HerbPluck = "SFX_HERB_PLUCK";
         public const string BrewSuccess = "SFX_BREW_SUCCESS";
+        public const string Congratulations = "SFX_CONGRATULATIONS";
         public const string Boiling = "SFX_BOILING";
         public const string Discard = "SFX_DISCARD";
         public const string Payment = "SFX_PAYMENT_COINS";
@@ -31,7 +32,7 @@ namespace Witch.Application.Ports
         {
             MainMenuMusic, ShopMusic, MinigameMusic, WitchHunterMusic, GameOverMusic, VictoryMusic,
             ShopAmbience, CustomerBell, PageFlip, Grind, HerbPluck,
-            BrewSuccess, Boiling, Discard, Payment, Wrong,
+            BrewSuccess, Congratulations, Boiling, Discard, Payment, Wrong,
             CardMatch, CardMismatch,
             MinigameComplete, Correct, UiClick
         };
