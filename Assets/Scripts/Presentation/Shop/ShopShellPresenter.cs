@@ -2460,6 +2460,12 @@ namespace Witch.Presentation.Shop
                 && !focusingSuspicion
                 && (showSummary || showGameOver || showClosingError);
             progressionPanel.SetActive(visible);
+
+            if (pauseOverlay != null)
+            {
+                pauseOverlay.SetActive(visible || userPaused || MinigameIntroVisible);
+            }
+
             if (!visible)
             {
                 return;
@@ -2526,6 +2532,8 @@ namespace Witch.Presentation.Shop
             {
                 return;
             }
+
+            audioService?.Play(GameAudioCueIds.UiClick);
 
             if (ActiveSession.CurrentPhase == Witch.Domain.GamePhase.Victory)
             {
