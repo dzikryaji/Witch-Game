@@ -209,6 +209,8 @@ MonoBehaviour:
     clip: {fileID: 8300000, guid: f6001bf6c5dd4d3db78b8cdab9887aca, type: 3}
   - cueId: SFX_BREW_SUCCESS
     clip: {fileID: 8300000, guid: 617ac18a65bc468f9281596652b89551, type: 3}
+  - cueId: SFX_CONGRATULATIONS
+    clip: {fileID: 8300000, guid: 2c745026643ac463e90c8528e38a8925, type: 3}
   - cueId: SFX_BOILING
     clip: {fileID: 8300000, guid: eab46db18628344eebcb6cb4da683661, type: 3}
   - cueId: SFX_DISCARD

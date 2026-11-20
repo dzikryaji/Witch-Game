@@ -15,6 +15,6 @@ MonoBehaviour:
   stableId: day.14
   dayNumber: 14
   timerSeconds: 300
-  dailyExpense: 0
+  dailyExpense: 20
   unlockedCategoryIds: []
   orderDifficulties: 03000000i

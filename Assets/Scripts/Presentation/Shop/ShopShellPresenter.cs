@@ -13,6 +13,7 @@ using Witch.Domain.Potions;
 using Witch.Domain.Progression;
 using Witch.Presentation;
 using Witch.Presentation.Credits;
+using Witch.Presentation.MainMenu;
 
 namespace Witch.Presentation.Shop
 {
@@ -82,6 +83,7 @@ namespace Witch.Presentation.Shop
         [SerializeField] private Button continueButton;
         [SerializeField] private GameObject creditsPanel;
         [SerializeField] private Witch.Presentation.Credits.CreditsRoll creditsRoll;
+        [SerializeField] private StoryIntroView epilogueView;
         [SerializeField] private GameObject pausePanel;
         [SerializeField] private Button resumeButton;
         [SerializeField] private Button mainMenuButton;
@@ -136,6 +138,8 @@ namespace Witch.Presentation.Shop
         private bool autoResolveExpenseAttempted;
         private bool creditsActive;
         private bool creditsExitStarted;
+        private bool epiloguePlaying;
+        private const float EpilogueFadeOutSeconds = 1.2f;
         private int? heldHeaderMoney;
         private readonly HashSet<string> announcedUnlocks = new HashSet<string>(StringComparer.Ordinal);
         private string autoResolveExpenseError;
@@ -485,7 +489,7 @@ namespace Witch.Presentation.Shop
 
         private void HandlePauseAction(InputAction.CallbackContext context)
         {
-            if (creditsActive) return;
+            if (creditsActive || epiloguePlaying) return;
             if (settingsPanelPresenter != null && settingsPanelPresenter.IsOpen)
             {
                 settingsPanelPresenter.Cancel();
@@ -501,7 +505,7 @@ namespace Witch.Presentation.Shop
 
         private void HandleGuidebookAction(InputAction.CallbackContext context)
         {
-            if (creditsActive) return;
+            if (creditsActive || epiloguePlaying) return;
             if (!IsInitialized || MinigameIntroVisible) return;
             if (guidedTutorialActive)
             {
@@ -2002,6 +2006,8 @@ namespace Witch.Presentation.Shop
             }
             creditsActive = false;
             creditsExitStarted = false;
+            epiloguePlaying = false;
+            if (epilogueView != null) epilogueView.Hide();
             guidebookLeftPage.BindPageLinks(GoToGuidebookPage);
             guidebookRightPage.BindPageLinks(GoToGuidebookPage);
             pauseButton.onClick.AddListener(TogglePause);
@@ -2435,6 +2441,12 @@ namespace Witch.Presentation.Shop
                 return;
             }
 
+            if (epiloguePlaying)
+            {
+                if (progressionPanel != null) progressionPanel.SetActive(false);
+                return;
+            }
+
             if (progressionPanel == null || resolveExpense == null)
             {
                 return;
@@ -2531,7 +2543,7 @@ namespace Witch.Presentation.Shop
 
             if (ActiveSession.CurrentPhase == Witch.Domain.GamePhase.Victory)
             {
-                StartCredits();
+                PlayEpilogueThenCredits();
                 return;
             }
 
@@ -2542,6 +2554,71 @@ namespace Witch.Presentation.Shop
             }
 
             RunUiAction(ContinueNextDayAsync);
+        }
+
+        private async void PlayEpilogueThenCredits()
+        {
+            if (creditsActive || epiloguePlaying) return;
+            if (epilogueView == null)
+            {
+                StartCredits();
+                return;
+            }
+
+            epiloguePlaying = true;
+            audioService?.Play(GameAudioCueIds.Congratulations);
+            if (progressionPanel != null) progressionPanel.SetActive(false);
+            if (pausePanel != null) pausePanel.SetActive(false);
+            if (pauseOverlay != null) pauseOverlay.SetActive(false);
+            epilogueView.transform.SetAsLastSibling();
+            try
+            {
+                await epilogueView.PlayAsync();
+            }
+            catch (Exception exception)
+            {
+                Debug.LogException(exception, this);
+            }
+
+            if (this == null) return;
+            epiloguePlaying = false;
+            StartCredits();
+            if (!creditsActive)
+            {
+                epilogueView.Hide();
+                return;
+            }
+
+            epilogueView.transform.SetAsLastSibling();
+            try
+            {
+                await FadeOutEpilogueAsync();
+            }
+            catch (Exception exception)
+            {
+                Debug.LogException(exception, this);
+                if (this != null) epilogueView.Hide();
+            }
+        }
+
+        private async Task FadeOutEpilogueAsync()
+        {
+            CanvasGroup group = epilogueView.GetComponent<CanvasGroup>();
+            if (group != null && epilogueView.gameObject.activeInHierarchy)
+            {
+                float start = group.alpha;
+                float elapsed = 0f;
+                while (elapsed < EpilogueFadeOutSeconds)
+                {
+                    await Task.Yield();
+                    if (this == null || group == null) return;
+                    elapsed += Mathf.Min(Time.unscaledDeltaTime, 1f / 30f);
+                    group.alpha = Mathf.Lerp(start, 0f, Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(elapsed / EpilogueFadeOutSeconds)));
+                }
+            }
+
+            epilogueView.Hide();
+            if (group != null) group.alpha = 1f;
         }
 
         private void StartCredits()
