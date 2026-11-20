@@ -50,6 +50,7 @@ namespace Witch.Presentation.MatchCard
 
         private IGameSessionStore sessionStore;
         private CompleteMinigameUseCase completeMinigameUseCase;
+        private AbandonMinigameUseCase abandonMinigameUseCase;
         private bool[] revealed;
         private bool[] matched;
         private int firstIndex = -1;
@@ -361,6 +362,7 @@ namespace Witch.Presentation.MatchCard
 
             timerRunning = false;
             IsTimedOut = true;
+            await SaveFailedMinigameAsync();
             boardGeneration++;
             IsResolvingMismatch = false;
             firstIndex = -1;
@@ -390,6 +392,37 @@ namespace Witch.Presentation.MatchCard
                 Debug.LogException(exception, this);
                 TryStartGameOverAmbienceOnce();
                 timeUpPopup?.Show();
+            }
+        }
+
+        private async Task SaveFailedMinigameAsync()
+        {
+            if (abandonMinigameUseCase == null || ActiveSession == null)
+            {
+                Debug.LogWarning("Cannot abandon minigame: use case or session is missing.", this);
+                return;
+            }
+
+            try
+            {
+                MinigameTransactionResult result =
+                    await abandonMinigameUseCase.ExecuteAsync(
+                        ActiveSession,
+                        lifetime.Token);
+
+                if (!result.Succeeded)
+                {
+                    Debug.LogWarning(
+                        $"Failed to save minigame abandonment: {result.ErrorMessage}",
+                        this);
+                }
+            }
+            catch (OperationCanceledException) when (lifetime.IsCancellationRequested)
+            {
+            }
+            catch (Exception exception)
+            {
+                Debug.LogException(exception, this);
             }
         }
 
@@ -435,6 +468,12 @@ namespace Witch.Presentation.MatchCard
         public void ConfigureNavigation(ISceneLoader loader)
         {
             sceneLoader = loader ?? throw new ArgumentNullException(nameof(loader));
+        }
+
+        public void ConfigureFailure(AbandonMinigameUseCase abandonUseCase)
+        {
+            abandonMinigameUseCase = abandonUseCase
+                ?? throw new ArgumentNullException(nameof(abandonUseCase));
         }
 
         private async void ReturnToMainMenu()

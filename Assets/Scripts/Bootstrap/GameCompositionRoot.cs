@@ -45,6 +45,7 @@ namespace Witch.Bootstrap
         private UpdateShopTimerUseCase updateShopTimer;
         private EnterMinigameUseCase enterMinigame;
         private CompleteMinigameUseCase completeMinigame;
+        private AbandonMinigameUseCase abandonMinigame;
         private ResolveExpenseUseCase resolveExpense;
         private RetryDayUseCase retryDay;
         private RestartDayUseCase restartDay;
@@ -234,6 +235,7 @@ namespace Witch.Bootstrap
                 sceneLoader,
                 new DeterministicRandomSource(randomSeed + 2),
                 gameCenter);
+            abandonMinigame = new AbandonMinigameUseCase(runRepository);
             resolveExpense = new ResolveExpenseUseCase(
                 content.ExpenseRules,
                 content.DayProgressionSetup,
@@ -374,6 +376,7 @@ namespace Witch.Bootstrap
                         symbols.Add(card.SymbolKey);
                     }
                     presenter.ConfigureNavigation(sceneLoader);
+                    presenter.ConfigureFailure(abandonMinigame);
                     presenter.Initialize(
                         sessionStore,
                         completeMinigame,
